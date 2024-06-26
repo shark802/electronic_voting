@@ -3,12 +3,12 @@ CREATE TABLE IF NOT EXISTS `users` (
    `firstname` VARCHAR(255) NOT NULL,
    `lastname` VARCHAR(255) NOT NULL,
    `middlename` VARCHAR(255),
-   `email` VARCHAR(100) NOT NULL UNIQUE,
-   `course` VARCHAR(50) NOT NULL,
-   `year_level` INT NOT NULL,
-   `section` VARCHAR(255) NOT NULL,
+   `email` VARCHAR(100) NOT NULL,
+   `course` VARCHAR(50),
+   `year_level` VARCHAR(10),
+   `section` VARCHAR(255),
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `elections` (
    `election_id` VARCHAR(50) NOT NULL PRIMARY KEY,
@@ -18,18 +18,18 @@ CREATE TABLE IF NOT EXISTS `elections` (
    `date_end` DATE NOT NULL,
    `time_end` TIME NOT NULL,
    `is_active` TINYINT(1) DEFAULT 1,
-   `is_deleted` TIMESTAMP NULL,
+   `deleted_at` TIMESTAMP NULL,
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `roles` (
    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
    `id_number` INT(10) NOT NULL, 
    `admin` TINYINT(1) DEFAULT 0,
    `voter` TINYINT(1) DEFAULT 0,
-   `candidate` TINYINT(1) DEFAULT 0,
+   `department_head` TINYINT(1) DEFAULT 0,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `voters` (
    `voter_id` VARCHAR(50) NOT NULL PRIMARY KEY,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `voters` (
    `election_id` VARCHAR(50),
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `candidates` (
    `candidate_id` VARCHAR(50) NOT NULL PRIMARY KEY,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `candidates` (
    `election_id` VARCHAR(50),
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `votes` (
    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `votes` (
    FOREIGN KEY (`vice_president`) REFERENCES `candidates`(`candidate_id`),
    FOREIGN KEY (`senator`) REFERENCES `candidates`(`candidate_id`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `election_logs` (
    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `election_logs` (
    `total_voters` INT DEFAULT 0, 
    `total_voted` INT DEFAULT 0,
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `election_results` (
    `id` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -88,14 +88,14 @@ CREATE TABLE IF NOT EXISTS `election_results` (
    `date_elected` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `register_devices` (
    `uuid` VARCHAR(50) NOT NULL PRIMARY KEY,
    `codename` VARCHAR(50) NOT NULL,
    `date_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
    `is_registered` TINYINT(1) DEFAULT 0
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `otp_codes` (
    `id` VARCHAR(50) NOT NULL PRIMARY KEY,
@@ -104,4 +104,4 @@ CREATE TABLE IF NOT EXISTS `otp_codes` (
    `expiration` TIMESTAMP NOT NULL,
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    `is_used` TINYINT(1) DEFAULT 0
-);
+) ENGINE=InnoDB;
