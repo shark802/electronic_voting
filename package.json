@@ -5,16 +5,18 @@
 	"main": "dist/app.js",
 	"scripts": {
 		"build": "tsc",
-		"start": "cross-env NODE_ENV=production ./dist/app.js",
+		"start": "cross-env NODE_ENV=production node ./dist/app.js",
+		"build-css": "tailwindcss build ./public/css/input.css -o ./public/css/style.css",	
 		"build:dev": "cross-env NODE_ENV=development tsc -w -p tsconfig.dev.json",
 		"dev": " cross-env NODE_ENV=development nodemon ./dist/app.js",
-		"build-css": "tailwindcss build ./public/css/input.css -o ./public/css/style.css"
+		"build-css:dev": "tailwindcss build ./public/css/input.css -o ./public/css/style.css --watch"
 	},
 	"author": "John Lester Villarde",
 	"license": "ISC",
 	"dependencies": {
 		"bcryptjs": "^2.4.3",
 		"dotenv": "^16.4.5",
+		"ejs": "^3.1.10",
 		"express": "^4.19.2",
 		"express-session": "^1.18.0",
 		"mysql2": "^3.9.7",

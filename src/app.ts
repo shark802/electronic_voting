@@ -7,6 +7,7 @@ import session from "express-session";
 import { socketIO } from "./middlewares/socketIO";
 import { errorHandler } from "./middlewares/errorHandler";
 import apiRoutes from "./api";
+import webRoutes from "./web"
 
 dotenv.config();
 const app = express();
@@ -39,6 +40,7 @@ app.use(socketIO(io));
 
 /* Routers */
 app.use("/api", apiRoutes);
+app.use("/", webRoutes);
 
 app.use(errorHandler);
 
