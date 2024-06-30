@@ -6,10 +6,10 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "cross-env NODE_ENV=production node ./dist/app.js",
-		"build-css": "tailwindcss build ./public/css/input.css -o ./public/css/style.css",	
+		"build-css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css",	
 		"build:dev": "cross-env NODE_ENV=development tsc -w -p tsconfig.dev.json",
 		"dev": " cross-env NODE_ENV=development nodemon ./dist/app.js",
-		"build-css:dev": "tailwindcss build ./public/css/input.css -o ./public/css/style.css --watch"
+		"build-css:dev": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css -w"
 	},
 	"author": "John Lester Villarde",
 	"license": "ISC",

@@ -10,9 +10,64 @@
   <script src="/javascript/election_create.js" defer></script>
 </head>
 
-<body class="w-[100vw] m-0 bg-blue-600 dvh">
+<body class="w-[100vw] m-0 bg-blue-600 dvh flex">
 
   <%- include("../partials/sidebar.ejs") %>
+
+  <main class="relative flex flex-col w-4/5 h-dvh">
+
+    <div class="w-full h-20">
+      <h1 class="mt-6 font-sans text-4xl font-bold text-center text-white">Create Election</h1>
+    </div>
+
+    <div class="self-center mt-16 bg-white rounded-xl lg:w-[700px] min-h-96 max-w-4/5 auto max-h-3/5 shadow-lg">
+
+      <form id="create_election_form" class="px-24 py-16">
+
+        <label for="election_name" class="text-sm">Election Name</label>
+        <input id="election_name" type="text" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm">
+        <div id="election_name_error_message" class="mb-3 text-red-500 h-7"></div>
+
+        <h3 class="text-lg font-semibold">Start</h3>
+
+        <div class="flex flex-1 gap-4">
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Date</label><br>
+            <input id="date_start" type="date" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm ">
+            <div id="election_name_error_message" class="h-5 text-red-500"></div>
+          </div>
+
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Time</label><br>
+            <input id="time_start" type="time" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm ">
+            <div id="election_name_error_message" class="h-5 text-red-500"></div>
+          </div>
+
+        </div>
+
+        <h3 class="text-lg font-semibold">End</h3>
+
+        <div class="flex flex-1 gap-4 mb-4">
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Date</label><br>
+            <input id="date_end" type="date" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm ">
+            <div id="election_name_error_message" class="h-5 text-red-500"></div>
+          </div>
+
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Time</label><br>
+            <input id="time_end" type="time" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm ">
+            <div id="election_name_error_message" class="h-5 text-red-500"></div>
+          </div>
+
+        </div>
+
+        <input type="submit" value="SAVE" class="float-right px-3 py-1 m-auto mb-4 font-bold text-white bg-blue-500 rounded-lg">
+
+      </form>
+
+    </div>
+  </main>
 
 </body>
 
