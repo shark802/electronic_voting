@@ -15,13 +15,10 @@ export function isValidEndTime(arrayValue, errorMessagDispaly) {
 
         const inputEndTime = arrayValue[0].value;
         const inputStartTime = arrayValue[1].value;
-
-        console.log(inputEndTime, inputStartTime)
         
         const endTime = new Date(inputEndTime);
         const startTime = new Date(inputStartTime);
 
-        console.log(endTime, startTime)
     } catch (error) {
         console.error(error);
     }
