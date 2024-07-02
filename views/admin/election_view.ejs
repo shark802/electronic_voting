@@ -20,7 +20,7 @@
       <h1 class="mt-6 font-sans text-4xl font-bold text-center text-white">Manage Election</h1>
     </div>
 
-    <div class="flex flex-col w-full gap-6 mt-12 overflow-y-auto min-h-96 auto max-h-3/5">
+    <div class="flex flex-col w-full gap-6 pb-16 mt-12 overflow-y-auto min-h-96 auto max-h-3/5">
 
       <% if (elections.length < 1) { %>
 
@@ -34,7 +34,10 @@
 
       <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3">
 
-        <h2 class="py-4 mb-6 font-semibold text-center lg:text-2xl"><%= element.election_name %></h2>
+        <h2 class="pt-4 font-semibold text-center lg:text-2xl"><%= element.election_name %></h2>
+        <p class="mb-6 text-center text-gray-400 text-md"><%= element.election_id %></p>
+        <hr class="border-gray-400">
+        <br>
 
         <% 
         const formatOptions = {
@@ -60,12 +63,12 @@
 
         <div class="flex gap-2 ">
           <p class="font-semibold">Start:</p>
-          <em><%= formattedStartDateTime %></em>
+          <p><%= formattedStartDateTime %></p>
         </div>
 
         <div class="flex gap-2 mt-3">
           <p class="font-semibold">End:</p>
-          <em><%= formattedEndDateTime %></em>
+          <p><%= formattedEndDateTime %></p>
 
         </div>
 

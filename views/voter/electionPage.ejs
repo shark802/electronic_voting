@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="w-full overflow-hidden bg-blue-600 h-dvh">
+  <header class="w-full bg-blue-800 min-h-24">
+
+  </header>
+  <main class="min-h-96] flex gap-6 flex-col py-10 overflow-auto h-[calc(100%-96px)]">
+
+    <% if (electionList.length < 1) { %>
+    <div>no election</div>
+    <% } else { %>
+
+    <% electionList.forEach(element => { %>
+    <section class="lg:w-[600px] bg-white rounded-md min-h-fit m-auto w-[500px] lg:min-w-[500px] py-6 px-10 ">
+      <h2 class="mb-6 text-2xl font-semibold text-center"><%= element.election_name %></h2>
+
+      <% 
+        const formatOptions = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+        }
+
+        const dateStart = new Date(element.date_start);
+        const [startHour, startMinute] = element.time_start.split(":");
+        dateStart.setHours(startHour, startMinute);
+        const formattedStartDateAndTime = dateStart.toLocaleString('en-US', formatOptions);
+
+        const dateEnd = new Date(element.date_end);
+        const [endHour, endMinute] = element.time_end.split(":");
+        dateEnd.setHours(endHour, endMinute);
+        const formattedEndDateAndTime = dateEnd.toLocaleString('en-US', formatOptions);
+      %>
+
+      <div class="flex gap-3 m-auto w-fit">
+        <p>Start: </p>
+        <p><%= formattedStartDateAndTime %></p>
+      </div>
+
+      <div class="flex gap-3 m-auto w-fit">
+        <p>End: </p>
+        <p><%= formattedEndDateAndTime %></p>
+      </div>
+
+      <hr class="my-6 border-t border-gray-400">
+
+      <button class="relative px-3 py-1 mt-10 font-semibold text-white transform -translate-x-1/2 bg-green-500 rounded-full left-1/2">Vote Now</button>
+    </section>
+    <% }) %>
+
+    <% } %>
+
+  </main>
+</body>
+
+</html>
