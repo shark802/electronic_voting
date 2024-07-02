@@ -10,9 +10,75 @@
   <script type="module" src="/javascript/admin/election_view.js" defer></script>
 </head>
 
-<body class="w-[100vw] m-0 bg-blue-600 dvh">
+<body class="w-[100vw] m-0 bg-blue-600 dvh flex">
 
   <%- include("../partials/sidebar.ejs") %>
+
+  <main class="relative flex flex-col w-4/5 h-dvh">
+
+    <div class="w-full h-20">
+      <h1 class="mt-6 font-sans text-4xl font-bold text-center text-white">Manage Election</h1>
+    </div>
+
+    <div class="flex flex-col w-full gap-6 mt-12 overflow-y-auto min-h-96 auto max-h-3/5">
+
+      <% if (elections.length < 1) { %>
+
+      <section class="lg:w-[700px] bg-white rounded-md min-h-28">
+
+      </section>
+
+      <% } else { %>
+
+      <% elections.forEach(element => { %>
+
+      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3">
+
+        <h2 class="py-4 mb-6 font-semibold text-center lg:text-2xl"><%= element.election_name %></h2>
+
+        <% 
+        const formatOptions = {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        }
+        
+        const startDateTime = new Date(element.date_start);
+        const [startHour, startMinute, startSecond] = element.time_start.split(":");
+        startDateTime.setHours(startHour, startMinute, startSecond);
+        const formattedStartDateTime = startDateTime.toLocaleString('en-US', formatOptions);
+
+        const electionEndDateTime = new Date(element.date_end);
+        const [endHour, endMinute, endSecond] = element.time_end.split(":");
+        electionEndDateTime.setHours(endHour, endMinute, endSecond);
+        const formattedEndDateTime = electionEndDateTime.toLocaleString('en-US', formatOptions);
+        
+         %>
+
+        <div class="flex gap-2 ">
+          <p class="font-semibold">Start:</p>
+          <em><%= formattedStartDateTime %></em>
+        </div>
+
+        <div class="flex gap-2 mt-3">
+          <p class="font-semibold">End:</p>
+          <em><%= formattedEndDateTime %></em>
+
+        </div>
+
+        <button class="float-right px-3 py-1 mt-6 text-white bg-green-500 rounded-md">Edit</button>
+
+      </section>
+
+      <% }) %>
+
+      <% } %>
+
+    </div>
+  </main>
 
 </body>
 

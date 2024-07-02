@@ -5,10 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Election</title>
+
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
   <script type="module" src="/javascript/admin/election_create.js" defer></script>
+
 </head>
 
 <body class="w-[100vw] m-0 bg-blue-600 dvh flex">
@@ -26,7 +28,7 @@
       <form id="create_election_form" class="px-24 py-16">
 
         <label for="election_name" class="text-sm">Election Name</label>
-        <input id="election_name" type="text" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm" required>
+        <input id="election_name" type="text" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
         <div id="election_name_error_message" class="mb-3 text-sm text-red-500 h-7"></div>
 
         <h3 class="text-lg font-semibold">Start</h3>
@@ -34,36 +36,36 @@
         <div class="flex flex-1 gap-4">
           <div class="w-1/2">
             <label for="election_name" class="text-sm">Date</label><br>
-            <input id="date_start" type="date" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm " required>
+            <input id="date_start" type="date" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
             <div id="startdate_error_message" class="h-5 text-sm text-red-500"></div>
           </div>
 
           <div class="w-1/2">
             <label for="election_name" class="text-sm">Time</label><br>
-            <input id="time_start" type="time" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm" required>
+            <input id="time_start" type="time" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
             <div id="election_name_error_message" class="h-5 text-sm text-red-500"></div>
           </div>
 
         </div>
 
-        <h3 class="text-lg font-semibold">End</h3>
+        <h3 class="m-auto text-lg font-semibold">End</h3>
 
         <div class="flex flex-1 gap-4 mb-4">
           <div class="w-1/2">
             <label for="election_name" class="text-sm">Date</label><br>
-            <input id="date_end" type="date" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm " required>
+            <input id="date_end" type="date" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
             <div id="enddate_error_message" class="h-5 text-sm text-red-500"></div>
           </div>
 
           <div class="w-1/2">
             <label for="election_name" class="text-sm">Time</label><br>
-            <input id="time_end" type="time" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm " required>
+            <input id="time_end" type="time" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
             <div id="endtime_error_message" class="h-5 text-sm text-red-500"></div>
           </div>
 
         </div>
 
-        <input type="submit" value="SAVE" class="float-right px-3 py-1 m-auto mb-4 font-bold text-white bg-blue-500 rounded-lg">
+        <input type="submit" value="SAVE" class="float-right px-3 py-1 mb-4 font-bold text-white bg-blue-500 rounded-lg">
 
       </form>
 

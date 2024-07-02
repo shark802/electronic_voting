@@ -1,4 +1,7 @@
 import { Request, Response, NextFunction } from "express";
+import { selectQuery } from "../../data_access/query";
+import { Election } from "../../utils/types/Election";
+import { pool } from "../../config/database";
 
 export function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -17,9 +20,12 @@ export function dashboardVoteTally(req: Request, res: Response, next: NextFuncti
 }
 
 // Election
-export function viewElection(req: Request, res: Response, next: NextFunction) {
+export async function viewElection(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/election_view")
+        const query = "SELECT * FROM elections WHERE deleted_at IS NULL";
+        const elections = await selectQuery<Election>(pool, query)
+
+        res.render("admin/election_view", {elections})
     } catch (error) {
         next(error)
     }

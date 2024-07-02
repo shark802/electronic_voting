@@ -42,7 +42,7 @@ document.querySelector("#create_election_form").addEventListener("submit", async
         !isValidEndDate([date_end, date_start], isValidEndDate, endDateErrorMessage)) 
     {
         console.log("Form Not Valid")
-        return
+        return;
     }else {
         try {
             
@@ -65,6 +65,15 @@ document.querySelector("#create_election_form").addEventListener("submit", async
                     text: message.message,
                     icon: "success"
                 });
+                document.querySelector("#create_election_form").reset();
+                // Swal.fire({
+                //     position: "top",
+                //     icon: "success",
+                //     title: message.message,
+                //     showConfirmButton: false,
+                //     timer: 1500
+                // });
+                
             }else {
                 Swal.fire({
                     icon: "error",
