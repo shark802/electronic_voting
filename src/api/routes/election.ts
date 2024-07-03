@@ -5,11 +5,11 @@ const router = Router();
 
 router
 	.route("/elections")
-	.get(findElectionByID)
 	.post(createElection);
 
 router
 	.route("/elections/:id")
+	.get(findElectionByID)
 	.delete(deleteElection)
 	.put(updateElection);
 

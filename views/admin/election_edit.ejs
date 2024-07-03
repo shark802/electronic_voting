@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Election</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
+  <script src="/javascript/lib/sweetalert2@11.js"></script>
+  <script type="module" src="/javascript/admin/election_edit.js" defer></script>
+
+</head>
+
+<body class="w-[100vw] m-0 bg-blue-600 dvh flex">
+
+  <%- include("../partials/sidebar.ejs") %>
+
+  <main class="relative flex flex-col w-4/5 h-dvh">
+
+    <div class="w-full h-20">
+      <h1 class="mt-6 font-sans text-4xl font-bold text-center text-white">Edit Election</h1>
+    </div>
+
+    <% if (election) { %>
+    <% 
+        function extractDate(date) {
+            const parsedDate = new Date(date);
+            const year = parsedDate.getUTCFullYear();
+            const month = String(parsedDate.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(parsedDate.getUTCDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`; 
+        }
+
+        election.date_start = extractDate(election.date_start);
+        election.date_end = extractDate(election.date_end);
+
+        console.log(election.date_start, election.date_end)
+    %>
+
+    <div class="self-center mt-12 bg-white rounded-xl lg:w-[700px] min-h-96 max-w-4/5 auto max-h-3/5 shadow-lg">
+
+      <form id="create_election_form" class="px-24 py-14">
+        <span class="flex justify-end gap-2 text-sm text-gray-400">
+          <p>Elecion ID: </p>
+          <p><%= election.election_id %></p>
+        </span>
+
+        <label for="election_name" class="text-sm">Election Name</label>
+        <input id="election_name" type="text" value="<%= election.election_name %>" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+        <div id="election_name_error_message" class="mb-2 text-sm text-red-500 h-7"></div>
+
+        <h3 class="text-lg font-semibold">Start</h3>
+
+        <div class="flex flex-1 gap-4">
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Date</label><br>
+            <input id="date_start" type="date" value="<%= election.date_start %>" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+            <div id="startdate_error_message" class="h-5 text-sm text-red-500"></div>
+          </div>
+
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Time</label><br>
+            <input id="time_start" type="time" value="<%= election.time_start %>" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+            <div id="election_name_error_message" class="h-5 text-sm text-red-500"></div>
+          </div>
+
+        </div>
+
+        <h3 class="m-auto text-lg font-semibold">End</h3>
+
+        <div class="flex flex-1 gap-4 mb-4">
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Date</label><br>
+            <input id="date_end" type="date" value="<%= election.date_end %>" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+            <div id="enddate_error_message" class="h-5 text-sm text-red-500"></div>
+          </div>
+
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Time</label><br>
+            <input id="time_end" type="time" value="<%= election.time_end %>" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+            <div id="endtime_error_message" class="h-5 text-sm text-red-500"></div>
+          </div>
+
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <input type="submit" value="CANCEL" class="px-3 py-1 mb-4 font-bold text-white bg-red-500 rounded-lg">
+          <input type="submit" value="SAVE" class="px-3 py-1 mb-4 font-bold text-white bg-blue-500 rounded-lg">
+
+        </div>
+      </form>
+
+    </div>
+
+    <% } %>
+
+  </main>
+
+</body>
+
+</html>

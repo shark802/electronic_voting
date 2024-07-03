@@ -9,31 +9,33 @@ import {
     manageVoter ,
     reviewRegisterDevice ,
     viewRegisterDevice,
-    fetchUser
+    fetchUser,
+    editElection
 } from '../controllers/admin';
 
-const router = Router()
+const router = Router();
 
 // Dashboard
-router.get("/dashboard/overview", dashboardOverview)
-router.get("/dashboard/vote-tally", dashboardVoteTally)
+router.get("/dashboard/overview", dashboardOverview);
+router.get("/dashboard/vote-tally", dashboardVoteTally);
 
 // Elections
-router.get("/election/view", viewElection)
-router.get("/election/new", newElection)
+router.get("/election/view", viewElection);
+router.get("/election/new", newElection);
+router.get("/election/:id/edit", editElection);
 
 // Candidate
-router.get("/candidate/manage", manageCandidate)
-router.get("/candidate/new", addCandidate)
+router.get("/candidate/manage", manageCandidate);
+router.get("/candidate/new", addCandidate);
 
 // Voter
-router.get("/voter/manage", manageVoter)
+router.get("/voter/manage", manageVoter);
 
 //Register Device
 router.get("/register-device/request", reviewRegisterDevice);
 router.get("/register-device/registered", viewRegisterDevice);
 
 // Control Panel
-router.get("/control-panel/import-user", fetchUser)
+router.get("/control-panel/import-user", fetchUser);
 
 export default router

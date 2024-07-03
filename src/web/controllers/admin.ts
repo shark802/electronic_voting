@@ -27,7 +27,7 @@ export async function viewElection(req: Request, res: Response, next: NextFuncti
 
         res.render("admin/election_view", {elections})
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
@@ -35,7 +35,26 @@ export function newElection(req: Request, res: Response, next: NextFunction) {
     try {
         res.render("admin/election_create")
     } catch (error) {
-        next(error)
+        next(error);
+    }
+}
+
+export async function editElection(req: Request, res: Response, next: NextFunction) {
+    try {
+        const election_id = req.params.id;
+        const query = "SELECT * FROM elections WHERE election_id = ? LIMIT 1";
+        const election = await selectQuery<Election>(pool, query, [election_id]);
+        res.render("admin/election_edit", {election: election[0]});
+    } catch (error) {
+        next(error);
+    }
+};
+
+export async function deleteElection(req: Request, res: Response, next: NextFunction) {
+    try {
+        
+    } catch (error) {
+        next(error);
     }
 }
 

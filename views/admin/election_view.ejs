@@ -5,9 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Election Events</title>
+
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
+  <script src="/javascript/lib/sweetalert2@11.js"></script>
   <script type="module" src="/javascript/admin/election_view.js" defer></script>
+  <style>
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+  </style>
 </head>
 
 <body class="w-[100vw] m-0 bg-blue-600 dvh flex">
@@ -35,7 +42,7 @@
       <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3">
 
         <h2 class="pt-4 font-semibold text-center lg:text-2xl"><%= element.election_name %></h2>
-        <p class="mb-6 text-center text-gray-400 text-md"><%= element.election_id %></p>
+        <p id="election-card-id" class="mb-6 text-center text-gray-400 text-md"><%= element.election_id %></p>
         <hr class="border-gray-400">
         <br>
 
@@ -72,7 +79,7 @@
 
         </div>
 
-        <button class="float-right px-3 py-1 mt-6 text-white bg-green-500 rounded-md">Edit</button>
+        <button id="election-card-edit-button" class="float-right px-3 py-1 mt-6 text-white bg-green-500 rounded-md">Edit</button>
 
       </section>
 
@@ -82,6 +89,66 @@
 
     </div>
   </main>
+
+  <!-- Modal -->
+
+  <dialog id="election-edit-modal">
+    <div class="self-center mt-12 bg-white rounded-xl lg:w-[700px] min-h-96 max-w-4/5 auto max-h-3/5 shadow-lg">
+
+      <form id="update_election_form" class="px-24 py-14">
+        <span class="flex justify-end gap-2 text-sm text-gray-400">
+          <p>Elecion ID: </p>
+          <p id="election_id"></p>
+        </span>
+
+        <label for="election_name" class="text-sm">Election Name</label>
+        <input id="election_name" type="text" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+        <div id="election_name_error_message" class="mb-2 text-sm text-red-500 h-7"></div>
+
+        <h3 class="text-lg font-semibold">Start</h3>
+
+        <div class="flex flex-1 gap-4">
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Date</label><br>
+            <input id="date_start" type="date" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+            <div id="startdate_error_message" class="h-5 text-sm text-red-500"></div>
+          </div>
+
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Time</label><br>
+            <input id="time_start" type="time" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+            <div id="election_name_error_message" class="h-5 text-sm text-red-500"></div>
+          </div>
+
+        </div>
+
+        <h3 class="m-auto text-lg font-semibold">End</h3>
+
+        <div class="flex flex-1 gap-4 mb-4">
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Date</label><br>
+            <input id="date_end" type="date" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+            <div id="enddate_error_message" class="h-5 text-sm text-red-500"></div>
+          </div>
+
+          <div class="w-1/2">
+            <label for="election_name" class="text-sm">Time</label><br>
+            <input id="time_end" type="time" class="w-full pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500" required>
+            <div id="endtime_error_message" class="h-5 text-sm text-red-500"></div>
+          </div>
+
+        </div>
+
+        <div class="flex justify-end gap-2">
+          <button id="closeModal" formmethod="dialog" type="button" class="px-3 py-1 mb-4 font-bold text-white bg-red-500 rounded-lg w-fit">CANCEL</button>
+          <input type="submit" value="SAVE" class="px-3 py-1 mb-4 font-bold text-white bg-blue-500 rounded-lg">
+
+        </div>
+      </form>
+
+    </div>
+  </dialog>
+
 
 </body>
 

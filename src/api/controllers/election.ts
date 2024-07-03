@@ -35,7 +35,7 @@ export async function createElection(req: Request, res: Response, next: NextFunc
  */
 export async function findElectionByID(req: Request, res:Response, next: NextFunction) {
 	try {
-		const election_id = req.query.election_id
+		const election_id = req.params.id
 		if (!election_id) return next(new BadRequestError("Cannot find Election if election_id is missing"))
 		
 		const query = "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL LIMIT 1"
