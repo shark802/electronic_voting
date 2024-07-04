@@ -8,3 +8,24 @@ election_nav.classList.add("active-page")
 
 view_election_page.classList.add("active-nav")
 $("#election_subpage").slideDown(500)
+
+// Toggle More option
+document.querySelectorAll("#more-button").forEach((button) => {
+
+    button.addEventListener('click', (event) => {
+        const eventElectionId = event.target.closest("#electionSection").querySelector("#election-card-id").textContent;
+
+        document.querySelectorAll("#more-option").forEach(element => {
+            const elementElectionId = element.closest("#electionSection").querySelector("#election-card-id").textContent;
+
+            if(elementElectionId !== eventElectionId) {
+                $(element).hide(100);
+            } else {
+                const parent = $(event.target).parent(); 
+                parent.find('#more-option').toggle(100);
+            }
+        })   
+        
+    });
+
+});

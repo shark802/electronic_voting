@@ -32,17 +32,44 @@
       <% if (elections.length < 1) { %>
 
       <section class="lg:w-[700px] bg-white rounded-md min-h-28">
-
+        <p>No Election</p>
       </section>
 
       <% } else { %>
 
       <% elections.forEach(element => { %>
 
-      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3">
+      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3 pb-9 ">
 
-        <h2 class="pt-4 font-semibold text-center lg:text-2xl"><%= element.election_name %></h2>
-        <p id="election-card-id" class="mb-6 text-center text-gray-400 text-md"><%= element.election_id %></p>
+        <div id="electionSection" class="relative flex justify-between pb-1">
+          <div class="relative ml-2">
+            <h2 class="pt-4 font-semibold lg:text-2xl"><%= element.election_name %></h2>
+            <p id="election-card-id" class="mb-6 text-gray-400 text-md"><%= element.election_id %></p>
+          </div>
+
+          <div class="absolute right-0 w-36 h-fit">
+            <img id="more-button" src="/img/more.png" alt="more" class="absolute w-6 transition-all rounded-full top-3 hover:cursor-pointer hover:bg-blue-200 right-2">
+
+            <div id="more-option" class="absolute hidden gap-2 py-3 bg-white border border-solid rounded shadow-md w-36 h-fit top-11">
+              <div class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
+                <img src="/img/pencil.png" alt="edit" class="w-4 h-4">
+                <p class="ml-2">Edit</p>
+              </div>
+
+              <div class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
+                <img src="/img/hide.png" alt="hide" class="w-4 h-4">
+                <p class="ml-2">Hide</p>
+              </div>
+
+              <div class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
+                <img src="/img/trash.png" alt="delete" class="w-4 h-4">
+                <p class="ml-2">Delete</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
         <hr class="border-gray-400">
         <br>
 
@@ -68,18 +95,17 @@
         
          %>
 
-        <div class="flex gap-2 ">
+        <div class="flex gap-2 m-auto text-center w-fit">
           <p class="font-semibold">Start:</p>
           <p><%= formattedStartDateTime %></p>
         </div>
 
-        <div class="flex gap-2 mt-3">
+        <div class="flex gap-2 m-auto mt-3 text-center w-fit">
           <p class="font-semibold">End:</p>
           <p><%= formattedEndDateTime %></p>
-
         </div>
 
-        <button id="election-card-edit-button" class="float-right px-3 py-1 mt-6 text-white bg-green-500 rounded-md">Edit</button>
+        <!-- <button id="election-card-edit-button" class="float-right px-3 py-1 mt-6 text-white bg-green-500 rounded-md">Edit</button> -->
 
       </section>
 
@@ -92,7 +118,7 @@
 
   <!-- Modal -->
 
-  <dialog id="election-edit-modal">
+  <dialog id="election-edit-modal" class="rounded-lg">
     <div class="self-center mt-12 bg-white rounded-xl lg:w-[700px] min-h-96 max-w-4/5 auto max-h-3/5 shadow-lg">
 
       <form id="update_election_form" class="px-24 py-14">
