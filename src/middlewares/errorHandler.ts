@@ -10,7 +10,7 @@ export function errorHandler(error: Error | customError, req: Request, res: Resp
   } else {
     console.error("ERROR: ", error.stack);
 
-    res.status(500).send("An unexpected error occured.")
+    res.status(500).send("An unexpected error occured.");
   }
 
 }
