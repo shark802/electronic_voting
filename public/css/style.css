@@ -639,10 +639,6 @@ video {
   top: 0.75rem;
 }
 
-.z-10 {
-  z-index: 10;
-}
-
 .float-right {
   float: right;
 }
@@ -727,10 +723,6 @@ video {
 
 .block {
   display: block;
-}
-
-.inline {
-  display: inline;
 }
 
 .flex {
@@ -957,6 +949,10 @@ video {
   align-items: center;
 }
 
+.justify-start {
+  justify-content: flex-start;
+}
+
 .justify-end {
   justify-content: flex-end;
 }
@@ -983,6 +979,10 @@ video {
 
 .gap-6 {
   gap: 1.5rem;
+}
+
+.gap-7 {
+  gap: 1.75rem;
 }
 
 .self-center {
@@ -1201,6 +1201,16 @@ video {
   padding-bottom: 1.75rem;
 }
 
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
 .pb-1 {
   padding-bottom: 0.25rem;
 }
@@ -1243,6 +1253,14 @@ video {
 
 .pt-4 {
   padding-top: 1rem;
+}
+
+.pb-6 {
+  padding-bottom: 1.5rem;
+}
+
+.pt-9 {
+  padding-top: 2.25rem;
 }
 
 .text-left {

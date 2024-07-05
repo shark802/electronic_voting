@@ -104,13 +104,13 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 	try {
 		const electionID = req.params.id;
 		const electionStatus = req.query.status
-		console.log(electionID, electionStatus);
 		if (!electionID || !electionStatus) return next(new BadRequestError());
 		
-		const query = "UPDATE elections SET is_active = ? WHERE election_id = ?";
+		const query = "UPDATE elections SET is_active = ? WHERE election_id = ? AND deleted_at IS NULL";
 		const sqlParams = [electionStatus, electionID]
 		const result = await updateQuery(pool, query, sqlParams);
 
+		if (result.affectedRows < 1) return next(new NotFoundError(`Updating election ${electionID} dont affect, Resource may not found`));
 		return res.status(200).json({result});
 
 	} catch (error) {

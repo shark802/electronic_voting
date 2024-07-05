@@ -51,19 +51,28 @@
           <div class="absolute right-0 w-36 h-fit">
             <img id="more-button" src="/img/more.png" alt="more" class="absolute w-6 transition-all rounded-full top-3 hover:cursor-pointer hover:bg-blue-200 right-2">
 
-            <div id="more-option" class="absolute hidden gap-2 py-3 bg-white border border-solid rounded shadow-md w-36 h-fit top-11">
+            <div id="more-option" class="absolute hidden gap-2 px-1 py-3 bg-white border border-solid rounded shadow-md w-36 h-fit top-11">
 
-              <div id="election-edit-button" class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
+              <div id="election-edit-button" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                 <img src="/img/pencil.png" alt="edit" class="w-4 h-4">
                 <p class="ml-2">Edit</p>
               </div>
 
-              <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all hover:bg-blue-200 ">
+              <% if (element.is_active === 1) { %>
+              <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                 <img id="viewStatusImage" src="/img/hide.png" alt="hide" class="w-4 h-4">
                 <p id="viewStatus" class="ml-2">Hide</p>
               </div>
 
-              <div class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
+              <% } else { %>
+              <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+                <img id="viewStatusImage" src="/img/view.png" alt="view" class="w-4 h-4">
+                <p id="viewStatus" class="ml-2">View</p>
+              </div>
+
+              <% } %>
+
+              <div class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                 <img src="/img/trash.png" alt="delete" class="w-4 h-4">
                 <p class="ml-2">Delete</p>
               </div>

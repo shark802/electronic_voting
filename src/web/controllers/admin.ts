@@ -22,7 +22,7 @@ export function dashboardVoteTally(req: Request, res: Response, next: NextFuncti
 // Election
 export async function viewElection(req: Request, res: Response, next: NextFunction) {
     try {
-        const query = "SELECT * FROM elections WHERE deleted_at IS NULL ORDER BY created_at DESC";
+        const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND date_end >= CURDATE() ORDER BY created_at DESC";
         const elections = await selectQuery<Election>(pool, query)
 
         res.render("admin/election_view", {elections})
