@@ -99,3 +99,21 @@ export async function updateElection(req: Request, res: Response, next: NextFunc
 		next(error)
 	}
 }
+
+export async function updateElectionStatus(req: Request, res: Response, next: NextFunction) {
+	try {
+		const electionID = req.params.id;
+		const electionStatus = req.query.status
+		console.log(electionID, electionStatus);
+		if (!electionID || !electionStatus) return next(new BadRequestError());
+		
+		const query = "UPDATE elections SET is_active = ? WHERE election_id = ?";
+		const sqlParams = [electionStatus, electionID]
+		const result = await updateQuery(pool, query, sqlParams);
+
+		return res.status(200).json({result});
+
+	} catch (error) {
+		next(error);
+	}
+}
