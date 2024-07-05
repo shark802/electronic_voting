@@ -39,9 +39,10 @@
 
       <% elections.forEach(element => { %>
 
-      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3 pb-9 ">
+      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3 pb-9 mb-4">
 
         <div id="electionSection" class="relative flex justify-between pb-1">
+
           <div class="relative ml-2">
             <h2 class="pt-4 font-semibold lg:text-2xl"><%= element.election_name %></h2>
             <p id="election-card-id" class="mb-6 text-gray-400 text-md"><%= element.election_id %></p>
@@ -51,14 +52,15 @@
             <img id="more-button" src="/img/more.png" alt="more" class="absolute w-6 transition-all rounded-full top-3 hover:cursor-pointer hover:bg-blue-200 right-2">
 
             <div id="more-option" class="absolute hidden gap-2 py-3 bg-white border border-solid rounded shadow-md w-36 h-fit top-11">
-              <div class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
+
+              <div id="election-edit-button" class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
                 <img src="/img/pencil.png" alt="edit" class="w-4 h-4">
                 <p class="ml-2">Edit</p>
               </div>
 
-              <div class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
-                <img src="/img/hide.png" alt="hide" class="w-4 h-4">
-                <p class="ml-2">Hide</p>
+              <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all hover:bg-blue-200 ">
+                <img id="viewStatusImage" src="/img/hide.png" alt="hide" class="w-4 h-4">
+                <p id="viewStatus" class="ml-2">Hide</p>
               </div>
 
               <div class="flex items-center px-3 my-2 transition-all hover:bg-blue-200">
@@ -105,7 +107,7 @@
           <p><%= formattedEndDateTime %></p>
         </div>
 
-        <!-- <button id="election-card-edit-button" class="float-right px-3 py-1 mt-6 text-white bg-green-500 rounded-md">Edit</button> -->
+        <button id="add-candidate" class="float-right px-3 py-1 m-auto mt-6 text-white bg-green-500 rounded-md ">Add Candidate</button>
 
       </section>
 

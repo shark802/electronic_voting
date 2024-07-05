@@ -1,4 +1,5 @@
 import '/javascript/admin/election_edit.js';
+import '/javascript/admin/election_showHide.js';
 
 const election_nav = document.querySelector("#election_nav")
 const view_election_page = document.querySelector("#view_election_page")

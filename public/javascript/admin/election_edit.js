@@ -3,12 +3,15 @@ import { isValidText } from "/javascript/formInputValidator/isValidText.js";
 import { isValidEndTime } from "/javascript/formInputValidator/timeValidator.js";
 import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 
-const electionCardEditButons = document.querySelectorAll('#election-card-edit-button');
+const electionCardEditButons = document.querySelectorAll('#election-edit-button');
 
 electionCardEditButons.forEach(cardButton => {
     cardButton.addEventListener('click', async (event) => {
         const parent = event.target.parentNode;
-        const electionId = parent.querySelector("#election-card-id").textContent;
+
+        $(event.target.closest("#more-option")).hide(100); 
+
+        const electionId = parent.closest("#electionSection").querySelector("#election-card-id").textContent;
         
         if (electionId) {
             const response = await fetch(`/api/elections/${electionId}`);
