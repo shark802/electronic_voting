@@ -31,8 +31,13 @@
 
       <% if (elections.length < 1) { %>
 
-      <section class="lg:w-[700px] bg-white rounded-md min-h-28">
-        <p>No Election</p>
+      <section class="lg:w-[700px] lg:px-10 box-border bg-white rounded-md min-h-28 grid m-auto mt-5 py-9">
+        <img src="/img/empty-folder.png" alt="empty folder" class="m-auto w-28 h-28">
+        <h1 class="m-auto mt-5 text-xl font-semibold text-center lg:w-3/5">It seems there are no elections scheduled at the moment</h1>
+
+        <a href="/admin/election/new" class="m-auto">
+          <button class="px-2 py-1 m-auto mt-5 text-white bg-blue-500 rounded-md w-fit">Create Election?</button>
+        </a>
       </section>
 
       <% } else { %>
