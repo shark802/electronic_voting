@@ -5,12 +5,12 @@ export function errorHandler(error: Error | customError, req: Request, res: Resp
 
   if ("statusCode" in error) {
     console.error("ERROR: ", error.stack);
-
     res.status(error.statusCode).send(error.message);
+    
   } else {
     console.error("ERROR: ", error.stack);
-
     res.status(500).send("An unexpected error occured.");
+
   }
 
 }

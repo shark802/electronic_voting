@@ -4,6 +4,7 @@ import '/javascript/admin/election_delete.js';
 
 const election_nav = document.querySelector("#election_nav")
 const view_election_page = document.querySelector("#view_election_page")
+view_election_page.removeAttribute("href")
 
 election_nav.classList.remove("font-normal")
 election_nav.classList.add("active-page")

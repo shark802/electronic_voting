@@ -1,6 +1,8 @@
 document.querySelectorAll("#delete_election_button").forEach(deleteButon => {
     deleteButon.addEventListener('click', async(event) => {
         const electionId = event.target.closest("#electionSection").querySelector("#election-card-id").textContent;
+        $(event.target.closest("#more-option")).hide(100); 
+
         Swal.fire({
             title: "Are you sure you want to delete this?",
             text: "You won't be able to revert this!",

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Election History</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
+  <script src="/javascript/lib/sweetalert2@11.js"></script>
+  <script type="module" src="/javascript/admin/election_history.js" defer></script>
+  <style>
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+
+<body class="w-[100vw] m-0 bg-blue-600 dvh flex">
+
+  <%- include("../partials/sidebar.ejs") %>
+
+  <main class="relative flex flex-col w-4/5 h-dvh">
+
+    <div class="w-full h-20">
+      <h1 class="mt-6 font-sans text-4xl font-bold text-center text-white">Election History</h1>
+    </div>
+
+    <div class="flex flex-col w-full gap-6 pb-16 mt-12 overflow-y-auto min-h-96 auto max-h-3/5">
+
+      <% if (elections.length < 1) { %>
+
+      <!-- Display no election history -->
+      <section>
+        <div>
+          <p>No Election History</p>
+        </div>
+      </section>
+
+      <% } else { %>
+
+      <!-- Display past elections -->
+
+      <% elections.forEach(election => { %>
+      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3 pb-9 mb-4">
+        <div id="electionSection" class="relative flex justify-between pb-1">
+
+          <div class="relative ml-2">
+            <h2 class="pt-4 font-semibold lg:text-2xl"><%= election.election_name %></h2>
+            <p id="election-card-id" class="mb-6 text-gray-400 text-md"><%= election.election_id %></p>
+          </div>
+
+          <div class="absolute right-0 w-36 h-fit">
+            <img id="more-button" src="/img/more.png" alt="more" class="absolute w-6 transition-all rounded-full top-3 hover:cursor-pointer hover:bg-blue-200 right-2">
+
+            <div id="more-option" class="absolute hidden gap-2 px-1 py-3 bg-white border border-solid rounded shadow-md w-36 h-fit top-11">
+
+              <div id="election-edit-button" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+                <img src="/img/pencil.png" alt="edit" class="w-4 h-4">
+                <p class="ml-2">Edit</p>
+              </div>
+
+              <% if (election.is_active === 1) { %>
+              <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+                <img id="viewStatusImage" src="/img/hide.png" alt="hide" class="w-4 h-4">
+                <p id="viewStatus" class="ml-2">Hide</p>
+              </div>
+
+              <% } else { %>
+              <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+                <img id="viewStatusImage" src="/img/view.png" alt="view" class="w-4 h-4">
+                <p id="viewStatus" class="ml-2">View</p>
+              </div>
+
+              <% } %>
+
+              <div id="delete_election_button" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+                <img src="/img/trash.png" alt="delete" class="w-4 h-4">
+                <p class="ml-2">Delete</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-gray-400">
+        <br>
+
+        <% 
+        const formatOptions = {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        }
+        
+        const startDateTime = new Date(election.date_start);
+        const [startHour, startMinute, startSecond] = election.time_start.split(":");
+        startDateTime.setHours(startHour, startMinute, startSecond);
+        const formattedStartDateTime = startDateTime.toLocaleString('en-US', formatOptions);
+
+        const electionEndDateTime = new Date(election.date_end);
+        const [endHour, endMinute, endSecond] = election.time_end.split(":");
+        electionEndDateTime.setHours(endHour, endMinute, endSecond);
+        const formattedEndDateTime = electionEndDateTime.toLocaleString('en-US', formatOptions);
+        
+         %>
+
+        <div class="flex gap-2 m-auto text-center w-fit">
+          <p class="font-semibold">Start:</p>
+          <p><%= formattedStartDateTime %></p>
+        </div>
+
+        <div class="flex gap-2 m-auto mt-3 text-center w-fit">
+          <p class="font-semibold">End:</p>
+          <p><%= formattedEndDateTime %></p>
+        </div>
+
+        <button id="add-candidate" class="float-right px-3 py-1 m-auto mt-6 text-white bg-green-500 rounded-md ">View Result</button>
+
+      </section>
+      <% }) %>
+
+      <% } %>
+
+    </div>
+  </main>
+
+
+</body>
+
+</html>

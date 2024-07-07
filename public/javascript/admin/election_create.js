@@ -6,6 +6,7 @@ import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 // Style active navbar
 const election_nav = document.querySelector("#election_nav");
 const create_election_page = document.querySelector("#create_election_page");
+create_election_page.removeAttribute("href");
 
 election_nav.classList.remove("font-normal")
 election_nav.classList.add("active-page")
@@ -64,15 +65,11 @@ document.querySelector("#create_election_form").addEventListener("submit", async
                     title: "Success!",
                     text: message.message,
                     icon: "success"
+                }).then(result => {
+                    if (result.isConfirmed) window.location = "/admin/election/view";
                 });
                 document.querySelector("#create_election_form").reset();
-                // Swal.fire({
-                //     position: "top",
-                //     icon: "success",
-                //     title: message.message,
-                //     showConfirmButton: false,
-                //     timer: 1500
-                // });
+                
                 
             }else {
                 Swal.fire({
