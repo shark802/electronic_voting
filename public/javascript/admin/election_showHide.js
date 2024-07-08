@@ -53,6 +53,7 @@ async function updateElectionStatus(electionId, electionStatus) {
         } else {
             responseMessage = await response.json();
             Swal.fire({
+                showConfirmButton: false,
                 title: responseMessage.message,
                 icon: "error",
                 toast: true,

@@ -37,12 +37,19 @@ changeEventListener([time_end, time_start], isValidEndTime, endTimeErrorMessage)
 document.querySelector("#create_election_form").addEventListener("submit", async(event) => {
     event.preventDefault();
 
-    if(
-        !isValidText([election_name], isValidText, election_name_error_message) ||
-        !isValidStartDate([date_start], isValidStartDate,  startDateErrorMessage) ||
-        !isValidEndDate([date_end, date_start], isValidEndDate, endDateErrorMessage)) 
-    {
-        console.log("Form Not Valid")
+    if( 
+        !isValidText([election_name], election_name_error_message) ||
+        !isValidStartDate([date_start], startDateErrorMessage) ||
+        !isValidEndDate([date_end, date_start], endDateErrorMessage)
+    ) {
+        Swal.fire({
+            showConfirmButton: false,
+            title: "Submit failed!",
+            icon: "error",
+            toast: true,
+            position: "top",
+            timer: 3000,
+        });
         return;
     }else {
         try {
