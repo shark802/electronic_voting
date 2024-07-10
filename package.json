@@ -4,12 +4,12 @@
 	"description": "Capstone Project about online voting with face recognition",
 	"main": "dist/app.js",
 	"scripts": {
+		"build-css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css",	
 		"build": "tsc",
 		"start": "cross-env NODE_ENV=production node ./dist/app.js",
-		"build-css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css",	
+		"build-css:dev": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css -w",
 		"build:dev": "cross-env NODE_ENV=development tsc -w -p tsconfig.dev.json",
-		"dev": " cross-env NODE_ENV=development nodemon ./dist/app.js",
-		"build-css:dev": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css -w"
+		"dev": " cross-env NODE_ENV=development nodemon ./dist/app.js"
 	},
 	"author": "John Lester Villarde",
 	"license": "ISC",
