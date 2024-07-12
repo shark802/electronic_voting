@@ -3,11 +3,13 @@ import express from "express";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
 import path from "node:path";
-import session from "express-session";
+import * as session from "express-session";
 import { socketIO } from "./middlewares/socketIO";
 import { errorHandler } from "./middlewares/errorHandler";
 import apiRoutes from "./api";
-import webRoutes from "./web"
+import webRoutes from "./web";
+import expressMysqlSession from "express-mysql-session";
+import passport from "passport";
 
 dotenv.config();
 const app = express();
@@ -20,11 +22,39 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../views"));
 app.use(express.static(path.join(__dirname, "../public")));
 
+const MySQLStore = expressMysqlSession(session);
+const sessionStore = new MySQLStore({
+	host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE,
+    clearExpired: true,
+    expiration: 86400000,
+    createDatabaseTable: true,
+    endConnectionOnClose: true,
+    disableTouch: true,
+    charset: "charset",
+    schema: {
+        tableName: "user_session",
+        columnNames: {
+            session_id: "session_id",
+            expires: "expires",
+            data: "data",
+        },
+    },
+    waitForConnections: true,
+    connectionLimit: 10,
+    maxIdle: 10,
+    idleTimeout: 60000,
+    queueLimit: 10,
+});
+
 app.use(
-	session({
+	session.default({
 		secret: process.env.SESSION_SECRET || "session-secret",
 		resave: false,
 		saveUninitialized: false,
+		store: sessionStore,
 		cookie: {
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 15 * 60000,
@@ -33,12 +63,15 @@ app.use(
 	})
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.set("socket", io);
 
 /* Custom Middlewares */
 app.use(socketIO(io));
 
-/* Routers */
+/* Routers/Endpoints */
 app.use("/api", apiRoutes);
 app.use("/", webRoutes);
 
