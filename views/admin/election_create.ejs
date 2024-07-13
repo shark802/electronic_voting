@@ -17,10 +17,11 @@
 
   <%- include("../partials/sidebar.ejs") %>
 
-  <main class="relative flex flex-col w-4/5 h-dvh">
+  <main class="relative flex flex-col w-full m-auto overflow-hidden lg:w-4/5 h-dvh">
 
-    <div class="w-full h-20">
-      <h1 class="mt-6 font-sans text-4xl font-bold text-center text-white">Create Election</h1>
+    <div class="flex items-center w-full h-20 py-3 m-0 lg:pt-7">
+      <img id="show-sidebar" src="/img/menu.png" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
+      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-4xl">Create New Election</h1>
     </div>
 
     <div class="self-center mt-16 bg-white rounded-xl lg:w-[700px] min-h-96 max-w-4/5 auto max-h-3/5 shadow-lg">

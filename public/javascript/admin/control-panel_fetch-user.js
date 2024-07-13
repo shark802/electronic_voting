@@ -6,4 +6,13 @@ control_panel_nav.classList.add("active-page")
 
 $("#control_panel_subpage").slideDown(500);
 
-fetch_user.classList.add("active-nav")
+fetch_user.classList.add("active-nav");
+
+// Hide Sidebar
+document.querySelector("#show-sidebar").addEventListener("click", () => {
+    $("#sidebar").show(300);
+});
+// Show Sidebar
+document.querySelector("#hide-sidebar").addEventListener('click', () => {
+    $("#sidebar").hide(300);
+});

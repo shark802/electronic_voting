@@ -6,4 +6,13 @@ register_device_nav.classList.add("active-page");
 
 $("#register_device_subpage").show();
 
-registered_device.classList.add("active-nav")
+registered_device.classList.add("active-nav");
+
+// Hide Sidebar
+document.querySelector("#show-sidebar").addEventListener("click", () => {
+    $("#sidebar").show(300);
+});
+// Show Sidebar
+document.querySelector("#hide-sidebar").addEventListener('click', () => {
+    $("#sidebar").hide(300);
+});

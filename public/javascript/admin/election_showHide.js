@@ -4,7 +4,7 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
         let electionStatus = undefined;
 
         let viewStatus = event.target.closest("#electionSection").querySelector("#viewStatus");
-        let viewStatusImage = event.target.closest("#electionSection").querySelector("#viewStatusImage");
+        let viewStatusImage = event.target.closest("#electionSection").querySelector("#viewStatusImage"); // div element text content contains Hide=(0) or Show=(1)
         if(viewStatus.textContent === "Hide") {
             electionStatus = 0;
             const updateOutcome = await updateElectionStatus(electionId, electionStatus)
@@ -27,9 +27,9 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
 
 /**
  * 
- * @param {*} electionId 
- * @param {*} electionStatus 
- * @returns 
+ * @param {string} electionId - Election ID to be update its status active/inactive 
+ * @param {number} electionStatus - the current status of election display
+ * @returns {boolean} - return true if update is successfull, false if failed
  */
 async function updateElectionStatus(electionId, electionStatus) {
     try {

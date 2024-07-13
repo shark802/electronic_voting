@@ -12,7 +12,16 @@ election_nav.classList.remove("font-normal")
 election_nav.classList.add("active-page")
 
 create_election_page.classList.add("active-nav")
-$("#election_subpage").show()
+$("#election_subpage").show();
+
+// Hide Sidebar
+document.querySelector("#show-sidebar").addEventListener("click", () => {
+    $("#sidebar").show(300);
+});
+// Show Sidebar
+document.querySelector("#hide-sidebar").addEventListener('click', () => {
+    $("#sidebar").hide(300);
+});
 
 // Process create election form
 // HTMLInputElement
