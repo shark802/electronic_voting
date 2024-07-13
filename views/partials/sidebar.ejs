@@ -1,143 +1,148 @@
-<nav class="relative flex flex-col w-full h-screen px-2 pt-2 bg-white rounded-tr-lg rounded-br-lg lg:w-1/5">
+<div id="sidebar" class="absolute z-10 hidden w-full bg-transparent bg-black bg-opacity-60 lg:block h-dvh lg:relative lg:w-1/5">
 
-  <div class="relative flex w-full text-xs min-h-20 rounded-tr-md">
-    <div class="w-[30%] flex items-center">
-      <img src="/img/bcc-logo.png" alt="bago-city-college_logo" class="w-16 h-16 m-auto">
+  <img id="hide-sidebar" src="/img/x.png" alt="exit" class="absolute w-8 m-2 bg-opacity-50 rounded-md right-4 top-4 bg-slate-500 lg:hidden">
+
+  <nav class="relative z-10 flex flex-col w-4/5 h-screen px-2 pt-2 bg-white rounded-tr-lg rounded-br-lg lg:w-full">
+
+    <div class="relative flex w-full text-xs min-h-20 rounded-tr-md">
+      <div class="w-[30%] flex items-center">
+        <img src="/img/bcc-logo.png" alt="bago-city-college_logo" class="w-16 h-16 m-auto">
+      </div>
+
+      <div class="max-w-[70%] relative">
+        <h1 class="relative w-full text-sm font-bold text-left transform -translate-y-1/2 top-1/2">BCC E-VOTING WITH FACIAL RECOGNITION AUTHENTICATOR</h1>
+      </div>
     </div>
 
-    <div class="max-w-[70%] relative">
-      <h1 class="relative w-full text-sm font-bold text-left transform -translate-y-1/2 top-1/2">BCC E-VOTING WITH FACIAL RECOGNITION AUTHENTICATOR</h1>
+    <hr class="shadow-md">
+
+    <ul class=" no-scrollbar overflow-auto overflow-x-hidden max-h-[77%] scroll-m-0 py-7 pb-14">
+
+      <li class="w-full mb-3 max-h-max min-h-11">
+        <div class="relative block w-full h-full grid-rows-1">
+
+          <a href="/admin/dashboard/overview" class="relative block w-full h-full">
+            <div class="relative flex items-center w-full gap-2 py-2 ml-4">
+
+              <img src="/img/dashboard.png" alt="dashboard" class="w-4 h-4">
+
+              <p id="dashboard_nav" class="w-full m-0 ml-2 text-xl font-normal transform">Dashboard</p>
+            </div>
+          </a>
+
+          <div id="dashboard_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid text-md">
+            <a id="overview_page" href="/admin/dashboard/overview" class="block p-1 pl-3">Overview</a>
+            <a id="vote_tally_page" href="/admin/dashboard/vote-tally" class="block p-1 pl-3">Vote Tally</a>
+          </div>
+
+        </div>
+      </li>
+
+      <li class="w-full mb-3 max-h-max min-h-11">
+        <div class="relative block w-full h-full grid-rows-1">
+
+          <a id="election_col" href="/admin/election/view" class="relative block w-full h-full">
+            <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
+              <img src="/img/calendar.png" alt="calendar" class="w-[19px] h-[19px]">
+              <p id="election_nav" class="w-full m-0 ml-2 text-xl font-normal transform ">Election</p>
+            </div>
+          </a>
+
+          <div id="election_subpage" class="relative hidden pl-3 pr-2 ml-6 border-l-2 border-black border-solid text-md">
+            <a id="view_election_page" href="/admin/election/view" class="block p-1 pl-3">View Election</a>
+            <a id="create_election_page" href="/admin/election/new" class="block p-1 pl-3">Create Election</a>
+            <a id="election_history_page" href="/admin/election/history" class="block p-1 pl-3">History</a>
+          </div>
+
+        </div>
+      </li>
+
+      <li class="w-full mb-3 max-h-max min-h-11">
+        <div class="relative block w-full h-full grid-rows-1">
+
+          <a href="/admin/candidate/manage" class="w-full h-full bloc relativek">
+            <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
+              <img src="/img/candidate.png" alt="voter" class="w-[18] h-[18px]">
+              <p id="candidate_nav" class="w-full m-0 ml-2 text-xl font-normal transform -translate-y-[2px] ">Candidate</p>
+            </div>
+          </a>
+
+          <div id="candidate_subpage" class="relative hidden pl-3 pr-2 ml-6 border-l-2 border-black border-solid text-md">
+            <a id="manage_candidate" href="/admin/candidate/manage" class="block p-1 pl-3">Manage Candidate</a>
+            <a id="add_candidate" href="/admin/candidate/new" class="block p-1 pl-3">Add Candidate</a>
+          </div>
+
+        </div>
+      </li>
+
+      <li class="w-full mb-3 max-h-max min-h-11">
+        <div class="relative block w-full h-full grid-rows-1">
+
+          <a href="/admin/voter/manage" class="relative block w-full h-full">
+            <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
+              <img src="/img/voter.png" alt="voter" class="w-5 h-5">
+              <p id="voter_nav" class="w-full m-0 ml-2 text-xl font-normal">Voter</p>
+            </div>
+          </a>
+
+          <div id="voter_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid text-md">
+            <a id="manage_voter_nav" href="/admin/voter/manage" class="block p-1 pl-3">Manage Voter</a>
+          </div>
+
+        </div>
+      </li>
+
+      <li class="w-full mb-3 max-h-max min-h-11">
+        <div class="relative block w-full h-full grid-rows-1">
+
+          <a href="/admin/register-device/request" class="relative block w-full h-full">
+            <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
+              <img src="/img/register-device.png" alt="voter" class="w-[18px] h-[18px]">
+              <p id="register_device_nav" class="w-full m-0 ml-2 text-xl font-normal">Register Device</p>
+            </div>
+          </a>
+
+          <div id="register_device_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid text-md">
+            <a id="review_request" href="/admin/register-device/request" class="block p-1 pl-3">Review Request</a>
+            <a id="registered_device" href="/admin/register-device/registered" class="block p-1 pl-3">Registered Device</a>
+          </div>
+
+        </div>
+      </li>
+
+      <li class="w-full mb-3 max-h-max min-h-11">
+        <div class="relative block w-full h-full grid-rows-1">
+
+          <a href="/admin/control-panel/import-user" class="relative block w-full h-full">
+            <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
+              <img src="/img/control-panel.png" alt="voter" class="w-5 h-5">
+              <p id="control_panel_nav" class="w-full m-0 ml-2 text-xl font-normal">Control Panel</p>
+            </div>
+          </a>
+
+          <div id="control_panel_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid text-md">
+            <a id="fetch_user" href="/admin/control-panel/import-user" class="block p-1 pl-3">Fetch User</a>
+          </div>
+
+        </div>
+      </li>
+    </ul>
+
+
+    <div class="absolute bottom-0 left-0 w-full pb-16 bg-white border-t border-solid lg:w-full min-h-20 rounded-br-md lg:mb-0">
+      <div class="absolute flex items-center gap-2 px-2 py-1 transform -translate-x-1/2 -translate-y-1/2 bg-gray-300 border border-solid rounded-lg top-1/2 left-1/2">
+
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#292929" width="20" height="20">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path d="M9.00195 7C9.01406 4.82497 9.11051 3.64706 9.87889 2.87868C10.7576 2 12.1718 2 15.0002 2L16.0002 2C18.8286 2 20.2429 2 21.1215 2.87868C22.0002 3.75736 22.0002 5.17157 22.0002 8L22.0002 16C22.0002 18.8284 22.0002 20.2426 21.1215 21.1213C20.2429 22 18.8286 22 16.0002 22H15.0002C12.1718 22 10.7576 22 9.87889 21.1213C9.11051 20.3529 9.01406 19.175 9.00195 17" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round"></path>
+            <path d="M15 12L2 12M2 12L5.5 9M2 12L5.5 15" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </g>
+        </svg>
+
+        <p class="text-sm font-medium cursor-pointer">LOGOUT</p>
+      </div>
     </div>
-  </div>
-
-  <hr class="shadow-md">
-
-  <ul class=" no-scrollbar overflow-auto overflow-x-hidden max-h-[77%] scroll-m-0 py-7 pb-14">
-
-    <li class="w-full mb-3 max-h-max min-h-11">
-      <div class="relative block w-full h-full grid-rows-1">
-
-        <a href="/admin/dashboard/overview" class="relative block w-full h-full">
-          <div class="relative flex items-center w-full gap-2 py-2 ml-4">
-
-            <img src="/img/dashboard.png" alt="dashboard" class="w-4 h-4">
-
-            <p id="dashboard_nav" class="w-full m-0 ml-2 text-xl font-normal transform">Dashboard</p>
-          </div>
-        </a>
-
-        <div id="dashboard_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid text-md">
-          <a id="overview_page" href="/admin/dashboard/overview" class="block p-1 pl-3">Overview</a>
-          <a id="vote_tally_page" href="/admin/dashboard/vote-tally" class="block p-1 pl-3">Vote Tally</a>
-        </div>
-
-      </div>
-    </li>
-
-    <li class="w-full mb-3 max-h-max min-h-11">
-      <div class="relative block w-full h-full grid-rows-1">
-
-        <a id="election_col" href="/admin/election/view" class="relative block w-full h-full">
-          <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
-            <img src="/img/calendar.png" alt="calendar" class="w-[19px] h-[19px]">
-            <p id="election_nav" class="w-full m-0 ml-2 text-xl font-normal transform ">Election</p>
-          </div>
-        </a>
-
-        <div id="election_subpage" class="relative hidden pl-3 pr-2 ml-6 border-l-2 border-black border-solid text-md">
-          <a id="view_election_page" href="/admin/election/view" class="block p-1 pl-3">View Election</a>
-          <a id="create_election_page" href="/admin/election/new" class="block p-1 pl-3">Create Election</a>
-          <a id="election_history_page" href="/admin/election/history" class="block p-1 pl-3">History</a>
-        </div>
-
-      </div>
-    </li>
-
-    <li class="w-full mb-3 max-h-max min-h-11">
-      <div class="relative block w-full h-full grid-rows-1">
-
-        <a href="/admin/candidate/manage" class="w-full h-full bloc relativek">
-          <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
-            <img src="/img/candidate.png" alt="voter" class="w-[18] h-[18px]">
-            <p id="candidate_nav" class="w-full m-0 ml-2 text-xl font-normal transform -translate-y-[2px] ">Candidate</p>
-          </div>
-        </a>
-
-        <div id="candidate_subpage" class="relative hidden pl-3 pr-2 ml-6 border-l-2 border-black border-solid text-md">
-          <a id="manage_candidate" href="/admin/candidate/manage" class="block p-1 pl-3">Manage Candidate</a>
-          <a id="add_candidate" href="/admin/candidate/new" class="block p-1 pl-3">Add Candidate</a>
-        </div>
-
-      </div>
-    </li>
-
-    <li class="w-full mb-3 max-h-max min-h-11">
-      <div class="relative block w-full h-full grid-rows-1">
-
-        <a href="/admin/voter/manage" class="relative block w-full h-full">
-          <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
-            <img src="/img/voter.png" alt="voter" class="w-5 h-5">
-            <p id="voter_nav" class="w-full m-0 ml-2 text-xl font-normal">Voter</p>
-          </div>
-        </a>
-
-        <div id="voter_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid text-md">
-          <a id="manage_voter_nav" href="/admin/voter/manage" class="block p-1 pl-3">Manage Voter</a>
-        </div>
-
-      </div>
-    </li>
-
-    <li class="w-full mb-3 max-h-max min-h-11">
-      <div class="relative block w-full h-full grid-rows-1">
-
-        <a href="/admin/register-device/request" class="relative block w-full h-full">
-          <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
-            <img src="/img/register-device.png" alt="voter" class="w-[18px] h-[18px]">
-            <p id="register_device_nav" class="w-full m-0 ml-2 text-xl font-normal">Register Device</p>
-          </div>
-        </a>
-
-        <div id="register_device_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid text-md">
-          <a id="review_request" href="/admin/register-device/request" class="block p-1 pl-3">Review Request</a>
-          <a id="registered_device" href="/admin/register-device/registered" class="block p-1 pl-3">Registered Device</a>
-        </div>
-
-      </div>
-    </li>
-
-    <li class="w-full mb-3 max-h-max min-h-11">
-      <div class="relative block w-full h-full grid-rows-1">
-
-        <a href="/admin/control-panel/import-user" class="relative block w-full h-full">
-          <div class="relative flex items-center w-full h-full gap-2 py-2 ml-4">
-            <img src="/img/control-panel.png" alt="voter" class="w-5 h-5">
-            <p id="control_panel_nav" class="w-full m-0 ml-2 text-xl font-normal">Control Panel</p>
-          </div>
-        </a>
-
-        <div id="control_panel_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid text-md">
-          <a id="fetch_user" href="/admin/control-panel/import-user" class="block p-1 pl-3">Fetch User</a>
-        </div>
-
-      </div>
-    </li>
-  </ul>
-
-
-  <div class="absolute bottom-0 left-0 w-full bg-white border border-solid lg:w-full min-h-20 rounded-br-md">
-    <div class="absolute flex items-center gap-2 px-2 py-1 transform -translate-x-1/2 -translate-y-1/2 bg-gray-300 border border-solid rounded-lg top-1/2 left-1/2">
-
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#292929" width="20" height="20">
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-        <g id="SVGRepo_iconCarrier">
-          <path d="M9.00195 7C9.01406 4.82497 9.11051 3.64706 9.87889 2.87868C10.7576 2 12.1718 2 15.0002 2L16.0002 2C18.8286 2 20.2429 2 21.1215 2.87868C22.0002 3.75736 22.0002 5.17157 22.0002 8L22.0002 16C22.0002 18.8284 22.0002 20.2426 21.1215 21.1213C20.2429 22 18.8286 22 16.0002 22H15.0002C12.1718 22 10.7576 22 9.87889 21.1213C9.11051 20.3529 9.01406 19.175 9.00195 17" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round"></path>
-          <path d="M15 12L2 12M2 12L5.5 9M2 12L5.5 15" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-        </g>
-      </svg>
-
-      <p class="text-sm font-medium cursor-pointer">LOGOUT</p>
-    </div>
-  </div>
-</nav>
+  </nav>
+</div>

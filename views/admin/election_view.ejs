@@ -21,13 +21,14 @@
 
   <%- include("../partials/sidebar.ejs") %>
 
-  <main class="relative flex flex-col w-4/5 h-dvh">
+  <main class="relative flex flex-col w-full m-auto overflow-hidden lg:w-4/5 h-dvh">
 
-    <div class="w-full h-20">
-      <h1 class="mt-6 font-sans text-4xl font-bold text-center text-white">Manage Election</h1>
+    <div class="flex items-center w-full h-20 py-3 m-0">
+      <img id="show-sidebar" src="/img/menu.png" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
+      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-4xl">Manage Election</h1>
     </div>
 
-    <div class="flex flex-col w-full gap-6 pb-16 mt-12 overflow-y-auto min-h-96 auto max-h-3/5">
+    <div class="flex flex-col w-[90%] m-auto gap-6 pb-16 lg:mt-12 mt-8 overflow-y-auto min-h-96 auto max-h-3/5 no-scrollbar animate-slide-in">
 
       <% if (elections.length < 1) { %>
 
@@ -44,7 +45,7 @@
 
       <% elections.forEach(element => { %>
 
-      <section id="election-card" class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3 pb-9 mb-4">
+      <section id="election-card" class="lg:w-[700px] w-full bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3 pb-9 mb-4">
 
         <div id="electionSection" class="relative flex justify-between pb-1">
 
