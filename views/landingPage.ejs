@@ -60,18 +60,20 @@
 
     <img src="/img/x.png" id="login-modal-exit" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
     <img src="/img/bcc-logo.png" alt="BCC Logo" class="w-1/3 m-auto">
-    <form id="login-form" class="grid gap-3 px-2 pb-10 rounded-md lg:gap-5">
+    <form id="login-form" class="grid gap-2 px-2 pb-10 rounded-md">
       <div class="grid">
         <label for="school-id">School ID</label class="">
         <input type="text" id="school-id" class="py-2 pl-3 border border-gray-400 rounded-md focus:outline-blue-500">
+        <div id="schoolIdErrorMessage" class="font-normal text-red-500 min-h-6"></div>
       </div>
 
       <div class="grid">
         <label for="password">Password</label class="">
         <input type="password" id="password" class="py-2 pl-3 border border-gray-400 rounded-md focus:outline-blue-500">
+        <div id="passwordErrorMessage" class="font-normal text-red-500 min-h-6"></div>
       </div>
 
-      <input type="submit" value="LOGIN" class="py-2 mt-4 font-semibold text-center text-white bg-blue-500 rounded-lg lg:mt-6">
+      <input type="submit" value="LOGIN" class="py-2 mt-4 font-semibold text-center text-white bg-blue-500 rounded-lg">
 
     </form>
   </dialog>

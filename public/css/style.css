@@ -844,6 +844,10 @@ video {
   min-height: 7rem;
 }
 
+.min-h-6 {
+  min-height: 1.5rem;
+}
+
 .min-h-96 {
   min-height: 24rem;
 }
@@ -1439,10 +1443,6 @@ video {
     margin: auto;
   }
 
-  .lg\:mt-6 {
-    margin-top: 1.5rem;
-  }
-
   .lg\:h-\[76\%\] {
     height: 76%;
   }
@@ -1489,10 +1489,6 @@ video {
 
   .lg\:gap-2 {
     gap: 0.5rem;
-  }
-
-  .lg\:gap-5 {
-    gap: 1.25rem;
   }
 
   .lg\:overflow-hidden {

@@ -6,9 +6,9 @@ export function isValidText(arrayValue, errorMessagDisplay) {
 		
 		if(textInput.trim() === "") {
 			arrayValue[0].value = ""
-			errorMessagDisplay.textContent = "Field must not empty"
+			errorMessagDisplay.textContent = "Whitespace input invalid"
 			return false;
-		}else {
+		}else{
 			errorMessagDisplay.textContent = "";
 			return true;
 		}
