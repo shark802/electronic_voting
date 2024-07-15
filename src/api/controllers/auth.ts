@@ -1,30 +1,56 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError, UnauthorizedError } from "../../utils/customErrors";
+import { TechnopalApiObject } from "../../utils/types/TechnopalApiObject";
+import { convertApiObjectToUser } from "../../utils/convertApiObjectToUser";
+import { pool } from "../../config/database";
+import { createUser } from "../../utils/createUser";
+import { Role } from "../../utils/types/Role";
+import { selectQuery } from "../../data_access/query";
+import { RowDataPacket } from 'mysql2/promise';
 
 export async function loginFunction(req: Request, res: Response, next: NextFunction) {
     try {
         const {id_number, password} = req.body;
         if(!id_number || !password) next(new BadRequestError());
-
-        console.log(id_number, password)
         
         const response = await fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
-        const responseMessage = await response.json();
+        const apiResponseObject: TechnopalApiObject = await response.json();
 
-        if(responseMessage.is_valid === false) return next(new UnauthorizedError("Login Failed!"));
-        else {
+        if(apiResponseObject.is_valid === false) {
+            // Login unsuccessful
+            return next(new UnauthorizedError("Login Failed!"));
+        } else {
+            // Login successful
+            const user = convertApiObjectToUser(apiResponseObject);
+
+            const connection = await pool.getConnection();
+            await connection.beginTransaction();
+
+            await createUser(connection, user); // save user info in database.
+
+            const [rowResult] = await connection.execute<RowDataPacket[]>("SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
+                
+            if (rowResult.length < 1) {
+                const voterRole = apiResponseObject.user_group === "STUDENT"? 1 : 0; // assign the voter role if the user is student.
+                await connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
+            }
+
+            connection.commit();
+
+            const [userRoleRow] = await selectQuery<Role>(pool, "SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
+
             req.session.user = {
-                user_id: responseMessage.user_code,
+                user_id: user.id_number,
                 roles: {
-                    admin: 1,
-                    program_head: 0,
-                    voter: 1
+                    admin: userRoleRow.admin,
+                    program_head: userRoleRow.program_head,
+                    voter: userRoleRow.voter
                 }
             }
             return res.status(200).end();
-        } 
+        }
             
     } catch (error) {
-        
+        next(error);
     }
 }

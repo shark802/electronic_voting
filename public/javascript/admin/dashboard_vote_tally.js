@@ -11,9 +11,9 @@ vote_tally_page.classList.add("active-nav");
 
 // Hide Sidebar
 document.querySelector("#show-sidebar").addEventListener("click", () => {
-    $("#sidebar").show(300);
+    $("#sidebar").show(100);
 });
 // Show Sidebar
 document.querySelector("#hide-sidebar").addEventListener('click', () => {
-    $("#sidebar").hide(300);
+    $("#sidebar").hide(100);
 });

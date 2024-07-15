@@ -17,7 +17,7 @@
   </style>
 </head>
 
-<body class="w-[100vw] m-0 bg-blue-600 dvh flex">
+<body class="w-[100vw] m-0 bg-blue-600 h-dvh flex">
 
   <%- include("../partials/sidebar.ejs") %>
 
@@ -25,17 +25,17 @@
 
     <div class="flex items-center w-full h-20 py-3 m-0 lg:pt-7">
       <img id="show-sidebar" src="/img/menu.png" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
-      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-4xl">Election History</h1>
+      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Election History</h1>
     </div>
 
-    <div class="flex flex-col w-full gap-6 pb-16 mt-12 overflow-y-auto min-h-96 auto max-h-3/5 no-scrollbar animate-slide-in">
+    <div class="flex flex-col w-full gap-6 px-2 pb-16 overflow-y-auto mt-11 min-h-96 auto max-h-3/5 no-scrollbar animate-slide-in">
 
       <% if (elections.length < 1) { %>
 
       <!-- Display no election history -->
-      <section class="lg:w-[700px] lg:px-10 box-border bg-white rounded-md min-h-28 grid m-auto mt-5 py-9">
+      <section class="lg:w-[700px] lg:px-10 box-border w-full mx-3 bg-white rounded-md min-h-28 grid m-auto mt-5 py-9">
         <img src="/img/empty-folder.png" alt="empty folder" class="m-auto w-28 h-28">
-        <h1 class="m-auto mt-4 text-xl font-semibold text-center lg:w-3/5">"No past elections found!</h1>
+        <h1 class="m-auto mt-4 text-lg font-semibold text-center lg:w-3/5">No past elections found!</h1>
       </section>
 
       <% } else { %>
@@ -43,12 +43,13 @@
       <!-- Display past elections -->
 
       <% elections.forEach(election => { %>
-      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-5 lg:px-12 px-3 pb-9 mb-4">
+
+      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-4 lg:px-12 px-3 pb-7 mb-4">
         <div id="electionSection" class="relative flex justify-between pb-1">
 
           <div class="relative ml-2">
             <h2 class="pt-4 font-semibold lg:text-2xl"><%= election.election_name %></h2>
-            <p id="election-card-id" class="mb-6 text-gray-400 text-md"><%= election.election_id %></p>
+            <p id="election-card-id" class="mb-4 text-gray-400"><%= election.election_id %></p>
           </div>
 
           <div class="absolute right-0 w-36 h-fit">
@@ -119,7 +120,7 @@
           <p><%= formattedEndDateTime %></p>
         </div>
 
-        <button id="add-candidate" class="float-right px-3 py-1 m-auto mt-6 text-white bg-green-500 rounded-md ">View Result</button>
+        <button id="add-candidate" class="float-right px-3 py-1 m-auto mt-4 text-white bg-green-500 rounded-md ">View Result</button>
 
       </section>
       <% }) %>

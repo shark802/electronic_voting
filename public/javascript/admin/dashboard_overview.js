@@ -7,11 +7,13 @@ dashboard_nav.classList.add("active-page")
 overview_page.classList.add("active-nav")
 $("#dashboard_subpage").slideDown(500);
 
+document.querySelector("#sidebar").classList.add("hidden");
+
 // Hide Sidebar
 document.querySelector("#show-sidebar").addEventListener("click", () => {
-    $("#sidebar").show(300);
+    $("#sidebar").show(100);
 });
 // Show Sidebar
 document.querySelector("#hide-sidebar").addEventListener('click', () => {
-    $("#sidebar").hide(300);
+    $("#sidebar").hide(100);
 });

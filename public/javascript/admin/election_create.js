@@ -16,11 +16,11 @@ $("#election_subpage").show();
 
 // Hide Sidebar
 document.querySelector("#show-sidebar").addEventListener("click", () => {
-    $("#sidebar").show(300);
+    $("#sidebar").show(100);
 });
 // Show Sidebar
 document.querySelector("#hide-sidebar").addEventListener('click', () => {
-    $("#sidebar").hide(300);
+    $("#sidebar").hide(100);
 });
 
 // Process create election form
@@ -53,7 +53,7 @@ document.querySelector("#create_election_form").addEventListener("submit", async
     ) {
         Swal.fire({
             showConfirmButton: false,
-            title: "Submit failed!",
+            title: "Submit failed! Please try again",
             icon: "error",
             toast: true,
             position: "top",
@@ -88,11 +88,11 @@ document.querySelector("#create_election_form").addEventListener("submit", async
                 
                 
             }else {
+                const message = await response.json();
                 Swal.fire({
                     icon: "error",
-                    title: "Oops...",
-                    text: "Something went wrong!",
-                    footer: '<a href="#">Why do I have this issue?</a>'
+                    title: "Process failed!",
+                    text: message.message
                 });
             }
         } catch (error) {

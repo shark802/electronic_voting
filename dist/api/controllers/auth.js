@@ -11,32 +11,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
+const convertApiObjectToUser_1 = require("../../utils/convertApiObjectToUser");
+const database_1 = require("../../config/database");
+const createUser_1 = require("../../utils/createUser");
+const query_1 = require("../../data_access/query");
 function loginFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { id_number, password } = req.body;
             if (!id_number || !password)
                 next(new customErrors_1.BadRequestError());
-            console.log(id_number, password);
             const response = yield fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
-            const responseMessage = yield response.json();
-            if (responseMessage.is_valid === false)
+            const apiResponseObject = yield response.json();
+            if (apiResponseObject.is_valid === false) {
+                // Login unsuccessful
                 return next(new customErrors_1.UnauthorizedError("Login Failed!"));
+            }
             else {
+                // Login successful
+                const user = (0, convertApiObjectToUser_1.convertApiObjectToUser)(apiResponseObject);
+                const connection = yield database_1.pool.getConnection();
+                yield connection.beginTransaction();
+                yield (0, createUser_1.createUser)(connection, user); // save user info in database.
+                const [rowResult] = yield connection.execute("SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
+                if (rowResult.length < 1) {
+                    const voterRole = apiResponseObject.user_group === "STUDENT" ? 1 : 0; // assign the voter role if the user is student.
+                    yield connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
+                }
+                connection.commit();
+                const [userRoleRow] = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
                 req.session.user = {
-                    user_id: responseMessage.user_code,
+                    user_id: user.id_number,
                     roles: {
-                        admin: 1,
-                        program_head: 0,
-                        voter: 1
+                        admin: userRoleRow.admin,
+                        program_head: userRoleRow.program_head,
+                        voter: userRoleRow.voter
                     }
                 };
                 return res.status(200).end();
             }
         }
         catch (error) {
+            next(error);
         }
     });
 }
 exports.loginFunction = loginFunction;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXV0aC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9hcGkvY29udHJvbGxlcnMvYXV0aC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFDQSwyREFBOEU7QUFFOUUsU0FBc0IsYUFBYSxDQUFDLEdBQVksRUFBRSxHQUFhLEVBQUUsSUFBa0I7O1FBQy9FLElBQUksQ0FBQztZQUNELE1BQU0sRUFBQyxTQUFTLEVBQUUsUUFBUSxFQUFDLEdBQUcsR0FBRyxDQUFDLElBQUksQ0FBQztZQUN2QyxJQUFHLENBQUMsU0FBUyxJQUFJLENBQUMsUUFBUTtnQkFBRSxJQUFJLENBQUMsSUFBSSw4QkFBZSxFQUFFLENBQUMsQ0FBQztZQUV4RCxPQUFPLENBQUMsR0FBRyxDQUFDLFNBQVMsRUFBRSxRQUFRLENBQUMsQ0FBQTtZQUVoQyxNQUFNLFFBQVEsR0FBRyxNQUFNLEtBQUssQ0FBQyw2REFBNkQsU0FBUyxnQkFBZ0IsUUFBUSxFQUFFLENBQUMsQ0FBQztZQUMvSCxNQUFNLGVBQWUsR0FBRyxNQUFNLFFBQVEsQ0FBQyxJQUFJLEVBQUUsQ0FBQztZQUU5QyxJQUFHLGVBQWUsQ0FBQyxRQUFRLEtBQUssS0FBSztnQkFBRSxPQUFPLElBQUksQ0FBQyxJQUFJLGdDQUFpQixDQUFDLGVBQWUsQ0FBQyxDQUFDLENBQUM7aUJBQ3RGLENBQUM7Z0JBQ0YsR0FBRyxDQUFDLE9BQU8sQ0FBQyxJQUFJLEdBQUc7b0JBQ2YsT0FBTyxFQUFFLGVBQWUsQ0FBQyxTQUFTO29CQUNsQyxLQUFLLEVBQUU7d0JBQ0gsS0FBSyxFQUFFLENBQUM7d0JBQ1IsWUFBWSxFQUFFLENBQUM7d0JBQ2YsS0FBSyxFQUFFLENBQUM7cUJBQ1g7aUJBQ0osQ0FBQTtnQkFDRCxPQUFPLEdBQUcsQ0FBQyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUMsR0FBRyxFQUFFLENBQUM7WUFDakMsQ0FBQztRQUVMLENBQUM7UUFBQyxPQUFPLEtBQUssRUFBRSxDQUFDO1FBRWpCLENBQUM7SUFDTCxDQUFDO0NBQUE7QUExQkQsc0NBMEJDIn0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXV0aC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9hcGkvY29udHJvbGxlcnMvYXV0aC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFDQSwyREFBOEU7QUFFOUUsK0VBQTRFO0FBQzVFLG9EQUE2QztBQUM3Qyx1REFBb0Q7QUFFcEQsbURBQXNEO0FBR3RELFNBQXNCLGFBQWEsQ0FBQyxHQUFZLEVBQUUsR0FBYSxFQUFFLElBQWtCOztRQUMvRSxJQUFJLENBQUM7WUFDRCxNQUFNLEVBQUMsU0FBUyxFQUFFLFFBQVEsRUFBQyxHQUFHLEdBQUcsQ0FBQyxJQUFJLENBQUM7WUFDdkMsSUFBRyxDQUFDLFNBQVMsSUFBSSxDQUFDLFFBQVE7Z0JBQUUsSUFBSSxDQUFDLElBQUksOEJBQWUsRUFBRSxDQUFDLENBQUM7WUFFeEQsTUFBTSxRQUFRLEdBQUcsTUFBTSxLQUFLLENBQUMsNkRBQTZELFNBQVMsZ0JBQWdCLFFBQVEsRUFBRSxDQUFDLENBQUM7WUFDL0gsTUFBTSxpQkFBaUIsR0FBdUIsTUFBTSxRQUFRLENBQUMsSUFBSSxFQUFFLENBQUM7WUFFcEUsSUFBRyxpQkFBaUIsQ0FBQyxRQUFRLEtBQUssS0FBSyxFQUFFLENBQUM7Z0JBQ3RDLHFCQUFxQjtnQkFDckIsT0FBTyxJQUFJLENBQUMsSUFBSSxnQ0FBaUIsQ0FBQyxlQUFlLENBQUMsQ0FBQyxDQUFDO1lBQ3hELENBQUM7aUJBQU0sQ0FBQztnQkFDSixtQkFBbUI7Z0JBQ25CLE1BQU0sSUFBSSxHQUFHLElBQUEsK0NBQXNCLEVBQUMsaUJBQWlCLENBQUMsQ0FBQztnQkFFdkQsTUFBTSxVQUFVLEdBQUcsTUFBTSxlQUFJLENBQUMsYUFBYSxFQUFFLENBQUM7Z0JBQzlDLE1BQU0sVUFBVSxDQUFDLGdCQUFnQixFQUFFLENBQUM7Z0JBRXBDLE1BQU0sSUFBQSx1QkFBVSxFQUFDLFVBQVUsRUFBRSxJQUFJLENBQUMsQ0FBQyxDQUFDLDhCQUE4QjtnQkFFbEUsTUFBTSxDQUFDLFNBQVMsQ0FBQyxHQUFHLE1BQU0sVUFBVSxDQUFDLE9BQU8sQ0FBa0IseUNBQXlDLEVBQUUsQ0FBQyxJQUFJLENBQUMsU0FBUyxDQUFDLENBQUMsQ0FBQztnQkFFM0gsSUFBSSxTQUFTLENBQUMsTUFBTSxHQUFHLENBQUMsRUFBRSxDQUFDO29CQUN2QixNQUFNLFNBQVMsR0FBRyxpQkFBaUIsQ0FBQyxVQUFVLEtBQUssU0FBUyxDQUFBLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLGdEQUFnRDtvQkFDckgsTUFBTSxVQUFVLENBQUMsT0FBTyxDQUFDLG9EQUFvRCxFQUFFLENBQUMsU0FBUyxFQUFFLElBQUksQ0FBQyxTQUFTLENBQUMsQ0FBQyxDQUFDO2dCQUNoSCxDQUFDO2dCQUVELFVBQVUsQ0FBQyxNQUFNLEVBQUUsQ0FBQztnQkFFcEIsTUFBTSxDQUFDLFdBQVcsQ0FBQyxHQUFHLE1BQU0sSUFBQSxtQkFBVyxFQUFPLGVBQUksRUFBRSx5Q0FBeUMsRUFBRSxDQUFDLElBQUksQ0FBQyxTQUFTLENBQUMsQ0FBQyxDQUFDO2dCQUVqSCxHQUFHLENBQUMsT0FBTyxDQUFDLElBQUksR0FBRztvQkFDZixPQUFPLEVBQUUsSUFBSSxDQUFDLFNBQVM7b0JBQ3ZCLEtBQUssRUFBRTt3QkFDSCxLQUFLLEVBQUUsV0FBVyxDQUFDLEtBQUs7d0JBQ3hCLFlBQVksRUFBRSxXQUFXLENBQUMsWUFBWTt3QkFDdEMsS0FBSyxFQUFFLFdBQVcsQ0FBQyxLQUFLO3FCQUMzQjtpQkFDSixDQUFBO2dCQUNELE9BQU8sR0FBRyxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyxHQUFHLEVBQUUsQ0FBQztZQUNqQyxDQUFDO1FBRUwsQ0FBQztRQUFDLE9BQU8sS0FBSyxFQUFFLENBQUM7WUFDYixJQUFJLENBQUMsS0FBSyxDQUFDLENBQUM7UUFDaEIsQ0FBQztJQUNMLENBQUM7Q0FBQTtBQTdDRCxzQ0E2Q0MifQ==

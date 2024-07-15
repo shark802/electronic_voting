@@ -3,10 +3,14 @@ CREATE TABLE IF NOT EXISTS `users` (
    `firstname` VARCHAR(255) NOT NULL,
    `lastname` VARCHAR(255) NOT NULL,
    `middlename` VARCHAR(255),
-   `email` VARCHAR(100) NOT NULL,
-   `course` VARCHAR(50),
+   `email` VARCHAR(100),
+   `cp_number` VARCHAR(25),
+   `course` VARCHAR(50) NOT NULL,
    `year_level` VARCHAR(10),
    `section` VARCHAR(255),
+   `program_description` VARCHAR(255),
+	`is_active` TINYINT(1),
+	`user_group` VARCHAR(255),
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -27,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
    `id_number` INT(10) NOT NULL, 
    `admin` TINYINT(1) DEFAULT 0,
    `voter` TINYINT(1) DEFAULT 0,
-   `department_head` TINYINT(1) DEFAULT 0,
+   `program_head` TINYINT(1) DEFAULT 0,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`)
 ) ENGINE=InnoDB;
 

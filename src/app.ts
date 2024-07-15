@@ -44,7 +44,7 @@ const sessionStore = new MySQLStore({
     },
     waitForConnections: true,
     connectionLimit: 10,
-    maxIdle: 10,
+    maxIdle: 10, 
     idleTimeout: 60000,
     queueLimit: 10,
 });
@@ -52,7 +52,7 @@ const sessionStore = new MySQLStore({
 app.use(
 	session.default({
 		secret: process.env.SESSION_SECRET || "session-secret",
-		resave: false,
+		resave: true,
 		saveUninitialized: false,
 		store: sessionStore,
 		cookie: {
