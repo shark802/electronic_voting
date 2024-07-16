@@ -57,7 +57,7 @@ export async function deleteElection(req: Request, res:Response, next: NextFunct
 		const election_id = req.params.id
 
 		if (!election_id) {
-			return next(new BadRequestError())
+			return next(new BadRequestError("Election Id is missing"))
 		}
 
 		const query = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";

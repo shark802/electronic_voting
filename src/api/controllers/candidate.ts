@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestError, ConflictError } from "../../utils/customErrors";
+import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
 import { pool } from "../../config/database";
-import { insertQuery, selectQuery } from "../../data_access/query";
+import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { Candidate } from "../../utils/types/Candidate";
 import { ulid } from "ulid";
 
@@ -38,5 +38,26 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
         }
     } catch (error) {
         next(error);
+    }
+}
+
+export async function updateCandidateFunction(req: Request, res: Response, next: NextFunction) {
+    try {
+        const candidate_id = req.params.id;
+        if (!candidate_id) return next(new BadRequestError("Election Id is missing"));
+
+        let {alias, party, position, enabled} = req.body;
+        if (!alias || !party || !position || !enabled) return next(new BadRequestError("Candidate is lacking some information to proceed update"));
+
+        const updateSqlQuery = "UPDATE candidates SET alias = ?, party = ?, position = ?, enabled = ? WHERE candidate_id = ? AND deleted IS NULL";
+        const updateParameter = [alias, party, position, enabled, candidate_id];
+
+        const updateResult = await updateQuery(pool, updateSqlQuery, updateParameter);
+        if (updateResult.affectedRows < 0) return next(new NotFoundError('Resource not found or no changes were made'));
+
+        return res.status(200).json({message: 'Resource updated successfully'});
+        
+    } catch (error) {
+        return next(error);
     }
 }

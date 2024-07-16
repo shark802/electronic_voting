@@ -13,14 +13,14 @@ exports.toUpperCase = void 0;
 function toUpperCase(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (req.body) {
-                Object.entries(req.body).forEach(([key, value]) => {
-                    if (typeof value === 'string') {
-                        req.body[key] = value.toUpperCase();
-                    }
-                });
-            }
-            next();
+            if (!req.body)
+                return next();
+            Object.entries(req.body).forEach(([key, value]) => {
+                if (typeof value === 'string') {
+                    req.body[key] = value.toUpperCase();
+                }
+            });
+            return next();
         }
         catch (error) {
             next(error);
@@ -28,4 +28,4 @@ function toUpperCase(req, res, next) {
     });
 }
 exports.toUpperCase = toUpperCase;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidG9VcHBlckNhc2UuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvbWlkZGxld2FyZXMvdG9VcHBlckNhc2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7O0FBRUEsU0FBc0IsV0FBVyxDQUFDLEdBQVksRUFBRSxHQUFhLEVBQUUsSUFBa0I7O1FBQzdFLElBQUksQ0FBQztZQUNELElBQUksR0FBRyxDQUFDLElBQUksRUFBRSxDQUFDO2dCQUNYLE1BQU0sQ0FBQyxPQUFPLENBQUMsR0FBRyxDQUFDLElBQUksQ0FBQyxDQUFDLE9BQU8sQ0FBQyxDQUFDLENBQUMsR0FBRyxFQUFFLEtBQUssQ0FBQyxFQUFFLEVBQUU7b0JBQzlDLElBQUcsT0FBTyxLQUFLLEtBQUksUUFBUSxFQUFFLENBQUM7d0JBQzFCLEdBQUcsQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLEdBQUcsS0FBSyxDQUFDLFdBQVcsRUFBRSxDQUFDO29CQUN4QyxDQUFDO2dCQUNMLENBQUMsQ0FBQyxDQUFBO1lBQ04sQ0FBQztZQUNELElBQUksRUFBRSxDQUFDO1FBQ1gsQ0FBQztRQUFDLE9BQU8sS0FBSyxFQUFFLENBQUM7WUFDYixJQUFJLENBQUMsS0FBSyxDQUFDLENBQUE7UUFDZixDQUFDO0lBQ0wsQ0FBQztDQUFBO0FBYkQsa0NBYUMifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidG9VcHBlckNhc2UuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvbWlkZGxld2FyZXMvdG9VcHBlckNhc2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7O0FBRUEsU0FBc0IsV0FBVyxDQUFDLEdBQVksRUFBRSxHQUFhLEVBQUUsSUFBa0I7O1FBQzdFLElBQUksQ0FBQztZQUNELElBQUksQ0FBQyxHQUFHLENBQUMsSUFBSTtnQkFBRSxPQUFPLElBQUksRUFBRSxDQUFDO1lBRTdCLE1BQU0sQ0FBQyxPQUFPLENBQUMsR0FBRyxDQUFDLElBQUksQ0FBQyxDQUFDLE9BQU8sQ0FBQyxDQUFDLENBQUMsR0FBRyxFQUFFLEtBQUssQ0FBQyxFQUFFLEVBQUU7Z0JBQzlDLElBQUcsT0FBTyxLQUFLLEtBQUksUUFBUSxFQUFFLENBQUM7b0JBQzFCLEdBQUcsQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLEdBQUcsS0FBSyxDQUFDLFdBQVcsRUFBRSxDQUFDO2dCQUN4QyxDQUFDO1lBQ0wsQ0FBQyxDQUFDLENBQUE7WUFDRixPQUFPLElBQUksRUFBRSxDQUFDO1FBQ2xCLENBQUM7UUFBQyxPQUFPLEtBQUssRUFBRSxDQUFDO1lBQ2IsSUFBSSxDQUFDLEtBQUssQ0FBQyxDQUFBO1FBQ2YsQ0FBQztJQUNMLENBQUM7Q0FBQTtBQWJELGtDQWFDIn0=
