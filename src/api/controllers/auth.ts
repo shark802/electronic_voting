@@ -53,4 +53,25 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
     } catch (error) {
         next(error);
     }
+};
+
+export async function logoutFunction(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        if (!req.session) {
+            return next(new Error('No session found'));
+        }
+
+        req.session.destroy((error) => {
+            if (error) {
+                console.error('Error destroying session:', error);
+                return next(error);
+            }
+
+            res.clearCookie("connect.sid");
+            res.status(200).json({ message: 'Logged out successfully' }).end();
+        });
+    } catch (error) {
+        console.error('Unexpected error during logout:', error);
+        next(error);
+    }
 }

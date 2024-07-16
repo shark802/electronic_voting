@@ -29,7 +29,7 @@ const sessionStore = new MySQLStore({
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
     clearExpired: true,
-    expiration: 86400000,
+    expiration: 15 * 60000,
     createDatabaseTable: true,
     endConnectionOnClose: true,
     disableTouch: true,

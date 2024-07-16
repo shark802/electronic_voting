@@ -25,6 +25,6 @@ export async function createUser(connection: PoolConnection, user: Partial<User>
             user_group = VALUES(user_group)`;
     const insertUserValues = [user.id_number, user.firstname, user.lastname, user.middlename, user.email, user.cp_number, user.course, user.year_level, user.section, user.program_description, user.is_active, user.user_group];
 
-    const [insertUserResult] = await connection.query<ResultSetHeader>(insertUserQuery, insertUserValues); // -Insert a new User or update some user columns if the user is already exist
+    const [insertUserResult] = await connection.execute<ResultSetHeader>(insertUserQuery, insertUserValues); // -Insert a new User or update some user columns if the user is already exist
     return insertUserResult;
 }
