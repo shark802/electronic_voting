@@ -63,7 +63,6 @@ export async function logoutFunction(req: Request, res: Response, next: NextFunc
 
         req.session.destroy((error) => {
             if (error) {
-                console.error('Error destroying session:', error);
                 return next(error);
             }
 

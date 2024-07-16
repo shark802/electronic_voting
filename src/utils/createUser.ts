@@ -1,13 +1,12 @@
-import { pool } from "../config/database";
 import { User } from "./types/User";
 import { ResultSetHeader } from "mysql2";
-import { Role } from "./types/Role";
 import { PoolConnection } from "mysql2/promise";
 
 /**
  * 
+ * @param connection 
  * @param user 
- * @param userRole 
+ * @returns 
  */
 export async function createUser(connection: PoolConnection, user: Partial<User>) {
 
