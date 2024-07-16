@@ -69,3 +69,16 @@ export class ForbiddenError extends Error implements customError {
 		this.statusCode = 403
 	}
 }
+
+/**
+ * Represents conflict error
+ * This error is thrown when attempting to create a new resource but already exist.
+ */
+export class ConflictError extends Error implements customError {
+	statusCode: number;
+
+	constructor(errorMessage?: string) {
+		super(errorMessage || "Conflict, resource already exist");
+		this.statusCode = 409
+	}
+}
