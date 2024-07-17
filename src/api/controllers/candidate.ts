@@ -61,3 +61,20 @@ export async function updateCandidateFunction(req: Request, res: Response, next:
         return next(error);
     }
 }
+
+export async function deleteCandidateFunction(req: Request, res: Response, next: NextFunction) {
+    try {
+        const candidate_id = req.params.id;
+        if (!candidate_id) throw new BadRequestError("Failed to delete candidate due to missing candidate's id");
+
+        const deleteQuery = 'UPDATE candidates SET deleted = CURDATE() WHERE deleted IS NULL';
+
+        const deleteResult = await updateQuery(pool, deleteQuery);
+        if (deleteResult.affectedRows < 1) throw new NotFoundError('Deletion failed, no changes were made');
+
+        return res.status(200).json({message: `${candidate_id} deleted successfully`});
+
+    } catch (error) {
+        next(error);
+    }
+}

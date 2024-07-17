@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addCandidateFunction, updateCandidateFunction } from "../controllers/candidate";
+import { addCandidateFunction, deleteCandidateFunction, updateCandidateFunction } from "../controllers/candidate";
 import { toUpperCase } from "../../middlewares/toUpperCase";
 
 const router = Router();
@@ -11,5 +11,6 @@ router.post("/candidate", addCandidateFunction);
 router
     .route("/candidate/:id")
     .put(updateCandidateFunction)
+    .delete(deleteCandidateFunction)
 
 export default router;
