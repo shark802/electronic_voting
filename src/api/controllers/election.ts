@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { pool } from "../../config/database";
 import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { ulid } from "ulid"
-import { BadRequestError, InternalServerError, NotFoundError } from "../../utils/customErrors";
+import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
 
 
@@ -19,7 +19,7 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 		const result = await insertQuery(pool, query, values)
 
 		if (result.affectedRows < 1) {
-			return next(new InternalServerError("Failed to create election"))
+			return next(new NotFoundError("Failed to create election"))
 		}
 
 		res.status(201).json({message: "Election created"})
@@ -65,7 +65,7 @@ export async function deleteElection(req: Request, res:Response, next: NextFunct
 
 		const result = await updateQuery(pool, query, value)
 		if (result.affectedRows < 1) {
-			return next(new InternalServerError())
+			return next(new NotFoundError("No changes were made"))
 		}
 
 		res.sendStatus(200)
@@ -90,7 +90,7 @@ export async function updateElection(req: Request, res: Response, next: NextFunc
 		const result = await updateQuery(pool, query, parameter)
 
 		if (result.affectedRows < 1) {
-			return next(new InternalServerError())
+			return next(new NotFoundError("No changes were made"))
 		}
 
 		res.status(200).end()

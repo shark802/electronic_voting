@@ -685,6 +685,11 @@ video {
   margin-bottom: 1.5rem;
 }
 
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .mb-14 {
   margin-bottom: 3.5rem;
 }
@@ -972,6 +977,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.w-\[95\%\] {
+  width: 95%;
 }
 
 .max-w-\[70\%\] {
@@ -1639,6 +1648,11 @@ video {
   .lg\:py-16 {
     padding-top: 4rem;
     padding-bottom: 4rem;
+  }
+
+  .lg\:py-9 {
+    padding-top: 2.25rem;
+    padding-bottom: 2.25rem;
   }
 
   .lg\:pb-0 {

@@ -1,6 +1,6 @@
 import { isValidStartDate, isValidEndDate } from "/javascript/formInputValidator/dateValidator.js"
 import { isValidText } from "/javascript/formInputValidator/isValidText.js";
-import { isValidEndTime } from "/javascript/formInputValidator/timeValidator.js";
+import { isValidEndTime, isValidStartTime } from "/javascript/formInputValidator/timeValidator.js";
 import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 
 const electionCardEditButons = document.querySelectorAll('#election-edit-button');
@@ -44,7 +44,21 @@ electionCardEditButons.forEach(cardButton => {
                 const closeButton = document.getElementById("closeModal");
                 closeButton.addEventListener('click', () => {
                     modal.close();
-                })
+                });
+
+                // Div element to display error message
+                const election_name_error_message = document.querySelector("#election_name_error_message");
+                const startDateErrorMessage = document.querySelector("#startdate_error_message");
+                const endDateErrorMessage = document.querySelector("#enddate_error_message");
+                const startTimeErrorMessage = document.querySelector("#starttime_error_message");
+                const endTimeErrorMessage = document.querySelector("#endtime_error_message");
+
+                // Watch for input value if valid
+                changeEventListener(isValidText, [election_name], election_name_error_message) // Validate the election name if user change focus from input
+                changeEventListener(isValidStartDate, [date_start], startDateErrorMessage); // Validate the start date input 
+                changeEventListener(isValidEndDate, [date_end, date_start], endDateErrorMessage); // Validate the end date input
+                changeEventListener(isValidStartTime, [time_end, time_start], startTimeErrorMessage)
+                changeEventListener(isValidEndTime, [time_end, time_start, date_start, date_end], endTimeErrorMessage)
 
                 const updateForm = document.querySelector("#update_election_form");
                 updateForm.addEventListener("submit", updateElection);
@@ -67,14 +81,17 @@ async function updateElection(event) {
         const election_name_error_message = document.querySelector("#election_name_error_message");
         const startDateErrorMessage = document.querySelector("#startdate_error_message");
         const endDateErrorMessage = document.querySelector("#enddate_error_message");
-        const endTimeErrorMessage = document.querySelector("#endTime_error_message");
+        const startTimeErrorMessage = document.querySelector("#starttime_error_message");
+        const endTimeErrorMessage = document.querySelector("#endtime_error_message");
 
         if (
-            !isValidText([electionName], isValidText, election_name_error_message) ||
-            !isValidStartDate([dateStart], isValidStartDate,  startDateErrorMessage) ||
-            !isValidEndDate([dateEnd, dateStart], isValidEndDate, endDateErrorMessage)
+            !isValidText([electionName], election_name_error_message) ||
+            !isValidStartDate([dateStart], startDateErrorMessage) ||
+            !isValidEndDate([dateEnd, dateStart], endDateErrorMessage) ||
+            !isValidStartTime([timeStart], startTimeErrorMessage) ||
+            !isValidEndTime([time_end, time_start, date_start, date_end], endTimeErrorMessage)
         ) {
-            console.log("Form Not Valid")
+            console.log('invalid form');
             return;
         } else {
             const updateResponse = await fetch(`/api/elections/${electionID.textContent}`, {

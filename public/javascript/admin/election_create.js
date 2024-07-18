@@ -1,6 +1,6 @@
 import { isValidStartDate, isValidEndDate } from "/javascript/formInputValidator/dateValidator.js"
 import { isValidText } from "/javascript/formInputValidator/isValidText.js";
-import { isValidEndTime } from "/javascript/formInputValidator/timeValidator.js";
+import { isValidEndTime, isValidStartTime } from "/javascript/formInputValidator/timeValidator.js";
 import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 
 // Style active navbar
@@ -34,13 +34,15 @@ const time_end = document.querySelector("#time_end")
 // Div element to display error message
 const election_name_error_message = document.querySelector("#election_name_error_message")
 const startDateErrorMessage = document.querySelector("#startdate_error_message")
+const startTimeErrorMessage = document.querySelector("#starttime_error_message")
 const endDateErrorMessage = document.querySelector("#enddate_error_message")
-const endTimeErrorMessage = document.querySelector("#endTime_error_message")
+const endTimeErrorMessage = document.querySelector("#endtime_error_message")
 
-changeEventListener([election_name], isValidText, election_name_error_message) // Validate the election name if user change focus from input
-changeEventListener([date_start], isValidStartDate,  startDateErrorMessage); // Validate the start date input 
-changeEventListener([date_end, date_start], isValidEndDate, endDateErrorMessage); // Validate the end date input
-changeEventListener([time_end, time_start], isValidEndTime, endTimeErrorMessage)
+changeEventListener(isValidText, [election_name], election_name_error_message) // Validate the election name if user change focus from input
+changeEventListener(isValidStartDate, [date_start], startDateErrorMessage); // Validate the start date input 
+changeEventListener(isValidStartTime, [time_start], startTimeErrorMessage)
+changeEventListener(isValidEndDate, [date_end, date_start], endDateErrorMessage); // Validate the end date input
+changeEventListener(isValidEndTime, [time_end, time_start, date_start, date_end], endTimeErrorMessage)
 
 // validate every input before sending to server
 document.querySelector("#create_election_form").addEventListener("submit", async(event) => {
@@ -49,7 +51,9 @@ document.querySelector("#create_election_form").addEventListener("submit", async
     if( 
         !isValidText([election_name], election_name_error_message) ||
         !isValidStartDate([date_start], startDateErrorMessage) ||
-        !isValidEndDate([date_end, date_start], endDateErrorMessage)
+        !isValidEndDate([date_end, date_start], endDateErrorMessage) ||
+        !isValidStartTime([time_start], startTimeErrorMessage) ||
+        !isValidEndTime([time_end, time_start, date_start, date_end], endTimeErrorMessage)
     ) {
         Swal.fire({
             showConfirmButton: false,
