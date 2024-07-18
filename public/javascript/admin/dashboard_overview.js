@@ -1,3 +1,5 @@
+import "/javascript/logout.js"
+
 const dashboard_nav = document.querySelector("#dashboard_nav")
 const overview_page = document.querySelector("#overview_page")
 

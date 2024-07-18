@@ -7,6 +7,7 @@ import { createUser } from "../../utils/createUser";
 import { Role } from "../../utils/types/Role";
 import { selectQuery } from "../../data_access/query";
 import { RowDataPacket } from 'mysql2/promise';
+import { resolveSoa } from "node:dns";
 
 export async function loginFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -47,7 +48,12 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
                     voter: userRoleRow.voter
                 }
             }
-            return res.status(200).end();
+
+            return res.status(200).json({roles: {
+                admin: userRoleRow.admin,
+                program_head: userRoleRow.program_head,
+                voter: userRoleRow.voter
+            }});
         }
             
     } catch (error) {
@@ -57,9 +63,7 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
 
 export async function logoutFunction(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        if (!req.session) {
-            return next(new Error('No session found'));
-        }
+        if (!req.session) return next(new Error('No session found'));
 
         req.session.destroy((error) => {
             if (error) {
@@ -67,7 +71,7 @@ export async function logoutFunction(req: Request, res: Response, next: NextFunc
             }
 
             res.clearCookie("connect.sid");
-            res.status(200).json({ message: 'Logged out successfully' }).end();
+            res.status(200).json({ message: 'Logged out successfully' });
         });
     } catch (error) {
         console.error('Unexpected error during logout:', error);

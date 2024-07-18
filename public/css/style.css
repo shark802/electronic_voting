@@ -685,11 +685,6 @@ video {
   margin-bottom: 1.5rem;
 }
 
-.mx-2 {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-}
-
 .mb-14 {
   margin-bottom: 3.5rem;
 }
@@ -970,6 +965,10 @@ video {
   width: 90%;
 }
 
+.w-\[95\%\] {
+  width: 95%;
+}
+
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
@@ -977,10 +976,6 @@ video {
 
 .w-full {
   width: 100%;
-}
-
-.w-\[95\%\] {
-  width: 95%;
 }
 
 .max-w-\[70\%\] {

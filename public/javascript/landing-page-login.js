@@ -6,8 +6,8 @@ const passwordErrorMessage = document.querySelector("#passwordErrorMessage");
 const id_number = document.querySelector("#school-id");
 const password = document.querySelector("#password");
 
-changeEventListener([id_number], isValidText, schoolIdErrorMessage);
-changeEventListener([password], isValidText, passwordErrorMessage);
+changeEventListener(isValidText, [id_number], schoolIdErrorMessage);
+changeEventListener(isValidText, [password], passwordErrorMessage);
 
 document.querySelector("#login-form").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -36,6 +36,8 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
             });
 
         } else {
+            const responseObject = await response.json();
+
             event.target.reset();
             document.querySelector("#login-modal").close();
             Swal.fire({
@@ -44,7 +46,8 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
                 icon: "success"
             }).then(result => {
                 if(result.isConfirmed) {
-                    window.location.href = "/election";
+                    if (responseObject.roles.admin === 1 || responseObject.roles.program_head === 1) return window.location.href = "/admin/dashboard/overview";
+                    if (responseObject.roles.voter === 1) return window.location.href = "/election";
                 }
             });
         }
