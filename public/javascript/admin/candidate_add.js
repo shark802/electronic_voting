@@ -1,3 +1,5 @@
+import "/javascript/logout.js"
+
 const candidate_nav = document.querySelector("#candidate_nav");
 const add_candidate = document.querySelector("#add_candidate");
 

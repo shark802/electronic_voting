@@ -1,3 +1,4 @@
+import "/javascript/logout.js"
 import '/javascript/admin/election_edit.js';
 import '/javascript/admin/election_showHide.js';
 import '/javascript/admin/election_delete.js';

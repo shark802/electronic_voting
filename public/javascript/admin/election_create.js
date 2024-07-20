@@ -1,3 +1,5 @@
+import "/javascript/logout.js"
+
 import { isValidStartDate, isValidEndDate } from "/javascript/formInputValidator/dateValidator.js"
 import { isValidText } from "/javascript/formInputValidator/isValidText.js";
 import { isValidEndTime, isValidStartTime } from "/javascript/formInputValidator/timeValidator.js";

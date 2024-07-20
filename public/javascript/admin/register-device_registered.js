@@ -1,3 +1,5 @@
+import "/javascript/logout.js"
+
 const register_device_nav = document.querySelector("#register_device_nav");
 const registered_device = document.querySelector("#registered_device");
 

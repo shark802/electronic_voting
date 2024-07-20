@@ -1,3 +1,5 @@
+import "/javascript/logout.js"
+
 const dashboard_nav = document.querySelector("#dashboard_nav")
 const vote_tally_page = document.querySelector("#vote_tally_page")
 

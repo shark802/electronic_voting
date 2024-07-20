@@ -1,3 +1,5 @@
+import "/javascript/logout.js"
+
 const control_panel_nav = document.querySelector("#control_panel_nav");
 const fetch_user = document.querySelector("#fetch_user")
 

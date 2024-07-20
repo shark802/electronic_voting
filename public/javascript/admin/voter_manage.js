@@ -1,3 +1,5 @@
+import "/javascript/logout.js"
+
 const voter_nav = document.querySelector("#voter_nav")
 const manage_voter_nav = document.querySelector("#manage_voter_nav")
 

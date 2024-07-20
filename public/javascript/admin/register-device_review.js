@@ -1,3 +1,5 @@
+import "/javascript/logout.js"
+
 const register_device_nav = document.querySelector("#register_device_nav")
 const review_request = document.querySelector("#review_request")
 
