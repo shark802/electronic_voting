@@ -7,12 +7,12 @@ const electionCardEditButons = document.querySelectorAll('#election-edit-button'
 
 electionCardEditButons.forEach(cardButton => {
     cardButton.addEventListener('click', async (event) => {
-        const parent = event.target.parentNode;
+        const parent = event.target.closest("#election-card");
 
-        $(event.target.closest("#more-option")).hide(100); 
+        $(event.target.closest("#more-option")).hide(100);
 
-        const electionId = parent.closest("#electionSection").querySelector("#election-card-id").textContent;
-        
+        const electionId = parent.querySelector("#election-card-id").textContent;
+
         if (electionId) {
             const response = await fetch(`/api/elections/${electionId}`);
 
@@ -25,7 +25,7 @@ electionCardEditButons.forEach(cardButton => {
                     const year = parsedDate.getFullYear();
                     const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
                     const day = String(parsedDate.getDate()).padStart(2, '0');
-                    return `${year}-${month}-${day}`; 
+                    return `${year}-${month}-${day}`;
                 }
 
                 election.date_start = extractDate(election.date_start);
@@ -61,13 +61,15 @@ electionCardEditButons.forEach(cardButton => {
                 changeEventListener(isValidEndTime, [time_end, time_start, date_start, date_end], endTimeErrorMessage)
 
                 const updateForm = document.querySelector("#update_election_form");
-                updateForm.addEventListener("submit", updateElection);
+                updateForm.addEventListener("submit", async (event) => {
+                    await updateElection(event, parent);
+                });
             }
         }
     })
 })
 
-async function updateElection(event) {
+async function updateElection(event, parent) {
     try {
         event.preventDefault();
         const electionID = document.querySelector("#election_id");
@@ -96,13 +98,13 @@ async function updateElection(event) {
         } else {
             const updateResponse = await fetch(`/api/elections/${electionID.textContent}`, {
                 method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     election_name: electionName.value,
                     date_start: dateStart.value,
                     time_start: timeStart.value,
                     date_end: dateEnd.value,
-                    time_end: timeEnd.value 
+                    time_end: timeEnd.value
                 })
             });
 
@@ -113,9 +115,33 @@ async function updateElection(event) {
                     text: "Update complete",
                     icon: "success"
                 });
+
+                // change with updated value if update success
+                const formatOptions = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                }
+
+                const startDateTime = new Date(dateStart.value);
+                const [startHour, startMinute] = timeStart.value.split(":");
+                startDateTime.setHours(startHour, startMinute);
+                const formattedStartDateTime = startDateTime.toLocaleString('en-US', formatOptions);
+
+                const electionEndDateTime = new Date(dateEnd.value);
+                const [endHour, endMinute] = timeEnd.value.split(":");
+                electionEndDateTime.setHours(endHour, endMinute);
+                const formattedEndDateTime = electionEndDateTime.toLocaleString('en-US', formatOptions);
+
+                parent.querySelector("#election-title").textContent = electionName.value;
+                parent.querySelector("#displayStart").textContent = formattedStartDateTime;
+                parent.querySelector("#displayEnd").textContent = formattedEndDateTime;
+                return;
             }
         }
-
     } catch (error) {
         console.error(error);
     }
