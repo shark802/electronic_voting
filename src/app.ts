@@ -9,7 +9,6 @@ import { errorHandler } from "./middlewares/errorHandler";
 import apiRoutes from "./api";
 import webRoutes from "./web";
 import expressMysqlSession from "express-mysql-session";
-import passport from "passport";
 
 dotenv.config();
 const app = express();
@@ -62,9 +61,6 @@ app.use(
 		},
 	})
 );
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.set("socket", io);
 

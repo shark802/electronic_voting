@@ -3,7 +3,6 @@ const logoutButton = document.querySelector("#logout-button");
 logoutButton.addEventListener('click', () => {
     Swal.fire({
         title: "Are you sure you want to logout?",
-        icon: "question",
         showCancelButton: true,
         confirmButtonText: "Yes, logout!",
         cancelButtonText: "No, cancel!",
@@ -22,7 +21,10 @@ logoutButton.addEventListener('click', () => {
                     title: "You have been logout",
                     icon: "success",
                     confirmButtonColor: "#2060f7",
-                });
+                })
+                .then(action => {
+                    if(action.isConfirmed) window.location.href = "/";
+                })
             } catch (error) {
                 console.error(error);
             }

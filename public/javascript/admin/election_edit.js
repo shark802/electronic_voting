@@ -22,9 +22,9 @@ electionCardEditButons.forEach(cardButton => {
 
                 function extractDate(date) {
                     const parsedDate = new Date(date);
-                    const year = parsedDate.getUTCFullYear();
-                    const month = String(parsedDate.getUTCMonth() + 1).padStart(2, '0');
-                    const day = String(parsedDate.getUTCDate()).padStart(2, '0');
+                    const year = parsedDate.getFullYear();
+                    const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+                    const day = String(parsedDate.getDate()).padStart(2, '0');
                     return `${year}-${month}-${day}`; 
                 }
 
