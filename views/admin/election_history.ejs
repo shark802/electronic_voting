@@ -44,7 +44,7 @@
 
       <% elections.forEach(election => { %>
 
-      <section class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-4 lg:px-12 px-3 pb-7 mb-4">
+      <section id="election-card" class="lg:w-[700px] bg-white rounded-md min-h-fit m-auto py-4 lg:px-12 px-3 pb-7 mb-4">
         <div id="electionSection" class="relative flex justify-between pb-1">
 
           <div class="relative ml-2">
@@ -120,7 +120,7 @@
           <p><%= formattedEndDateTime %></p>
         </div>
 
-        <button id="add-candidate" class="float-right px-3 py-1 m-auto mt-4 text-white bg-green-500 rounded-md ">View Result</button>
+        <button id="add-candidate" class="float-right px-3 py-1 m-auto mt-4 text-white transition-colors bg-green-500 rounded-md ring-0 hover:ring-2">View Result</button>
 
       </section>
       <% }) %>

@@ -5,14 +5,14 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
 
         let viewStatus = event.target.closest("#electionSection").querySelector("#viewStatus");
         let viewStatusImage = event.target.closest("#electionSection").querySelector("#viewStatusImage"); // div element text content contains Hide=(0) or Show=(1)
-        if(viewStatus.textContent === "Hide") {
+        if (viewStatus.textContent === "Hide") {
             electionStatus = 0;
             const updateOutcome = await updateElectionStatus(electionId, electionStatus)
             if (updateOutcome) {
                 viewStatusImage.src = "/img/view.png"
                 viewStatus.textContent = "Show";
             }
-            
+
         } else {
             electionStatus = 1;
             const updateOutcome = await updateElectionStatus(electionId, electionStatus)
@@ -33,7 +33,7 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
  */
 async function updateElectionStatus(electionId, electionStatus) {
     try {
-        const electionMessage =  electionStatus === 1 ?  "Election status is now active." : "Election status is now inactive.";
+        const electionMessage = electionStatus === 1 ? "Election status is now active." : "Election status is now inactive.";
 
         const response = await fetch(`/api/elections/${electionId}?status=${electionStatus}`, {
             method: "PATCH"
@@ -63,8 +63,8 @@ async function updateElectionStatus(electionId, electionStatus) {
             });
             return false;
         }
-        
+
     } catch (error) {
-        
+
     }
 };

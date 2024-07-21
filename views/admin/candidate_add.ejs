@@ -15,12 +15,49 @@
 
   <%- include("../partials/sidebar.ejs") %>
 
-  <main class="relative flex flex-col w-full m-auto overflow-hidden lg:w-4/5 h-dvh">
+  <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 h-dvh">
 
     <div class="flex items-center w-full h-20 py-3 m-0 lg:pt-7">
       <img id="show-sidebar" src="/img/menu.png" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Add New Candidate</h1>
     </div>
+
+    <form id="candidate-form" class="flex flex-col mb-7 lg:min-h-fit lg:px-9 rounded-lg pt-5 lg:w-[700px] w-full px-2 lg:pb-4 pb-16 m-auto bg-white mt-11 min-h-96 no-scrollbar">
+
+      <label class="text-sm text-gray-500" for="election">Election name</label>
+      <input id="election" type="text" class="py-1 pl-2 border border-gray-500 rounded-lg focus:outline-blue-500">
+      <div id="electionErrorMessage" class="min-h-5"></div>
+
+      <label class="text-sm text-gray-500" for="id-number">Id number</label>
+      <input id="id-number" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <div id="idNumberErrorMessage" class="min-h-5"></div>
+
+      <label class="text-sm text-gray-500" for="firstname">Firstname</label>
+      <input id="firstname type=" text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <div id="firstnameErrorMessage" class="min-h-5"></div>
+
+      <label class="text-sm text-gray-500" for="lastname">Lastname</label>
+      <input id="lastname" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <div id="lastnameErrorMessage" class="min-h-5"></div>
+
+      <label class="text-sm text-gray-500" for="alias">Alias</label>
+      <input id="alias" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <div id="aliasErrorMessage" class="min-h-5"></div>
+
+      <label class="text-sm text-gray-500" for="program">Program</label>
+      <input id="program" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <div id="programErrorMessage" class="min-h-5"></div>
+
+      <label class="text-sm text-gray-500" for="party">Party</label>
+      <input id="party" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <div id="partyErrorMessage" class="min-h-5"></div>
+
+      <label class="text-sm text-gray-500" for="position">Position</label>
+      <input id="position" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <div id="positionErrorMessage" class="min-h-5"></div>
+
+      <button type="submit" class="px-5 py-1 m-auto mt-5 text-white bg-green-500 rounded-full hover:ring-2 w-fit">Save</button>
+    </form>
 
   </main>
 

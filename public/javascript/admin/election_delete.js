@@ -1,7 +1,7 @@
 document.querySelectorAll("#delete_election_button").forEach(deleteButon => {
-    deleteButon.addEventListener('click', async(event) => {
+    deleteButon.addEventListener('click', async (event) => {
         const electionId = event.target.closest("#electionSection").querySelector("#election-card-id").textContent;
-        $(event.target.closest("#more-option")).hide(100); 
+        $(event.target.closest("#more-option")).hide(100);
 
         Swal.fire({
             title: "Are you sure you want to delete this?",
@@ -11,11 +11,11 @@ document.querySelectorAll("#delete_election_button").forEach(deleteButon => {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!"
-            }).then(async (result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                
-                const response = await fetch(`/api/elections/${electionId}`,{method: "DELETE"});
-                if(response.ok) {
+
+                const response = await fetch(`/api/elections/${electionId}`, { method: "DELETE" });
+                if (response.ok) {
                     $(event.target.closest("#election-card")).hide(100);
 
                     Swal.fire({
@@ -31,8 +31,8 @@ document.querySelectorAll("#delete_election_button").forEach(deleteButon => {
                         icon: "error"
                     });
                 }
-                
-               
+
+
             }
         });
 

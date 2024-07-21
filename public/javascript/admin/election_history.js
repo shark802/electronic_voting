@@ -1,5 +1,6 @@
 import "/javascript/logout.js"
 import '/javascript/admin/election_showHide.js';
+import '/javascript/admin/election_delete.js';
 
 const election_nav = document.querySelector("#election_nav");
 const election_history_page = document.querySelector("#election_history_page");
