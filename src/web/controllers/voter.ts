@@ -5,7 +5,7 @@ import { pool } from "../../config/database";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
-        const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 AND date_end >= CURDATE() ORDER BY date_start";
+        const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start";
         const electionList = await selectQuery<Election>(pool, query);
 
         res.render("voter/electionPage", {electionList});

@@ -57,10 +57,10 @@
 
             <div id="more-option" class="absolute hidden gap-2 px-1 py-3 bg-white border border-solid rounded shadow-md w-36 h-fit top-11">
 
-              <div id="election-edit-button" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+              <!-- <div id="election-edit-button" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                 <img src="/img/pencil.png" alt="edit" class="w-4 h-4">
                 <p class="ml-2">Edit</p>
-              </div>
+              </div> -->
 
               <% if (election.is_active === 1) { %>
               <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
@@ -71,7 +71,7 @@
               <% } else { %>
               <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                 <img id="viewStatusImage" src="/img/view.png" alt="view" class="w-4 h-4">
-                <p id="viewStatus" class="ml-2">View</p>
+                <p id="viewStatus" class="ml-2">Show</p>
               </div>
 
               <% } %>
