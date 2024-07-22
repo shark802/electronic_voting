@@ -34,4 +34,48 @@ document.querySelector("#candidate-form").addEventListener('submit', async (even
     console.log(election.value);
     console.log(program.value);
     console.log(position.value);
+
+    const requestBody = {
+        election_id: election.value,
+        id_number: idNumber.value,
+        firstname: firstname.value,
+        lastname: lastname.value,
+        alias: alias.value,
+        course: program.value,
+        party: party.value,
+        position: position.value
+    }
+
+    try {
+
+        const response = await fetch("/api/candidate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody)
+        })
+
+        if (!response.ok) {
+            const responseObject = await response.json();
+            Swal.fire({
+                title: responseObject.name,
+                text: responseObject.message,
+                icon: "error",
+            });
+            return;
+        } else {
+            Swal.fire({
+                showConfirmButton: false,
+                title: "New Candidate added successfully",
+                icon: "success",
+                toast: true,
+                position: "top",
+                timer: 5000,
+            });
+            return;
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+
 })

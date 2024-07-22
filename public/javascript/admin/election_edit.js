@@ -140,6 +140,18 @@ async function updateElection(event, parent) {
                 parent.querySelector("#displayStart").textContent = formattedStartDateTime;
                 parent.querySelector("#displayEnd").textContent = formattedEndDateTime;
                 return;
+            } else {
+
+                const reponseObject = await updateResponse.json();
+                Swal.fire({
+                    showConfirmButton: false,
+                    title: responseObject.message,
+                    icon: "error",
+                    toast: true,
+                    position: "top",
+                    timer: 3000,
+                });
+                return;
             }
         }
     } catch (error) {

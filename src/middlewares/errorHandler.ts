@@ -7,6 +7,6 @@ export function errorHandler(error: Error, req: Request, res: Response, next: Ne
   } else {
     console.error(`${error.name}: ${error.message}`);
     console.error(`${error.stack}`)
-    res.status(500).json({name: error.name, message: "Unexpected server error!"});
+    res.status(500).send(`Unexpected error occured!`);
   }
 }
