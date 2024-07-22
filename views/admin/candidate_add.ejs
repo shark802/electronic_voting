@@ -22,39 +22,55 @@
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Add New Candidate</h1>
     </div>
 
-    <form id="candidate-form" class="flex flex-col mb-7 lg:min-h-fit lg:px-9 rounded-lg pt-5 lg:w-[700px] w-full px-2 lg:pb-4 pb-16 m-auto bg-white mt-11 min-h-96 no-scrollbar">
+    <form id="candidate-form" class="flex flex-col mb-7 lg:min-h-fit rounded-lg pt-5 lg:w-[700px] w-full lg:px-11 px-2 lg:pb-4 pb-16 m-auto bg-white mt-11 min-h-96 no-scrollbar">
 
       <label class="text-sm text-gray-500" for="election">Election name</label>
-      <input id="election" type="text" class="py-1 pl-2 border border-gray-500 rounded-lg focus:outline-blue-500">
+      <select id="election" class="py-1 pl-2 border border-gray-400 rounded-lg focus:outline-blue-500">
+        <option value="">--</option>
+        <% electionList.forEach(election => { %>
+        <option value="<%= election.election_id %>"><%= election.election_name %></option>
+        <% }) %>
+      </select>
       <div id="electionErrorMessage" class="min-h-5"></div>
 
       <label class="text-sm text-gray-500" for="id-number">Id number</label>
-      <input id="id-number" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <input id="id-number" type="text" class="py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
       <div id="idNumberErrorMessage" class="min-h-5"></div>
 
       <label class="text-sm text-gray-500" for="firstname">Firstname</label>
-      <input id="firstname type=" text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <input id="firstname" type="text" class="py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
       <div id="firstnameErrorMessage" class="min-h-5"></div>
 
       <label class="text-sm text-gray-500" for="lastname">Lastname</label>
-      <input id="lastname" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <input id="lastname" type="text" class="py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
       <div id="lastnameErrorMessage" class="min-h-5"></div>
 
       <label class="text-sm text-gray-500" for="alias">Alias</label>
-      <input id="alias" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <input id="alias" type="text" class="py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
       <div id="aliasErrorMessage" class="min-h-5"></div>
 
       <label class="text-sm text-gray-500" for="program">Program</label>
-      <input id="program" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <select id="program" class="py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
+        <option value="">--</option>
+        <% programs.forEach((value) => { %>
+        <option value="<%= value %>"> <%= value%> </option>
+        <% }) %>
+      </select>
       <div id="programErrorMessage" class="min-h-5"></div>
 
       <label class="text-sm text-gray-500" for="party">Party</label>
-      <input id="party" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <input id="party" type="text" class="py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
       <div id="partyErrorMessage" class="min-h-5"></div>
 
       <label class="text-sm text-gray-500" for="position">Position</label>
-      <input id="position" type="text" class="py-1 pl-2 border rounded-lg focus:outline-blue-500">
+      <select id="position" class="py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
+        <option value="">--</option>
+        <% positions.forEach((value) => { %>
+        <option value="<%= value %>"> <%= value %> </option>
+        <% }) %>
+      </select>
       <div id="positionErrorMessage" class="min-h-5"></div>
+
 
       <button type="submit" class="px-5 py-1 m-auto mt-5 text-white bg-green-500 rounded-full hover:ring-2 w-fit">Save</button>
     </form>

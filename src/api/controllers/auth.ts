@@ -7,7 +7,6 @@ import { createUser } from "../../utils/createUser";
 import { Role } from "../../utils/types/Role";
 import { selectQuery } from "../../data_access/query";
 import { RowDataPacket } from 'mysql2/promise';
-import { resolveSoa } from "node:dns";
 
 export async function loginFunction(req: Request, res: Response, next: NextFunction) {
     try {

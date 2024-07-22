@@ -31,14 +31,67 @@ document.querySelectorAll("#more-button").forEach((button) => {
         document.querySelectorAll("#more-option").forEach(element => {
             const elementElectionId = element.closest("#electionSection").querySelector("#election-card-id").textContent;
 
-            if(elementElectionId !== eventElectionId) {
+            if (elementElectionId !== eventElectionId) {
                 $(element).hide(100);
             } else {
-                const parent = $(event.target).parent(); 
+                const parent = $(event.target).parent();
                 parent.find('#more-option').toggle(100);
             }
-        })   
-        
+        })
+
     });
 
 });
+
+// Disable add candidate button if election is already started.
+document.querySelectorAll("#add-candidate").forEach(addButton => {
+    addButton.addEventListener('click', (event) => {
+        const parent = event.target.closest("#election-card");
+        const electionInfo = parent.querySelector("#election-info");
+
+        const dateStart = electionInfo.dataset.dateStart;
+        const timeStart = electionInfo.dataset.timeStart;
+
+        const present = new Date();
+        let startDateTime = new Date(dateStart);
+        const [hour, minute] = timeStart.split(':');
+        startDateTime.setHours(hour, minute);
+
+        if (present > startDateTime) {
+            event.target.style.backgroundColor = "#9ca3af";
+            event.target.style.color = "#f3f4f6";
+
+            Swal.fire({
+                showConfirmButton: false,
+                title: "Election has already started, adding candidate is restricted",
+                icon: "error",
+                toast: true,
+                position: "top",
+                timer: 3000,
+                timerProgressBar: true
+            });
+            return;
+        } else {
+            // Proceed adding candidate
+        }
+
+    })
+
+    // setInterval(() => {
+    //     const buttonParent = addButton.closest("#election-card");
+    //     const electionInfo = buttonParent.querySelector("#election-info");
+
+    //     const dateStart = electionInfo.dataset.dateStart;
+    //     const timeStart = electionInfo.dataset.timeStart;
+
+    //     const present = new Date();
+    //     let startDateTime = new Date(dateStart);
+    //     const [hour, minute] = timeStart.split(':');
+    //     startDateTime.setHours(hour, minute);
+
+    //     if (present > startDateTime) {
+
+    //     }
+
+    // }, 1000);
+})

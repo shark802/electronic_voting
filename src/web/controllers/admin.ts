@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
+import { Position } from "../../utils/enums/position";
+import { Program } from "../../utils/enums/program";
 
 export function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -77,9 +79,14 @@ export function manageCandidate(req: Request, res: Response, next: NextFunction)
     }
 }
 
-export function addCandidate(req: Request, res: Response, next: NextFunction) {
+export async function addCandidate(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/candidate_add")
+        const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND time_start > CURTIME())) ORDER BY created_at DESC";
+        const electionList = await selectQuery<Election>(pool, query);
+        const positions = Object.values(Position);
+        const programs = Object.values(Program);
+
+        res.render("admin/candidate_add", {electionList, positions, programs})
     } catch (error) {
         next(error)
     }

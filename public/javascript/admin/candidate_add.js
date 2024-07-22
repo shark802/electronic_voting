@@ -18,3 +18,20 @@ document.querySelector("#show-sidebar").addEventListener("click", () => {
 document.querySelector("#hide-sidebar").addEventListener('click', () => {
     $("#sidebar").hide(100);
 });
+
+const election = document.querySelector("#election");
+const idNumber = document.querySelector("#id-number");
+const firstname = document.querySelector("#firstname");
+const lastname = document.querySelector("#lastname");
+const alias = document.querySelector("#alias");
+const program = document.querySelector("#program");
+const party = document.querySelector("#party");
+const position = document.querySelector("#position");
+
+document.querySelector("#candidate-form").addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    console.log(election.value);
+    console.log(program.value);
+    console.log(position.value);
+})
