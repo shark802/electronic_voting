@@ -1,4 +1,5 @@
-import "/javascript/logout.js"
+import "/javascript/logout.js";
+import "/javascript/admin/candidate_add_default_election.js"
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const add_candidate = document.querySelector("#add_candidate");

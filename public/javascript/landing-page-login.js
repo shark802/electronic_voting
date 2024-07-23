@@ -1,4 +1,4 @@
-import {changeEventListener} from "/javascript/helper/changeEventListener.js";
+import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 import { isValidText } from "/javascript/formInputValidator/isValidText.js"
 
 const schoolIdErrorMessage = document.querySelector("#schoolIdErrorMessage");
@@ -12,7 +12,7 @@ changeEventListener(isValidText, [password], passwordErrorMessage);
 document.querySelector("#login-form").addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if(
+    if (
         !isValidText([id_number], schoolIdErrorMessage) ||
         !isValidText([password], passwordErrorMessage)
     ) {
@@ -20,15 +20,15 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
     }
 
     try {
-        
+
         const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({"id_number": id_number.value, "password": password.value})
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ "id_number": id_number.value, "password": password.value })
         });
-        
+
         if (!response.ok) {
-            
+
             document.querySelector('#login-modal').close();
             Swal.fire({
                 title: "Login Failed!",
@@ -38,22 +38,25 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
         } else {
             const responseObject = await response.json();
 
-            event.target.reset();
-            document.querySelector("#login-modal").close();
-            Swal.fire({
-                title: "Success!",
-                text: "Login successfully ",
-                icon: "success"
-            }).then(result => {
-                if(result.isConfirmed) {
-                    if (responseObject.roles.admin === 1 || responseObject.roles.program_head === 1) return window.location.href = "/admin/dashboard/overview";
-                    if (responseObject.roles.voter === 1) return window.location.href = "/election";
-                }
-            });
+            if (responseObject.roles.admin === 1 || responseObject.roles.program_head === 1) return window.location.href = "/admin/dashboard/overview";
+            if (responseObject.roles.voter === 1) return window.location.href = "/election";
+
+            // event.target.reset();
+            // document.querySelector("#login-modal").close();
+            // Swal.fire({
+            //     title: "Success!",
+            //     text: "Login successfully ",
+            //     icon: "success"
+            // }).then(result => {
+            //     if(result.isConfirmed) {
+            //         if (responseObject.roles.admin === 1 || responseObject.roles.program_head === 1) return window.location.href = "/admin/dashboard/overview";
+            //         if (responseObject.roles.voter === 1) return window.location.href = "/election";
+            //     }
+            // });
         }
 
     } catch (error) {
         console.error(error.message);
     }
-    
+
 })

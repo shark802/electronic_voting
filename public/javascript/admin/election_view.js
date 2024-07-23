@@ -43,9 +43,9 @@ document.querySelectorAll("#more-button").forEach((button) => {
 
 });
 
-// Disable add candidate button if election is already started.
+// Redirect to add candidate page or disable add candidate button if election is already started.
 document.querySelectorAll("#add-candidate").forEach(addButton => {
-    addButton.addEventListener('click', (event) => {
+    addButton.addEventListener('click', async (event) => {
         const parent = event.target.closest("#election-card");
         const electionInfo = parent.querySelector("#election-info");
 
@@ -72,26 +72,10 @@ document.querySelectorAll("#add-candidate").forEach(addButton => {
             });
             return;
         } else {
+            const electionId = parent.querySelector("#election-card-id").textContent;
+            // await fetch(`/admin/candidate/new/${true}`);
+            window.location.href = `/admin/candidate/new?election_id=${electionId}`;
             // Proceed adding candidate
         }
-
     })
-
-    // setInterval(() => {
-    //     const buttonParent = addButton.closest("#election-card");
-    //     const electionInfo = buttonParent.querySelector("#election-info");
-
-    //     const dateStart = electionInfo.dataset.dateStart;
-    //     const timeStart = electionInfo.dataset.timeStart;
-
-    //     const present = new Date();
-    //     let startDateTime = new Date(dateStart);
-    //     const [hour, minute] = timeStart.split(':');
-    //     startDateTime.setHours(hour, minute);
-
-    //     if (present > startDateTime) {
-
-    //     }
-
-    // }, 1000);
 })
