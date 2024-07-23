@@ -9,9 +9,11 @@ export function changeEventListener(inputValidator, arrayValue, errorMessage) {
     try {
         if (!Array.isArray(arrayValue)) throw new Error(`${arrayValue} is expected to be an array`);
         arrayValue.forEach(inputElement => {
-            if (!(inputElement instanceof HTMLInputElement)) throw new Error("Invalid HTML input element");
+            if ((inputElement instanceof HTMLInputElement) || (inputElement instanceof HTMLSelectElement)) {
+
+            } else throw new Error("Invalid HTML input element");
         })
-                
+
         arrayValue[0].addEventListener("change", (event) => {
             inputValidator(arrayValue, errorMessage)
         })

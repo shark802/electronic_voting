@@ -1,5 +1,7 @@
 import "/javascript/logout.js";
-import "/javascript/admin/candidate_add_default_election.js"
+import "/javascript/admin/candidate_add_default_election.js";
+import { changeEventListener } from "/javascript/helper/changeEventListener.js";
+import { isInputNotEmpty } from "/javascript/formInputValidator/isInputNotEmpty.js";
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const add_candidate = document.querySelector("#add_candidate");
@@ -20,6 +22,7 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
     $("#sidebar").hide(100);
 });
 
+// Form Input Element
 const election = document.querySelector("#election");
 const idNumber = document.querySelector("#id-number");
 const firstname = document.querySelector("#firstname");
@@ -29,13 +32,27 @@ const program = document.querySelector("#program");
 const party = document.querySelector("#party");
 const position = document.querySelector("#position");
 
+// Input Error Messsage element
+const electionErrorMessage = document.querySelector("#electionErrorMessage");
+const idNumberErrorMessage = document.querySelector("#idNumberErrorMessage");
+const firstnameErrorMessage = document.querySelector("#firstnameErrorMessage");
+const lastnameErrorMessage = document.querySelector("#lastnameErrorMessage");
+const aliasErrorMessage = document.querySelector("#aliasErrorMessage");
+const programErrorMessage = document.querySelector("#programErrorMessage");
+const partyErrorMessage = document.querySelector("#partyErrorMessage");
+const positionErrorMessage = document.querySelector("#positionErrorMessage");
+
+changeEventListener(isInputNotEmpty, [election], electionErrorMessage);
+changeEventListener(isInputNotEmpty, [idNumber], idNumberErrorMessage);
+changeEventListener(isInputNotEmpty, [firstname], firstnameErrorMessage);
+changeEventListener(isInputNotEmpty, [lastname], lastnameErrorMessage);
+changeEventListener(isInputNotEmpty, [alias], aliasErrorMessage);
+changeEventListener(isInputNotEmpty, [program], programErrorMessage);
+changeEventListener(isInputNotEmpty, [party], partyErrorMessage);
+changeEventListener(isInputNotEmpty, [position], positionErrorMessage);
+
 document.querySelector("#candidate-form").addEventListener('submit', async (event) => {
     event.preventDefault();
-
-    console.log(election.value);
-    console.log(program.value);
-    console.log(position.value);
-
     const requestBody = {
         election_id: election.value,
         id_number: idNumber.value,
@@ -45,6 +62,27 @@ document.querySelector("#candidate-form").addEventListener('submit', async (even
         course: program.value,
         party: party.value,
         position: position.value
+    }
+
+    if (
+        !isInputNotEmpty([election], electionErrorMessage) ||
+        !isInputNotEmpty([idNumber], idNumberErrorMessage) ||
+        !isInputNotEmpty([firstname], firstnameErrorMessage) ||
+        !isInputNotEmpty([lastname], lastnameErrorMessage) ||
+        !isInputNotEmpty([alias], lastnameErrorMessage) ||
+        !isInputNotEmpty([program], programErrorMessage) ||
+        !isInputNotEmpty([party], partyErrorMessage) ||
+        !isInputNotEmpty([position], positionErrorMessage)
+    ) {
+        Swal.fire({
+            toast: true,
+            position: "top",
+            timer: 5000,
+            title: "Oops, something wasn't right, The form has error!",
+            icon: "error",
+            showConfirmButton: false
+        });
+        return;
     }
 
     try {
@@ -65,13 +103,11 @@ document.querySelector("#candidate-form").addEventListener('submit', async (even
             return;
         } else {
             Swal.fire({
-                showConfirmButton: false,
                 title: "New Candidate added successfully",
                 icon: "success",
-                toast: true,
-                position: "top",
-                timer: 5000,
-            });
+            }).then(action => {
+                if (action.isConfirmed) event.target.reset();
+            })
             return;
         }
 

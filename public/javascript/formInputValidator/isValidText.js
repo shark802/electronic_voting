@@ -1,15 +1,15 @@
-export function isValidText(arrayValue, errorMessagDisplay) {
+export function isValidText(arrayValue, errorMessageDisplay) {
 	try {
-        if(!Array.isArray(arrayValue) || arrayValue.length < 1) throw new Error(`${arrayValue} is not a valid array`);
+		if (!Array.isArray(arrayValue) || arrayValue.length < 1) throw new Error(`${arrayValue} is not a valid array`);
 
 		let textInput = arrayValue[0].value
-		
-		if(textInput.trim() === "") {
+
+		if (textInput.trim() === "") {
 			arrayValue[0].value = ""
-			errorMessagDisplay.textContent = "Whitespace input invalid"
+			errorMessageDisplay.textContent = "Whitespace input invalid"
 			return false;
-		}else{
-			errorMessagDisplay.textContent = "";
+		} else {
+			errorMessageDisplay.textContent = "";
 			return true;
 		}
 

@@ -8,7 +8,6 @@ import { ulid } from "ulid";
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {
     try {
         let {election_id, id_number, firstname, lastname, course, alias, party, position} = req.body;
-        console.log(req.body);
         
         if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
 
