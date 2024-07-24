@@ -1,9 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-	content: ["./views/**/*.ejs"],
-  safelist: ['active-nav', 'active-page'],
-	theme: {
-		extend: {
+  content: ["./views/**/*.ejs"],
+  safelist: ['active-nav', 'active-page', 'selected-position'],
+  theme: {
+    extend: {
       animation: {
         'slide-in': 'slideIn .5s ease-in-out',
       },
@@ -14,9 +14,9 @@ module.exports = {
         },
       },
     },
-	},
-	plugins: [
-		function ({ addUtilities }) {
+  },
+  plugins: [
+    function ({ addUtilities }) {
       addUtilities({
         '.no-scrollbar': {
           'scrollbar-width': 'none',
@@ -26,5 +26,5 @@ module.exports = {
         },
       });
     },
-	],
+  ],
 };

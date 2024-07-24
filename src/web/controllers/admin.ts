@@ -73,7 +73,9 @@ export async function viewElectionHistory (req: Request, res: Response, next: Ne
 // Candidate
 export function manageCandidate(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/candidate_manage")
+        const positions = Object.values(Position)
+
+        res.render("admin/candidate_manage", {positions})
     } catch (error) {
         next(error)
     }

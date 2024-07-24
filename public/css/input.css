@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer components {
+    .selected-position {
+        @apply text-gray-600 text-lg border-blue-400 transition-all border-b-4
+    }
+
     .center {
         @apply transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
     }
