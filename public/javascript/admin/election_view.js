@@ -78,4 +78,13 @@ document.querySelectorAll("#add-candidate").forEach(addButton => {
             // Proceed adding candidate
         }
     })
+});
+
+document.querySelector("body").addEventListener('click', (event) => {
+    const elementClicked = event.target;
+    if (!elementClicked.closest('#option-section')) {
+        document.querySelectorAll("#more-option").forEach(card => {
+            $(card).hide(100);
+        })
+    }
 })

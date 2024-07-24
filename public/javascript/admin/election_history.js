@@ -41,3 +41,12 @@ document.querySelectorAll("#more-button").forEach((button) => {
     });
 
 });
+
+document.querySelector("body").addEventListener('click', (event) => {
+    const elementClicked = event.target;
+    if (!elementClicked.closest('#option-section')) {
+        document.querySelectorAll("#more-option").forEach(card => {
+            $(card).hide(100);
+        })
+    }
+})
