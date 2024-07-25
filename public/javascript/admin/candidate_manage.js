@@ -1,4 +1,5 @@
-import "/javascript/logout.js"
+import "/javascript/logout.js";
+import { fetchCandidates } from "/javascript/modules/candidates/fetchCandidates.js";
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const manage_candidate = document.querySelector("#manage_candidate");
@@ -25,7 +26,7 @@ document.querySelector("#position").classList.add("selected-position"); // set a
 
 // change the the position selected if click
 document.querySelectorAll("#position").forEach(position => {
-    position.addEventListener('click', (event) => {
+    position.addEventListener('click', async (event) => {
         document.querySelectorAll("#position").forEach(pos => {
             pos.classList.remove("selected-position");
             pos.classList.add("text-gray-400");
@@ -33,5 +34,7 @@ document.querySelectorAll("#position").forEach(position => {
 
         event.target.classList.remove("text-gray-400");
         event.target.classList.add("selected-position");
+        const candidates = await fetchCandidates(position.textContent);
+        console.log(candidates);
     });
 });

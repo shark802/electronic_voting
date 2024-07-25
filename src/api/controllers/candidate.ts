@@ -4,6 +4,7 @@ import { pool } from "../../config/database";
 import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { Candidate } from "../../utils/types/Candidate";
 import { ulid } from "ulid";
+import { User } from "../../utils/types/User";
 
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -76,5 +77,32 @@ export async function deleteCandidateFunction(req: Request, res: Response, next:
 
     } catch (error) {
         next(error);
+    }
+}
+
+export async function getManageCandidates(req: Request, res: Response, next: NextFunction) {
+    try {
+        const position = req.query.position;
+        const electionIds = req.query.election_id;
+        const electionList = Array.isArray(electionIds) ?electionIds : [electionIds];
+
+        if (!position || ! electionList) throw new BadRequestError('No election Available');
+
+        type userCandidate = Pick<User, "id_number" | 'firstname' | 'lastname' | 'year_level' | 'section' | 'course'> & Pick<Candidate, 'candidate_id' | 'election_id' | 'position' | 'enabled' | 'alias' | 'party'>;
+        
+        const sqlSelectUserCandidateQuery = `
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.alias, c.party
+        FROM users u JOIN candidates c
+        ON u.id_number = c.id_number
+        WHERE c.position = ?
+        AND c.election_id IN (?);
+        `
+        const userCandidateResult = await selectQuery<userCandidate>(pool, sqlSelectUserCandidateQuery, [position, electionList]);
+        console.log(userCandidateResult);
+
+        return res.status(200).json(userCandidateResult);
+        
+    } catch (error) {
+        next(error)
     }
 }

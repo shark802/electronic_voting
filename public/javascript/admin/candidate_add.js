@@ -1,5 +1,5 @@
 import "/javascript/logout.js";
-import "/javascript/admin/candidate_add_default_election.js";
+import "/javascript/modules/candidates/candidate_add_default_election.js";
 import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 import { isInputNotEmpty } from "/javascript/formInputValidator/isInputNotEmpty.js";
 

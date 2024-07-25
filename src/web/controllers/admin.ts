@@ -71,11 +71,15 @@ export async function viewElectionHistory (req: Request, res: Response, next: Ne
 }
 
 // Candidate
-export function manageCandidate(req: Request, res: Response, next: NextFunction) {
+export async function manageCandidate(req: Request, res: Response, next: NextFunction) {
     try {
-        const positions = Object.values(Position)
+        const positions = Object.values(Position);
 
-        res.render("admin/candidate_manage", {positions})
+        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND  time_start > CURTIME()))";
+        const elections = await selectQuery<Election>(pool, selectElectioQuery);
+        // const elections: Election[] = []
+
+        res.render("admin/candidate_manage", {elections, positions})
     } catch (error) {
         next(error)
     }
