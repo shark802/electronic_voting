@@ -1,7 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./views/**/*.ejs"],
-  safelist: ['active-nav', 'active-page', 'selected-position'],
+  safelist: [
+    'active-nav',
+    'active-page',
+    'selected-position',
+    'hover:bg-blue-100',
+    'py-2',
+    'border-b-2',
+    'text-gray-600'
+  ],
   theme: {
     extend: {
       animation: {

@@ -22,20 +22,24 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
         } else {
             // Login successful
             const user = convertApiObjectToUser(apiResponseObject);
-
             const connection = await pool.getConnection();
-            await connection.beginTransaction();
 
-            await createUser(connection, user); // save user info in database.
-
-            const [rowResult] = await connection.execute<RowDataPacket[]>("SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
-                
-            if (rowResult.length < 1) {
-                const voterRole = apiResponseObject.user_group === "STUDENT"? 1 : 0; // assign the voter role if the user is student.
-                await connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
+            try {
+                await connection.beginTransaction();
+    
+                await createUser(connection, user); // save user info in database.
+    
+                const [rowResult] = await connection.execute<RowDataPacket[]>("SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
+                    
+                if (rowResult.length < 1) {
+                    const voterRole = apiResponseObject.user_group === "STUDENT"? 1 : 0; // assign the voter role if the user is student.
+                    await connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
+                }
+                connection.commit();
+            } catch (error) {
+                connection.rollback()
+                return next(error);
             }
-
-            connection.commit();
 
             const [userRoleRow] = await selectQuery<Role>(pool, "SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
 

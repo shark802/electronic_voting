@@ -95,11 +95,10 @@ export async function getManageCandidates(req: Request, res: Response, next: Nex
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.position = ?
-        AND c.election_id IN (?);
+        AND c.election_id IN (?)
+        ORDER BY u.lastname;
         `
         const userCandidateResult = await selectQuery<userCandidate>(pool, sqlSelectUserCandidateQuery, [position, electionList]);
-        console.log(userCandidateResult);
-
         return res.status(200).json(userCandidateResult);
         
     } catch (error) {

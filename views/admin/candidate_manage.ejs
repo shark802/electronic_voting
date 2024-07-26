@@ -29,7 +29,7 @@
         <% }) %>
       </div>
 
-      <div id="election-box" class="grid gap-6 lg:px-7 pt-5">
+      <div id="election-box" class="grid gap-6 pt-5 lg:px-7">
         <% if (elections.length < 1) { %>
 
         <!-- Display no election history -->
@@ -48,7 +48,23 @@
             <!-- <img src="/img/chevron.webp" alt="chevron" class="absolute w-5 opacity-70 bottom-3 right-5"> -->
           </div>
 
-          <div id="candidates-display" class="hidden h-10 bg-white">
+          <div id="candidates-display" class="hidden p-1 bg-white rounded-bl-lg rounded-br-lg min-h-32">
+
+            <table class="w-full border">
+              <thead class="py-4 bg-blue-200">
+                <tr class="py-4">
+                  <th class="py-2 font-medium border-b-gray-400">ID</th>
+                  <th class="py-2 font-medium border">Name</th>
+                  <th class="py-2 font-medium border">Course/Yr/Sec</th>
+                  <th class="py-2 font-medium border">Status</th>
+                </tr>
+              </thead>
+
+              <tbody id="candidates-section" data-election-id="<%= election.election_id %>">
+
+              </tbody>
+
+            </table>
 
           </div>
         </section>
