@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 @layer components {
+    .active {
+        @apply rounded-full px-4 bg-green-200 text-green-600 w-fit py-1 text-[10px] m-auto
+    }
+    .inactive {
+        @apply rounded-full px-4 bg-red-200 text-red-600 w-fit py-1 text-[10px] m-auto
+    }
+
     .selected-position {
         @apply text-gray-600 text-lg border-blue-400 transition-all border-b-4
     }

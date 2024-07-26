@@ -101,7 +101,7 @@ function getManageCandidates(req, res, next) {
             if (!position || !electionList)
                 throw new customErrors_1.BadRequestError('No election Available');
             const sqlSelectUserCandidateQuery = `
-        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.alias, c.party
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.alias, c.party, c.added_at
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.position = ?

@@ -1,5 +1,4 @@
 import "/javascript/logout.js";
-// import { fetchCandidates } from "/javascript/modules/candidates/fetchCandidates.js";
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const manage_candidate = document.querySelector("#manage_candidate");
@@ -20,16 +19,15 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
     $("#sidebar").hide(100);
 });
 
-
 document.querySelectorAll("#election").forEach(election => {
     election.addEventListener('click', event => {
-        $(event.target.closest("#election").querySelector("#candidates-display")).slideToggle(300);
+        if (!event.target.closest("#candidates-display")) {
+            $(event.target.closest("#election").querySelector("#candidates-display")).slideToggle(300);
+        }
     })
 })
 
-
-
-
+// display all available candidates when content loaded
 document.addEventListener('DOMContentLoaded', async () => {
     document.querySelector("#position").classList.remove("text-gray-400");
     document.querySelector("#position").classList.add("selected-position"); // set as default position selected
@@ -39,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 })
 
+// Display all candidates when candidate position option click
 document.querySelectorAll("#position").forEach(position => {
     position.addEventListener('click', async (event) => {
         styleSelectedPosition(event);
@@ -85,16 +84,30 @@ function displayFetchCandidate(candidates) {
 
     candidates.forEach(candidate => {
 
-        console.log(candidate);
+        const status = candidate.enabled === 1 ? '<div class="active">ACTIVE</div>' : '<div class="inactive">INACTIVE</div>'
+        let candidateAddedAt = new Date(candidate.added_at);
+        const options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        };
+
+        candidateAddedAt = candidateAddedAt.toLocaleString('en-US', options);
+
         const tableRow = `
             <tr class="hover:bg-blue-100 border-b-2 transition-all">
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidate.id_number}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidate.lastname}, ${candidate.firstname}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidate.course} ${candidate.year_level} ${candidate.section}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400 text-center">${candidate.enabled}</td>
+                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400 text-center">${candidate.id_number}</td>
+                <td class="text-xs font-medium py-2 pl-4 text-gray-600 border-b-gray-400">${candidate.lastname}, ${candidate.firstname}</td>
+                <td class="text-xs pl-4 font-medium py-2 text-gray-600 border-b-gray-400">${candidate.alias}</td>
+                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidate.course}</td>
+                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidateAddedAt}</td>
+                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400 text-center">${status}</td>
+                <td> <div class="flex justify-center gap-4 items-center"> <img src="/img/more.webp" class="w-5 hover:cursor-pointer opacity-70 hover:rounded-full hover:bg-blue-300"/> <p class="font-semibold hover:cursor-pointer text-blue-500">Edit</p> </div> </td>
             </tr>
         `
         document.querySelector(`tbody[data-election-id="${candidate.election_id}"]`).innerHTML += tableRow;
-        console.log(document.querySelector(`tbody[data-election-id="${candidate.election_id}"]`));
     })
 }

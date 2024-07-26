@@ -8,7 +8,12 @@ module.exports = {
     'hover:bg-blue-100',
     'py-2',
     'border-b-2',
-    'text-gray-600'
+    'text-gray-600',
+    'active',
+    'inactive',
+    'opacity-70',
+    'hover:bg-blue-300',
+    'hover:rounded-full'
   ],
   theme: {
     extend: {

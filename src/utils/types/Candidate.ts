@@ -8,6 +8,7 @@ type Candidate = {
 	deleted: number;
 	vote_count: number;
 	election_id: string;
+	added_at: string;
 };
 
 export { Candidate };

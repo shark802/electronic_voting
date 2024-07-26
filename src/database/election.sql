@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `candidates` (
    `deleted` TIMESTAMP NULL,
    `vote_count` INT DEFAULT 0,
    `election_id` VARCHAR(50),
+   `added_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
 ) ENGINE=InnoDB;
