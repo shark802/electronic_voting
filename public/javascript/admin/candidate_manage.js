@@ -20,57 +20,74 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
     $("#sidebar").hide(100);
 });
 
+main();
 
-document.querySelectorAll("#election").forEach(election => {
-    election.addEventListener('click', event => {
-        if (!event.target.closest("#candidates-display")) {
-            $(event.target.closest("#election").querySelector("#candidates-display")).slideToggle(300);
-        }
-    })
-})
+function main() {
+    toggleDisplayCandidate(); // Toggle the candidate table to display for management
+    displayInitialCandidate(); //  Will display the initial candidates(President position)
+    displayCandidatesForPositionClick(); // Will update the candidate table if click new candidate position
+    triggerOptionOrEdit(); // Will open the more option or edit if tey are click
+    closeOptions() // Will close opened options if click is outside the options
+}
 
-// display all available candidates when content loaded
-document.addEventListener('DOMContentLoaded', async () => {
-    document.querySelector("#position").classList.remove("text-gray-400");
-    document.querySelector("#position").classList.add("selected-position"); // set as default position selected
-
-    const candidates = await fetchCandidates(document.querySelector("#position").textContent);
-    displayFetchCandidate(candidates);
-
-})
-
-// Display all candidates when candidate position option click
-document.querySelectorAll("#position").forEach(position => {
-    position.addEventListener('click', async (event) => {
-        styleSelectedPosition(event);
-
-        const candidates = await fetchCandidates(position.textContent);
-        displayFetchCandidate(candidates);
-    });
-});
-
-document.querySelectorAll("#candidates-section").forEach(section => { // Open more option
-    section.addEventListener('click', (event) => {
-        if (event.target.closest('#option-section')) {
-            toggleMoreOptionDisplay(event);
-        }
-
-        if (event.target.closest("#edit")) {
-            console.log("EDIT");
-        }
-
-    })
-});
-
-document.addEventListener('click', event => { // Close if there is an open section  
-    if (!event.target.closest("#option-section")) {
-        document.querySelectorAll("#candidates-section").forEach(candidateSection => {
-            candidateSection.querySelectorAll("#more-option").forEach(section => $(section).slideUp(100))
+function toggleDisplayCandidate() {
+    document.querySelectorAll("#election").forEach(election => {
+        election.addEventListener('click', event => {
+            if (!event.target.closest("#candidates-display")) {
+                $(event.target.closest("#election").querySelector("#candidates-display")).slideToggle(300);
+            }
         })
-    }
-})
+    });
+}
 
-// change the the position selected if click
+function displayInitialCandidate() {
+    document.addEventListener('DOMContentLoaded', async () => {
+        document.querySelector("#position").classList.remove("text-gray-400");
+        document.querySelector("#position").classList.add("selected-position"); // set as default position selected
+
+        const candidates = await fetchCandidates(document.querySelector("#position").textContent);
+        displayFetchCandidate(candidates);
+    })
+}
+
+function displayCandidatesForPositionClick() {
+    document.querySelectorAll("#position").forEach(position => {
+        position.addEventListener('click', async (event) => {
+            styleSelectedPosition(event);
+
+            const candidates = await fetchCandidates(position.textContent);
+            displayFetchCandidate(candidates);
+        });
+    });
+}
+
+function triggerOptionOrEdit() {
+    document.querySelectorAll("#candidates-section").forEach(section => { // Open more option
+        section.addEventListener('click', (event) => {
+            if (event.target.closest('#option-section')) {
+                toggleMoreOptionDisplay(event);
+            }
+
+            if (event.target.closest("#edit")) {
+                console.log("EDIT");
+            }
+
+        })
+    });
+}
+
+function closeOptions() {
+    document.addEventListener('click', event => { // Close if there is an open section  
+        if (!event.target.closest("#option-section")) {
+            document.querySelectorAll("#candidates-section").forEach(candidateSection => {
+                candidateSection.querySelectorAll("#more-option").forEach(section => $(section).slideUp(100))
+            })
+        }
+    })
+}
+
+
+// HELPER FUNCTIONS
 function styleSelectedPosition(event) {
     document.querySelectorAll("#position").forEach(pos => {
         pos.classList.remove("selected-position");
@@ -127,7 +144,7 @@ function displayFetchCandidate(candidates) {
                 <td class="text-xs pl-4 font-medium py-2 text-gray-600 border-b-gray-400">${candidate.alias}</td>
                 <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidate.course}</td>
                 <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidateAddedAt}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400 text-center">${status}</td>
+                <td data-status="${candidate.enabled}" class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400 text-center">${status}</td>
                 <td>
                     <div class="flex justify-center gap-4 items-center">
                         <div id="option-section" class="relative">

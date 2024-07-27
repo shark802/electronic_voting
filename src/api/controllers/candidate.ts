@@ -105,3 +105,21 @@ export async function getManageCandidates(req: Request, res: Response, next: Nex
         next(error)
     }
 }
+
+export async function updateCandidateStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+        const candidate_id = req.params.id
+        const status = req.body.status;
+        if (!status || !candidate_id) throw new BadRequestError("Required value is missing can't update candidate");
+
+        const sqlQuery = "UPDATE candidates SET enabled = ? WHERE candidate_id = ?";
+        const parameter = [status, candidate_id];
+        const result = await updateQuery(pool, sqlQuery, parameter);
+
+        if(result.affectedRows < 1) throw new NotFoundError('No resource updated');
+
+        res.status(200).json({message: `Candidate ${candidate_id} status succesfully updated`});
+    } catch (error) {
+        next(error)
+    }
+}

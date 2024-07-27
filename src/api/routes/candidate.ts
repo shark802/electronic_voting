@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addCandidateFunction, deleteCandidateFunction, getManageCandidates, updateCandidateFunction } from "../controllers/candidate";
+import { addCandidateFunction, deleteCandidateFunction, getManageCandidates, updateCandidateFunction, updateCandidateStatus } from "../controllers/candidate";
 import { toUpperCase } from "../../middlewares/toUpperCase";
 
 const router = Router();
@@ -14,5 +14,5 @@ router
     .delete(deleteCandidateFunction)
 
 router.get("/candidate", getManageCandidates);
-
+router.put("/cadidate/:id/status", updateCandidateStatus);
 export default router;
