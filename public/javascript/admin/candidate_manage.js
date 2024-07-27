@@ -93,8 +93,6 @@ function updateCandidateStatus() {
             const status = String(event.target.closest('tr').querySelector('td[data-status]').dataset.status == 1 ? 0 : 1);
             const candidate_id = event.target.closest('tr').dataset.candidateId;
 
-            console.log(candidate_id, status);
-
             if (event.target.closest("#toggleCandidateStatus")) {
                 Swal.fire({
                     title: "Confirm Update",
@@ -121,6 +119,8 @@ function updateCandidateStatus() {
                             });
                             return;
                         }
+                        changeUpdateStatusIcon(status, event);
+                        toggleStatusOptionDisplay(event);
 
                         const responseMessage = await response.json();
                         Swal.fire({
@@ -129,10 +129,11 @@ function updateCandidateStatus() {
                             position: 'top',
                             timer: 3000,
                             timerProgressBar: true,
-                            title: 'Update Success!',
-                            text: responseMessage.message,
+                            title: responseMessage.message,
                             icon: 'success'
                         });
+                        event.target.closest('tr').querySelector('td[data-status]').dataset.status = status;
+
                         return;
 
                     }
@@ -180,7 +181,23 @@ function displayFetchCandidate(candidates) {
 
     candidates.forEach(candidate => {
 
-        const status = candidate.enabled === 1 ? '<div class="active">ACTIVE</div>' : '<div class="inactive">INACTIVE</div>'
+        const status = candidate.enabled === 1 ? '<div class="active">ACTIVE</div>' : '<div class="inactive">INACTIVE</div>';
+        let statusOptionDisplay
+        if (candidate.enabled === 0) {
+            statusOptionDisplay = `
+            <div id="toggleCandidateStatus" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+                <img id="viewStatusImage" src="/img/view.webp" alt="view" class="w-4 h-4">
+                <p id="viewStatus" class="ml-2">Activate</p>
+            </div>
+            `
+        } else {
+            statusOptionDisplay = `
+            <div id="toggleCandidateStatus" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+                <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4">
+                <p id="viewStatus" class="ml-2">Deactivate</p>
+            </div>
+            `
+        }
         let candidateAddedAt = new Date(candidate.added_at);
         const options = {
             year: 'numeric',
@@ -207,10 +224,7 @@ function displayFetchCandidate(candidates) {
                             <img src="/img/more.webp" class="w-5 hover:cursor-pointer opacity-70 hover:rounded-full hover:bg-blue-300"/>
                             <div id="more-option" class="absolute z-10 right-0 gap-2 px-1 py-3 hidden bg-white border border-solid rounded shadow-md w-36 h-fit top-7">
 
-                                <div id="toggleCandidateStatus" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
-                                    <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4">
-                                    <p id="viewStatus" class="ml-2">Deactivate</p>
-                                </div>
+                               ${statusOptionDisplay}
 
                                 <div id="delete_election_button" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                                     <img src="/img/trash.webp" alt="delete" class="w-4 h-4">
@@ -242,5 +256,30 @@ function toggleMoreOptionDisplay(event) {
     $(event.target.closest("#option-section").querySelector("#more-option")).slideToggle(300)
 }
 
+function changeUpdateStatusIcon(status, event) {
+    const statusWord = event.target.closest('tr').querySelector('td[data-status]').querySelector('div');
+    const newStatus = status == 1 ? 'ACTIVE' : 'INACTIVE';
+    if (Number(status) === 1) {
+        statusWord.textContent = newStatus;
+        event.target.closest('tr').querySelector('td[data-status]').querySelector('div').classList.remove('inactive');
+        event.target.closest('tr').querySelector('td[data-status]').querySelector('div').classList.add('active');
+    } else {
+        statusWord.textContent = newStatus;
+        event.target.closest('tr').querySelector('td[data-status]').querySelector('div').classList.remove('active');
+        event.target.closest('tr').querySelector('td[data-status]').querySelector('div').classList.add('inactive');
+    }
+}
+
+function toggleStatusOptionDisplay(event) {
+    const prevStatus = event.target.closest("#candidates-section").querySelector("#viewStatus");
+    if (prevStatus.textContent === 'Activate') {
+        prevStatus.textContent = "Deactivate";
+        event.target.closest("#candidates-section").querySelector("#viewStatusImage").src = "/img/hide.webp"
+    } else {
+        prevStatus.textContent = "Activate";
+        event.target.closest("#candidates-section").querySelector("#viewStatusImage").src = "/img/view.webp"
+    }
+
+}
 
 
