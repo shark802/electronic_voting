@@ -1003,6 +1003,10 @@ video {
   width: 80%;
 }
 
+.w-44 {
+  width: 11rem;
+}
+
 .w-5 {
   width: 1.25rem;
 }
@@ -1058,10 +1062,6 @@ video {
 
 .w-full {
   width: 100%;
-}
-
-.w-44 {
-  width: 11rem;
 }
 
 .min-w-\[500px\] {
@@ -1196,10 +1196,6 @@ video {
 
 .overflow-hidden {
   overflow: hidden;
-}
-
-.overflow-scroll {
-  overflow: scroll;
 }
 
 .overflow-x-auto {
