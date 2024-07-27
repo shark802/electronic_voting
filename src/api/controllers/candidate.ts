@@ -118,7 +118,7 @@ export async function updateCandidateStatus(req: Request, res: Response, next: N
 
         if(result.affectedRows < 1) throw new NotFoundError('No resource updated');
 
-        res.status(200).json({message: `Candidate ${candidate_id} status succesfully updated`});
+        res.status(200).json({message: `Candidate status updated`});
     } catch (error) {
         next(error)
     }

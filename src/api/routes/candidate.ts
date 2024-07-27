@@ -14,5 +14,5 @@ router
     .delete(deleteCandidateFunction)
 
 router.get("/candidate", getManageCandidates);
-router.put("/cadidate/:id/status", updateCandidateStatus);
+router.put("/candidate/status/:id", updateCandidateStatus);
 export default router;

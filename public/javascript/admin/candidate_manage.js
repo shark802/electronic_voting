@@ -28,6 +28,7 @@ function main() {
     displayCandidatesForPositionClick(); // Will update the candidate table if click new candidate position
     triggerOptionOrEdit(); // Will open the more option or edit if tey are click
     closeOptions() // Will close opened options if click is outside the options
+    updateCandidateStatus();
 }
 
 function toggleDisplayCandidate() {
@@ -86,6 +87,61 @@ function closeOptions() {
     })
 }
 
+function updateCandidateStatus() {
+    document.querySelectorAll("#candidates-section").forEach(candidateSection => {
+        candidateSection.addEventListener('click', async (event) => {
+            const status = String(event.target.closest('tr').querySelector('td[data-status]').dataset.status == 1 ? 0 : 1);
+            const candidate_id = event.target.closest('tr').dataset.candidateId;
+
+            console.log(candidate_id, status);
+
+            if (event.target.closest("#toggleCandidateStatus")) {
+                Swal.fire({
+                    title: "Confirm Update",
+                    text: "Please confirm your action to update the candidate status",
+                    showCancelButton: true,
+                }).then(async (action) => {
+                    if (action.isConfirmed) {
+                        const response = await fetch(`/api/candidate/status/${candidate_id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ status: status })
+                        });
+                        if (!response.ok) {
+                            const message = await response.json();
+                            Swal.fire({
+                                toast: true,
+                                showConfirmButton: false,
+                                position: 'top',
+                                timer: 3000,
+                                timerProgressBar: true,
+                                title: 'Update failed!',
+                                text: message.message,
+                                icon: 'error'
+                            });
+                            return;
+                        }
+
+                        const responseMessage = await response.json();
+                        Swal.fire({
+                            toast: true,
+                            showConfirmButton: false,
+                            position: 'top',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            title: 'Update Success!',
+                            text: responseMessage.message,
+                            icon: 'success'
+                        });
+                        return;
+
+                    }
+                })
+            }
+        })
+    })
+}
+
 
 // HELPER FUNCTIONS
 function styleSelectedPosition(event) {
@@ -138,7 +194,7 @@ function displayFetchCandidate(candidates) {
         candidateAddedAt = candidateAddedAt.toLocaleString('en-US', options);
 
         const tableRow = `
-            <tr class="hover:bg-blue-100 border-b-2 transition-all">
+            <tr data-candidate-id="${candidate.candidate_id}" class="hover:bg-blue-100 border-b-2 transition-all">
                 <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400 text-center">${candidate.id_number}</td>
                 <td class="text-xs font-medium py-2 pl-4 text-gray-600 border-b-gray-400">${candidate.lastname}, ${candidate.firstname}</td>
                 <td class="text-xs pl-4 font-medium py-2 text-gray-600 border-b-gray-400">${candidate.alias}</td>
@@ -151,7 +207,7 @@ function displayFetchCandidate(candidates) {
                             <img src="/img/more.webp" class="w-5 hover:cursor-pointer opacity-70 hover:rounded-full hover:bg-blue-300"/>
                             <div id="more-option" class="absolute z-10 right-0 gap-2 px-1 py-3 hidden bg-white border border-solid rounded shadow-md w-36 h-fit top-7">
 
-                                <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+                                <div id="toggleCandidateStatus" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                                     <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4">
                                     <p id="viewStatus" class="ml-2">Deactivate</p>
                                 </div>
