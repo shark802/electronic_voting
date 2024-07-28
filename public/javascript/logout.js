@@ -9,25 +9,24 @@ logoutButton.addEventListener('click', () => {
         reverseButtons: true,
         confirmButtonColor: "#2060f7",
         cancelButtonColor: "#fc3232"
-    })
-        .then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const response = await fetch("/api/logout", { method: "POST" })
-                    if (!response.ok) {
-                        return;
-                    }
-                    Swal.fire({
-                        title: "You have been logout",
-                        icon: "success",
-                        confirmButtonColor: "#2060f7",
-                    })
-                        .then(action => {
-                            if (action.isConfirmed) window.location.href = "/";
-                        })
-                } catch (error) {
-                    console.error(error);
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch("/api/logout", { method: "POST" })
+                if (!response.ok) {
+                    return;
                 }
+                Swal.fire({
+                    title: "You have been logout",
+                    icon: "success",
+                    confirmButtonColor: "#2060f7",
+                })
+                    .then(action => {
+                        if (action.isConfirmed) window.location.href = "/";
+                    })
+            } catch (error) {
+                console.error(error);
             }
-        })
+        }
+    })
 })
