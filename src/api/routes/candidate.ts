@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addCandidateFunction, deleteCandidateFunction, getManageCandidates, updateCandidateFunction, updateCandidateStatus } from "../controllers/candidate";
+import { addCandidateFunction, deleteCandidateFunction, getCandidateById, getManageCandidates, updateCandidateFunction, updateCandidateStatus } from "../controllers/candidate";
 import { toUpperCase } from "../../middlewares/toUpperCase";
 
 const router = Router();
@@ -12,6 +12,7 @@ router
     .route("/candidate/:id")
     .put(updateCandidateFunction)
     .delete(deleteCandidateFunction)
+    .get(getCandidateById)
 
 router.get("/candidate", getManageCandidates);
 router.put("/candidate/status/:id", updateCandidateStatus);

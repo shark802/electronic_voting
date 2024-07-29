@@ -77,7 +77,7 @@ export async function manageCandidate(req: Request, res: Response, next: NextFun
 
         const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND  time_start > CURTIME()))";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
-        // const elections: Election[] = []
+        // const elections: Election[]   = []
 
         res.render("admin/candidate_manage", {elections, positions})
     } catch (error) {

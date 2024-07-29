@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
+import { BadRequestError, ConflictError, NotFoundError } from '../../utils/customErrors';
 import { pool } from "../../config/database";
 import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { Candidate } from "../../utils/types/Candidate";
@@ -47,11 +47,11 @@ export async function updateCandidateFunction(req: Request, res: Response, next:
         const candidate_id = req.params.id;
         if (!candidate_id) return next(new BadRequestError("Election Id is missing"));
 
-        let {alias, party, position, enabled} = req.body;
-        if (!alias || !party || !position || !enabled) return next(new BadRequestError("Candidate is lacking some information to proceed update"));
+        let {alias, party, position} = req.body;
+        if (!alias || !party || !position) return next(new BadRequestError("Candidate is lacking some information to proceed update"));
 
-        const updateSqlQuery = "UPDATE candidates SET alias = ?, party = ?, position = ?, enabled = ? WHERE candidate_id = ? AND deleted IS NULL";
-        const updateParameter = [alias, party, position, enabled, candidate_id];
+        const updateSqlQuery = "UPDATE candidates SET alias = ?, party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
+        const updateParameter = [alias, party, position, candidate_id];
 
         const updateResult = await updateQuery(pool, updateSqlQuery, updateParameter);
         if (updateResult.affectedRows < 0) return next(new NotFoundError('Resource not found or no changes were made'));
@@ -102,6 +102,21 @@ export async function getManageCandidates(req: Request, res: Response, next: Nex
         const userCandidateResult = await selectQuery<userCandidate>(pool, sqlSelectUserCandidateQuery, [position, electionList]);
         return res.status(200).json(userCandidateResult);
         
+    } catch (error) {
+        next(error)
+    }
+};
+
+export async function getCandidateById(req: Request, res: Response, next: NextFunction) {
+    try {
+        const candidate_id = req.params.id;
+        if (!candidate_id) throw new BadRequestError("Candidate Id is missing");
+
+        const sqlQuery = `SELECT u.firstname, u.lastname, u.course, c.* FROM candidates c JOIN users u  ON c.id_number = u.id_number WHERE c.candidate_id = ? AND c.deleted IS NULL`
+        const candidate = await selectQuery<Candidate>(pool, sqlQuery, [candidate_id]);
+        
+        if(candidate.length < 1) throw new NotFoundError("Candidate Not Found");
+        res.status(200).send(candidate[0]);
     } catch (error) {
         next(error)
     }

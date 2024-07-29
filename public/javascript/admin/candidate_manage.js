@@ -64,14 +64,13 @@ function displayCandidatesForPositionClick() {
 
 function triggerOptionOrEdit() {
     document.querySelectorAll("#candidates-section").forEach(section => { // Open more option
-        section.addEventListener('click', (event) => {
+        section.addEventListener('click', async (event) => {
             if (event.target.closest('#option-section')) {
                 toggleMoreOptionDisplay(event);
             }
 
             if (event.target.closest("#edit")) {
-                console.log("EDIT");
-                editCandidate(event);
+                await editCandidate(event);
             }
 
             if (event.target.closest("#delete_candidate")) {
@@ -191,8 +190,8 @@ function deleteCandidate(event) {
     })
 }
 
-function editCandidate(event) {
-    displayEditForm();
+async function editCandidate(event) {
+    await displayEditForm(event);
 }
 
 
@@ -334,24 +333,38 @@ function toggleStatusOptionDisplay(event) {
 
 }
 
-function displayEditForm(candidate) {
-    const dialog = document.createElement('dialog');
-    const form = `
-        <button>close</button>
-        <h1></h1>
-        <form>
-            <div>
+async function displayEditForm(event) {
+    const dialog = document.querySelector('dialog');
 
-            </div>
+    try {
+        const candidateId = event.target.closest('tr[data-candidate-id]').dataset.candidateId;
 
-            <div>
+        const response = await fetch(`/api/candidate/${candidateId}`);
+        const responseObject = await response.json();
 
-            </div>
-        </form>
-    `;
-    dialog.innerHTML = form;
+        dialog.querySelector('#fullname').textContent = `Fullname:  ${responseObject.lastname}, ${responseObject.firstname}`;
+        dialog.querySelector('#id-number').textContent = `ID:  ${responseObject.id_number}`;
+        dialog.querySelector('#course').textContent = `Course:  ${responseObject.course}`;
 
-    document.body.appendChild(dialog);
-    dialog.showModal();
+        dialog.querySelector("#alias").value = responseObject.alias;
+        dialog.querySelector("#party").value = responseObject.party;
+        const positionOptions = dialog.querySelector("#position").querySelectorAll('option');
+        for (let option of positionOptions) {
+            if (option.value === responseObject.position) {
+                option.selected = true;
+                break;
+            }
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+
+    document.querySelector("dialog").showModal();
+
+    // Close modal
+    document.querySelector("#closeModal").addEventListener('click', (event) => {
+        event.target.closest('dialog').close()
+    })
 }
 
