@@ -1,5 +1,6 @@
 // import { setTimeout } from "timers/promises";
 import "/javascript/logout.js";
+import { isInputNotEmpty } from '/javascript/formInputValidator/isInputNotEmpty.js'
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const manage_candidate = document.querySelector("#manage_candidate");
@@ -191,7 +192,10 @@ function deleteCandidate(event) {
 }
 
 async function editCandidate(event) {
+    const candidateId = event.target.closest('tr').dataset.candidateId;
+
     await displayEditForm(event);
+    await confirmCandidateUpdate(candidateId);
 }
 
 
@@ -368,3 +372,94 @@ async function displayEditForm(event) {
     })
 }
 
+async function confirmCandidateUpdate(candidateId) {
+    try {
+        document.querySelector("#editCandidateForm").addEventListener('submit', async (event) => {
+            event.preventDefault();
+            document.querySelector('dialog').close();
+
+            if (!validateFormBeforeSubmit(event)) {
+
+                Swal.fire({
+                    toast: true,
+                    showConfirmButton: false,
+                    position: 'top',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    title: 'Update failed, Please check the form before you submit',
+                    icon: 'error'
+                })
+                return;
+            }
+
+            Swal.fire({
+                title: "Confirm Update",
+                text: "Please confirm your action to update the candidate status",
+                showCancelButton: true,
+                confirmButtonColor: "#2060f7",
+                reverseButtons: true,
+            }).then(async (action) => {
+                if (action.isConfirmed) {
+
+                    const position = event.target.querySelector('#position').value;
+                    const alias = event.target.querySelector('#alias').value;
+                    const party = event.target.querySelector('#party').value;
+
+                    const response = await fetch(`/api/candidate/${candidateId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ position, alias, party })
+                    });
+                    const responseObject = await response.json();
+                    if (!response.ok) {
+                        Swal.fire({
+                            toast: true,
+                            showConfirmButton: false,
+                            position: 'top',
+                            timer: 3000,
+                            timerProgressBar: true,
+                            title: responseObject.message,
+                            icon: 'error'
+                        });
+                        return;
+                    }
+
+                    Swal.fire({
+                        toast: true,
+                        showConfirmButton: false,
+                        position: 'top',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        title: responseObject.message,
+                        icon: 'success'
+                    });
+                    return;
+
+                }
+            })
+
+
+        })
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function validateFormBeforeSubmit(event) {
+    const positionInput = event.target.querySelector("#position");
+    const aliasInput = event.target.querySelector("#alias");
+    const partyInput = event.target.querySelector("#party");
+
+    const positionErrorMessage = event.target.querySelector("#positionErrorMessage")
+    const aliasErrorMessage = event.target.querySelector("#aliasErrorMessage")
+    const partyErrorMessage = event.target.querySelector("#partyErrorMessage")
+    if (
+        !isInputNotEmpty([positionInput], positionErrorMessage) ||
+        !isInputNotEmpty([aliasInput], aliasErrorMessage) ||
+        !isInputNotEmpty([partyInput], partyErrorMessage)
+    ) {
+        return false;
+    }
+    return true;
+}

@@ -56,7 +56,7 @@ export async function updateCandidateFunction(req: Request, res: Response, next:
         const updateResult = await updateQuery(pool, updateSqlQuery, updateParameter);
         if (updateResult.affectedRows < 0) return next(new NotFoundError('Resource not found or no changes were made'));
 
-        return res.status(200).json({message: 'Resource updated successfully'});
+        return res.status(200).json({message: 'Candidate updated successfully'});
         
     } catch (error) {
         return next(error);
