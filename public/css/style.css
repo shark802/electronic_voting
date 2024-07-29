@@ -1877,14 +1877,6 @@ video {
     min-width: 500px;
   }
 
-  .lg\:min-w-\[700px\] {
-    min-width: 700px;
-  }
-
-  .lg\:min-w-\[600px\] {
-    min-width: 600px;
-  }
-
   .lg\:flex-row {
     flex-direction: row;
   }

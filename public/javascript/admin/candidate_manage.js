@@ -352,7 +352,7 @@ async function displayEditForm(event) {
 
         dialog.querySelector("#alias").value = responseObject.alias;
         dialog.querySelector("#party").value = responseObject.party;
-        const positionOptions = dialog.querySelector("#position").querySelectorAll('option');
+        const positionOptions = dialog.querySelector("#selectPosition").querySelectorAll('option');
         for (let option of positionOptions) {
             if (option.value === responseObject.position) {
                 option.selected = true;
@@ -394,14 +394,14 @@ async function confirmCandidateUpdate(candidateId) {
 
             Swal.fire({
                 title: "Confirm Update",
-                text: "Please confirm your action to update the candidate status",
+                text: "Please confirm your action to update the candidate",
                 showCancelButton: true,
                 confirmButtonColor: "#2060f7",
                 reverseButtons: true,
             }).then(async (action) => {
                 if (action.isConfirmed) {
 
-                    const position = event.target.querySelector('#position').value;
+                    const position = event.target.querySelector('#selectPosition').value;
                     const alias = event.target.querySelector('#alias').value;
                     const party = event.target.querySelector('#party').value;
 
@@ -433,6 +433,9 @@ async function confirmCandidateUpdate(candidateId) {
                         title: responseObject.message,
                         icon: 'success'
                     });
+
+                    const candidates = await fetchCandidates(document.querySelector(".selected-position").textContent);
+                    displayFetchCandidate(candidates);
                     return;
 
                 }
@@ -447,7 +450,7 @@ async function confirmCandidateUpdate(candidateId) {
 }
 
 function validateFormBeforeSubmit(event) {
-    const positionInput = event.target.querySelector("#position");
+    const positionInput = event.target.querySelector("#selectPosition");
     const aliasInput = event.target.querySelector("#alias");
     const partyInput = event.target.querySelector("#party");
 
