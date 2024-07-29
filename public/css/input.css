@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer components {
+    .table-row {
+        @apply bg-white rounded-lg my-3 hover:bg-blue-50 border-y-4 border-y-blue-100 transition-all
+    }
+
     .active {
         @apply rounded-full w-20 px-4 bg-green-200 text-green-600 py-1 text-[10px] m-auto
     }

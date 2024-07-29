@@ -2,6 +2,7 @@
 module.exports = {
   content: ["./views/**/*.ejs"],
   safelist: [
+    'table-row',
     'active-nav',
     'active-page',
     'selected-position',
@@ -13,7 +14,11 @@ module.exports = {
     'inactive',
     'opacity-70',
     'hover:bg-blue-300',
-    'hover:rounded-full'
+    'hover:rounded-full',
+    'rounded-tl-lg',
+    'rounded-bl-lg',
+    'rounded-br-lg',
+    'rounded-tr-lg',
   ],
   theme: {
     extend: {

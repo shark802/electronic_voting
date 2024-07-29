@@ -71,6 +71,7 @@ function triggerOptionOrEdit() {
 
             if (event.target.closest("#edit")) {
                 console.log("EDIT");
+                editCandidate(event);
             }
 
             if (event.target.closest("#delete_candidate")) {
@@ -190,6 +191,10 @@ function deleteCandidate(event) {
     })
 }
 
+function editCandidate(event) {
+    displayEditForm();
+}
+
 
 // HELPER FUNCTIONS
 function styleSelectedPosition(event) {
@@ -258,14 +263,14 @@ function displayFetchCandidate(candidates) {
         candidateAddedAt = candidateAddedAt.toLocaleString('en-US', options);
 
         const tableRow = `
-            <tr data-candidate-id="${candidate.candidate_id}" class="hover:bg-blue-100 border-b-2 transition-all">
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400 text-center">${candidate.id_number}</td>
-                <td class="text-xs font-medium py-2 pl-4 text-gray-600 border-b-gray-400">${candidate.lastname}, ${candidate.firstname}</td>
-                <td class="text-xs pl-4 font-medium py-2 text-gray-600 border-b-gray-400">${candidate.alias}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidate.course}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400">${candidateAddedAt}</td>
-                <td data-status="${candidate.enabled}" class="text-xs font-medium py-2 pl-2 text-gray-600 border-b-gray-400 text-center">${status}</td>
-                <td>
+            <tr data-candidate-id="${candidate.candidate_id}" class=" rounded-xl transition-all table-row">
+                <td class="text-xs font-medium py-2 pl-2 text-gray-60 rounded-tl-lg rounded-bl-lg text-center">${candidate.id_number}</td>
+                <td class="text-xs font-medium py-2 pl-4 text-gray-600">${candidate.lastname}, ${candidate.firstname}</td>
+                <td class="text-xs pl-4 font-medium py-2 text-gray-600">${candidate.alias}</td>
+                <td class="text-xs font-medium py-2 pl-2 text-gray-600">${candidate.course}</td>
+                <td class="text-xs font-medium py-2 pl-2 text-gray-600">${candidateAddedAt}</td>
+                <td data-status="${candidate.enabled}" class="text-xs font-medium py-2 pl-2 text-gray-60 text-center">${status}</td>
+                <td class="rounded-tr-lg rounded-br-lg">
                     <div class="flex justify-center gap-4 items-center">
                         <div id="option-section" class="relative">
                             <img src="/img/more.webp" class="w-5 hover:cursor-pointer opacity-70 hover:rounded-full hover:bg-blue-300"/>
@@ -318,8 +323,8 @@ function changeUpdateStatusIcon(status, event) {
 }
 
 function toggleStatusOptionDisplay(event) {
-    const prevStatus = event.target.closest("#candidates-section").querySelector("#viewStatus");
-    if (prevStatus.textContent === 'Activate') {
+    const prevStatus = event.target.closest("#toggleCandidateStatus").querySelector("#viewStatus");
+    if (prevStatus.textContent == 'Activate') {
         prevStatus.textContent = "Deactivate";
         event.target.closest("#candidates-section").querySelector("#viewStatusImage").src = "/img/hide.webp"
     } else {
@@ -329,4 +334,24 @@ function toggleStatusOptionDisplay(event) {
 
 }
 
+function displayEditForm(candidate) {
+    const dialog = document.createElement('dialog');
+    const form = `
+        <button>close</button>
+        <h1></h1>
+        <form>
+            <div>
+
+            </div>
+
+            <div>
+
+            </div>
+        </form>
+    `;
+    dialog.innerHTML = form;
+
+    document.body.appendChild(dialog);
+    dialog.showModal();
+}
 

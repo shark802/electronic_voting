@@ -9,7 +9,7 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
             electionStatus = 0;
             const updateOutcome = await updateElectionStatus(electionId, electionStatus)
             if (updateOutcome) {
-                viewStatusImage.src = "/img/view.png"
+                viewStatusImage.src = "/img/view.webp"
                 viewStatus.textContent = "Show";
             }
 
@@ -18,7 +18,7 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
             const updateOutcome = await updateElectionStatus(electionId, electionStatus)
 
             if (updateOutcome) {
-                viewStatusImage.src = "/img/hide.png"
+                viewStatusImage.src = "/img/hide.webp"
                 viewStatus.textContent = "Hide";
             }
         }
