@@ -1,6 +1,7 @@
 // import { setTimeout } from "timers/promises";
 import "/javascript/logout.js";
 import { isInputNotEmpty } from '/javascript/formInputValidator/isInputNotEmpty.js'
+import { confirmAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const manage_candidate = document.querySelector("#manage_candidate");
@@ -75,7 +76,7 @@ function triggerOptionOrEdit() {
             }
 
             if (event.target.closest("#delete_candidate")) {
-                deleteCandidate(event);
+                await deleteCandidate(event);
             }
 
         })
@@ -99,96 +100,47 @@ function updateCandidateStatus() {
             const candidate_id = event.target.closest('tr').dataset.candidateId;
 
             if (event.target.closest("#toggleCandidateStatus")) {
-                Swal.fire({
-                    title: "Confirm Update",
-                    text: "Please confirm your action to update the candidate status",
-                    showCancelButton: true,
-                    confirmButtonColor: "#2060f7",
-                    reverseButtons: true,
-                }).then(async (action) => {
-                    if (!action.isConfirmed) return;
+                const action = await confirmAlert("Confirm Update", "Please confirm your action to update the candidate status")
+                if (!action.isConfirmed) return;
 
-                    const response = await fetch(`/api/candidate/status/${candidate_id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ status: status })
-                    });
+                const response = await fetch(`/api/candidate/status/${candidate_id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: status })
+                });
 
-                    if (!response.ok) {
-                        const message = await response.json();
-                        Swal.fire({
-                            toast: true,
-                            showConfirmButton: false,
-                            position: 'top',
-                            timer: 3000,
-                            timerProgressBar: true,
-                            title: message.message,
-                            text: message.message,
-                            icon: 'error'
-                        });
-                        return;
-                    }
-                    changeUpdateStatusIcon(status, event); // change active/inactive diplay state
-                    toggleStatusOptionDisplay(event); // will update the option icon activate/deactivate
-                    event.target.closest('tr').querySelector('td[data-status]').dataset.status = status;
-
-                    const responseMessage = await response.json();
-                    Swal.fire({
-                        toast: true,
-                        showConfirmButton: false,
-                        position: 'top',
-                        timer: 3000,
-                        timerProgressBar: true,
-                        title: responseMessage.message,
-                        icon: 'success'
-                    });
-
+                const responseObject = await response.json()
+                if (!response.ok) {
+                    showSwalErrorToast(responseObject.message)
                     return;
+                }
+                changeUpdateStatusIcon(status, event); // change active/inactive diplay state
+                toggleStatusOptionDisplay(event); // will update the option icon activate/deactivate
+                event.target.closest('tr').querySelector('td[data-status]').dataset.status = status;
 
-                })
+                showSwalSuccessToast(responseObject.message);
+                return;
             }
         })
     })
 }
 
-function deleteCandidate(event) {
+async function deleteCandidate(event) {
     const candidateId = event.target.closest('tr').dataset.candidateId;
-    Swal.fire({
-        title: "Are you sure you want to delete this candidate?",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete!",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-        confirmButtonColor: "#2060f7",
-    }).then(async result => {
-        if (result.isConfirmed) {
-            const response = await fetch(`/api/candidate/${candidateId}`, { method: 'DELETE' });
-            const responseObject = await response.json();
-            if (!response.ok) {
-                Swal.fire({
-                    toast: true,
-                    showConfirmButton: false,
-                    position: 'top',
-                    timer: 3000,
-                    timerProgressBar: true,
-                    title: responseObject.message,
-                    icon: 'error'
-                });
-                return;
-            }
-            Swal.fire({
-                toast: true,
-                showConfirmButton: false,
-                position: 'top',
-                timer: 3000,
-                timerProgressBar: true,
-                title: responseObject.message,
-                icon: 'success'
-            });
-            event.target.closest('tr').remove();
-            return;
-        }
-    })
+
+    const action = await confirmAlert("Are you sure you want to delete this candidate?");
+    if (!action.isConfirmed) return;
+
+    const response = await fetch(`/api/candidate/${candidateId}`, { method: 'DELETE' });
+    const responseObject = await response.json();
+    if (!response.ok) {
+        showSwalErrorToast(responseObject.message)
+        return;
+    }
+
+    showSwalSuccessToast(responseObject.message);
+    event.target.closest('tr').remove();
+    return;
 }
 
 async function editCandidate(event) {
@@ -379,68 +331,34 @@ async function confirmCandidateUpdate(candidateId) {
             document.querySelector('dialog').close();
 
             if (!validateFormBeforeSubmit(event)) {
-
-                Swal.fire({
-                    toast: true,
-                    showConfirmButton: false,
-                    position: 'top',
-                    timer: 3000,
-                    timerProgressBar: true,
-                    title: 'Update failed, Please check the form before you submit',
-                    icon: 'error'
-                })
+                showSwalErrorToast('Update failed, Please check the form before you submit');
                 return;
             }
 
-            Swal.fire({
-                title: "Confirm Update",
-                text: "Please confirm your action to update the candidate",
-                showCancelButton: true,
-                confirmButtonColor: "#2060f7",
-                reverseButtons: true,
-            }).then(async (action) => {
-                if (action.isConfirmed) {
+            const action = await confirmAlert("Confirm Update", "Please confirm to update the candidate");
 
-                    const position = event.target.querySelector('#selectPosition').value;
-                    const alias = event.target.querySelector('#alias').value;
-                    const party = event.target.querySelector('#party').value;
+            if (!action.isConfirmed) return;
 
-                    const response = await fetch(`/api/candidate/${candidateId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ position, alias, party })
-                    });
-                    const responseObject = await response.json();
-                    if (!response.ok) {
-                        Swal.fire({
-                            toast: true,
-                            showConfirmButton: false,
-                            position: 'top',
-                            timer: 3000,
-                            timerProgressBar: true,
-                            title: responseObject.message,
-                            icon: 'error'
-                        });
-                        return;
-                    }
+            const position = event.target.querySelector('#selectPosition').value;
+            const alias = event.target.querySelector('#alias').value;
+            const party = event.target.querySelector('#party').value;
 
-                    Swal.fire({
-                        toast: true,
-                        showConfirmButton: false,
-                        position: 'top',
-                        timer: 3000,
-                        timerProgressBar: true,
-                        title: responseObject.message,
-                        icon: 'success'
-                    });
+            const response = await fetch(`/api/candidate/${candidateId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ position, alias, party })
+            });
+            const responseObject = await response.json();
+            if (!response.ok) {
+                showSwalErrorToast(responseObject.message);
+                return;
+            }
 
-                    const candidates = await fetchCandidates(document.querySelector(".selected-position").textContent);
-                    displayFetchCandidate(candidates);
-                    return;
+            showSwalSuccessToast(responseObject.message);
 
-                }
-            })
-
+            const candidates = await fetchCandidates(document.querySelector(".selected-position").textContent);
+            displayFetchCandidate(candidates);
+            return;
 
         })
 
