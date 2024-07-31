@@ -22,7 +22,7 @@
         let candidatePerPosition;
         if (position === 'SENATOR') {
           candidatePerPosition = candidateList.filter(candidate => {
-            return candidate.position === position && candidate.course === course;
+            return candidate.position === position && candidate.course === user.course;
           });
         } else {
           candidatePerPosition = candidateList.filter(candidate => {

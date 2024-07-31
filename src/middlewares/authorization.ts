@@ -1,9 +1,32 @@
 import { Request, Response, NextFunction } from "express";
+import { selectQuery } from "../data_access/query";
+import { User } from "../utils/types/User";
+import { pool } from "../config/database";
 
 export function isAuthenticated(req: Request, res: Response, next: NextFunction) {
-    if(!req.session.user && !req.session) {
-        return res.redirect("/landingPage");
-    };
+    try {
+        if(!req.session.user || !req.session) {
+            return res.redirect("/?redirectMessage='You need to login first'");
+        };
+    
+        return next();
+        
+    } catch (error) {
+        next(error);
+    }
+}
 
-    return next();
+export async function isValidVoter(req: Request, res:Response, next: NextFunction) {
+    try {
+        const user_id = req.session.user!.user_id
+        const [user] = await selectQuery<User>(pool, "SELECT * FROM users WHERE id_number = ?", [user_id]);
+
+        if(user.is_active === 0 || user.user_group !== "STUDENT") {
+            return res.redirect('/election');
+        }
+
+        return next();
+    } catch (error) {
+        next(error);
+    }
 }

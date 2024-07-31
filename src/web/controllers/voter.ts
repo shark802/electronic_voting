@@ -3,6 +3,7 @@ import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
 import { Position } from "../../utils/enums/position";
+import { User } from "../../utils/types/User";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -17,8 +18,12 @@ export async function electionPage(req: Request, res: Response, next: NextFuncti
 
 export async function renderElectionBallot(req: Request, res: Response, next: NextFunction) {
     try {
-        const course = "IS";
+        const id_number = req.session.user!.user_id;
         const election_id = "01J3MP1NC8AVWD5ZDXMHDGDCPA";
+
+        const [user] = await selectQuery<User>(pool, "SELECT * FROM users WHERE id_number = ?", [id_number]);
+
+        console.log(user);
 
         const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position
@@ -31,10 +36,7 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         const candidateList = await selectQuery(pool, sqlQuery, [election_id]);
         const candidatePositionList = Object.values(Position);
 
-        console.log(candidatePositionList);
-        console.log(candidateList);
-
-        return res.render('voter/voteBallot', {course, candidatePositionList, candidateList});
+        return res.render('voter/voteBallot', {user, candidatePositionList, candidateList});
     } catch (error) {
         next(error);
     }
