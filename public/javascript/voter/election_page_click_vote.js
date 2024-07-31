@@ -1,6 +1,7 @@
 document.querySelectorAll("#vote-now-button").forEach(button => {
-    button.addEventListener('click', event => {
+    button.addEventListener('click', async event => {
         const parentSection = event.target.parentElement;
+        const electionId = event.target.closest('section').querySelector("#election-id").textContent;
 
         const present = new Date();
 
@@ -13,7 +14,8 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
         end.setHours(endHour, endMinute);
 
         if (present >= start && present <= end) {
-            console.log("voting...");
+            // Request for election ballot to vote
+            window.location.href = `/ballot/${electionId}`;
         } else if (present < start) {
             Swal.fire({
                 toast: true,
@@ -25,7 +27,7 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
                 title: 'Voting has not started yet. Please come back later.'
             })
             return;
-        } else if (end < present ) { 
+        } else if (end < present) {
             Swal.fire({
                 toast: true,
                 showConfirmButton: false,
@@ -35,12 +37,11 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
                 icon: 'error',
                 title: 'Voting period is over. You cannot vote anymore.',
             })
+
+            // fetch the result if election is finished
+            const electionId = parentSection.querySelector("#election-id").textContent;
+            console.log("viewing result ", electionId);
             return;
         }
-
-        // fetch the result if election is finished
-        const electionId = parentSection.querySelector("#election-id").textContent;
-        console.log("viewing result ", electionId);
-
     })
 })

@@ -74,7 +74,9 @@
       </div>
 
       <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>
+      <!-- <a href="/ballot/element.election_id"> -->
       <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-semibold text-center text-gray-500">The election is now live! Cast your vote to make your voice heard.</div>
+      <!-- </a> -->
       <% } else if (presentDate < dateStart) { %>
       <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-semibold text-center text-gray-500">The election is yet to begin. Please check back later for updates.</div>
       <% } else if (presentDate > dateEnd) { %>

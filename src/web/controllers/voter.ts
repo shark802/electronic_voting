@@ -20,8 +20,7 @@ export async function electionPage(req: Request, res: Response, next: NextFuncti
 export async function renderElectionBallot(req: Request, res: Response, next: NextFunction) {
     try {
         const id_number = req.session.user!.user_id;
-        const election_id = "01J3MP1NC8AVWD5ZDXMHDGDCPA";
-        // const election_id = req.query.election_id;
+        const election_id = req.params.electionId;
 
         const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position

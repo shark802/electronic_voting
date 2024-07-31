@@ -10,7 +10,7 @@ router.get('/election', electionPage);
 
 router.use(isValidVoter)
 
-router.get('/ballot', renderElectionBallot)
+router.get('/ballot/:electionId', renderElectionBallot)
 
 
 export default router;
