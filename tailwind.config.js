@@ -19,6 +19,8 @@ module.exports = {
     'rounded-bl-lg',
     'rounded-br-lg',
     'rounded-tr-lg',
+    'loader',
+    'z-30'
   ],
   theme: {
     extend: {

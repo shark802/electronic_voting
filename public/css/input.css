@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer components {
+    .loader {
+        @apply bg-black opacity-35 absolute flex justify-center items-center top-0 bottom-0 left-0 right-0
+    }
+
     .table-row {
         @apply bg-white rounded-lg my-3 hover:bg-blue-50 border-y-4 border-y-blue-100 transition-all
     }

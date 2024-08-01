@@ -22,7 +22,7 @@ export async function isValidVoter(req: Request, res:Response, next: NextFunctio
         const [user] = await selectQuery<User>(pool, "SELECT * FROM users WHERE id_number = ?", [user_id]);
 
         if(user.is_active === 0 || user.user_group !== "STUDENT") {
-            return res.redirect('/election');
+            return res.redirect('/election/?redirectMessage=\"You dont have right to vote on this election\"');
         }
 
         return next();

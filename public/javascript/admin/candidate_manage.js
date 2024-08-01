@@ -226,7 +226,7 @@ function displayFetchCandidate(candidates) {
                 <td class="text-xs font-medium py-2 pl-2 text-gray-600">${candidateAddedAt}</td>
                 <td data-status="${candidate.enabled}" class="text-xs font-medium py-2 pl-2 text-gray-60 text-center">${status}</td>
                 <td class="rounded-tr-lg rounded-br-lg">
-                    <div class="flex justify-center gap-4 items-center">
+                    <div class="flex justify-center gap-4 items-center z-30">
                         <div id="option-section" class="relative">
                             <img src="/img/more.webp" class="w-5 hover:cursor-pointer opacity-70 hover:rounded-full hover:bg-blue-300"/>
                             <div id="more-option" class="absolute z-10 right-0 gap-2 px-1 py-3 hidden bg-white border border-solid rounded shadow-md w-36 h-fit top-7">

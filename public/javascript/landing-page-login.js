@@ -1,5 +1,6 @@
 import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 import { isValidText } from "/javascript/formInputValidator/isValidText.js"
+import { showLoading, hideLoader } from "/javascript/helper/loader.js";
 
 const schoolIdErrorMessage = document.querySelector("#schoolIdErrorMessage");
 const passwordErrorMessage = document.querySelector("#passwordErrorMessage");
@@ -20,7 +21,8 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
     }
 
     try {
-
+        showLoading()
+        event.target.closest("dialog").close();
         const response = await fetch("/api/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -28,7 +30,7 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
         });
 
         if (!response.ok) {
-
+            // hideLoader();
             document.querySelector('#login-modal').close();
             Swal.fire({
                 title: "Login Failed!",
@@ -36,23 +38,12 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
             });
 
         } else {
+            // hideLoader()
             const responseObject = await response.json();
 
             if (responseObject.roles.admin === 1 || responseObject.roles.program_head === 1) return window.location.href = "/admin/dashboard/overview";
             if (responseObject.roles.voter === 1) return window.location.href = "/election";
 
-            // event.target.reset();
-            // document.querySelector("#login-modal").close();
-            // Swal.fire({
-            //     title: "Success!",
-            //     text: "Login successfully ",
-            //     icon: "success"
-            // }).then(result => {
-            //     if(result.isConfirmed) {
-            //         if (responseObject.roles.admin === 1 || responseObject.roles.program_head === 1) return window.location.href = "/admin/dashboard/overview";
-            //         if (responseObject.roles.voter === 1) return window.location.href = "/election";
-            //     }
-            // });
         }
 
     } catch (error) {

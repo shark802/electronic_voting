@@ -9,7 +9,7 @@ import { errorHandler } from "./middlewares/errorHandler";
 import apiRoutes from "./api";
 import webRoutes from "./web";
 import expressMysqlSession from "express-mysql-session";
-
+ 
 dotenv.config();
 const app = express();
 const httpServer = http.createServer(app);
