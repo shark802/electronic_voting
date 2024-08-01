@@ -11,12 +11,20 @@
 
 <body class="w-full pt-24 overflow-hidden overflow-y-auto bg-blue-600 mb-44 h-dvh">
 
-  <form class="m-auto align-middle bg-white rounded-lg lg:p-3 h-fit max-w-[700px] min-h-4/5">
+  <form class="m-auto align-middle py-5 px-3 bg-white rounded-lg lg:p-3 h-fit max-w-[700px] min-h-4/5">
 
     <h1 class="text-2xl font-bold text-center"><%= election ? election.election_name : "Official Ballot" %></h1>
 
     <% 
-    if (candidatePositionList && candidatePositionList.length > 0) { 
+    if (candidatePositionList && candidatePositionList.length > 0) {
+      
+      if(candidateList.length <= 0) {
+    %>
+    <div class="px-3 py-6 mt-6 text-lg font-semibold text-center text-blue-700 bg-blue-200 rounded-lg">
+      <p>No Candidates to display on this election</p>
+    </div>
+    <%
+      }
       candidatePositionList.forEach(position => {
 
         let candidatePerPosition;
@@ -50,11 +58,17 @@
         }
       });
     }
+
+    if (candidateList.length > 0) {
     %>
 
     <div class="relative flex flex-row-reverse">
       <button class="px-6 py-1 font-semibold text-white bg-green-500 rounded-md" type="submit">Save Vote</button>
     </div>
+
+    <%
+  }
+    %>
 
   </form>
 </body>

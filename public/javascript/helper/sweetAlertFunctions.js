@@ -35,3 +35,12 @@ export function showSwalErrorToast(title, text) {
         icon: 'error'
     });
 }
+
+export function showRedirectMessage(text) {
+    Swal.fire({
+        title: "You have been redirect!",
+        text: text,
+        confirmButtonColor: "#2060f7",
+        reverseButtons: true,
+    });
+}

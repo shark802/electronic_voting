@@ -5,6 +5,7 @@ import { pool } from "../../config/database";
 import { Position } from "../../utils/enums/position";
 import { User } from "../../utils/types/User";
 import { isValidTimeToVote } from "../../utils/isValidTimeToVote";
+import { Candidate } from "../../utils/types/Candidate";
  
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -37,7 +38,8 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         ]);
         const candidatePositionList = Object.values(Position);
 
-        if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage='Voting is currently closed'")
+
+        if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=\"Voting is currently closed\"")
 
         return res.render('voter/voteBallot', {user, candidatePositionList, candidateList, election});
     } catch (error) {

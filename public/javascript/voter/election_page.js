@@ -1,4 +1,5 @@
 import "/javascript/voter/election_page_click_vote.js";
+import { displayRedirectMessage } from "/javascript/helper/showRedirectMessage.js";
 
 document.querySelectorAll("#vote-now-button").forEach(button => {
    const parentSection = button.parentElement;
@@ -13,6 +14,8 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
 
    let electiopnStatusMessage = parentSection.querySelector("#election-status-message");
    // console.log(electiopnStatusMessage.textContent);
+
+   displayRedirectMessage();
 
    setInterval(() => {
       let present = new Date();

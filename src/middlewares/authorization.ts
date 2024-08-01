@@ -6,7 +6,7 @@ import { pool } from "../config/database";
 export function isAuthenticated(req: Request, res: Response, next: NextFunction) {
     try {
         if(!req.session.user || !req.session) {
-            return res.redirect("/?redirectMessage='You need to login first'");
+            return res.redirect("/?redirectMessage=\"You need to login first\"");
         };
     
         return next();
