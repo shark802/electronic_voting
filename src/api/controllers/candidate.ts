@@ -5,6 +5,7 @@ import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { Candidate } from "../../utils/types/Candidate";
 import { ulid } from "ulid";
 import { User } from "../../utils/types/User";
+import { getUserCandidate } from "../../data_access/candidateService";
 
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -86,7 +87,7 @@ export async function getManageCandidates(req: Request, res: Response, next: Nex
         const electionIds = req.query.election_id;
         const electionList = Array.isArray(electionIds) ?electionIds : [electionIds];
 
-        if (!position || ! electionList) throw new BadRequestError('No election Available');
+        if (!position || !electionList) throw new BadRequestError('No election Available');
 
         type userCandidate = Pick<User, "id_number" | 'firstname' | 'lastname' | 'year_level' | 'section' | 'course'> & Pick<Candidate, 'candidate_id' | 'election_id' | 'position' | 'enabled' | 'alias' | 'party'>;
         
@@ -137,5 +138,23 @@ export async function updateCandidateStatus(req: Request, res: Response, next: N
         res.status(200).json({message: `Candidate status updated`});
     } catch (error) {
         next(error)
+    }
+}
+
+// Will return the candidate information according to request object that contains candidate id_number
+export async function getUserCandidateData(req:Request, res: Response, next: NextFunction) {
+    try {
+        const candidateIdNumberList = req.query.id_number;
+        const candidateIdList = Array.isArray(candidateIdNumberList)? candidateIdNumberList : [candidateIdNumberList]; 
+
+        candidateIdList.map(id => {
+            if(!id) throw new BadRequestError('Id of candidates is required for searching');
+        })
+
+        const userCandidate = await getUserCandidate(candidateIdList as string[]);
+        return res.status(200).send(userCandidate);
+        
+    } catch (error) {
+        next(error);
     }
 }

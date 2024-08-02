@@ -1277,18 +1277,6 @@ video {
   overflow-x: hidden;
 }
 
-.overflow-y-visible {
-  overflow-y: visible;
-}
-
-.overflow-x-scroll {
-  overflow-x: scroll;
-}
-
-.overflow-y-scroll {
-  overflow-y: scroll;
-}
-
 .text-wrap {
   text-wrap: wrap;
 }

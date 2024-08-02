@@ -30,7 +30,7 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
         });
 
         if (!response.ok) {
-            // hideLoader();
+            hideLoader();
             document.querySelector('#login-modal').close();
             Swal.fire({
                 title: "Login Failed!",
