@@ -9,9 +9,15 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/sweetalert2@11.js"></script>
   <script type="module" src="/javascript/voter/voteBallot.js"></script>
+
+  <style>
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  </style>
 </head>
 
-<body class="w-full pt-24 overflow-hidden overflow-y-auto bg-blue-600 mb-44 h-dvh">
+<body class="w-full px-3 pt-24 overflow-hidden overflow-y-auto bg-blue-600 mb-44 h-dvh">
 
   <form id="ballot-form" class="m-auto align-middle py-5 px-3 bg-white rounded-lg lg:p-3 h-fit max-w-[700px] min-h-4/5">
 
@@ -47,9 +53,9 @@
       <div id="position-label" class="w-full py-1 mb-3 font-bold text-center text-white bg-blue-500 rounded-tl-md rounded-tr-md"> <%= position %> </div>
       <div>
         <% candidatePerPosition.forEach(candidateOfPosition => { %>
-        <div class="flex justify-between py-1 lg:px-7">
+        <div class="flex gap-2 py-1 pl-2 lg:px-7">
+          <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-4">
           <label for="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="text-sm font-semibold text-gray-600"> <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %> </label>
-          <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>"" id=" <%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-4">
         </div>
         <% }) %>
       </div>
@@ -67,6 +73,7 @@
     <div class="relative flex flex-row-reverse">
       <button class="px-6 py-1 font-semibold text-white bg-green-500 rounded-md" type="submit">Save Vote</button>
     </div>
+
 
     <%
   }

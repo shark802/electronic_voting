@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer components {
+    .confirm-modal {
+        @apply p-4 pt-7 lg:max-w-[600px] w-[90%] min-h-fit pb-20 rounded-md shadow-lg text-center relative flex flex-col justify-center
+    }
+
     .loader {
         @apply bg-black opacity-35 absolute flex justify-center items-center top-0 bottom-0 left-0 right-0
     }

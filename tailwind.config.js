@@ -2,6 +2,7 @@
 module.exports = {
   content: ["./views/**/*.ejs"],
   safelist: [
+    'confirm-modal',
     'table-row',
     'active-nav',
     'active-page',
@@ -14,13 +15,16 @@ module.exports = {
     'inactive',
     'opacity-70',
     'hover:bg-blue-300',
+    'hover:bg-gray-300',
+    'hover:text-white',
     'hover:rounded-full',
     'rounded-tl-lg',
     'rounded-bl-lg',
     'rounded-br-lg',
     'rounded-tr-lg',
     'loader',
-    'z-30'
+    'z-30',
+    'pb-3'
   ],
   theme: {
     extend: {

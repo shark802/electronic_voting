@@ -141,19 +141,19 @@ export async function updateCandidateStatus(req: Request, res: Response, next: N
     }
 }
 
-// Will return the candidate information according to request object that contains candidate id_number
+// Will response the candidate information according to candidates id_number parse in url query params
 export async function getUserCandidateData(req:Request, res: Response, next: NextFunction) {
     try {
         const candidateIdNumberList = req.query.id_number;
         const candidateIdList = Array.isArray(candidateIdNumberList)? candidateIdNumberList : [candidateIdNumberList]; 
 
         candidateIdList.map(id => {
-            if(!id) throw new BadRequestError('Id of candidates is required for searching');
+            if(!id) throw new BadRequestError('Canidate is not provided!');
         })
 
         const userCandidate = await getUserCandidate(candidateIdList as string[]);
         return res.status(200).send(userCandidate);
-        
+
     } catch (error) {
         next(error);
     }
