@@ -4,11 +4,11 @@ import { isAuthenticated, isValidVoter } from "../../middlewares/authorization";
 
 const router = Router();
 
-router.use(isAuthenticated);
+// router.use(isAuthenticated);
 
 router.get('/election', electionPage);
 
-router.use(isValidVoter)
+// router.use(isValidVoter)
 
 router.get('/ballot/:electionId', renderElectionBallot)
 

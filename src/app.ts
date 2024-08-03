@@ -9,7 +9,7 @@ import { errorHandler } from "./middlewares/errorHandler";
 import apiRoutes from "./api";
 import webRoutes from "./web";
 import expressMysqlSession from "express-mysql-session";
- 
+
 dotenv.config();
 const app = express();
 const httpServer = http.createServer(app);
@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 const MySQLStore = expressMysqlSession(session);
 const sessionStore = new MySQLStore({
-	host: process.env.HOST,
+    host: process.env.HOST,
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
@@ -43,23 +43,23 @@ const sessionStore = new MySQLStore({
     },
     waitForConnections: true,
     connectionLimit: 10,
-    maxIdle: 10, 
+    maxIdle: 10,
     idleTimeout: 60000,
     queueLimit: 10,
 });
 
 app.use(
-	session.default({
-		secret: process.env.SESSION_SECRET || "session-secret",
-		resave: true,
-		saveUninitialized: false,
-		store: sessionStore,
-		cookie: {
-			secure: process.env.NODE_ENV === "production",
-			maxAge: 15 * 60000,
-			httpOnly: true,
-		},
-	})
+    session.default({
+        secret: process.env.SESSION_SECRET || "session-secret",
+        resave: true,
+        saveUninitialized: false,
+        store: sessionStore,
+        cookie: {
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 15 * 60000,
+            httpOnly: true,
+        },
+    })
 );
 
 app.set("socket", io);
@@ -77,5 +77,5 @@ const PORT = process.env.PORT || 3000;
 const ENVIRONMENT = process.env.NODE_ENV;
 
 httpServer.listen(PORT, () => {
-	console.log(`Server running on PORT ${PORT} in ${ENVIRONMENT} Environment`);
+    console.log(`Server running on PORT ${PORT} in ${ENVIRONMENT} Environment`);
 });

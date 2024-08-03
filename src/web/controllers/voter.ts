@@ -6,13 +6,13 @@ import { Position } from "../../utils/enums/position";
 import { User } from "../../utils/types/User";
 import { isValidTimeToVote } from "../../utils/isValidTimeToVote";
 import { Candidate } from "../../utils/types/Candidate";
- 
+
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
         const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start";
         const electionList = await selectQuery<Election>(pool, query);
 
-        res.render("voter/electionPage", {electionList});
+        res.render("voter/electionPage", { electionList });
     } catch (error) {
         next(error)
     }
@@ -20,7 +20,8 @@ export async function electionPage(req: Request, res: Response, next: NextFuncti
 
 export async function renderElectionBallot(req: Request, res: Response, next: NextFunction) {
     try {
-        const id_number = req.session.user!.user_id;
+        // const id_number = req.session.user!.user_id;
+        const id_number = '2021116418';
         const election_id = req.params.electionId;
 
         const sqlQuery = `
@@ -41,7 +42,7 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
 
         if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=\"Voting is currently closed\"")
 
-        return res.render('voter/voteBallot', {user, candidatePositionList, candidateList, election});
+        return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election });
     } catch (error) {
         next(error);
     }
