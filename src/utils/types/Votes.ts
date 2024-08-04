@@ -1,10 +1,9 @@
 type Vote = {
 	id: number;
 	voter_id: string;
-	president: string;
-	vice_president: string;
-	senator: string;
-	time_casted: string;
+	candidate_id: string;
+	position: string;
+	time_casted: Date;
 	election_id: string;
 };
 

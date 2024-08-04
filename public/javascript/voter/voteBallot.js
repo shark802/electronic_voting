@@ -2,7 +2,6 @@ import { showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
 import { showLoading, hideLoader } from "/javascript/helper/loader.js";
 import { confirmAlert } from "/javascript/helper/sweetAlertFunctions.js";
 
-
 document.querySelector("#ballot-form").addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -12,39 +11,42 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
         const candidateObjectArray = await fetchSelectedCandidateInfo(selectedCandidate); // fetch info of candidate selected
         displayConfirmVoteModal(candidateObjectArray); // display the candidate info to confirm
 
-        document.addEventListener('click', async (event) => {
+        const confirmModal = document.getElementById('confirm-modal');
+        confirmModal.addEventListener('click', async (event) => {
             if (event.target.id === "cancel-vote") {
-                event.target.closest('dialog').remove();
-                return;
+                confirmModal.close();
+                confirmModal.remove();
             } else if (event.target.id === "submit-vote") {
+                console.log('submitting vote..');
+                confirmModal.close();
+                confirmModal.remove();
                 const response = await submitVote(selectedCandidate);
                 const responseObject = await response.json();
 
                 if (!response.ok) return showSwalErrorToast(responseObject.message);
 
                 const action = await confirmAlert(responseObject.message);
-                if (action.confirm) {
+                if (action.isConfirmed) {
                     window.location.href = "/election";
                 }
             }
-        })
-
+        }, { once: true }); // Use `once: true` to ensure the listener is removed after it is invoked
     } catch (error) {
         console.error(error);
     }
-})
+});
 
 /* Helper Functions */
 
-// Retrieves voter selected candidates after submit the ballot form.
-// Return an object mapping position labels (as keys) to the values of the selected candidates id number.
+// Retrieves voter selected candidates after submitting the ballot form.
+// Returns an object mapping position labels (as keys) to the values of the selected candidates' id numbers.
 function getSelectedCandidatePerPosition(event) {
     let castedVote = {}
     event.target.querySelectorAll("section").forEach(position => {
         const positionCandidateRun = position.querySelector('#position-label').textContent.trim();
         const selectedCandidate = position.querySelector('input[type=radio]:checked');
 
-        const key = positionCandidateRun.toLowerCase().replace(/\s+/g, '_');
+        const key = positionCandidateRun.toUpperCase().replace(/\s+/g, '_');
         if (selectedCandidate) {
             castedVote[key] = selectedCandidate.value;
         }
@@ -87,7 +89,7 @@ function displayConfirmVoteModal(candidateObjectArray) {
     confirmModal.showModal();
 }
 
-// send request to fetch candidate info of selected candidate
+// Send request to fetch candidate info of selected candidate
 async function fetchSelectedCandidateInfo(selectedCandidateObject) {
     try {
         const urlParams = Object.values(selectedCandidateObject).map(candidate => `id_number=${candidate}`).join('&');
@@ -106,14 +108,16 @@ async function fetchSelectedCandidateInfo(selectedCandidateObject) {
     }
 }
 
-async function submitVote(selectedCandidateObject) {
+async function submitVote(selectedCandidate) {
     try {
-        console.log(selectedCandidateObject);
         showLoading();
+        let urlPath = window.location.href.split('/');
+        const electionId = urlPath[urlPath.length - 1]
+
         const response = await fetch('/api/vote', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(selectedCandidateObject)
+            body: JSON.stringify({ selectedCandidate, electionId })
         });
 
         hideLoader();

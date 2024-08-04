@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `voters` (
 
 CREATE TABLE IF NOT EXISTS `candidates` (
    `candidate_id` VARCHAR(50) NOT NULL PRIMARY KEY,
-   `id_number` INT(10) NOT NULL, 
+   `id_number` INT(10) NOT NULL,
    `position` VARCHAR(50) NOT NULL,
    `alias` VARCHAR(50) NOT NULL,
    `party` VARCHAR(50) NOT NULL,
@@ -55,23 +55,20 @@ CREATE TABLE IF NOT EXISTS `candidates` (
    `deleted` TIMESTAMP NULL,
    `vote_count` INT DEFAULT 0,
    `election_id` VARCHAR(50),
-   `added_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   `added_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `votes` (
    `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   `voter_id` VARCHAR(50) NOT NULL, 
-   `president` VARCHAR(50) NOT NULL,
-   `vice_president` VARCHAR(50) NOT NULL,
-   `senator` VARCHAR(50) NOT NULL,
+   `voter_id` INT(10) NOT NULL, 
+   `candidate_id` INT(10) NOT NULL,
+   `position` VARCHAR(50) NOT NULL,
    `time_casted` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    `election_id` VARCHAR(50),
-   FOREIGN KEY (`voter_id`) REFERENCES `voters`(`voter_id`),
-   FOREIGN KEY (`president`) REFERENCES `candidates`(`candidate_id`),
-   FOREIGN KEY (`vice_president`) REFERENCES `candidates`(`candidate_id`),
-   FOREIGN KEY (`senator`) REFERENCES `candidates`(`candidate_id`),
+   FOREIGN KEY (`voter_id`) REFERENCES `users`(`id_number`),
+   FOREIGN KEY (`candidate_id`) REFERENCES `users`(`id_number`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
 ) ENGINE=InnoDB;
 
