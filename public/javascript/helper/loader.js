@@ -32,7 +32,7 @@ export function showLoading() {
 
         <style>
             .container {
-                --uib-size: 60px;
+                --uib-size: 45px;
                 --uib-color: white;
                 --uib-speed: .8s;
                 --uib-bg-opacity: 0.3;

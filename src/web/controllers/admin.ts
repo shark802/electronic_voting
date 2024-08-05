@@ -27,7 +27,7 @@ export async function viewElection(req: Request, res: Response, next: NextFuncti
         const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end > CURTIME())) ORDER BY created_at DESC";
         const elections = await selectQuery<Election>(pool, query)
 
-        res.render("admin/election_view", {elections})
+        res.render("admin/election_view", { elections })
     } catch (error) {
         next(error);
     }
@@ -46,7 +46,7 @@ export async function editElection(req: Request, res: Response, next: NextFuncti
         const election_id = req.params.id;
         const query = "SELECT * FROM elections WHERE election_id = ?";
         const election = await selectQuery<Election>(pool, query, [election_id]);
-        res.render("admin/election_edit", {election: election[0]});
+        res.render("admin/election_edit", { election: election[0] });
     } catch (error) {
         next(error);
     }
@@ -54,17 +54,17 @@ export async function editElection(req: Request, res: Response, next: NextFuncti
 
 export async function deleteElection(req: Request, res: Response, next: NextFunction) {
     try {
-        
+
     } catch (error) {
         next(error);
     }
 }
 
-export async function viewElectionHistory (req: Request, res: Response, next: NextFunction) {
+export async function viewElectionHistory(req: Request, res: Response, next: NextFunction) {
     try {
         const query = "SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
         const elections = await selectQuery<Election>(pool, query);
-        res.render("admin/election_history", {elections});
+        res.render("admin/election_history", { elections });
     } catch (error) {
         next(error);
     }
@@ -75,11 +75,11 @@ export async function manageCandidate(req: Request, res: Response, next: NextFun
     try {
         const positions = Object.values(Position);
 
-        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND  time_start > CURTIME()))";
+        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND  time_start > CURTIME()))";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
         // const elections: Election[] = []
 
-        res.render("admin/candidate_manage", {elections, positions})
+        res.render("admin/candidate_manage", { elections, positions })
     } catch (error) {
         next(error)
     }
@@ -92,7 +92,7 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
         const positions = Object.values(Position);
         const programs = Object.values(Program);
 
-        res.render("admin/candidate_add", {electionList, positions, programs})
+        res.render("admin/candidate_add", { electionList, positions, programs })
     } catch (error) {
         next(error)
     }
@@ -118,7 +118,7 @@ export function reviewRegisterDevice(req: Request, res: Response, next: NextFunc
     }
 }
 
-export function viewRegisterDevice(req: Request, res:Response, next: NextFunction) {
+export function viewRegisterDevice(req: Request, res: Response, next: NextFunction) {
 
     try {
         res.render("admin/register_device_registered")

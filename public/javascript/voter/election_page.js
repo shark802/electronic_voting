@@ -1,5 +1,6 @@
 import "/javascript/voter/election_page_click_vote.js";
 import { displayRedirectMessage } from "/javascript/helper/showRedirectMessage.js";
+import { showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js";
 
 document.querySelectorAll("#vote-now-button").forEach(button => {
    const parentSection = button.parentElement;
@@ -16,12 +17,14 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
    // console.log(electiopnStatusMessage.textContent);
 
    displayRedirectMessage();
+   displayToast();
 
    setInterval(() => {
       let present = new Date();
 
       if (start <= present && end >= present) { // means voting is now available
          electiopnStatusMessage.textContent = "The election is now live! Cast your vote to make your voice heard.";
+         electiopnStatusMessage.style.color = "#3b82f6";
 
          button.style.backgroundColor = '#3b82f6';
          button.style.color = "white"
@@ -37,4 +40,12 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
 
    }, 1000);
 
-})
+});
+
+function displayToast() {
+   const urlQueryParams = new URLSearchParams(window.location.search);
+   const isVoted = urlQueryParams.get("isVoted");
+   if (isVoted === 'true') {
+      showSwalSuccessToast("Thank you for participating");
+   }
+}

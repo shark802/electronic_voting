@@ -38,8 +38,7 @@ export function showSwalErrorToast(title, text) {
 
 export function showRedirectMessage(text) {
     Swal.fire({
-        title: "You have been redirect!",
-        text: text,
+        title: text,
         confirmButtonColor: "#2060f7",
         reverseButtons: true,
     });

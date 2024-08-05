@@ -14,6 +14,7 @@ const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const position_1 = require("../../utils/enums/position");
 const isValidTimeToVote_1 = require("../../utils/isValidTimeToVote");
+const voteService_1 = require("../../data_access/voteService");
 function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -30,9 +31,11 @@ exports.electionPage = electionPage;
 function renderElectionBallot(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // const id_number = req.session.user!.user_id;
-            const id_number = '2021116418';
+            const id_number = req.session.user.user_id;
             const election_id = req.params.electionId;
+            const hasVoted = yield (0, voteService_1.isVoted)(id_number, election_id);
+            if (hasVoted)
+                return res.redirect('/election?redirectMessage=\"You have already voted\"');
             const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position
         FROM users u JOIN candidates c
@@ -57,4 +60,3 @@ function renderElectionBallot(req, res, next) {
     });
 }
 exports.renderElectionBallot = renderElectionBallot;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidm90ZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9zcmMvd2ViL2NvbnRyb2xsZXJzL3ZvdGVyLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7OztBQUNBLG1EQUFzRDtBQUV0RCxvREFBNkM7QUFDN0MseURBQXNEO0FBRXRELHFFQUFrRTtBQUdsRSxTQUFzQixZQUFZLENBQUMsR0FBWSxFQUFFLEdBQWEsRUFBRSxJQUFrQjs7UUFDOUUsSUFBSSxDQUFDO1lBQ0QsTUFBTSxLQUFLLEdBQUcsd0ZBQXdGLENBQUM7WUFDdkcsTUFBTSxZQUFZLEdBQUcsTUFBTSxJQUFBLG1CQUFXLEVBQVcsZUFBSSxFQUFFLEtBQUssQ0FBQyxDQUFDO1lBRTlELEdBQUcsQ0FBQyxNQUFNLENBQUMsb0JBQW9CLEVBQUUsRUFBRSxZQUFZLEVBQUUsQ0FBQyxDQUFDO1FBQ3ZELENBQUM7UUFBQyxPQUFPLEtBQUssRUFBRSxDQUFDO1lBQ2IsSUFBSSxDQUFDLEtBQUssQ0FBQyxDQUFBO1FBQ2YsQ0FBQztJQUNMLENBQUM7Q0FBQTtBQVRELG9DQVNDO0FBRUQsU0FBc0Isb0JBQW9CLENBQUMsR0FBWSxFQUFFLEdBQWEsRUFBRSxJQUFrQjs7UUFDdEYsSUFBSSxDQUFDO1lBQ0QsK0NBQStDO1lBQy9DLE1BQU0sU0FBUyxHQUFHLFlBQVksQ0FBQztZQUMvQixNQUFNLFdBQVcsR0FBRyxHQUFHLENBQUMsTUFBTSxDQUFDLFVBQVUsQ0FBQztZQUUxQyxNQUFNLFFBQVEsR0FBRzs7Ozs7OztTQU9oQixDQUFBO1lBQ0QsTUFBTSxDQUFDLENBQUMsSUFBSSxDQUFDLEVBQUUsQ0FBQyxRQUFRLENBQUMsRUFBRSxhQUFhLENBQUMsR0FBRyxNQUFNLE9BQU8sQ0FBQyxHQUFHLENBQUM7Z0JBQzFELElBQUEsbUJBQVcsRUFBTyxlQUFJLEVBQUUseUNBQXlDLEVBQUUsQ0FBQyxTQUFTLENBQUMsQ0FBQztnQkFDL0UsSUFBQSxtQkFBVyxFQUFXLGVBQUksRUFBRSxzRUFBc0UsRUFBRSxDQUFDLFdBQVcsQ0FBQyxDQUFDO2dCQUNsSCxJQUFBLG1CQUFXLEVBQUMsZUFBSSxFQUFFLFFBQVEsRUFBRSxDQUFDLFdBQVcsQ0FBQyxDQUFDO2FBQzdDLENBQUMsQ0FBQztZQUNILE1BQU0scUJBQXFCLEdBQUcsTUFBTSxDQUFDLE1BQU0sQ0FBQyxtQkFBUSxDQUFDLENBQUM7WUFHdEQsSUFBSSxDQUFDLElBQUEscUNBQWlCLEVBQUMsUUFBUSxDQUFDO2dCQUFFLE9BQU8sR0FBRyxDQUFDLFFBQVEsQ0FBQywwREFBMEQsQ0FBQyxDQUFBO1lBRWpILE9BQU8sR0FBRyxDQUFDLE1BQU0sQ0FBQyxrQkFBa0IsRUFBRSxFQUFFLElBQUksRUFBRSxxQkFBcUIsRUFBRSxhQUFhLEVBQUUsUUFBUSxFQUFFLENBQUMsQ0FBQztRQUNwRyxDQUFDO1FBQUMsT0FBTyxLQUFLLEVBQUUsQ0FBQztZQUNiLElBQUksQ0FBQyxLQUFLLENBQUMsQ0FBQztRQUNoQixDQUFDO0lBQ0wsQ0FBQztDQUFBO0FBNUJELG9EQTRCQyJ9

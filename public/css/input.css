@@ -4,7 +4,7 @@
 
 @layer components {
     .confirm-modal {
-        @apply p-4 pt-7 lg:max-w-[600px] w-[90%] min-h-fit pb-20 rounded-md shadow-lg text-center relative flex flex-col justify-center
+        @apply p-4 pt-7 lg:max-w-[600px] w-[90%] min-h-fit pb-20 rounded-md shadow-lg text-center 
     }
 
     .loader {

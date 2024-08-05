@@ -96,6 +96,7 @@ function closeOptions() {
 function updateCandidateStatus() {
     document.querySelectorAll("#candidates-section").forEach(candidateSection => {
         candidateSection.addEventListener('click', async (event) => {
+
             const status = String(event.target.closest('tr').querySelector('td[data-status]').dataset.status == 1 ? 0 : 1);
             const candidate_id = event.target.closest('tr').dataset.candidateId;
 

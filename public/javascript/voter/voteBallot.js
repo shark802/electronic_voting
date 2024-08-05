@@ -27,7 +27,7 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
 
                 const action = await confirmAlert(responseObject.message);
                 if (action.isConfirmed) {
-                    window.location.href = "/election";
+                    window.location.href = "/election?isVoted=true";
                 }
             }
         }, { once: true }); // Use `once: true` to ensure the listener is removed after it is invoked
@@ -92,8 +92,11 @@ function displayConfirmVoteModal(candidateObjectArray) {
 // Send request to fetch candidate info of selected candidate
 async function fetchSelectedCandidateInfo(selectedCandidateObject) {
     try {
+        const electionIdInUrl = window.location.href.split("/");
+        const electionId = electionIdInUrl[electionIdInUrl.length - 1]
+
         const urlParams = Object.values(selectedCandidateObject).map(candidate => `id_number=${candidate}`).join('&');
-        const url = `/api/candidate-info?${urlParams}`
+        const url = `/api/candidate-info?electionId=${electionId}&${urlParams}`
 
         showLoading();
         const response = await fetch(url);

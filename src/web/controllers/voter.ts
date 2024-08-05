@@ -5,7 +5,7 @@ import { pool } from "../../config/database";
 import { Position } from "../../utils/enums/position";
 import { User } from "../../utils/types/User";
 import { isValidTimeToVote } from "../../utils/isValidTimeToVote";
-import { Candidate } from "../../utils/types/Candidate";
+import { isVoted } from "../../data_access/voteService";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -20,9 +20,11 @@ export async function electionPage(req: Request, res: Response, next: NextFuncti
 
 export async function renderElectionBallot(req: Request, res: Response, next: NextFunction) {
     try {
-        // const id_number = req.session.user!.user_id;
-        const id_number = '2021116418';
+        const id_number = req.session.user!.user_id;
         const election_id = req.params.electionId;
+
+        const hasVoted = await isVoted(id_number, election_id);
+        if (hasVoted) return res.redirect('/election?redirectMessage=\"You have already voted\"')
 
         const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position
@@ -38,7 +40,6 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
             selectQuery(pool, sqlQuery, [election_id])
         ]);
         const candidatePositionList = Object.values(Position);
-
 
         if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=\"Voting is currently closed\"")
 

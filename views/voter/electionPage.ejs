@@ -12,7 +12,7 @@
 </head>
 
 <body class="w-full overflow-hidden bg-blue-600 h-dvh">
-  <header class="flex items-center justify-end w-full h-20 px-4 font-semibold bg-blue-800 lg:max-h-24">
+  <header class="flex items-center justify-end w-full h-[75px] px-4 font-semibold bg-blue-800 lg:h-20 lg:max-h-24">
 
   </header>
 
@@ -37,7 +37,7 @@
       <input type="hidden" value="<%= element.date_end %>" id="date-end">
       <input type="hidden" value="<%= element.time_end %>" id="time-end">
 
-      <h2 class="mb-6 text-2xl font-semibold text-center"><%= element.election_name %></h2>
+      <h2 class="mb-5 text-2xl font-semibold text-center"><%= element.election_name %></h2>
 
       <% 
         const formatOptions = {
@@ -61,26 +61,26 @@
       %>
 
 
-      <hr class="my-6 border-t border-gray-400">
+      <!-- <hr class="my-6 border-t border-gray-400"> -->
 
-      <div class="flex gap-3 m-auto w-fit">
+      <div class="flex gap-3 m-auto text-sm text-gray-400 w-fit">
         <p>Start: </p>
         <p id="start"><%= formattedStartDateAndTime %></p>
       </div>
 
-      <div class="flex gap-3 m-auto w-fit">
+      <div class="flex gap-3 m-auto text-sm text-gray-400 w-fit">
         <p>End: </p>
         <p id="end"><%= formattedEndDateAndTime %></p>
       </div>
 
       <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>
       <!-- <a href="/ballot/element.election_id"> -->
-      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-semibold text-center text-gray-500">The election is now live! Cast your vote to make your voice heard.</div>
+      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-blue-500 lg:text-2xl">The election is now live! Cast your vote to make your voice heard.</div>
       <!-- </a> -->
       <% } else if (presentDate < dateStart) { %>
-      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-semibold text-center text-gray-500">The election is yet to begin. Please check back later for updates.</div>
+      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-gray-500 lg:text-2xl">The election is yet to begin. Please check back later for updates.</div>
       <% } else if (presentDate > dateEnd) { %>
-      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-semibold text-center text-gray-500">The election has ended. You can now view the results.</div>
+      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-gray-500 lg:text-2xl">The election has ended. You can now view the results.</div>
       <% } %>
 
       <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>

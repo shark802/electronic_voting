@@ -20,7 +20,7 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
             try {
                 await connection.beginTransaction();
                 await connection.execute("INSERT INTO users (id_number, firstname, lastname, course) VALUES(?, ?, ?, ?)", [id_number, firstname, lastname, course]);
-                await connection.execute("INSERT INTO roles (id_number, voter) VALUES(?, ?)", [id_number, 1]);
+                await connection.execute("INSERT INTO roles (id_number, voter) VALUES(?, ?)", [id_number, 1])
                 await connection.commit();
             } catch (error) {
                 connection.rollback();
@@ -85,9 +85,11 @@ export async function getManageCandidates(req: Request, res: Response, next: Nex
     try {
         const position = req.query.position;
         const electionIds = req.query.election_id;
-        const electionList = Array.isArray(electionIds) ? electionIds : [electionIds];
 
-        if (!position || !electionList) throw new BadRequestError('No election Available');
+        if (!position) throw new BadRequestError('No election Available');
+        if (!electionIds) throw new BadRequestError('Atleast 1 election Id is required');
+
+        const electionList = Array.isArray(electionIds) ? electionIds : [electionIds];
 
         type userCandidate = Pick<User, "id_number" | 'firstname' | 'lastname' | 'year_level' | 'section' | 'course'> & Pick<Candidate, 'candidate_id' | 'election_id' | 'position' | 'enabled' | 'alias' | 'party'>;
 
@@ -144,14 +146,16 @@ export async function updateCandidateStatus(req: Request, res: Response, next: N
 // Will response the candidate information according to candidates id_number parse in url query params
 export async function getUserCandidateData(req: Request, res: Response, next: NextFunction) {
     try {
+        const electionId = req.query.electionId as string;
         const candidateIdNumberList = req.query.id_number;
-        const candidateIdList = Array.isArray(candidateIdNumberList) ? candidateIdNumberList : [candidateIdNumberList];
 
-        candidateIdList.map(id => {
-            if (!id) throw new BadRequestError('Canidate is not provided!');
-        })
+        if (!electionId) throw new BadRequestError("Election Id is not provided");
+        if (!candidateIdNumberList) throw new BadRequestError('Please select a candidate!');
 
-        const userCandidate = await getUserCandidate(candidateIdList as string[]);
+        const candidateIdList = Array.isArray(candidateIdNumberList) ? candidateIdNumberList as string[] : [candidateIdNumberList] as string[];
+
+        const userCandidate = await getUserCandidate(candidateIdList, electionId);
+        console.log(userCandidate);
         return res.status(200).send(userCandidate);
 
     } catch (error) {

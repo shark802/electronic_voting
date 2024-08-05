@@ -555,13 +555,9 @@ video {
 }
 
 .confirm-modal {
-  position: relative;
-  display: flex;
   min-height: -moz-fit-content;
   min-height: fit-content;
   width: 90%;
-  flex-direction: column;
-  justify-content: center;
   border-radius: 0.375rem;
   padding: 1rem;
   padding-top: 1.75rem;
@@ -830,12 +826,8 @@ video {
   margin-bottom: 1rem;
 }
 
-.mb-44 {
-  margin-bottom: 11rem;
-}
-
-.mb-6 {
-  margin-bottom: 1.5rem;
+.mb-5 {
+  margin-bottom: 1.25rem;
 }
 
 .mb-7 {
@@ -976,6 +968,10 @@ video {
 
 .h-\[19px\] {
   height: 19px;
+}
+
+.h-\[75px\] {
+  height: 75px;
 }
 
 .h-\[87\%\] {
@@ -1632,6 +1628,10 @@ video {
   padding-bottom: 0.75rem;
 }
 
+.pb-32 {
+  padding-bottom: 8rem;
+}
+
 .pb-7 {
   padding-bottom: 1.75rem;
 }
@@ -1961,6 +1961,10 @@ video {
 
   .lg\:hidden {
     display: none;
+  }
+
+  .lg\:h-20 {
+    height: 5rem;
   }
 
   .lg\:h-\[76\%\] {
