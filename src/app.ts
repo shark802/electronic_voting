@@ -28,7 +28,7 @@ const sessionStore = new MySQLStore({
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
     clearExpired: true,
-    expiration: 15 * 60000,
+    expiration: 60 * 60000,
     createDatabaseTable: true,
     endConnectionOnClose: true,
     disableTouch: true,
@@ -56,7 +56,7 @@ app.use(
         store: sessionStore,
         cookie: {
             secure: process.env.NODE_ENV === "production",
-            maxAge: 15 * 60000,
+            maxAge: 60 * 60000,
             httpOnly: true,
         },
     })

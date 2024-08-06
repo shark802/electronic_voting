@@ -18,6 +18,7 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
 
    displayRedirectMessage();
    displayToast();
+   toggleProfile();
 
    setInterval(() => {
       let present = new Date();
@@ -48,4 +49,11 @@ function displayToast() {
    if (isVoted === 'true') {
       showSwalSuccessToast("Thank you for participating");
    }
+}
+
+
+function toggleProfile() {
+   document.querySelector('#profile-info').addEventListener('click', (event) => {
+      $("#account-section").slideToggle(300);
+   })
 }

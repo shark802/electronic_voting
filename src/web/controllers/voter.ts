@@ -9,10 +9,13 @@ import { isVoted } from "../../data_access/voteService";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
+        const user_id = req.session.user!.user_id;
+
         const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start";
         const electionList = await selectQuery<Election>(pool, query);
+        const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id])
 
-        res.render("voter/electionPage", { electionList });
+        res.render("voter/electionPage", { electionList, user });
     } catch (error) {
         next(error)
     }

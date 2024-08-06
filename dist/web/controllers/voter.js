@@ -18,9 +18,11 @@ const voteService_1 = require("../../data_access/voteService");
 function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const user_id = req.session.user.user_id;
             const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start";
             const electionList = yield (0, query_1.selectQuery)(database_1.pool, query);
-            res.render("voter/electionPage", { electionList });
+            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
+            res.render("voter/electionPage", { electionList, user });
         }
         catch (error) {
             next(error);
