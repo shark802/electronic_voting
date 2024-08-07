@@ -60,9 +60,11 @@
 
   </footer>
 
+
+  <!-- Login Modal -->
   <dialog id="login-modal" class="w-full px-2 pt-10 rounded-md shadow-lg lg:w-[400px] lg:px-7">
 
-    <img src="/img/x.png" id="login-modal-exit" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
+    <img src="/img/x.webp" id="login-modal-exit" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
     <img src="/img/bcc-logo.png" alt="BCC Logo" class="w-1/3 m-auto">
     <form id="login-form" class="grid px-2 pb-10 rounded-md">
       <div class="grid">
@@ -79,6 +81,27 @@
 
       <input type="submit" value="LOGIN" class="py-2 mt-4 font-semibold text-center text-white bg-blue-500 rounded-lg">
 
+    </form>
+  </dialog>
+
+  <!-- Register device Modal -->
+  <dialog id="registerDeviceModal" class="w-full px-2 pt-10 rounded-md shadow-lg lg:w-[400px] lg:px-7">
+    <img src="/img/x.webp" id="closeRegisterDevice" alt="close" class="absolute rounded-full w-7 hover:bg-gray-300 opacity-70 top-3 right-3">
+    <h2 class="text-lg text-center">Register Device</h2>
+    <form id="registerDeviceForm" class="py-7">
+
+      <div class="">
+        <label for="code-name" class="font-medium text-gray-800">UUID</label>
+        <input id="uuid" type="text" disabled placeholder="Request UUID" readonly class="w-full py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
+      </div>
+
+      <div class="flex flex-col mt-3">
+        <label for="code-name" class="font-medium text-gray-800">Code name *</label>
+        <input type="text" id="code-name" class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
+        <div id="codeNameErrorMessage" class="text-sm font-normal text-red-500 min-h-5"></div>
+      </div>
+
+      <input type="submit" value="Generate UUID" class="w-full py-2 text-center text-white bg-green-500 rounded-md mt-7">
     </form>
   </dialog>
 
