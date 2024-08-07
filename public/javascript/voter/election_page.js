@@ -1,6 +1,7 @@
 import "/javascript/voter/election_page_click_vote.js";
 import { displayRedirectMessage } from "/javascript/helper/showRedirectMessage.js";
 import { showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js";
+import "/javascript/logout.js"
 
 document.querySelectorAll("#vote-now-button").forEach(button => {
    const parentSection = button.parentElement;
@@ -18,7 +19,6 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
 
    displayRedirectMessage();
    displayToast();
-   toggleProfile();
 
    setInterval(() => {
       let present = new Date();
@@ -53,7 +53,13 @@ function displayToast() {
 
 
 function toggleProfile() {
-   document.querySelector('#profile-info').addEventListener('click', (event) => {
-      $("#account-section").slideToggle(300);
-   })
+   document.querySelector('#profile-info').addEventListener('click', () => {
+      $(document.querySelector("#account-section")).slideToggle(300)
+   });
 }
+
+document.addEventListener('click', (event) => {
+   if (!event.target.closest('#profile-container')) return $(document.querySelector("#account-section")).slideUp(300)
+})
+
+toggleProfile();

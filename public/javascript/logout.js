@@ -7,8 +7,7 @@ logoutButton.addEventListener('click', () => {
         confirmButtonText: "Yes, logout!",
         cancelButtonText: "No, cancel!",
         reverseButtons: true,
-        confirmButtonColor: "#2060f7",
-        cancelButtonColor: "#fc3232"
+        confirmButtonColor: "#fc3232",
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {

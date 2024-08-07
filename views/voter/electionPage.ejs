@@ -7,8 +7,8 @@
   <title>Election Homepage</title>
 
   <link rel="stylesheet" href="css/style.css">
-  <script src="/javascript/lib/jquery-3.7.1.min.js" defer></script>
   <script src="/javascript\lib\sweetalert2@11.js" defer></script>
+  <script src="/javascript\lib\jquery-3.7.1.min.js"></script>
   <script type="module" src="/javascript/voter/election_page.js" defer></script>
 </head>
 
@@ -16,12 +16,12 @@
   <header class="flex items-center justify-end w-full h-[75px] px-4 font-semibold bg-blue-800 lg:h-20 lg:max-h-24">
     <% if (user) { %>
     <div id="profile-container" class="absolute lg:mr-4">
-      <div id="profile-info" class="flex items-center gap-3 hover:cursor-pointer">
+      <div id="profile-info" class="flex items-center gap-3">
         <span class="text-sm text-white lg:text-base"><%= user.firstname %> <%= user.lastname %></span>
         <img src="/img/account.webp" alt="profile" class="w-8 h-8">
       </div>
 
-      <div id="account-section" class="absolute hidden w-full py-2 bg-white border-2 rounded-md shadow-lg border-spacing-2 top-14" </div>
+      <div id="account-section" class="absolute hidden w-full py-2 bg-white border-2 rounded-md shadow-lg top-14" </div>
         <p class="mb-3 font-bold text-center">Account</p>
         <span class="flex py-2 pl-3 text-sm">
           <p class="mr-2 font-bold text-gray-500">Id number: </p>
@@ -30,16 +30,29 @@
 
         <span class="flex py-2 pl-3 text-sm">
           <p class="mr-2 font-bold text-gray-500">Course/yr/sec: </p>
-          <p><%= user.course %>-<%= user.year_level %>-<%= user.section %></p>
+          <p><%= user.course %>-<%= user.year_level %><%= user.section %></p>
         </span>
 
-        <div class="py-1 mx-3 mt-4 font-bold text-center text-white bg-blue-500 rounded-md">Register Face</div>
+        <div class="py-1 mx-3 mt-4 mb-3 font-bold text-center text-white bg-blue-500 rounded-md hover:cursor-pointer">Register Face</div>
 
+        <hr class="border-t border-gray-300">
+
+        <div id="logout-button" class="flex items-center justify-center gap-1 px-3 py-1 mx-3 mt-3 bg-gray-300 rounded-md cursor-pointer ">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#292929" width="16" height="16">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+              <path d="M9.00195 7C9.01406 4.82497 9.11051 3.64706 9.87889 2.87868C10.7576 2 12.1718 2 15.0002 2L16.0002 2C18.8286 2 20.2429 2 21.1215 2.87868C22.0002 3.75736 22.0002 5.17157 22.0002 8L22.0002 16C22.0002 18.8284 22.0002 20.2426 21.1215 21.1213C20.2429 22 18.8286 22 16.0002 22H15.0002C12.1718 22 10.7576 22 9.87889 21.1213C9.11051 20.3529 9.01406 19.175 9.00195 17" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="M15 12L2 12M2 12L5.5 9M2 12L5.5 15" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+          </svg>
+          <p class="text-sm text-center text-gray-700">LOGOUT</p>
+        </div>
       </div>
       <% } %>
   </header>
 
-  <main class="min-h-96 flex gap-7 flex-col mx-3 items-center py-8 overflow-auto lg:mb-0 h-[calc(100%-80px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
+  <main class="min-h-96 flex gap-7 flex-col mx-4 items-center py-8 overflow-auto lg:mb-0 h-[calc(100%-80px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
 
     <% if (electionList.length < 1) { %>
 
