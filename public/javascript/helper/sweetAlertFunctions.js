@@ -10,6 +10,19 @@ export async function confirmAlert(title, text) {
     return action;
 }
 
+export async function confirmErrorAlert(title, text) {
+    const action = Swal.fire({
+        title: title,
+        text: text,
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonColor: "#2060f7",
+        reverseButtons: true,
+    });
+
+    return action;
+}
+
 export function showSwalSuccessToast(title, text) {
     Swal.fire({
         toast: true,
