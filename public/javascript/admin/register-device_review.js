@@ -18,3 +18,16 @@ document.querySelector("#show-sidebar").addEventListener("click", () => {
 document.querySelector("#hide-sidebar").addEventListener('click', () => {
     $("#sidebar").hide(100);
 });
+
+declineDeviceRegistration();
+
+function declineDeviceRegistration() {
+    document.querySelector("#register-device-table").addEventListener('click', async (event) => {
+        if (event.target.id === "decline-request") {
+            const rowClicked = event.target.closest('tr').querySelector("#uuid");
+            console.log(rowClicked);
+        }
+        // const rowClicked = event.target.closest('tr').querySelector("#uuid");
+        // console.log(rowClicked);
+    })
+}

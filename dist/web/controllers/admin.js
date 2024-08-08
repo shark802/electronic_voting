@@ -136,12 +136,15 @@ function manageVoter(req, res, next) {
 exports.manageVoter = manageVoter;
 // Register device
 function reviewRegisterDevice(req, res, next) {
-    try {
-        res.render("admin/register_device_review");
-    }
-    catch (error) {
-        next(error);
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const devices = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM register_devices WHERE deleted_at IS NULL");
+            res.render("admin/register_device_review", { devices });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
 }
 exports.reviewRegisterDevice = reviewRegisterDevice;
 function viewRegisterDevice(req, res, next) {

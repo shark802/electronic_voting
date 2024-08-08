@@ -4,6 +4,7 @@ import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
 import { Position } from "../../utils/enums/position";
 import { Program } from "../../utils/enums/program";
+import { RegisterDevice } from "../../utils/types/RegisterDevice";
 
 export function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -109,10 +110,11 @@ export function manageVoter(req: Request, res: Response, next: NextFunction) {
 }
 
 // Register device
-export function reviewRegisterDevice(req: Request, res: Response, next: NextFunction) {
-
+export async function reviewRegisterDevice(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/register_device_review")
+        const devices = await selectQuery<RegisterDevice>(pool, "SELECT * FROM register_devices WHERE deleted_at IS NULL")
+
+        res.render("admin/register_device_review", { devices })
     } catch (error) {
         next(error)
     }

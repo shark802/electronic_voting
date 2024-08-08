@@ -6,9 +6,12 @@ import { showLoading, hideLoader } from "/javascript/helper/loader.js"
 
 const loginModal = document.querySelector('#login-modal');
 
-document.querySelector('#login-button').addEventListener('click', () => {
-    loginModal.showModal();
-});
+const loginButton = document.querySelector('#login-button');
+if (loginButton) {
+    loginButton.addEventListener('click', () => {
+        loginModal.showModal();
+    });
+}
 
 document.querySelector("#login-modal-exit").addEventListener('click', function (event) {
     loginModal.close();
@@ -22,7 +25,7 @@ submitRegisterDeviceForm();
 
 function displayUuidOnLoad() {
     document.addEventListener('DOMContentLoaded', () => {
-        displayUUID();
+        if (localStorage.getItem('register-device-data')) return displayUUID();
     })
 }
 
@@ -35,6 +38,7 @@ function openRegisterDeviceModal() {
 function closeRegisterDeviceModal() {
     document.querySelector('#closeRegisterDevice').addEventListener('click', () => {
         document.querySelector('#registerDeviceModal').close();
+        document.querySelector("#registerDeviceForm").reset();
     })
 }
 
@@ -106,7 +110,7 @@ function displayUUID() {
     const storedRegisterDeviceData = localStorage.getItem('register-device-data');
     const registerDeviceData = JSON.parse(storedRegisterDeviceData);
 
-    const statusMessage = registerDeviceData.status === 'pending' ? "Registration Pending" : "Device registered";
+    const statusMessage = registerDeviceData.status === 'pending' ? "Registration pending..." : "Device registered";
 
     const registerDeviceForm = document.querySelector('#registerDeviceForm');
 
@@ -128,7 +132,7 @@ function displayUUID() {
 
     // Add the UUID field
     const uuidInnerHtmlToDisplay = `
-    <div class="">
+    <div class="mb-7">
         <label for="uuid" class="font-medium text-gray-800">UUID</label>
         <input id="uuid" type="text" value="${registerDeviceData.uuid}" disabled placeholder="Request UUID" readonly class="w-full py-1 pl-3 mb-6 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
     </div>

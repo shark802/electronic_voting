@@ -172,7 +172,6 @@ function getUserCandidateData(req, res, next) {
                 throw new customErrors_1.BadRequestError('Please select a candidate!');
             const candidateIdList = Array.isArray(candidateIdNumberList) ? candidateIdNumberList : [candidateIdNumberList];
             const userCandidate = yield (0, candidateService_1.getUserCandidate)(candidateIdList, electionId);
-            console.log(userCandidate);
             return res.status(200).send(userCandidate);
         }
         catch (error) {

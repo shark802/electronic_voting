@@ -219,7 +219,7 @@ function displayFetchCandidate(candidates) {
         candidateAddedAt = candidateAddedAt.toLocaleString('en-US', options);
 
         const tableRow = `
-            <tr data-candidate-id="${candidate.candidate_id}" class=" rounded-xl transition-all table-row">
+            <tr data-candidate-id="${candidate.candidate_id}" class="rounded-xl transition-all tablerow">
                 <td class="text-xs font-medium py-2 pl-2 text-gray-60 rounded-tl-lg rounded-bl-lg text-center">${candidate.id_number}</td>
                 <td class="text-xs font-medium py-2 pl-4 text-gray-600">${candidate.lastname}, ${candidate.firstname}</td>
                 <td class="text-xs pl-4 font-medium py-2 text-gray-600">${candidate.alias}</td>

@@ -155,7 +155,6 @@ export async function getUserCandidateData(req: Request, res: Response, next: Ne
         const candidateIdList = Array.isArray(candidateIdNumberList) ? candidateIdNumberList as string[] : [candidateIdNumberList] as string[];
 
         const userCandidate = await getUserCandidate(candidateIdList, electionId);
-        console.log(userCandidate);
         return res.status(200).send(userCandidate);
 
     } catch (error) {

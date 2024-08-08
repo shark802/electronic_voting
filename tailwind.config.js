@@ -3,7 +3,7 @@ module.exports = {
   content: ["./views/**/*.ejs"],
   safelist: [
     'confirm-modal',
-    'table-row',
+    'tablerow',
     'active-nav',
     'active-page',
     'selected-position',

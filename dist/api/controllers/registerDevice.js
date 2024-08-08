@@ -17,7 +17,6 @@ const database_1 = require("../../config/database");
 function requestUuidFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log(req.body);
             const { codeName } = req.body;
             if (!codeName)
                 throw new customErrors_1.BadRequestError("Please preovide code name");

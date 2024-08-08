@@ -13,9 +13,18 @@
 </head>
 
 <body class="w-full overflow-hidden bg-blue-600 h-dvh">
-  <header class="flex items-center justify-end w-full h-[75px] px-4 font-semibold bg-blue-800 lg:h-20 lg:max-h-24">
+  <header class="flex relative items-center justify-between w-full h-[75px] px-4 font-semibold bg-blue-800 lg:h-20 lg:max-h-24">
+
+    <a href="/" class="">
+      <div class="relative flex items-center float-left gap-3 pl-1 md:pl-3 min-h-20">
+        <img src="/img/back.webp" alt="back" class="w-6 aspect-square">
+        <p class="hidden font-normal text-white md:block">Back to landing page</p>
+      </div>
+    </a>
+
+
     <% if (user) { %>
-    <div id="profile-container" class="absolute lg:mr-4">
+    <div id="profile-container" class="relative cursor-pointer lg:mr-4">
       <div id="profile-info" class="flex items-center gap-3">
         <span class="text-sm text-white lg:text-base"><%= user.firstname %> <%= user.lastname %></span>
         <img src="/img/account.webp" alt="profile" class="w-8 h-8">
@@ -95,12 +104,12 @@
         const formattedEndDateAndTime = dateEnd.toLocaleString('en-US', formatOptions);
       %>
 
-      <div class="flex gap-3 m-auto text-sm text-gray-400 w-fit">
+      <div class="flex gap-3 m-auto text-sm text-gray-500 w-fit">
         <p>Start: </p>
         <p id="start"><%= formattedStartDateAndTime %></p>
       </div>
 
-      <div class="flex gap-3 m-auto text-sm text-gray-400 w-fit">
+      <div class="flex gap-3 m-auto text-sm text-gray-500 w-fit">
         <p>End: </p>
         <p id="end"><%= formattedEndDateAndTime %></p>
       </div>

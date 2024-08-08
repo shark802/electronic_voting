@@ -6,7 +6,6 @@ import { pool } from "../../config/database";
 
 export async function requestUuidFunction(req: Request, res: Response, next: NextFunction) {
     try {
-        console.log(req.body);
         const { codeName } = req.body;
         if (!codeName) throw new BadRequestError("Please preovide code name");
 

@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.landingPage = void 0;
 function landingPage(req, res, next) {
     try {
-        res.render("landingPage");
+        const user = req.session.user;
+        res.render("landingPage", { user });
     }
     catch (error) {
         return next(error);

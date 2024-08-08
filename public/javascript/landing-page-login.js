@@ -32,10 +32,13 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
         if (!response.ok) {
             hideLoader();
             document.querySelector('#login-modal').close();
+            // document.querySelector("#login-form").reset();
             Swal.fire({
                 title: "Login Failed!",
                 icon: "error"
-            });
+            }).then(action => {
+                if (action.isConfirmed) document.querySelector('#login-modal').showModal();
+            })
 
         } else {
             // hideLoader()

@@ -15,11 +15,53 @@
 
   <%- include("../partials/sidebar.ejs") %>
 
-  <main class="relative flex flex-col w-full m-auto overflow-hidden lg:w-4/5 h-dvh">
+  <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5">
 
     <div class="flex items-center w-full h-20 py-3 m-0 lg:pt-7">
       <img id="show-sidebar" src="/img/menu.png" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Review Request</h1>
+    </div>
+
+    <div class="relative h-full px-3 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto bg-blue-100 rounded-lg lg:mb-3 no-scrollbar">
+
+      <table id="register-device-table" class="w-full">
+        <thead class="px-4 py-4 text-gray-600">
+          <tr class="">
+            <th class="w-[20%] py-3">Codename</th>
+            <th class="w-[30%] py-3">UUID</th>
+            <th class="w-[25%] py-3">Date Requested</th>
+            <th class="w-[20%] py-3"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <% devices.forEach(device => {
+
+            const formatOptions = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            };
+            let dateCreated = new Date(device.date_created).toLocaleString('en-US', formatOptions);
+            
+          %>
+          <tr class="transition-all tablerow">
+            <td class="py-1 text-xs font-medium text-center text-gray-700 rounded-tl-lg rounded-bl-lg"><%= device.codename %></td>
+            <td id="uuid" class="py-1 text-xs font-medium text-center text-gray-700"><%= device.uuid %></td>
+            <td class="py-1 text-xs font-medium text-center text-gray-700 "><%= dateCreated%></td>
+            <td class="py-1 text-xs font-medium text-center text-gray-700 rounded-tr-lg rounded-br-lg ">
+              <button id="decline-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-red-500 rounded-lg hover:bg-red-600">DECLINE</button>
+              <button id="accept-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-green-500 rounded-lg hover:bg-green-600">ACCEPT</button>
+            </td>
+          </tr>
+          <% }) %>
+
+        </tbody>
+      </table>
+
     </div>
 
   </main>
