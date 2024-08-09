@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requestUuidFunction = void 0;
+exports.declineRequestFunction = exports.requestUuidFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const uuid_1 = require("uuid");
 const query_1 = require("../../data_access/query");
@@ -32,3 +32,20 @@ function requestUuidFunction(req, res, next) {
     });
 }
 exports.requestUuidFunction = requestUuidFunction;
+function declineRequestFunction(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const uuid = req.params.id;
+            if (!uuid)
+                throw new customErrors_1.BadRequestError("Missing UUID");
+            const deleteResult = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE register_devices SET deleted_at = CURDATE() WHERE uuid = ? AND deleted_at IS NULL', [uuid]);
+            if (deleteResult.affectedRows < 1)
+                throw new customErrors_1.NotFoundError('No resource modified, check the uuid if correct');
+            return res.status(200).json({ message: 'Request succesfully removed' });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.declineRequestFunction = declineRequestFunction;

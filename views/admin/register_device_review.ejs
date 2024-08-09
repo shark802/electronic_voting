@@ -9,6 +9,12 @@
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
   <script type="module" src="/javascript/admin/register-device_review.js" defer></script>
+
+  <style>
+    #decline-request-modal::backdrop {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  </style>
 </head>
 
 <body class="w-[100vw] m-0 bg-blue-600 dvh flex">
@@ -49,11 +55,11 @@
             
           %>
           <tr class="transition-all tablerow">
-            <td class="py-1 text-xs font-medium text-center text-gray-700 rounded-tl-lg rounded-bl-lg"><%= device.codename %></td>
+            <td id="codename" class="py-1 text-xs font-medium text-center text-gray-700 rounded-tl-lg rounded-bl-lg"><%= device.codename %></td>
             <td id="uuid" class="py-1 text-xs font-medium text-center text-gray-700"><%= device.uuid %></td>
-            <td class="py-1 text-xs font-medium text-center text-gray-700 "><%= dateCreated%></td>
+            <td id="request-date" class="py-1 text-xs font-medium text-center text-gray-700 "><%= dateCreated%></td>
             <td class="py-1 text-xs font-medium text-center text-gray-700 rounded-tr-lg rounded-br-lg ">
-              <button id="decline-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-red-500 rounded-lg hover:bg-red-600">DECLINE</button>
+              <button popovertarget="decline-request-modal" id="decline-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-red-500 rounded-lg hover:bg-red-600">DECLINE</button>
               <button id="accept-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-green-500 rounded-lg hover:bg-green-600">ACCEPT</button>
             </td>
           </tr>
@@ -61,6 +67,34 @@
 
         </tbody>
       </table>
+    </div>
+
+    <div popover id="decline-request-modal" class="bg-white rounded-lg p-7 text-center shadow-lg w-[95%] max-w-[600px] h-fit py-10">
+      <h1 class="text-lg font-semibold text-gray-600 md:text-2xl">Are you sure you want to decline this request?</h1>
+      <p class="text-gray-600">This will remove the request in table</p>
+
+      <div class="py-8 pl-5">
+
+        <div class="flex">
+          <p class="text-gray-700">Codename: </p>
+          <p id="codename" class="pl-3">Codename: </p>
+        </div>
+
+        <div class="flex">
+          <p class="text-gray-700">UUID: </p>
+          <p id="uuid" class="pl-3">UUID: </p>
+        </div>
+
+        <div class="flex">
+          <p class="text-gray-700">Request date: </p>
+          <p id="request-date" class="pl-3">Requested at: </p>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-4 ">
+        <button popovertarget="decline-request-modal" class="w-20 py-1 text-white bg-gray-400 rounded-lg">Cancel</button>
+        <button popovertarget="decline-request-modal" id="confirm-decline" class="w-20 py-1 font-semibold text-white bg-blue-500 rounded-lg">Decline</button>
+      </div>
 
     </div>
 

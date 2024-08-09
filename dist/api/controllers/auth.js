@@ -54,13 +54,9 @@ function loginFunction(req, res, next) {
                     voter: userRoleRow.voter
                 }
             };
-            return res.status(200).json({
-                roles: {
-                    admin: userRoleRow.admin,
-                    program_head: userRoleRow.program_head,
-                    voter: userRoleRow.voter
-                }
-            });
+            if (userRoleRow.admin)
+                return res.status(302).redirect('/admin/dashboard/overview');
+            return res.status(302).redirect('/election');
         }
         catch (error) {
             next(error);

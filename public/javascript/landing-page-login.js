@@ -21,7 +21,7 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
     }
 
     try {
-        showLoading()
+        showLoading();
         event.target.closest("dialog").close();
         const response = await fetch("/api/login", {
             method: "POST",
@@ -29,28 +29,26 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
             body: JSON.stringify({ "id_number": id_number.value, "password": password.value })
         });
 
-        if (!response.ok) {
+        if (response.redirected) {
+            window.location.href = response.url;
+
+        } else if (!response.ok) {
             hideLoader();
             document.querySelector('#login-modal').close();
-            // document.querySelector("#login-form").reset();
             Swal.fire({
                 title: "Login Failed!",
                 icon: "error"
             }).then(action => {
                 if (action.isConfirmed) document.querySelector('#login-modal').showModal();
-            })
+            });
 
         } else {
-            // hideLoader()
-            const responseObject = await response.json();
-
-            if (responseObject.roles.admin === 1 || responseObject.roles.program_head === 1) return window.location.href = "/admin/dashboard/overview";
-            if (responseObject.roles.voter === 1) return window.location.href = "/election";
-
+            hideLoader();
         }
 
     } catch (error) {
         console.error(error.message);
     }
+
 
 })
