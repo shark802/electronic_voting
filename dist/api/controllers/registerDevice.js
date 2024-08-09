@@ -41,7 +41,7 @@ function declineRequestFunction(req, res, next) {
             const deleteResult = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE register_devices SET deleted_at = CURDATE() WHERE uuid = ? AND deleted_at IS NULL', [uuid]);
             if (deleteResult.affectedRows < 1)
                 throw new customErrors_1.NotFoundError('No resource modified, check the uuid if correct');
-            return res.status(200).json({ message: 'Request succesfully removed' });
+            return res.status(200).json({ message: 'Request declined' });
         }
         catch (error) {
             next(error);

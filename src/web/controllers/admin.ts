@@ -120,10 +120,10 @@ export async function reviewRegisterDevice(req: Request, res: Response, next: Ne
     }
 }
 
-export function viewRegisterDevice(req: Request, res: Response, next: NextFunction) {
-
+export async function viewRegisterDevice(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/register_device_registered")
+        const registeredDevices = await selectQuery<RegisterDevice>(pool, 'SELECT * FROM register_devices WHERE is_registered = 1 AND deleted_at IS NULL');
+        res.render("admin/register_device_registered", { registeredDevices })
     } catch (error) {
         next(error)
     }

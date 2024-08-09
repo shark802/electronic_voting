@@ -148,12 +148,15 @@ function reviewRegisterDevice(req, res, next) {
 }
 exports.reviewRegisterDevice = reviewRegisterDevice;
 function viewRegisterDevice(req, res, next) {
-    try {
-        res.render("admin/register_device_registered");
-    }
-    catch (error) {
-        next(error);
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const registeredDevices = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_devices WHERE is_registered = 1 AND deleted_at IS NULL');
+            res.render("admin/register_device_registered", { registeredDevices });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
 }
 exports.viewRegisterDevice = viewRegisterDevice;
 // Control Panel
