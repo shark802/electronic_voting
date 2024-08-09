@@ -33,15 +33,20 @@ export async function declineRequestFunction(req: Request, res: Response, next: 
     }
 }
 
-export async function acceptRequestFunction(req: Request, res: Response, next: NextFunction) {
+export async function updateRegisterStatusFunction(req: Request, res: Response, next: NextFunction) {
     try {
 
-        const uuid = req.body.uuid;
-        if (!uuid) throw new BadRequestError('UUID is missing');
+        const uuid = req.params.id;
+        const action = req.body.action;
 
-        const registerQuery = await updateQuery(pool, "UPDATE register_devices SET is_registered = 1 WHERE uuid = ? AND deleted_at IS NULL", [uuid]);
+        if (!uuid) throw new BadRequestError('UUID is missing');
+        if (!action) throw new BadRequestError('Provide action to perform update register status');
+
+        const registerQuery = await updateQuery(pool, "UPDATE register_devices SET is_registered = ? WHERE uuid = ? AND deleted_at IS NULL", [action, uuid]);
         if (registerQuery.affectedRows < 1) throw new NotFoundError('No resource modified, check UUID if correct');
-        return res.status(200).json({ message: 'Succesfully registered' })
+
+        const responseMessage = Number(action) === 1 ? 'Device successfully registered' : 'Device unregistered'
+        return res.status(200).json({ message: responseMessage });
 
     } catch (error) {
         next(error)

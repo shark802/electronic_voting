@@ -102,10 +102,10 @@ function acceptDeviceRegistration() {
 }
 
 async function submitAcceptToServer(uuid) {
-    const response = await fetch('/api/uuid', {
+    const response = await fetch(`/api/uuid/${uuid}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uuid })
+        body: JSON.stringify({ action: 1 })
     });
 
     return response;

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.acceptRequestFunction = exports.declineRequestFunction = exports.requestUuidFunction = void 0;
+exports.updateRegisterStatusFunction = exports.declineRequestFunction = exports.requestUuidFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const uuid_1 = require("uuid");
 const query_1 = require("../../data_access/query");
@@ -49,20 +49,24 @@ function declineRequestFunction(req, res, next) {
     });
 }
 exports.declineRequestFunction = declineRequestFunction;
-function acceptRequestFunction(req, res, next) {
+function updateRegisterStatusFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const uuid = req.body.uuid;
+            const uuid = req.params.id;
+            const action = req.body.action;
             if (!uuid)
                 throw new customErrors_1.BadRequestError('UUID is missing');
-            const registerQuery = yield (0, query_1.updateQuery)(database_1.pool, "UPDATE register_devices SET is_registered = 1 WHERE uuid = ? AND deleted_at IS NULL", [uuid]);
+            if (!action)
+                throw new customErrors_1.BadRequestError('Provide action to perform update register status');
+            const registerQuery = yield (0, query_1.updateQuery)(database_1.pool, "UPDATE register_devices SET is_registered = ? WHERE uuid = ? AND deleted_at IS NULL", [action, uuid]);
             if (registerQuery.affectedRows < 1)
                 throw new customErrors_1.NotFoundError('No resource modified, check UUID if correct');
-            return res.status(200).json({ message: 'Succesfully registered' });
+            const responseMessage = Number(action) === 1 ? 'Device successfully registered' : 'Device unregistered';
+            return res.status(200).json({ message: responseMessage });
         }
         catch (error) {
             next(error);
         }
     });
 }
-exports.acceptRequestFunction = acceptRequestFunction;
+exports.updateRegisterStatusFunction = updateRegisterStatusFunction;

@@ -1,3 +1,4 @@
+import { confirmAlert, confirmErrorAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js"
 import "/javascript/logout.js"
 
 const register_device_nav = document.querySelector("#register_device_nav");
@@ -18,3 +19,54 @@ document.querySelector("#show-sidebar").addEventListener("click", () => {
 document.querySelector("#hide-sidebar").addEventListener('click', () => {
     $("#sidebar").hide(100);
 });
+
+removeRegisteredDevice();
+
+function removeRegisteredDevice() {
+    document.querySelector('#registered-device-table').addEventListener('click', (event) => {
+        if (event.target.id !== 'remove-device') return;
+
+        const tableRow = event.target.closest('tr');
+        const codename = tableRow.querySelector('#codename').textContent;
+        const uuid = tableRow.querySelector('#uuid').textContent;
+        const requestDate = tableRow.querySelector('#request-date').textContent;
+
+        const removeModal = document.querySelector('#remove-device-modal');
+
+        displayRegisteredDeviceInfo(removeModal, codename, uuid, requestDate);
+
+        removeModal.addEventListener('click', async (event) => {
+            if (event.target.id !== 'confirm-remove') return;
+
+            try {
+                const response = await sendRequestToRemoveDevice(uuid);
+                const responseObject = await response.json();
+
+                if (!response.ok) return confirmErrorAlert(responseObject.message);
+
+                tableRow.remove();
+                return showSwalSuccessToast(responseObject.message);
+
+
+            } catch (error) {
+                console.error(error);
+            }
+        })
+    })
+}
+
+function displayRegisteredDeviceInfo(modal, codename, uuid, requestDate) {
+    modal.querySelector('#codename').textContent = codename
+    modal.querySelector('#uuid').textContent = uuid
+    modal.querySelector('#request-date').textContent = requestDate
+}
+
+async function sendRequestToRemoveDevice(uuid) {
+    const response = await fetch(`/api/uuid/${uuid}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: '0' })
+    })
+
+    return response;
+}

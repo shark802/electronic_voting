@@ -9,6 +9,12 @@
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
   <script type="module" src="/javascript/admin/register-device_registered.js" defer></script>
+
+  <style>
+    #remove-device-modal::backdrop {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  </style>
 </head>
 
 <body class="w-[100vw] m-0 bg-blue-600 dvh flex">
@@ -18,13 +24,13 @@
   <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5">
 
     <div class="flex items-center w-full h-20 py-3 m-0 lg:pt-7">
-      <img id="show-sidebar" src="/img/menu.png" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
+      <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
       <h1 class="relative m-auto font-sans text-xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Manage Registered Device</h1>
     </div>
 
     <div class="relative h-full px-3 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto bg-blue-100 rounded-lg lg:mb-3 no-scrollbar">
 
-      <table id="register-device-table" class="w-full">
+      <table id="registered-device-table" class="w-full">
         <thead class="px-4 py-4 text-gray-600">
           <tr class="">
             <th class="w-[20%] py-3">Codename</th>
@@ -53,7 +59,7 @@
             <td id="uuid" class="py-1 text-xs font-medium text-center text-gray-700"><%= device.uuid %></td>
             <td id="request-date" class="py-1 text-xs font-medium text-center text-gray-700 "><%= dateCreated%></td>
             <td class="py-1 text-xs font-medium text-center text-gray-700 rounded-tr-lg rounded-br-lg ">
-              <button popovertarget="accept-request-modal" id="remove-device" class="w-20 py-1 m-1 font-semibold text-center text-white bg-red-500 rounded-lg hover:bg-red-600">REMOVE</button>
+              <button popovertarget="remove-device-modal" id="remove-device" class="w-20 py-1 m-1 font-semibold text-center text-white bg-red-500 rounded-lg hover:bg-red-600">REMOVE</button>
             </td>
           </tr>
           <% }) %>
@@ -62,6 +68,34 @@
       </table>
     </div>
 
+    <div popover id="remove-device-modal" class="bg-white rounded-lg p-7 text-center shadow-lg w-[95%] max-w-[600px] h-fit pb-5 pt-10">
+      <h1 class="text-lg font-semibold text-gray-600 md:text-2xl">Do you want to REMOVE this device?</h1>
+      <p class="text-gray-600">This will remove from registered device</p>
+
+      <div class="py-6 my-3 text-sm rounded-sm bg-blue-50 md:pl-5">
+
+        <div class="flex">
+          <p class="text-gray-700">Codename: </p>
+          <p id="codename" class="pl-2 md:pl-3">Codename: </p>
+        </div>
+
+        <div class="flex">
+          <p class="text-gray-700 ">UUID: </p>
+          <p id="uuid" class="pl-2 md:pl-3">UUID: </p>
+        </div>
+
+        <div class="flex">
+          <p class="text-gray-700">Request date: </p>
+          <p id="request-date" class="pl-2 md:pl-3">Requested at: </p>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-4 mt-5">
+        <button popovertarget="remove-device-modal" class="w-20 py-1 text-white bg-gray-400 rounded-lg">Cancel</button>
+        <button popovertarget="remove-device-modal" id="confirm-remove" class="w-20 py-1 font-semibold text-white bg-blue-500 rounded-lg">REMOVE</button>
+      </div>
+
+    </div>
 
   </main>
 
