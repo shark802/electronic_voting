@@ -11,7 +11,8 @@
   <script type="module" src="/javascript/admin/register-device_review.js" defer></script>
 
   <style>
-    #decline-request-modal::backdrop {
+    #decline-request-modal::backdrop,
+    #accept-request-modal::backdrop {
       background-color: rgba(0, 0, 0, 0.3);
     }
   </style>
@@ -60,7 +61,7 @@
             <td id="request-date" class="py-1 text-xs font-medium text-center text-gray-700 "><%= dateCreated%></td>
             <td class="py-1 text-xs font-medium text-center text-gray-700 rounded-tr-lg rounded-br-lg ">
               <button popovertarget="decline-request-modal" id="decline-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-red-500 rounded-lg hover:bg-red-600">DECLINE</button>
-              <button id="accept-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-green-500 rounded-lg hover:bg-green-600">ACCEPT</button>
+              <button popovertarget="accept-request-modal" id="accept-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-green-500 rounded-lg hover:bg-green-600">ACCEPT</button>
             </td>
           </tr>
           <% }) %>
@@ -69,31 +70,60 @@
       </table>
     </div>
 
-    <div popover id="decline-request-modal" class="bg-white rounded-lg p-7 text-center shadow-lg w-[95%] max-w-[600px] h-fit py-10">
+    <div popover id="decline-request-modal" class="bg-white rounded-lg p-7 text-center shadow-lg w-[95%] max-w-[600px] h-fit pb-5 pt-10">
       <h1 class="text-lg font-semibold text-gray-600 md:text-2xl">Are you sure you want to decline this request?</h1>
       <p class="text-gray-600">This will remove the request in table</p>
 
-      <div class="py-8 pl-5">
+      <div class="py-6 my-3 text-sm rounded-sm bg-blue-50 md:pl-5">
 
         <div class="flex">
           <p class="text-gray-700">Codename: </p>
-          <p id="codename" class="pl-3">Codename: </p>
+          <p id="codename" class="pl-2 md:pl-3">Codename: </p>
         </div>
 
         <div class="flex">
-          <p class="text-gray-700">UUID: </p>
-          <p id="uuid" class="pl-3">UUID: </p>
+          <p class="text-gray-700 ">UUID: </p>
+          <p id="uuid" class="pl-2 md:pl-3">UUID: </p>
         </div>
 
         <div class="flex">
           <p class="text-gray-700">Request date: </p>
-          <p id="request-date" class="pl-3">Requested at: </p>
+          <p id="request-date" class="pl-2 md:pl-3">Requested at: </p>
         </div>
       </div>
 
-      <div class="flex justify-center gap-4 ">
+      <div class="flex justify-center gap-4 mt-5">
         <button popovertarget="decline-request-modal" class="w-20 py-1 text-white bg-gray-400 rounded-lg">Cancel</button>
-        <button popovertarget="decline-request-modal" id="confirm-decline" class="w-20 py-1 font-semibold text-white bg-blue-500 rounded-lg">Decline</button>
+        <button popovertarget="decline-request-modal" id="confirm-decline" class="w-20 py-1 font-semibold text-white bg-blue-500 rounded-lg">Confirm</button>
+      </div>
+
+    </div>
+
+    <div popover id="accept-request-modal" class="bg-white rounded-lg p-7 text-center shadow-lg w-[95%] max-w-[600px] h-fit pb-5 pt-10">
+      <h1 class="text-lg font-semibold text-gray-600 md:text-2xl">Do you want to ACCEPT this request?</h1>
+      <p class="text-gray-600">This will list the device as registered</p>
+
+      <div class="py-6 my-3 text-sm rounded-sm bg-blue-50 md:pl-5">
+
+        <div class="flex">
+          <p class="text-gray-700">Codename: </p>
+          <p id="codename" class="pl-2 md:pl-3">Codename: </p>
+        </div>
+
+        <div class="flex">
+          <p class="text-gray-700 ">UUID: </p>
+          <p id="uuid" class="pl-2 md:pl-3">UUID: </p>
+        </div>
+
+        <div class="flex">
+          <p class="text-gray-700">Request date: </p>
+          <p id="request-date" class="pl-2 md:pl-3">Requested at: </p>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-4 mt-5">
+        <button popovertarget="accept-request-modal" class="w-20 py-1 text-white bg-gray-400 rounded-lg">Cancel</button>
+        <button popovertarget="accept-request-modal" id="confirm-accept" class="w-20 py-1 font-semibold text-white bg-blue-500 rounded-lg">Confirm</button>
       </div>
 
     </div>

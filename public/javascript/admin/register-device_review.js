@@ -21,6 +21,7 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 });
 
 declineDeviceRegistration();
+acceptDeviceRegistration();
 
 function declineDeviceRegistration() {
     document.querySelector("#register-device-table").addEventListener('click', (event) => {
@@ -34,7 +35,7 @@ function declineDeviceRegistration() {
         const declineModal = document.querySelector('#decline-request-modal');
         displayRegistrationRequestInfo(declineModal, codename, uuid, requestDate);
 
-        // initiate submit request if the decline modal is confirmed.
+        // initiate to submit request if the decline modal is confirmed.
         declineModal.addEventListener('click', async (event) => {
             if (event.target.id !== "confirm-decline") return;
 
@@ -63,8 +64,49 @@ function displayRegistrationRequestInfo(modal, codename, uuid, requestDate) {
 }
 
 async function submitDeclineToServer(uuid) {
-    console.log(uuid);
     const response = await fetch(`/api/uuid/${uuid}`, { method: 'DELETE' });
+    return response;
+}
+
+function acceptDeviceRegistration() {
+    document.querySelector("#register-device-table").addEventListener('click', (event) => {
+        if (event.target.id !== "accept-request") return;
+
+        const rowClicked = event.target.closest('tr');
+        const codename = rowClicked.querySelector('#codename').textContent;
+        const uuid = rowClicked.querySelector('#uuid').textContent;
+        const requestDate = rowClicked.querySelector('#request-date').textContent;
+
+        const acceptModal = document.querySelector('#accept-request-modal');
+        displayRegistrationRequestInfo(acceptModal, codename, uuid, requestDate);
+
+        // initiate to submit request if the decline modal is confirmed.
+        acceptModal.addEventListener('click', async (event) => {
+            if (event.target.id !== "confirm-accept") return;
+
+            try {
+                const response = await submitAcceptToServer(uuid);
+                const responseObject = await response.json();
+
+                if (!response.ok) return confirmErrorAlert(responseObject.message);
+
+                rowClicked.remove();
+                return showSwalSuccessToast(responseObject.message);
+
+            } catch (error) {
+                console.error(error);
+            }
+
+        }, { once: true })
+    })
+}
+
+async function submitAcceptToServer(uuid) {
+    const response = await fetch('/api/uuid', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uuid })
+    });
 
     return response;
 }
