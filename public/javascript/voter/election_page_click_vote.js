@@ -15,7 +15,16 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
 
         if (present >= start && present <= end) {
             // Request for election ballot to vote
+            let registerDeviceData = localStorage.getItem('register-device-data');
+            registerDeviceData = JSON.parse(registerDeviceData)
+            await fetch('/api/uuid-validation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uuid: registerDeviceData.uuid })
+            });
+
             window.location.href = `/ballot/${electionId}`;
+
         } else if (present < start) {
             Swal.fire({
                 toast: true,

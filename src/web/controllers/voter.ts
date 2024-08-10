@@ -6,6 +6,7 @@ import { Position } from "../../utils/enums/position";
 import { User } from "../../utils/types/User";
 import { isValidTimeToVote } from "../../utils/isValidTimeToVote";
 import { isVoted } from "../../data_access/voteService";
+import { isValidToProceedVote } from "../../utils/isValidToProceedVote";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -25,9 +26,16 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
     try {
         const id_number = req.session.user!.user_id;
         const election_id = req.params.electionId;
+        const deviceRegistrationStatus = req.session.deviceRegistrationStatus;
 
+        // stop if already voted.
         const hasVoted = await isVoted(id_number, election_id);
-        if (hasVoted) return res.redirect('/election?redirectMessage=\"You have already voted\"')
+        if (hasVoted) return res.redirect('/election?redirectMessage=\"You have already voted\"');
+
+        if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED") return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
+
+        // const isValidToVote = await isValidToProceedVote(id_number, deviceRegistrationStatus);
+        // if (!isValidToVote) res.redirect('/election?redirectMessage="Please register your face for authentication to access this service."')
 
         const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position

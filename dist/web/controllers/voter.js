@@ -35,9 +35,15 @@ function renderElectionBallot(req, res, next) {
         try {
             const id_number = req.session.user.user_id;
             const election_id = req.params.electionId;
+            const deviceRegistrationStatus = req.session.deviceRegistrationStatus;
+            // stop if already voted.
             const hasVoted = yield (0, voteService_1.isVoted)(id_number, election_id);
             if (hasVoted)
                 return res.redirect('/election?redirectMessage=\"You have already voted\"');
+            if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED")
+                return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
+            // const isValidToVote = await isValidToProceedVote(id_number, deviceRegistrationStatus);
+            // if (!isValidToVote) res.redirect('/election?redirectMessage="Please register your face for authentication to access this service."')
             const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position
         FROM users u JOIN candidates c

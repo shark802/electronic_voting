@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkUuidStatus = exports.updateRegisterStatusFunction = exports.declineRequestFunction = exports.requestUuidFunction = void 0;
+exports.validateUuid = exports.checkUuidStatus = exports.updateRegisterStatusFunction = exports.declineRequestFunction = exports.requestUuidFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const uuid_1 = require("uuid");
 const query_1 = require("../../data_access/query");
@@ -97,3 +97,22 @@ function checkUuidStatus(req, res, next) {
     });
 }
 exports.checkUuidStatus = checkUuidStatus;
+function validateUuid(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const uuid = req.body.uuid;
+            if (!uuid)
+                throw new customErrors_1.BadRequestError('Uuid is undefined');
+            const [uuidRow] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_devices WHERE uuid = ? AND deleted_at IS NULL', [uuid]);
+            if (!uuidRow)
+                throw new customErrors_1.NotFoundError('Uuid not found!');
+            const isUuidRegistered = uuidRow.is_registered === 1 ? "REGISTERED" : "UNREGISTERED";
+            req.session.deviceRegistrationStatus = isUuidRegistered;
+            return res.status(200).end();
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.validateUuid = validateUuid;
