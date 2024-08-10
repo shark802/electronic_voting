@@ -96,7 +96,10 @@ CREATE TABLE IF NOT EXISTS `register_devices` (
    `uuid` VARCHAR(50) NOT NULL PRIMARY KEY,
    `codename` VARCHAR(50) NOT NULL,
    `date_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-   `is_registered` TINYINT(1) DEFAULT 0
+   `is_registered` TINYINT(1) DEFAULT 0,
+   `updated_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   `deleted_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `otp_codes` (

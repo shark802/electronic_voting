@@ -59,7 +59,7 @@ export async function checkUuidStatus(req: Request, res: Response, next: NextFun
         const uuid = req.params.id;
         if (!uuid) throw new BadRequestError('Please provide UUID');
 
-        const [uuidFound] = await selectQuery<RegisterDevice>(pool, 'SELECT * FROM register_devices WHERE uuid = ?', [uuid]);
+        const [uuidFound] = await selectQuery<RegisterDevice>(pool, 'SELECT * FROM register_devices WHERE uuid = ? LIMIT 1', [uuid]);
         if (!uuidFound) throw new NotFoundError('Device UUID not found');
 
         let status: string;

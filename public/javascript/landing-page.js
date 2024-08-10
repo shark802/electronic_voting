@@ -17,16 +17,42 @@ document.querySelector("#login-modal-exit").addEventListener('click', function (
     loginModal.close();
 });
 
+updateUuidStatusOnLoad();
 displayRedirectMessage();
-displayUuidOnLoad();
 openRegisterDeviceModal();
 closeRegisterDeviceModal();
 submitRegisterDeviceForm();
 
-function displayUuidOnLoad() {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('register-device-data')) return displayUUID();
+function updateUuidStatusOnLoad() {
+    document.addEventListener('DOMContentLoaded', async () => {
+        const uuid = getRegisterDeviceUuidIfExist();
+        if (!uuid) return;
+
+        const response = await fetch(`/api/uuid/${uuid}`);
+        if (!response.ok) return;
+
+        const responseObject = await response.json();
+
+        if (responseObject.status === 'DELETED') {
+            localStorage.removeItem('register-device-data');
+
+        } else if (responseObject.status === 'PENDING') {
+            displayUUID(responseObject.status);
+
+        } else {
+            displayUUID(responseObject.status)
+
+        }
+
     })
+}
+
+function getRegisterDeviceUuidIfExist() {
+    const registerDeviceData = localStorage.getItem('register-device-data');
+    if (!registerDeviceData) return;
+
+    const data = JSON.parse(registerDeviceData);
+    return data.uuid;
 }
 
 function openRegisterDeviceModal() {
@@ -60,13 +86,12 @@ function submitRegisterDeviceForm() {
             if (!response.ok) {
                 const action = await confirmErrorAlert(responseObject.message);
                 if (action.isConfirmed) {
-                    document.querySelector('#registerDeviceModal').showModal();
+                    return document.querySelector('#registerDeviceModal').showModal();
                 }
-                return;
             }
 
             setUuidToLocalStorage(responseObject);
-            displayUUID();
+            displayUUID("PENDING");
 
             const action = await confirmAlert("Registration send", "Your request is now pending for approval");
             if (action.isConfirmed) {
@@ -106,11 +131,11 @@ function setUuidToLocalStorage(registerResponseObject) {
     }
 }
 
-function displayUUID() {
+function displayUUID(status) {
     const storedRegisterDeviceData = localStorage.getItem('register-device-data');
     const registerDeviceData = JSON.parse(storedRegisterDeviceData);
 
-    const statusMessage = registerDeviceData.status === 'pending' ? "Registration pending..." : "Device registered";
+    const statusMessage = status === 'PENDING' ? "Registration pending..." : "Device registered";
 
     const registerDeviceForm = document.querySelector('#registerDeviceForm');
 
@@ -123,19 +148,18 @@ function displayUUID() {
         submitButton.remove();
     }
 
-    // Set the code name field value and disable it
-    const codeNameInput = registerDeviceForm.querySelector('#code-name');
-    if (codeNameInput) {
-        codeNameInput.value = registerDeviceData.codeName;
-        codeNameInput.setAttribute('disabled', 'disabled');
-    }
-
-    // Add the UUID field
+    // Add the uuid indisplay
     const uuidInnerHtmlToDisplay = `
+    <div class="flex flex-col mt-3">
+        <label for="code-name" class="font-medium text-gray-800">Code name *</label>
+        <input type="text" id="code-name" disabled value="${registerDeviceData.codeName}" class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
+        <div id="codeNameErrorMessage" class="text-sm font-normal text-red-500 min-h-5"></div>
+      </div>
+
     <div class="mb-7">
         <label for="uuid" class="font-medium text-gray-800">UUID</label>
         <input id="uuid" type="text" value="${registerDeviceData.uuid}" disabled placeholder="Request UUID" readonly class="w-full py-1 pl-3 mb-6 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
     </div>
     `;
-    registerDeviceForm.insertAdjacentHTML('beforeend', uuidInnerHtmlToDisplay);
+    registerDeviceForm.innerHTML = uuidInnerHtmlToDisplay;
 }

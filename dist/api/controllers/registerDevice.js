@@ -76,7 +76,7 @@ function checkUuidStatus(req, res, next) {
             const uuid = req.params.id;
             if (!uuid)
                 throw new customErrors_1.BadRequestError('Please provide UUID');
-            const [uuidFound] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_devices WHERE uuid = ?', [uuid]);
+            const [uuidFound] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_devices WHERE uuid = ? LIMIT 1', [uuid]);
             if (!uuidFound)
                 throw new customErrors_1.NotFoundError('Device UUID not found');
             let status;

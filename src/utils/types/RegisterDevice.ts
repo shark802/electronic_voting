@@ -3,7 +3,7 @@ type RegisterDevice = {
 	codename: string;
 	date_created: Date;
 	is_registered: number;
-	registered_at: Date;
+	updated_at: Date;
 	deleted_at: Date;
 };
 

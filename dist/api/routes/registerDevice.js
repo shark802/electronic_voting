@@ -6,6 +6,7 @@ const router = (0, express_1.Router)();
 router.route('/uuid')
     .post(registerDevice_1.requestUuidFunction);
 router.route('/uuid/:id')
+    .get(registerDevice_1.checkUuidStatus)
     .delete(registerDevice_1.declineRequestFunction)
     .put(registerDevice_1.updateRegisterStatusFunction);
 exports.default = router;
