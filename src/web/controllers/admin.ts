@@ -112,7 +112,7 @@ export function manageVoter(req: Request, res: Response, next: NextFunction) {
 // Register device
 export async function reviewRegisterDevice(req: Request, res: Response, next: NextFunction) {
     try {
-        const devices = await selectQuery<RegisterDevice>(pool, "SELECT * FROM register_devices WHERE deleted_at IS NULL")
+        const devices = await selectQuery<RegisterDevice>(pool, "SELECT * FROM register_devices WHERE is_registered = 0 AND deleted_at IS NULL")
 
         res.render("admin/register_device_review", { devices })
     } catch (error) {
@@ -122,7 +122,7 @@ export async function reviewRegisterDevice(req: Request, res: Response, next: Ne
 
 export async function viewRegisterDevice(req: Request, res: Response, next: NextFunction) {
     try {
-        const registeredDevices = await selectQuery<RegisterDevice>(pool, 'SELECT * FROM register_devices WHERE is_registered = 1 AND deleted_at IS NULL');
+        const registeredDevices = await selectQuery<RegisterDevice>(pool, 'SELECT * FROM register_devices WHERE is_registered = 1 AND deleted_at IS NULL ORDER BY updated_at DESC');
         res.render("admin/register_device_registered", { registeredDevices })
     } catch (error) {
         next(error)

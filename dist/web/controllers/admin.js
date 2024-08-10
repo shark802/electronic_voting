@@ -138,7 +138,7 @@ exports.manageVoter = manageVoter;
 function reviewRegisterDevice(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const devices = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM register_devices WHERE deleted_at IS NULL");
+            const devices = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM register_devices WHERE is_registered = 0 AND deleted_at IS NULL");
             res.render("admin/register_device_review", { devices });
         }
         catch (error) {
@@ -150,7 +150,7 @@ exports.reviewRegisterDevice = reviewRegisterDevice;
 function viewRegisterDevice(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const registeredDevices = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_devices WHERE is_registered = 1 AND deleted_at IS NULL');
+            const registeredDevices = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_devices WHERE is_registered = 1 AND deleted_at IS NULL ORDER BY updated_at DESC');
             res.render("admin/register_device_registered", { registeredDevices });
         }
         catch (error) {

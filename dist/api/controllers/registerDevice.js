@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateRegisterStatusFunction = exports.declineRequestFunction = exports.requestUuidFunction = void 0;
+exports.checkUuidStatus = exports.updateRegisterStatusFunction = exports.declineRequestFunction = exports.requestUuidFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const uuid_1 = require("uuid");
 const query_1 = require("../../data_access/query");
@@ -53,15 +53,15 @@ function updateRegisterStatusFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const uuid = req.params.id;
-            const action = req.body.action;
+            const isToRegister = req.body.isToRegister;
             if (!uuid)
                 throw new customErrors_1.BadRequestError('UUID is missing');
-            if (!action)
+            if (isToRegister === undefined)
                 throw new customErrors_1.BadRequestError('Provide action to perform update register status');
-            const registerQuery = yield (0, query_1.updateQuery)(database_1.pool, "UPDATE register_devices SET is_registered = ? WHERE uuid = ? AND deleted_at IS NULL", [action, uuid]);
+            const registerQuery = yield (0, query_1.updateQuery)(database_1.pool, "UPDATE register_devices SET is_registered = ?, updated_at = NOW() WHERE uuid = ? AND deleted_at IS NULL", [isToRegister, uuid]);
             if (registerQuery.affectedRows < 1)
                 throw new customErrors_1.NotFoundError('No resource modified, check UUID if correct');
-            const responseMessage = Number(action) === 1 ? 'Device successfully registered' : 'Device unregistered';
+            const responseMessage = isToRegister === true ? 'Device successfully registered' : 'Device unregistered';
             return res.status(200).json({ message: responseMessage });
         }
         catch (error) {
@@ -70,3 +70,30 @@ function updateRegisterStatusFunction(req, res, next) {
     });
 }
 exports.updateRegisterStatusFunction = updateRegisterStatusFunction;
+function checkUuidStatus(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const uuid = req.params.id;
+            if (!uuid)
+                throw new customErrors_1.BadRequestError('Please provide UUID');
+            const [uuidFound] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_devices WHERE uuid = ?', [uuid]);
+            if (!uuidFound)
+                throw new customErrors_1.NotFoundError('Device UUID not found');
+            let status;
+            if (uuidFound.deleted_at) {
+                status = "DELETED";
+            }
+            else if (uuidFound.is_registered === 1) {
+                status = "REGISTERED";
+            }
+            else {
+                status = "PENDING";
+            }
+            return res.status(200).json({ status });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.checkUuidStatus = checkUuidStatus;

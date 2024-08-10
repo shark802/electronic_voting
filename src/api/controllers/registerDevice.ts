@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { v4 as uuidV4 } from "uuid";
-import { insertQuery, updateQuery } from "../../data_access/query";
+import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { pool } from "../../config/database";
+import { RegisterDevice } from "../../utils/types/RegisterDevice";
 
 export async function requestUuidFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -37,16 +38,40 @@ export async function updateRegisterStatusFunction(req: Request, res: Response, 
     try {
 
         const uuid = req.params.id;
-        const action = req.body.action;
+        const isToRegister = req.body.isToRegister;
 
         if (!uuid) throw new BadRequestError('UUID is missing');
-        if (!action) throw new BadRequestError('Provide action to perform update register status');
+        if (isToRegister === undefined) throw new BadRequestError('Provide action to perform update register status');
 
-        const registerQuery = await updateQuery(pool, "UPDATE register_devices SET is_registered = ? WHERE uuid = ? AND deleted_at IS NULL", [action, uuid]);
+        const registerQuery = await updateQuery(pool, "UPDATE register_devices SET is_registered = ?, updated_at = NOW() WHERE uuid = ? AND deleted_at IS NULL", [isToRegister, uuid]);
         if (registerQuery.affectedRows < 1) throw new NotFoundError('No resource modified, check UUID if correct');
 
-        const responseMessage = Number(action) === 1 ? 'Device successfully registered' : 'Device unregistered'
+        const responseMessage = isToRegister === true ? 'Device successfully registered' : 'Device unregistered'
         return res.status(200).json({ message: responseMessage });
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function checkUuidStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+        const uuid = req.params.id;
+        if (!uuid) throw new BadRequestError('Please provide UUID');
+
+        const [uuidFound] = await selectQuery<RegisterDevice>(pool, 'SELECT * FROM register_devices WHERE uuid = ?', [uuid]);
+        if (!uuidFound) throw new NotFoundError('Device UUID not found');
+
+        let status: string;
+        if (uuidFound.deleted_at) {
+            status = "DELETED";
+        } else if (uuidFound.is_registered === 1) {
+            status = "REGISTERED";
+        } else {
+            status = "PENDING";
+        }
+
+        return res.status(200).json({ status })
 
     } catch (error) {
         next(error)

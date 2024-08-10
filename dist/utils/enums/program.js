@@ -7,4 +7,5 @@ var Program;
     Program["bscrim"] = "CRIM";
     Program["bsoa"] = "OA";
     Program["educ"] = "EDUC";
+    Program["bsedfil"] = "BSEDFIL";
 })(Program || (exports.Program = Program = {}));

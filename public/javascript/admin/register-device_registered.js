@@ -47,7 +47,6 @@ function removeRegisteredDevice() {
                 tableRow.remove();
                 return showSwalSuccessToast(responseObject.message);
 
-
             } catch (error) {
                 console.error(error);
             }
@@ -65,7 +64,7 @@ async function sendRequestToRemoveDevice(uuid) {
     const response = await fetch(`/api/uuid/${uuid}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: '0' })
+        body: JSON.stringify({ isToRegister: false })
     })
 
     return response;
