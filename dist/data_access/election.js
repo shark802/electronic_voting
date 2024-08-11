@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
+exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
 function getElectionInfoById(electionId) {
@@ -34,3 +34,17 @@ function getCandidatesTotalTally(electionId) {
     });
 }
 exports.getCandidatesTotalTally = getCandidatesTotalTally;
+function getAllCandidatesInElection(electionId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const sqlQuery = `
+        SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, c.vote_count
+        FROM users u
+        JOIN candidates c
+        ON u.id_number = c.id_number
+        WHERE election_id = ?
+    `;
+        const candidates = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionId]); // Assuming selectQuery automatically binds parameters
+        return candidates;
+    });
+}
+exports.getAllCandidatesInElection = getAllCandidatesInElection;

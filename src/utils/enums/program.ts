@@ -1,7 +1,7 @@
 export enum Program {
     bsis = "IS",
     bscrim = "CRIM",
-    bsoa = "OA",
+    ab = "AB",
     educ = "EDUC",
     bsedfil = "BSEDFIL"
 }

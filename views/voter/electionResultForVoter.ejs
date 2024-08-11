@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Result</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- <script src="/javascript/lib/sweetalert2@11.js"></script> -->
+  <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
+  <script type="module" src="/javascript/voter/electionResultForVoter.js"></script>
+
+  <style>
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+
+<body class="w-full bg-blue-50 lg:px-0 h-dvh">
+
+  <a href="/election">
+    <header class="fixed top-0 z-10 flex items-center w-full gap-3 pl-6 bg-blue-600 min-h-20">
+      <img src="/img/back.webp" alt="back" class="w-6 aspect-square">
+      <p class="text-white">Back to Home</p>
+    </header>
+  </a>
+
+  <div class="relative mt-24 overflow-y-auto bg-blue-50">
+
+    <div id="result-box" class="w-full lg:max-w-[750px] rounded-lg h-full px-3 py-5 m-auto align-middle bg-white shadow-md lg:p-3 mb-10">
+
+      <% 
+      if (positionList && positionList.length > 0) { 
+        if (candidatesVoteTally.length < 1) {
+      %>
+      <div class="px-3 py-6 mt-6 text-lg font-semibold text-center text-blue-700 bg-blue-200 rounded-lg">
+        <p>No Candidates to display on this election</p>
+      </div>
+      <%
+        }
+
+        allCandidatesInElection.forEach(candidate => {
+
+          if (!candidatesVoteTally.some(talliedCandidate => candidate.id_number == talliedCandidate.id_number)) {
+            candidatesVoteTally.push(candidate)
+          }
+
+      })
+
+      positionList.forEach(position => {
+      let candidatePerPosition
+
+      if (position === 'SENATOR') {
+      candidatePerPosition = candidatesVoteTally.filter(candidate => candidate.course === user.course && candidate.position === position);
+      } else {
+      candidatePerPosition = candidatesVoteTally.filter(candidate => candidate.position === position);
+      }
+
+      if (candidatePerPosition.length > 0) {
+
+      candidatePerPosition.sort((a, b) => b.vote_count - a.vote_count);
+      const totalVotesInPosition = candidatePerPosition.reduce((total, candidateVotes) => total + candidateVotes.vote_count, 0);
+      const highestVotesInPosition = candidatePerPosition.reduce((highestVoteCount, currentCandidate) => currentCandidate.vote_count >= highestVoteCount ? currentCandidate.vote_count : highestVoteCount, candidatePerPosition[0].vote_count);
+      const candidateWithHighestVotes = candidatePerPosition.filter(candidate => candidate.vote_count === highestVotesInPosition);
+      const restOfCandidates = candidatePerPosition.filter(candidate => candidate.vote_count !== highestVotesInPosition)
+
+      %>
+
+      <section class="m-auto mb-4 lg:mb-6">
+        <div id="position-label" class="w-full py-2 font-bold text-center text-white bg-blue-500"> <%= position %> </div>
+
+        <div>
+          <% candidateWithHighestVotes.forEach(candidate => { %>
+
+          <div class="flex items-center justify-between gap-2 py-1 pt-3 pl-2 border-b lg:px-7">
+            <div>
+              <div class="flex items-end">
+                <p class="font-bold text-gray-600 lg:text-xl"> <%= candidate.firstname %> <%= candidate.lastname %> </p>
+                <p class="ml-2 text-sm font-semibold text-gray-400"> - <%= candidate.course %></p>
+              </div>
+
+              <div class="flex items-center text-sm font-semibold">
+                <p class="text-gray-500">Votes:</p>
+                <p class="ml-1 text-lg font-bold text-green-500"><%= candidate.vote_count %></p>
+              </div>
+
+            </div>
+
+
+            <div class="flex items-end gap-2">
+
+              <p id="vote-percentage" class="text-2xl font-bold text-green-600 lg:text-4xl"> <%= ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) %>%</p>
+            </div>
+          </div>
+
+          <% }) %>
+        </div>
+
+        <div id="rest-candidates" class="hidden">
+          <% restOfCandidates.forEach(candidate => { %>
+
+          <div class="flex items-center justify-between gap-2 py-1 pl-2 border-b lg:px-7">
+            <div>
+              <div class="flex items-end">
+                <p class="font-bold text-gray-600 lg:text-xl"> <%= candidate.firstname %> <%= candidate.lastname %> </p>
+                <p class="ml-2 text-sm font-semibold text-gray-400"> - <%= candidate.course %></p>
+              </div>
+
+              <div class="flex items-center text-sm font-semibold">
+                <p class="text-gray-400">Votes:</p>
+                <p class="ml-2 text-lg font-bold text-green-400"><%= candidate.vote_count %></p>
+              </div>
+            </div>
+
+            <div>
+              <p id="vote-percentage" class="text-xl font-bold text-gray-500 lg:text-2xl"> <%= ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) %>%</p>
+            </div>
+          </div>
+
+          <% }) %>
+        </div>
+
+      </section>
+
+      <% 
+                }
+            })
+        }
+      %>
+
+
+    </div>
+
+  </div>
+
+</body>
+
+</html>

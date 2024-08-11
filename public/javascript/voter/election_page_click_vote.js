@@ -21,7 +21,6 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
         } else if (now < startDate) {
             showSwalWarningToast('Voting has not started yet. Please come back later.');
         } else {
-            showSwalErrorToast('Voting period is over. You cannot vote anymore.');
             viewElectionResult(electionId);
         }
     });
@@ -41,7 +40,7 @@ async function handleVoteRequest(electionId) {
 }
 
 function viewElectionResult(electionId) {
-    console.log("Viewing result for election", electionId);
+    window.location.href = `/result/${electionId}`
 }
 
 

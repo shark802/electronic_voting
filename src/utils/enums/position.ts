@@ -1,7 +1,6 @@
 export enum Position {
     President = "PRESIDENT",
-    Vice_president = "VICE PRESIDENT",
+    Vice_president = "VICE_PRESIDENT",
     Senator = "SENATOR",
-    PIO = "PIO",
     Treasurer = "TREASURER"
 }

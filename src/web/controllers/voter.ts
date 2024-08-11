@@ -7,7 +7,7 @@ import { User } from "../../utils/types/User";
 import { isValidTimeToVote } from "../../utils/isValidTimeToVote";
 import { checkIfUserHasVoted } from "../../data_access/voteService";
 import { hasUserRegisterFaceImage } from "../../utils/hasUserRegisterFaceImage";
-import { getCandidatesTotalTally, getElectionInfoById } from "../../data_access/election";
+import { getAllCandidatesInElection, getCandidatesTotalTally, getElectionInfoById } from "../../data_access/election";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { isElectionEnded } from "../../utils/isElectionEnded";
 
@@ -81,12 +81,13 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
         // check if the election has ended
         if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
 
+        const positionList = Object.values(Position);
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
         const candidatesVoteTally = await getCandidatesTotalTally(electionId);
+        const allCandidatesInElection = await getAllCandidatesInElection(electionId);
 
-        console.log(candidatesVoteTally);
 
-        return res.status(200).end();
+        return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, allCandidatesInElection });
     } catch (error) {
         next(error)
     }

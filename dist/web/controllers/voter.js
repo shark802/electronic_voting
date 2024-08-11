@@ -89,10 +89,11 @@ function renderElectionResult(req, res, next) {
             // check if the election has ended
             if (!(0, isElectionEnded_1.isElectionEnded)(electionInfo))
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
+            const positionList = Object.values(position_1.Position);
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
             const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
-            console.log(candidatesVoteTally);
-            return res.status(200).end();
+            const allCandidatesInElection = yield (0, election_1.getAllCandidatesInElection)(electionId);
+            return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, allCandidatesInElection });
         }
         catch (error) {
             next(error);

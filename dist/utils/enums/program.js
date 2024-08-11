@@ -5,7 +5,7 @@ var Program;
 (function (Program) {
     Program["bsis"] = "IS";
     Program["bscrim"] = "CRIM";
-    Program["bsoa"] = "OA";
+    Program["ab"] = "AB";
     Program["educ"] = "EDUC";
     Program["bsedfil"] = "BSEDFIL";
 })(Program || (exports.Program = Program = {}));

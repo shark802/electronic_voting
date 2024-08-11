@@ -19,3 +19,15 @@ export async function getCandidatesTotalTally(electionId: string) {
     const candidatesVoteTally = await selectQuery(pool, sqlQuery, [electionId]);
     return candidatesVoteTally;
 }
+
+export async function getAllCandidatesInElection(electionId: string) {
+    const sqlQuery = `
+        SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, c.vote_count
+        FROM users u
+        JOIN candidates c
+        ON u.id_number = c.id_number
+        WHERE election_id = ?
+    `;
+    const candidates = await selectQuery(pool, sqlQuery, [electionId]); // Assuming selectQuery automatically binds parameters
+    return candidates;
+}

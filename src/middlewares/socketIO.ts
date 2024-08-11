@@ -14,5 +14,6 @@ export function socketIO(io: Server) {
 // const router = Router();
 
 // router.post("/socketRoute", (req, res, next: NextFunction) => {
-// 	const io: Server = req.app.get("socket");
+// 	const io = req.app.get("socket");
+
 // });

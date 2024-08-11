@@ -46,7 +46,7 @@ function getSelectedCandidatePerPosition(event) {
         const positionCandidateRun = position.querySelector('#position-label').textContent.trim();
         const selectedCandidate = position.querySelector('input[type=radio]:checked');
 
-        const key = positionCandidateRun.toUpperCase().replace(/\s+/g, '_');
+        const key = positionCandidateRun.toUpperCase();
         if (selectedCandidate) {
             castedVote[key] = selectedCandidate.value;
         }
