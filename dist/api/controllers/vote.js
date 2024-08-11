@@ -23,7 +23,7 @@ function saveVoteFunction(req, res, next) {
                 throw new customErrors_1.BadRequestError('Election ID is missing');
             if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0)
                 throw new customErrors_1.BadRequestError('Selected candidate data is missing or invalid');
-            const hasVoted = yield (0, voteService_1.isVoted)(user_id, electionId);
+            const hasVoted = yield (0, voteService_1.checkIfUserHasVoted)(user_id, electionId);
             if (hasVoted)
                 throw new customErrors_1.ConflictError("You have already voted!");
             // Start transaction for saving vote and updating candidate vote count.

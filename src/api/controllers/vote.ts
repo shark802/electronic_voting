@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { BadRequestError, ConflictError } from "../../utils/customErrors";
-import { incrementCandidateVoteCount, isVoted, saveVote } from "../../data_access/voteService";
+import { checkIfUserHasVoted, incrementCandidateVoteCount, saveVote } from "../../data_access/voteService";
 import { pool } from "../../config/database";
 
 export async function saveVoteFunction(req: Request, res: Response, next: NextFunction) {
@@ -12,7 +12,7 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
         if (!electionId) throw new BadRequestError('Election ID is missing');
         if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0) throw new BadRequestError('Selected candidate data is missing or invalid');
 
-        const hasVoted = await isVoted(user_id, electionId);
+        const hasVoted = await checkIfUserHasVoted(user_id, electionId);
         if (hasVoted) throw new ConflictError("You have already voted!");
 
         // Start transaction for saving vote and updating candidate vote count.

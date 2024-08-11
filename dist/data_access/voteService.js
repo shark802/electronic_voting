@@ -9,16 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.incrementCandidateVoteCount = exports.saveVote = exports.isVoted = void 0;
+exports.incrementCandidateVoteCount = exports.saveVote = exports.checkIfUserHasVoted = void 0;
 const query_1 = require("./query");
 const database_1 = require("../config/database");
-function isVoted(userId, electionId) {
+function checkIfUserHasVoted(userId, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const getUserVoteHistory = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM votes WHERE voter_id = ? AND election_id = ?", [userId, electionId]);
         return getUserVoteHistory.length > 0; // return true if the result is not zero, false otherwise
     });
 }
-exports.isVoted = isVoted;
+exports.checkIfUserHasVoted = checkIfUserHasVoted;
 function saveVote(connection, selectedCandidateObject, userId, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const placeholders = Object.keys(selectedCandidateObject).map(() => "(?, ?, ?, ?)").join(", ");

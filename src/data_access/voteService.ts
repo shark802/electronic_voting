@@ -2,10 +2,9 @@ import { PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { selectQuery } from './query';
 import { Vote } from '../utils/types/Votes';
 import { pool } from '../config/database';
-import { Candidate } from '../utils/types/Candidate';
 
 
-export async function isVoted(userId: string, electionId: string) {
+export async function checkIfUserHasVoted(userId: string, electionId: string) {
     const getUserVoteHistory = await selectQuery<Vote>(pool, "SELECT * FROM votes WHERE voter_id = ? AND election_id = ?", [userId, electionId]);
     return getUserVoteHistory.length > 0; // return true if the result is not zero, false otherwise
 }

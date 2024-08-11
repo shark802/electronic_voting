@@ -5,8 +5,11 @@ import { pool } from "../../config/database";
 import { Position } from "../../utils/enums/position";
 import { User } from "../../utils/types/User";
 import { isValidTimeToVote } from "../../utils/isValidTimeToVote";
-import { isVoted } from "../../data_access/voteService";
-import { isValidToProceedVote } from "../../utils/isValidToProceedVote";
+import { checkIfUserHasVoted } from "../../data_access/voteService";
+import { hasUserRegisterFaceImage } from "../../utils/hasUserRegisterFaceImage";
+import { getCandidatesTotalTally, getElectionInfoById } from "../../data_access/election";
+import { BadRequestError, NotFoundError } from "../../utils/customErrors";
+import { isElectionEnded } from "../../utils/isElectionEnded";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -28,14 +31,18 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         const election_id = req.params.electionId;
         const deviceRegistrationStatus = req.session.deviceRegistrationStatus;
 
-        // stop if already voted.
-        const hasVoted = await isVoted(id_number, election_id);
-        if (hasVoted) return res.redirect('/election?redirectMessage=\"You have already voted\"');
+        // Check if the user has already voted
+        const hasVoted = await checkIfUserHasVoted(id_number, election_id);
+        if (hasVoted) return res.redirect('/election?redirectMessage=You have already voted');
 
-        if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED") return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
+        // If the device is not registered, check if user is available for face authentication.
+        if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED") {
+            const isUserRegisteredFaceImage = await hasUserRegisterFaceImage(id_number);
+            if (!isUserRegisteredFaceImage) return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
 
-        // const isValidToVote = await isValidToProceedVote(id_number, deviceRegistrationStatus);
-        // if (!isValidToVote) res.redirect('/election?redirectMessage="Please register your face for authentication to access this service."')
+            // redirect user to face authentication
+
+        }
 
         const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position
@@ -52,10 +59,35 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         ]);
         const candidatePositionList = Object.values(Position);
 
-        if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=\"Voting is currently closed\"")
+        if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=Voting is currently closed")
 
         return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election });
     } catch (error) {
         next(error);
+    }
+}
+
+export async function renderElectionResult(req: Request, res: Response, next: NextFunction) {
+    try {
+        const userId = req.session.user!.user_id;
+        const electionId = req.params.id;
+
+        if (!electionId) throw new BadRequestError('Election id is missing');
+
+        // retrieve election here
+        const electionInfo = await getElectionInfoById(electionId);
+        if (!electionInfo) throw new NotFoundError('Election not exist');
+
+        // check if the election has ended
+        if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
+
+        const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
+        const candidatesVoteTally = await getCandidatesTotalTally(electionId);
+
+        console.log(candidatesVoteTally);
+
+        return res.status(200).end();
+    } catch (error) {
+        next(error)
     }
 }

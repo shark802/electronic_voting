@@ -5,7 +5,7 @@ function isValidTimeToVote(election) {
     const PRESENT_DATE_TIME = new Date();
     const startDateAndTime = dateFormatter(election.date_start, election.time_start);
     const endDateAndTime = dateFormatter(election.date_end, election.time_end);
-    if (PRESENT_DATE_TIME >= startDateAndTime && PRESENT_DATE_TIME <= endDateAndTime)
+    if (PRESENT_DATE_TIME >= startDateAndTime && PRESENT_DATE_TIME < endDateAndTime)
         return true;
     return false;
 }

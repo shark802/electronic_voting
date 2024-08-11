@@ -36,6 +36,19 @@ export function showSwalSuccessToast(title, text) {
     });
 }
 
+export function showSwalWarningToast(title, text) {
+    Swal.fire({
+        toast: true,
+        showConfirmButton: false,
+        position: 'top',
+        timer: 3000,
+        timerProgressBar: true,
+        title: title,
+        text: text,
+        icon: 'warning'
+    });
+}
+
 export function showSwalErrorToast(title, text) {
     Swal.fire({
         toast: true,

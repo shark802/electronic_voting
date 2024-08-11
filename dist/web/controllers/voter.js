@@ -9,12 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderElectionBallot = exports.electionPage = void 0;
+exports.renderElectionResult = exports.renderElectionBallot = exports.electionPage = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const position_1 = require("../../utils/enums/position");
 const isValidTimeToVote_1 = require("../../utils/isValidTimeToVote");
 const voteService_1 = require("../../data_access/voteService");
+const hasUserRegisterFaceImage_1 = require("../../utils/hasUserRegisterFaceImage");
+const election_1 = require("../../data_access/election");
+const customErrors_1 = require("../../utils/customErrors");
+const isElectionEnded_1 = require("../../utils/isElectionEnded");
 function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -36,14 +40,17 @@ function renderElectionBallot(req, res, next) {
             const id_number = req.session.user.user_id;
             const election_id = req.params.electionId;
             const deviceRegistrationStatus = req.session.deviceRegistrationStatus;
-            // stop if already voted.
-            const hasVoted = yield (0, voteService_1.isVoted)(id_number, election_id);
+            // Check if the user has already voted
+            const hasVoted = yield (0, voteService_1.checkIfUserHasVoted)(id_number, election_id);
             if (hasVoted)
-                return res.redirect('/election?redirectMessage=\"You have already voted\"');
-            if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED")
-                return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
-            // const isValidToVote = await isValidToProceedVote(id_number, deviceRegistrationStatus);
-            // if (!isValidToVote) res.redirect('/election?redirectMessage="Please register your face for authentication to access this service."')
+                return res.redirect('/election?redirectMessage=You have already voted');
+            // If the device is not registered, check if user is available for face authentication.
+            if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED") {
+                const isUserRegisteredFaceImage = yield (0, hasUserRegisterFaceImage_1.hasUserRegisterFaceImage)(id_number);
+                if (!isUserRegisteredFaceImage)
+                    return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
+                // redirect user to face authentication
+            }
             const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position
         FROM users u JOIN candidates c
@@ -59,7 +66,7 @@ function renderElectionBallot(req, res, next) {
             ]);
             const candidatePositionList = Object.values(position_1.Position);
             if (!(0, isValidTimeToVote_1.isValidTimeToVote)(election))
-                return res.redirect("/election?redirectMessage=\"Voting is currently closed\"");
+                return res.redirect("/election?redirectMessage=Voting is currently closed");
             return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election });
         }
         catch (error) {
@@ -68,3 +75,28 @@ function renderElectionBallot(req, res, next) {
     });
 }
 exports.renderElectionBallot = renderElectionBallot;
+function renderElectionResult(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const userId = req.session.user.user_id;
+            const electionId = req.params.id;
+            if (!electionId)
+                throw new customErrors_1.BadRequestError('Election id is missing');
+            // retrieve election here
+            const electionInfo = yield (0, election_1.getElectionInfoById)(electionId);
+            if (!electionInfo)
+                throw new customErrors_1.NotFoundError('Election not exist');
+            // check if the election has ended
+            if (!(0, isElectionEnded_1.isElectionEnded)(electionInfo))
+                return res.redirect('/election?redirectMessage=Result Not Available Yet');
+            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
+            const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
+            console.log(candidatesVoteTally);
+            return res.status(200).end();
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.renderElectionResult = renderElectionResult;
