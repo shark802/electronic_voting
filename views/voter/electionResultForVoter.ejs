@@ -36,7 +36,7 @@
         if (candidatesVoteTally.length < 1) {
       %>
       <div class="px-3 py-6 mt-6 text-lg font-semibold text-center text-blue-700 bg-blue-200 rounded-lg">
-        <p>No Candidates to display on this election</p>
+        <p class="text-2xl font-bold">No Candidates to display on this election</p>
       </div>
       <%
         }
@@ -74,7 +74,7 @@
         <div>
           <% candidateWithHighestVotes.forEach(candidate => { %>
 
-          <div class="flex items-center justify-between gap-2 py-1 pt-3 pl-2 border-b lg:px-7">
+          <div class="flex items-center justify-between gap-2 py-1 pt-3 pl-2 border-b cursor-pointer lg:px-7">
             <div>
               <div class="flex items-end">
                 <p class="font-bold text-gray-600 lg:text-xl"> <%= candidate.firstname %> <%= candidate.lastname %> </p>
@@ -104,8 +104,8 @@
           <div class="flex items-center justify-between gap-2 py-1 pl-2 border-b lg:px-7">
             <div>
               <div class="flex items-end">
-                <p class="font-bold text-gray-600 lg:text-xl"> <%= candidate.firstname %> <%= candidate.lastname %> </p>
-                <p class="ml-2 text-sm font-semibold text-gray-400"> - <%= candidate.course %></p>
+                <p class="font-bold text-gray-600 lg:text-lg"> <%= candidate.firstname %> <%= candidate.lastname %> </p>
+                <p class="ml-2 text-xs font-semibold text-gray-400"> - <%= candidate.course %></p>
               </div>
 
               <div class="flex items-center text-sm font-semibold">

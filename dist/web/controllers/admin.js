@@ -15,12 +15,16 @@ const database_1 = require("../../config/database");
 const position_1 = require("../../utils/enums/position");
 const program_1 = require("../../utils/enums/program");
 function dashboardOverview(req, res, next) {
-    try {
-        res.render("admin/dashboard_overview");
-    }
-    catch (error) {
-        next(error);
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 ORDER BY date_start, time_start');
+            const courses = Object.values(program_1.Program);
+            res.render("admin/dashboard_overview", { elections, courses });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
 }
 exports.dashboardOverview = dashboardOverview;
 function dashboardVoteTally(req, res, next) {

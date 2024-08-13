@@ -22,18 +22,19 @@
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Manage Candidate</h1>
     </div>
 
-    <div class="relative h-full mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:mb-3 bg-blue-50 no-scrollbar">
+    <div class="relative h-full mt-3 overflow-x-hidden rounded-lg lg:mb-3 bg-blue-50 no-scrollbar">
+
       <div class="flex items-center w-full gap-5 px-5 py-1 overflow-x-auto bg-blue-50 min-h-14 lg:px-7 lg:gap-7 flex-nowrap text-nowrap lg:min-h-16">
         <% positions.forEach(position => { %>
         <div id="position" class="py-1 font-semibold text-gray-400"><%= position %></div>
         <% }) %>
       </div>
 
-      <div id="election-box" class="grid gap-6 px-3 lg:px-7">
+      <div id="election-box" class="flex flex-wrap pb-6 gap-6 px-3 items-end overflow-y-auto max-h-[calc(100%-80px)] no-scrollbar lg:px-7">
         <% if (elections.length < 1) { %>
 
         <!-- Display no election -->
-        <section class="lg:w-[700px] shadow-md lg:px-10 box-border w-[95%] bg-white rounded-md min-h-28 grid m-auto mt-5 lg:mt-6 py-5 lg:py-9">
+        <section class="lg:w-[700px] shadow-md lg:px-10 w-[95%] bg-white rounded-md min-h-28 grid m-auto mt-5 lg:mt-6 py-5 lg:py-9">
           <img src="/img/empty-folder.webp" alt="empty folder" class="m-auto w-28 h-28">
           <h1 class="m-auto mt-5 text-lg font-semibold text-center lg:w-3/5">There are no elections scheduled at the moment</h1>
         </section>
@@ -41,14 +42,14 @@
         <% } else { %>
 
         <% elections.forEach(election => { %>
-        <section id="election" class="relative w-full transition-colors bg-blue-100 rounded-lg shadow min-h-16">
+        <section id="election" class="w-full transition-colors bg-blue-100 rounded-lg shadow h-fit min-h-16">
           <div class="px-8 py-5">
             <h2 class="text-xl font-semibold"><%= election.election_name %></h2>
             <p id="election-id" class="text-gray-400"><%= election.election_id %></p>
             <!-- <img src="/img/chevron.webp" alt="chevron" class="absolute w-5 opacity-70 bottom-3 right-5"> -->
           </div>
 
-          <div id="candidates-display" class="hidden p-1 pb-0 rounded-lg rounded-bl-lg rounded-br-lg">
+          <div id="candidates-display" class="hidden p-1 pb-0 rounded-lg rounded-bl-lg rounded-br-lg h-fit">
 
             <hr class="mb-2 border-t border-gray-300">
 

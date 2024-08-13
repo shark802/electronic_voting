@@ -32,7 +32,7 @@ const sessionStore = new MySQLStore({
     createDatabaseTable: true,
     endConnectionOnClose: true,
     disableTouch: true,
-    charset: "charset",
+    charset: "utf8mb4",
     schema: {
         tableName: "user_session",
         columnNames: {

@@ -6,9 +6,13 @@ import { Position } from "../../utils/enums/position";
 import { Program } from "../../utils/enums/program";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
 
-export function dashboardOverview(req: Request, res: Response, next: NextFunction) {
+export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/dashboard_overview")
+
+        const elections = await selectQuery(pool, 'SELECT * FROM elections WHERE is_close = 0 ORDER BY date_start, time_start');
+        const courses = Object.values(Program);
+
+        res.render("admin/dashboard_overview", { elections, courses })
     } catch (error) {
         next(error)
     }

@@ -66,24 +66,27 @@
 
 
   <!-- Login Modal -->
-  <dialog id="login-modal" class="w-full px-2 pt-10 rounded-md shadow-lg lg:w-[400px] lg:px-7">
+  <dialog id="login-modal" class="w-full px-2 pt-8 rounded-md shadow-lg lg:w-[400px] lg:px-7">
 
     <img src="/img/x.webp" id="login-modal-exit" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
     <img src="/img/bcc-logo.webp" alt="BCC Logo" class="w-1/3 m-auto">
     <form id="login-form" class="grid px-2 pb-10 rounded-md">
       <div class="grid">
-        <label for="school-id">School ID</label class="font-semibold">
-        <input type="text" id="school-id" class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
+        <label for="school-id" class="block mb-1 text-sm font-medium text-gray-900">Username</label class="font-semibold">
+        <input type="text" id="school-id" placeholder="your id number" class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
+
         <div id="schoolIdErrorMessage" class="text-xs font-normal text-red-500 min-h-5"></div>
       </div>
 
       <div class="grid">
-        <label for="password">Password</label class="font-semibold ">
-        <input type="password" id="password" class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
+        <label for="password" class="block mb-1 text-sm font-medium text-gray-900">Password</label class="font-semibold ">
+        <input type="password" id="password" placeholder="••••••••" class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
         <div id="passwordErrorMessage" class="text-xs font-normal text-red-500 min-h-5"></div>
       </div>
 
-      <input type="submit" value="LOGIN" class="py-2 mt-4 font-semibold text-center text-white bg-blue-500 rounded-lg">
+      <!-- <input type="submit" value="LOGIN" class="py-2 mt-4 font-semibold text-center text-white bg-blue-500 rounded-lg"> -->
+      <button type="submit" class="w-full mt-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">Login to your account</button>
+
 
     </form>
   </dialog>
