@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import { pool } from "../config/database";
 import { Election } from "../utils/types/Election";
 import { selectQuery } from "./query";
@@ -30,4 +31,17 @@ export async function getAllCandidatesInElection(electionId: string) {
     `;
     const candidates = await selectQuery(pool, sqlQuery, [electionId]); // Assuming selectQuery automatically binds parameters
     return candidates;
+}
+
+export async function totalUserVotedPerElection() {
+    const sqlQuery = `
+    SELECT e.election_id, COUNT(DISTINCT v.voter_id) AS total_voted
+    FROM elections e
+    JOIN votes v ON e.election_id = v.election_id
+    WHERE e.is_close = 0
+    GROUP BY e.election_id;
+`;
+
+    const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
+    return totalVoted
 }

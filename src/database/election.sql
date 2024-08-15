@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS `elections` (
    `date_end` DATE NOT NULL,
    `time_end` TIME NOT NULL,
    `is_active` TINYINT(1) DEFAULT 1,
+   `is_close` TINYINT(1) DEFAULT 0,
+   `total_populations` INT DEFAULT 0,
    `deleted_at` TIMESTAMP NULL,
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
@@ -98,8 +100,7 @@ CREATE TABLE IF NOT EXISTS `register_devices` (
    `date_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
    `is_registered` TINYINT(1) DEFAULT 0,
    `updated_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   `deleted_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
+   `deleted_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `otp_codes` (
@@ -116,5 +117,11 @@ CREATE TABLE IF NOT EXISTS `face_image` (
    `id_number` INT(10) NOT NULL,
    `face_image` BLOB, 
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP.
-   FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
+   FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `program_populations` (
+   `id` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+   `program_code` VARCHAR(100) NOT NULL,
+   `program_population` INT DEFAULT 0
 ) ENGINE=InnoDB;

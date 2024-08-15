@@ -32,8 +32,11 @@ function addCandidateFunction(req, res, next) {
                     yield connection.commit();
                 }
                 catch (error) {
-                    connection.rollback();
+                    yield connection.rollback();
                     return next(error);
+                }
+                finally {
+                    yield connection.release();
                 }
             }
             const findCandidateIfExist = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM candidates WHERE id_number = ? AND election_id = ? AND deleted IS NULL", [id_number, election_id]);

@@ -38,11 +38,14 @@ function loginFunction(req, res, next) {
                     yield connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
                 }
                 ;
-                connection.commit();
+                yield connection.commit();
             }
             catch (error) {
-                connection.rollback();
+                yield connection.rollback();
                 return next(error);
+            }
+            finally {
+                yield connection.release();
             }
             // attach this role result to user session
             const [userRoleRow] = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM roles WHERE id_number = ?", [user.id_number]);

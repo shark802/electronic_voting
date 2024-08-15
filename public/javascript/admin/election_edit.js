@@ -142,7 +142,7 @@ async function updateElection(event, parent) {
                 return;
             } else {
 
-                const reponseObject = await updateResponse.json();
+                const responseObject = await updateResponse.json();
                 Swal.fire({
                     showConfirmButton: false,
                     title: responseObject.message,

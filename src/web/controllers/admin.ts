@@ -5,14 +5,16 @@ import { pool } from "../../config/database";
 import { Position } from "../../utils/enums/position";
 import { Program } from "../../utils/enums/program";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
+import { totalUserVotedPerElection } from "../../data_access/election";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
 
         const elections = await selectQuery(pool, 'SELECT * FROM elections WHERE is_close = 0 ORDER BY date_start, time_start');
+        const totalVotedPerElection = await totalUserVotedPerElection();
         const courses = Object.values(Program);
 
-        res.render("admin/dashboard_overview", { elections, courses })
+        res.render("admin/dashboard_overview", { elections, courses, totalVotedPerElection })
     } catch (error) {
         next(error)
     }

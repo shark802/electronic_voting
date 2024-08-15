@@ -33,11 +33,13 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
                 const voterRole = apiResponseObject.user_group === "STUDENT" ? 1 : 0; // assign the voter role if the user is student.
                 await connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
             };
-            connection.commit();
+            await connection.commit();
 
         } catch (error) {
-            connection.rollback()
+            await connection.rollback()
             return next(error);
+        } finally {
+            await connection.release();
         }
 
         // attach this role result to user session

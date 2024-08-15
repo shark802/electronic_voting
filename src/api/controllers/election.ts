@@ -4,9 +4,13 @@ import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { ulid } from "ulid"
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
+import { Program } from "../../utils/enums/program";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
+
+	const connection = await pool.getConnection();
+
 	try {
 		const { election_name, date_start, time_start, date_end, time_end } = req.body;
 		if (!election_name || !date_start || !time_start || !date_end || !time_end) {
@@ -16,15 +20,22 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 
 		const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)"
 		const values = [election_id, election_name, date_start, time_start, date_end, time_end]
-		const result = await insertQuery(pool, query, values)
 
-		if (result.affectedRows < 1) {
-			return next(new NotFoundError("Failed to create election"))
-		}
+		await connection.execute(query, values);
 
-		res.status(201).json({message: "Election created"})
+		Object.values(Program).forEach(async (program) => {
+			const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
+			await connection.execute(insertProgramPopulationQuery, [program, election_id]);
+		})
+
+		await connection.commit()
+
+		res.status(201).json({ message: "Election created" })
 	} catch (error) {
-		return next(error);
+		await connection.rollback()
+		next(error)
+	} finally {
+		await connection.release()
 	}
 }
 
@@ -33,26 +44,26 @@ export async function createElection(req: Request, res: Response, next: NextFunc
  * - assumes election_id is passed in req.query
  * - server will search election_id and response the resource back to client
  */
-export async function findElectionByID(req: Request, res:Response, next: NextFunction) {
+export async function findElectionByID(req: Request, res: Response, next: NextFunction) {
 	try {
 		const election_id = req.params.id
 		if (!election_id) return next(new BadRequestError("Cannot find Election if election_id is missing"))
-		
+
 		const query = "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL LIMIT 1"
 		const value = [election_id]
 		const result = await selectQuery<Election>(pool, query, value)
 
-		if(result.length < 1) {
+		if (result.length < 1) {
 			return next(new NotFoundError())
 		}
 
-		res.status(200).json({election: result[0]})
+		res.status(200).json({ election: result[0] })
 	} catch (error) {
 		return next(error)
 	}
 }
 
-export async function deleteElection(req: Request, res:Response, next: NextFunction) {
+export async function deleteElection(req: Request, res: Response, next: NextFunction) {
 	try {
 		const election_id = req.params.id
 
@@ -105,13 +116,13 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 		const electionID = req.params.id;
 		const electionStatus = req.query.status
 		if (!electionID || !electionStatus) return next(new BadRequestError());
-		
+
 		const query = "UPDATE elections SET is_active = ? WHERE election_id = ? AND deleted_at IS NULL";
 		const sqlParams = [electionStatus, electionID]
 		const result = await updateQuery(pool, query, sqlParams);
 
 		if (result.affectedRows < 1) return next(new NotFoundError(`Updating election ${electionID} dont affect, Resource may not found`));
-		return res.status(200).json({result});
+		return res.status(200).json({ result });
 
 	} catch (error) {
 		next(error);

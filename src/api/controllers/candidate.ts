@@ -23,8 +23,10 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
                 await connection.execute("INSERT INTO roles (id_number, voter) VALUES(?, ?)", [id_number, 1])
                 await connection.commit();
             } catch (error) {
-                connection.rollback();
+                await connection.rollback();
                 return next(error);
+            } finally {
+                await connection.release();
             }
         }
         const findCandidateIfExist = await selectQuery<Candidate>(pool, "SELECT * FROM candidates WHERE id_number = ? AND election_id = ? AND deleted IS NULL", [id_number, election_id]);
