@@ -43,7 +43,8 @@
 
         allCandidatesInElection.forEach(candidate => {
 
-          if (!candidatesVoteTally.some(talliedCandidate => candidate.id_number == talliedCandidate.id_number)) {
+          if (!candidatesVoteTally.some(talliedCandidate => candidate.id_number === talliedCandidate.id_number)) {
+            candidate.vote_count = 0;
             candidatesVoteTally.push(candidate)
           }
 
@@ -110,7 +111,7 @@
 
               <div class="flex items-center text-sm font-semibold">
                 <p class="text-gray-400">Votes:</p>
-                <p class="ml-2 text-lg font-bold text-green-400"><%= candidate.vote_count %></p>
+                <p class="ml-2 text-lg font-bold text-green-400"><%= 0 %></p>
               </div>
             </div>
 

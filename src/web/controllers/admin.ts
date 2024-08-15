@@ -5,16 +5,19 @@ import { pool } from "../../config/database";
 import { Position } from "../../utils/enums/position";
 import { Program } from "../../utils/enums/program";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
-import { totalUserVotedPerElection } from "../../data_access/election";
+import { totalUserVotedPerElection, totalUserVotedPerProgram } from "../../data_access/election";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
 
-        const elections = await selectQuery(pool, 'SELECT * FROM elections WHERE is_close = 0 ORDER BY date_start, time_start');
+        const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
         const totalVotedPerElection = await totalUserVotedPerElection();
-        const courses = Object.values(Program);
+        const totalVotedPerProgram = await totalUserVotedPerProgram()
+        const electionIdList = elections.map(election => election.election_id);
+        const populationPerProgram = await selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList])
+        // const courses = Object.values(Program);
 
-        res.render("admin/dashboard_overview", { elections, courses, totalVotedPerElection })
+        res.render("admin/dashboard_overview", { elections, totalVotedPerElection, populationPerProgram, totalVotedPerProgram })
     } catch (error) {
         next(error)
     }

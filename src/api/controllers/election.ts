@@ -1,43 +1,46 @@
 import { Request, Response, NextFunction } from "express";
 import { pool } from "../../config/database";
-import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { ulid } from "ulid"
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
 import { Program } from "../../utils/enums/program";
+import { selectQuery, updateQuery } from "../../data_access/query";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
-
 	const connection = await pool.getConnection();
 
 	try {
 		const { election_name, date_start, time_start, date_end, time_end } = req.body;
 		if (!election_name || !date_start || !time_start || !date_end || !time_end) {
-			return next(new BadRequestError("Bad request, some missing data is required"))
+			return next(new BadRequestError("Bad request, some required data is missing"));
 		}
-		const election_id = ulid()
 
-		const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)"
-		const values = [election_id, election_name, date_start, time_start, date_end, time_end]
+		await connection.beginTransaction();
+
+		const election_id = ulid();
+
+		const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
+		const values = [election_id, election_name, date_start, time_start, date_end, time_end];
 
 		await connection.execute(query, values);
 
-		Object.values(Program).forEach(async (program) => {
+		for (const program of Object.values(Program)) {
 			const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
 			await connection.execute(insertProgramPopulationQuery, [program, election_id]);
-		})
+		}
 
-		await connection.commit()
+		await connection.commit();
 
-		res.status(201).json({ message: "Election created" })
+		res.status(201).json({ message: "Election created" });
 	} catch (error) {
-		await connection.rollback()
-		next(error)
+		await connection.rollback();
+		next(error);
 	} finally {
-		await connection.release()
+		await connection.release();
 	}
 }
+
 
 /**
  * Function for searching specific election event based on id.

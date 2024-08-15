@@ -10,6 +10,10 @@
   <script src="/javascript/lib/sweetalert2@11.js"></script>
   <script type="module" src="/javascript/landing-page.js" defer></script>
   <style>
+    main {
+      background-image: url('/img/image.png');
+    }
+
     dialog::backdrop {
       background-color: rgba(0, 0, 0, 0.3);
     }
@@ -17,13 +21,12 @@
 </head>
 
 <body class="w-full font-bold bg-blue-700 h-dvh scroll-m-0 lg:overflow-hidden lg:h-screen">
-
   <header class="sticky flex items-center justify-center w-full h-24 bg-blue-800">
-    <h1 class="lg:text-xl text-sm max-w-[70%] float-right xl:max-w-[40%] flex justify-center lg:m-auto text-center text-blue-400">BCC
+    <h1 class="lg:text-lg text-sm max-w-[70%] float-right xl:max-w-[40%] flex justify-center lg:m-auto text-center text-blue-400">BCC
       WEB-BASED E-VOTING WITH FACIAL RECOGNITION AUTHENTICATOR</h1>
   </header>
 
-  <main class="flex text-white flex-col h-[85%] lg:h-[74%] place-items-center">
+  <main class="flex bg-no-repeat bg-cover bg-center text-white flex-col h-[85%] lg:h-[74%] place-items-center">
 
     <div class="flex justify-end w-full mt-2 mr-1 lg:gap-2 lg:pr-8 justify-self-start">
       <% if (user) { %>
@@ -34,10 +37,10 @@
       <button id="register-device-button" class="text-xs font-semibold button">Register Device</button>
     </div>
 
-    <div class="absolute center lg:w-[60%] w-[90%]">
+    <div class="absolute center lg:w-[50%] w-[90%]">
       <p class="m-auto font-sans text-2xl text-center lg:text-5xl pb-11">Welcome
         to Bago City College Online Voting System</p>
-      <p class="max-w-[80%] lg:max-w-[50% ] text-wrap text-center text-xl lg:text-2xl font-normal text-white m-auto font-sans">Welcome
+      <p class="max-w-[80%] lg:max-w-[50% ] text-wrap text-center text-lg lg:text-2xl font-normal text-white m-auto font-sans">Welcome
         to official online voting platform of Bago City College.
         Our secure and easy to use system allows you to participate in school
         elections and make your voice heard.</p>

@@ -18,10 +18,13 @@ const election_1 = require("../../data_access/election");
 function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 ORDER BY date_start, time_start');
+            const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
             const totalVotedPerElection = yield (0, election_1.totalUserVotedPerElection)();
-            const courses = Object.values(program_1.Program);
-            res.render("admin/dashboard_overview", { elections, courses, totalVotedPerElection });
+            const totalVotedPerProgram = yield (0, election_1.totalUserVotedPerProgram)();
+            const electionIdList = elections.map(election => election.election_id);
+            const populationPerProgram = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList]);
+            // const courses = Object.values(Program);
+            res.render("admin/dashboard_overview", { elections, totalVotedPerElection, populationPerProgram, totalVotedPerProgram });
         }
         catch (error) {
             next(error);

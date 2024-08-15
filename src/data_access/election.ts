@@ -23,25 +23,37 @@ export async function getCandidatesTotalTally(electionId: string) {
 
 export async function getAllCandidatesInElection(electionId: string) {
     const sqlQuery = `
-        SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, c.vote_count
+        SELECT u.id_number, u.firstname, u.lastname, u.course, c.position
         FROM users u
-        JOIN candidates c
-        ON u.id_number = c.id_number
+        JOIN candidates c ON u.id_number = c.id_number
         WHERE election_id = ?
-    `;
+    `
+
     const candidates = await selectQuery(pool, sqlQuery, [electionId]); // Assuming selectQuery automatically binds parameters
     return candidates;
 }
 
 export async function totalUserVotedPerElection() {
     const sqlQuery = `
-    SELECT e.election_id, COUNT(DISTINCT v.voter_id) AS total_voted
-    FROM elections e
-    JOIN votes v ON e.election_id = v.election_id
-    WHERE e.is_close = 0
-    GROUP BY e.election_id;
-`;
+        SELECT e.election_id, COUNT(DISTINCT v.voter_id) AS total_voted
+        FROM elections e
+        JOIN votes v ON e.election_id = v.election_id
+        WHERE e.is_close = 0
+        GROUP BY e.election_id;
+    `
+    const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
+    return totalVoted
+}
 
+export async function totalUserVotedPerProgram() {
+    const sqlQuery = `
+        SELECT e.election_id, u.course, COUNT(DISTINCT v.voter_id) AS total_voted
+        FROM elections e
+        JOIN votes v ON e.election_id = v.election_id
+        JOIN users u ON v.voter_id = u.id_number
+        WHERE e.is_close = 0
+        GROUP BY e.election_id, u.course;
+    `
     const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
     return totalVoted
 }

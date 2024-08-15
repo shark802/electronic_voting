@@ -44,10 +44,10 @@
 
         <div class="flex flex-grow w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
 
-          <div class="w-1/3 p-2 bg-blue-500 border border-blue-700 rounded-sm lg:px-4 min-h-20">
+          <div class="w-1/3 p-2 bg-blue-500 border border-blue-700 rounded-sm lg:py-4 lg:px-4 min-h-20">
 
             <div class="flex items-center">
-              <img src="/img/population.webp" class="relative mr-3 w-8 top-[2px]" alt="population">
+              <img src="/img/population.webp" class="relative w-5 mr-1 lg:mr-3 lg:w-8 -top-[3px] lg:top-[2px]" alt="population">
 
               <div class="min-h-8">
                 <p class="font-bold text-white tet-lg lg:text-4xl"><%= election.total_populations !== 0 ? election.total_populations : "N/A" %></p>
@@ -57,11 +57,11 @@
             <p class="pt-1 text-xs font-medium text-white lg:text-sm">Total students</p>
           </div>
 
-          <div class="w-1/3 p-2 bg-green-200 border border-green-500 rounded-sm lg:px-4 min-h-20">
+          <div class="w-1/3 p-2 bg-green-200 border border-green-500 rounded-sm lg:py-4 lg:px-4 min-h-20">
 
             <div class="min-h-8">
               <div class="flex items-center">
-                <img src="/img/like.webp" class="relative w-8 mr-3 top-[1px]" alt="like">
+                <img src="/img/like.webp" class="relative lg:w-8 w-5 lg:mr-3 mr-1 top-[1px]" alt="like">
 
                 <%
                const findAvailableTotalVotes = totalVotedPerElection.filter(total => total.election_id === election.election_id);
@@ -74,11 +74,11 @@
             <p class="pt-1 text-xs font-medium text-green-600 lg:text-sm">Voted</p>
           </div>
 
-          <div class="w-1/3 p-2 bg-red-200 border border-red-500 rounded-sm lg:px-4 min-h-20">
+          <div class="w-1/3 p-2 bg-red-200 border border-red-500 rounded-sm lg:py-4 lg:px-4 min-h-20">
 
             <div class="min-h-8">
               <div class="flex items-center">
-                <img src="/img/dislike.webp" class="relative w-8 mr-3 top-[3px]" alt="dislike">
+                <img src="/img/dislike.webp" class="relative lg:w-8 w-5 lg:mr-3 mr-1 top-[3px]" alt="dislike">
 
                 <%
               const totalVotedInElection = totalVotedPerElection.filter(total => total.election_id === election.election_id);
@@ -95,16 +95,33 @@
 
         <div class="grid gap-1 px-1 py-2 lg:gap-2 lg:px-3">
           <%
+          const courses = populationPerProgram.filter(program => program.election_id === election.election_id).sort((a, b) => a.program_code.localeCompare(b.program_code));
           courses.forEach(course => {
+
+            const findTotalVotedInProgram = totalVotedPerProgram.filter(total => total.election_id === election.election_id && total.course === course.program_code);
+            const totalVotedInProgram = findTotalVotedInProgram.length > 0 ? findTotalVotedInProgram[0].total_voted : 0;
           %>
 
-          <div class="w-full py-2 bg-blue-100 border border-gray-400 rounded-sm min-h-10">
-            <div class="text-sm font-medium text-center"> <%= course %> </div>
+          <div class="w-full pb-2 text-center bg-blue-100 border border-gray-400 rounded-sm min-h-10">
+            <div class="py-1 text-sm font-medium text-center"> <%= course.program_code %> </div>
 
             <div class="flex flex-grow w-full gap-1 px-1 mt-2 lg:px-3 lg:gap-3">
-              <div class="w-1/3 rounded-sm min-h-10"></div>
-              <div class="w-1/3 rounded-sm min-h-10"></div>
-              <div class="w-1/3 rounded-sm min-h-10"></div>
+
+              <div class="w-1/3 rounded-sm min-h-10">
+                <div class="text-lg font-bold text-gray-600 lg:text-2xl"> <%= course.program_population === 0 ? 'N/A' : course.program_populations %> </div>
+                <p class="font-medium text-gray-500">Total voter</p>
+              </div>
+
+              <div class="w-1/3 rounded-sm min-h-10">
+                <div class="text-lg font-bold text-gray-600 lg:text-2xl"> <%= totalVotedInProgram %> </div>
+                <p class="font-medium text-gray-500">Voted</p>
+              </div>
+
+              <div class="w-1/3 rounded-sm min-h-10">
+                <div class="text-lg font-bold text-gray-600 lg:text-2xl"> <%= course.program_population === 0 ? 'N/A' : course.program_populations %> </div>
+                <p class="font-medium text-gray-500">Not voted</p>
+              </div>
+
             </div>
 
           </div>
