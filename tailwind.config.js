@@ -24,7 +24,9 @@ module.exports = {
     'rounded-tr-lg',
     'loader',
     'z-30',
-    'pb-3'
+    'pb-3',
+    'w-1/3',
+    'inline-block'
   ],
   theme: {
     extend: {

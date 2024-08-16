@@ -17,30 +17,35 @@ const program_1 = require("../../utils/enums/program");
 const query_1 = require("../../data_access/query");
 function createElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const connection = yield database_1.pool.getConnection();
         try {
             const { election_name, date_start, time_start, date_end, time_end } = req.body;
             if (!election_name || !date_start || !time_start || !date_end || !time_end) {
                 return next(new customErrors_1.BadRequestError("Bad request, some required data is missing"));
             }
-            yield connection.beginTransaction();
             const election_id = (0, ulid_1.ulid)();
-            const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
-            const values = [election_id, election_name, date_start, time_start, date_end, time_end];
-            yield connection.execute(query, values);
-            for (const program of Object.values(program_1.Program)) {
-                const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
-                yield connection.execute(insertProgramPopulationQuery, [program, election_id]);
+            const connection = yield database_1.pool.getConnection();
+            try {
+                yield connection.beginTransaction();
+                const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
+                const values = [election_id, election_name, date_start, time_start, date_end, time_end];
+                yield connection.execute(query, values);
+                for (const program of Object.values(program_1.Program)) {
+                    const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
+                    yield connection.execute(insertProgramPopulationQuery, [program, election_id]);
+                }
+                yield connection.commit();
+                res.status(201).json({ message: "Election created" });
             }
-            yield connection.commit();
-            res.status(201).json({ message: "Election created" });
+            catch (error) {
+                yield connection.rollback();
+                next(error);
+            }
+            finally {
+                yield connection.release();
+            }
         }
         catch (error) {
-            yield connection.rollback();
             next(error);
-        }
-        finally {
-            yield connection.release();
         }
     });
 }

@@ -8,36 +8,38 @@ import { selectQuery, updateQuery } from "../../data_access/query";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
-	const connection = await pool.getConnection();
-
 	try {
 		const { election_name, date_start, time_start, date_end, time_end } = req.body;
 		if (!election_name || !date_start || !time_start || !date_end || !time_end) {
 			return next(new BadRequestError("Bad request, some required data is missing"));
 		}
-
-		await connection.beginTransaction();
-
 		const election_id = ulid();
 
-		const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
-		const values = [election_id, election_name, date_start, time_start, date_end, time_end];
+		const connection = await pool.getConnection();
+		try {
+			await connection.beginTransaction();
 
-		await connection.execute(query, values);
+			const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
+			const values = [election_id, election_name, date_start, time_start, date_end, time_end];
 
-		for (const program of Object.values(Program)) {
-			const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
-			await connection.execute(insertProgramPopulationQuery, [program, election_id]);
+			await connection.execute(query, values);
+
+			for (const program of Object.values(Program)) {
+				const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
+				await connection.execute(insertProgramPopulationQuery, [program, election_id]);
+			}
+
+			await connection.commit();
+			res.status(201).json({ message: "Election created" });
+		} catch (error) {
+			await connection.rollback();
+			next(error)
+		} finally {
+			await connection.release();
 		}
 
-		await connection.commit();
-
-		res.status(201).json({ message: "Election created" });
 	} catch (error) {
-		await connection.rollback();
 		next(error);
-	} finally {
-		await connection.release();
 	}
 }
 
