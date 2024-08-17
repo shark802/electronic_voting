@@ -133,3 +133,19 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 		next(error);
 	}
 }
+
+export async function closeElectionDashboard(req: Request, res: Response, next: NextFunction) {
+	try {
+		const electionId = req.params.id;
+		console.log(electionId);
+		if (!electionId) throw new BadRequestError('Election Id is missing!');
+
+		const updateResult = await updateQuery(pool, 'UPDATE elections SET is_close = 1 WHERE election_id = ?', [electionId]);
+		if (updateResult.affectedRows === 0) throw new BadRequestError('No changes were made, election not found');
+
+		return res.status(200).json({ message: 'Election successfully closed' })
+
+	} catch (error) {
+		next(error);
+	}
+}

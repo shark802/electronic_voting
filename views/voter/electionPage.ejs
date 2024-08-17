@@ -1,143 +1,152 @@
-<!DOCTYPE html>
-<html lang="en">
+  <!DOCTYPE html>
+  <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Election Homepage</title>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Homepage</title>
 
-  <link rel="stylesheet" href="css/style.css">
-  <script src="/javascript\lib\sweetalert2@11.js" defer></script>
-  <script src="/javascript\lib\jquery-3.7.1.min.js"></script>
-  <script type="module" src="/javascript/voter/election_page.js" defer></script>
-</head>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="/javascript\lib\sweetalert2@11.js" defer></script>
+    <script src="/javascript\lib\jquery-3.7.1.min.js"></script>
+    <script type="module" src="/javascript/voter/election_page.js" defer></script>
 
-<body class="w-full overflow-hidden bg-blue-600 h-dvh">
-  <header class="flex relative items-center justify-between w-full h-[75px] px-4 font-semibold bg-blue-800 lg:h-20 lg:max-h-24">
+    <style>
+      main {
+        background-image: url('/img/image.png');
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+      }
+    </style>
+  </head>
 
-    <a href="/" class="">
-      <div class="relative flex items-center float-left gap-3 pl-1 md:pl-3 min-h-20">
-        <img src="/img/back.webp" alt="back" class="w-6 aspect-square">
-        <p class="hidden font-normal text-white md:block">Back to landing page</p>
-      </div>
-    </a>
+  <body class="w-full overflow-hidden bg-blue-600 h-dvh">
+    <header class="flex relative items-center justify-between w-full h-[75px] px-4 font-semibold bg-blue-800 lg:h-20 lg:max-h-24">
 
-
-    <% if (user) { %>
-    <div id="profile-container" class="relative cursor-pointer lg:mr-4">
-      <div id="profile-info" class="flex items-center gap-3">
-        <span class="text-sm text-white lg:text-base"><%= user.firstname %> <%= user.lastname %></span>
-        <img src="/img/account.webp" alt="profile" class="w-8 h-8">
-      </div>
-
-      <div id="account-section" class="absolute hidden w-full py-2 bg-white border-2 rounded-md shadow-lg top-14" </div>
-        <p class="mb-3 font-bold text-center">Account</p>
-        <span class="flex py-2 pl-3 text-sm">
-          <p class="mr-2 font-bold text-gray-500">Id number: </p>
-          <p><%= user.id_number %></p>
-        </span>
-
-        <span class="flex py-2 pl-3 text-sm">
-          <p class="mr-2 font-bold text-gray-500">Crs/yr/sec: </p>
-          <p><%= user.course %>-<%= user.year_level %><%= user.section %></p>
-        </span>
-
-        <div class="py-1 mx-3 mt-4 mb-3 font-bold text-center text-white bg-blue-500 rounded-md hover:cursor-pointer">Register Face</div>
-
-        <hr class="border-t border-gray-300">
-
-        <div id="logout-button" class="flex items-center justify-center gap-1 px-3 py-1 mx-3 mt-3 bg-gray-300 rounded-md cursor-pointer ">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#292929" width="16" height="16">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-              <path d="M9.00195 7C9.01406 4.82497 9.11051 3.64706 9.87889 2.87868C10.7576 2 12.1718 2 15.0002 2L16.0002 2C18.8286 2 20.2429 2 21.1215 2.87868C22.0002 3.75736 22.0002 5.17157 22.0002 8L22.0002 16C22.0002 18.8284 22.0002 20.2426 21.1215 21.1213C20.2429 22 18.8286 22 16.0002 22H15.0002C12.1718 22 10.7576 22 9.87889 21.1213C9.11051 20.3529 9.01406 19.175 9.00195 17" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round"></path>
-              <path d="M15 12L2 12M2 12L5.5 9M2 12L5.5 15" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </g>
-          </svg>
-          <p class="text-sm text-center text-gray-700">LOGOUT</p>
+      <a href="/" class="">
+        <div class="relative flex items-center float-left gap-3 pl-1 md:pl-3 min-h-20">
+          <img src="/img/back.webp" alt="back" class="w-6 aspect-square">
+          <p class="hidden font-normal text-white md:block">Back to landing page</p>
         </div>
-      </div>
+      </a>
+
+
+      <% if (user) { %>
+      <div id="profile-container" class="relative cursor-pointer lg:mr-4">
+        <div id="profile-info" class="flex items-center gap-3">
+          <span class="text-sm text-white lg:text-base"><%= user.firstname %> <%= user.lastname %></span>
+          <img src="/img/account.webp" alt="profile" class="w-8 h-8">
+        </div>
+
+        <div id="account-section" class="absolute right-0 hidden w-full py-2 bg-white border-2 rounded-md shadow-lg min-w-48 top-14" </div>
+          <p class="mb-3 font-bold text-center">Account</p>
+          <span class="flex py-2 pl-3 text-sm">
+            <p class="mr-2 font-bold text-gray-500">Id number: </p>
+            <p><%= user.id_number %></p>
+          </span>
+
+          <span class="flex py-2 pl-3 text-sm">
+            <p class="mr-2 font-bold text-gray-500">Crs/yr/sec: </p>
+            <p><%= user.course %>-<%= user.year_level %><%= user.section %></p>
+          </span>
+
+          <div class="py-1 mx-3 mt-4 mb-3 font-bold text-center text-white bg-blue-500 rounded-md hover:cursor-pointer">Register Face</div>
+
+          <hr class="border-t border-gray-300">
+
+          <div id="logout-button" class="flex items-center justify-center gap-1 px-3 py-1 mx-3 mt-3 bg-gray-300 rounded-md cursor-pointer ">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#292929" width="16" height="16">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path d="M9.00195 7C9.01406 4.82497 9.11051 3.64706 9.87889 2.87868C10.7576 2 12.1718 2 15.0002 2L16.0002 2C18.8286 2 20.2429 2 21.1215 2.87868C22.0002 3.75736 22.0002 5.17157 22.0002 8L22.0002 16C22.0002 18.8284 22.0002 20.2426 21.1215 21.1213C20.2429 22 18.8286 22 16.0002 22H15.0002C12.1718 22 10.7576 22 9.87889 21.1213C9.11051 20.3529 9.01406 19.175 9.00195 17" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M15 12L2 12M2 12L5.5 9M2 12L5.5 15" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </g>
+            </svg>
+            <p class="text-sm text-center text-gray-700">LOGOUT</p>
+          </div>
+        </div>
+        <% } %>
+    </header>
+
+    <main class=" flex gap-7 flex-col px-4 items-center pt-12 overflow-auto lg:mb-0 h-[calc(100%-80px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
+
+      <% if (electionList.length < 1) { %>
+
+      <section class="lg:w-[700px] mx-4 w-full lg:px-10 box-border bg-white rounded-md min-h-28 grid m-auto mt-0 py-9">
+        <img src="/img/empty-folder.webp" alt="empty folder" class="m-auto w-28 h-28">
+        <h1 class="m-auto mt-4 text-xl font-semibold text-center lg:w-3/5">It seems there are no elections scheduled at the moment</h1>
+        <p class="mt-3 text-center">"The next election will be announce soon. Please stay tuned!"</p>
+      </section>
+
+      <% } else { %>
+
+      <% electionList.forEach(element => { %>
+      <section class="lg:max-w-[700px] mx-4 max-w-[500px] bg-white rounded-md min-h-fit w-full lg:min-w-[500px] py-8 px-10 shadow-md">
+        <div id="election-id" class="hidden"><%= element.election_id %></div>
+        <input type="hidden" value="<%= element.date_start %>" id="date-start">
+        <input type="hidden" value="<%= element.time_start %>" id="time-start">
+        <input type="hidden" value="<%= element.date_end %>" id="date-end">
+        <input type="hidden" value="<%= element.time_end %>" id="time-end">
+
+        <h2 class="mb-3 text-2xl font-semibold text-center"><%= element.election_name %></h2>
+
+        <% 
+          const formatOptions = {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
+          }
+          const presentDate = new Date()
+
+          const dateStart = new Date(element.date_start);
+          const [startHour, startMinute] = element.time_start.split(":");
+          dateStart.setHours(startHour, startMinute);
+          const formattedStartDateAndTime = dateStart.toLocaleString('en-US', formatOptions);
+
+          const dateEnd = new Date(element.date_end);
+          const [endHour, endMinute] = element.time_end.split(":");
+          dateEnd.setHours(endHour, endMinute);
+          const formattedEndDateAndTime = dateEnd.toLocaleString('en-US', formatOptions);
+        %>
+
+        <div class="flex gap-3 m-auto text-sm text-gray-500 w-fit">
+          <p>Start: </p>
+          <p id="start"><%= formattedStartDateAndTime %></p>
+        </div>
+
+        <div class="flex gap-3 m-auto text-sm text-gray-500 w-fit">
+          <p>End: </p>
+          <p id="end"><%= formattedEndDateAndTime %></p>
+        </div>
+
+        <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>
+        <!-- <a href="/ballot/element.election_id"> -->
+        <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-blue-500 lg:text-2xl">The election is now live! Cast your vote to make your voice heard.</div>
+        <!-- </a> -->
+        <% } else if (presentDate < dateStart) { %>
+        <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-gray-500 lg:text-2xl">The election is yet to begin. Please check back later for updates.</div>
+        <% } else if (presentDate > dateEnd) { %>
+        <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-gray-500 lg:text-2xl">The election has ended. You can now view the results.</div>
+        <% } %>
+
+        <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>
+        <button id="vote-now-button" class="relative px-3 py-1 mt-6 font-semibold text-white transform -translate-x-1/2 bg-blue-500 rounded-full ring-0 hover:ring-2 left-1/2">Vote Now</button>
+        <% } else if (presentDate < dateStart) { %>
+        <button id="vote-now-button" class="relative px-3 py-1 mt-6 font-semibold text-gray-100 transform -translate-x-1/2 bg-gray-400 rounded-full ring-0 ring-gray-300 hover:ring-2 left-1/2">Vote Now</button>
+        <% } else if (presentDate > dateEnd) { %>
+        <button id="vote-now-button" class="relative px-3 py-1 mt-6 font-semibold text-white transform -translate-x-1/2 bg-green-500 rounded-full ring-green-300 ring-0 hover:ring-2 left-1/2">View Result</button>
+        <% } %>
+
+      </section>
+      <% }) %>
+
       <% } %>
-  </header>
 
-  <main class="min-h-96 flex gap-7 flex-col mx-4 items-center pt-12 overflow-auto lg:mb-0 h-[calc(100%-80px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
+    </main>
+  </body>
 
-    <% if (electionList.length < 1) { %>
-
-    <section class="lg:w-[700px] lg:px-10 box-border bg-white rounded-md min-h-28 grid m-auto mt-0 py-9">
-      <img src="/img/empty-folder.webp" alt="empty folder" class="m-auto w-28 h-28">
-      <h1 class="m-auto mt-4 text-xl font-semibold text-center lg:w-3/5">It seems there are no elections scheduled at the moment</h1>
-      <p class="mt-3 text-center">"The next election will be announce soon. Please stay tuned!"</p>
-    </section>
-
-    <% } else { %>
-
-    <% electionList.forEach(element => { %>
-    <section class="lg:w-[700px] bg-white rounded-md min-h-fit w-[500px] lg:min-w-[500px] py-8 px-10 shadow-md">
-      <div id="election-id" class="hidden"><%= element.election_id %></div>
-      <input type="hidden" value="<%= element.date_start %>" id="date-start">
-      <input type="hidden" value="<%= element.time_start %>" id="time-start">
-      <input type="hidden" value="<%= element.date_end %>" id="date-end">
-      <input type="hidden" value="<%= element.time_end %>" id="time-end">
-
-      <h2 class="mb-3 text-2xl font-semibold text-center"><%= element.election_name %></h2>
-
-      <% 
-        const formatOptions = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-        }
-        const presentDate = new Date()
-
-        const dateStart = new Date(element.date_start);
-        const [startHour, startMinute] = element.time_start.split(":");
-        dateStart.setHours(startHour, startMinute);
-        const formattedStartDateAndTime = dateStart.toLocaleString('en-US', formatOptions);
-
-        const dateEnd = new Date(element.date_end);
-        const [endHour, endMinute] = element.time_end.split(":");
-        dateEnd.setHours(endHour, endMinute);
-        const formattedEndDateAndTime = dateEnd.toLocaleString('en-US', formatOptions);
-      %>
-
-      <div class="flex gap-3 m-auto text-sm text-gray-500 w-fit">
-        <p>Start: </p>
-        <p id="start"><%= formattedStartDateAndTime %></p>
-      </div>
-
-      <div class="flex gap-3 m-auto text-sm text-gray-500 w-fit">
-        <p>End: </p>
-        <p id="end"><%= formattedEndDateAndTime %></p>
-      </div>
-
-      <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>
-      <!-- <a href="/ballot/element.election_id"> -->
-      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-blue-500 lg:text-2xl">The election is now live! Cast your vote to make your voice heard.</div>
-      <!-- </a> -->
-      <% } else if (presentDate < dateStart) { %>
-      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-gray-500 lg:text-2xl">The election is yet to begin. Please check back later for updates.</div>
-      <% } else if (presentDate > dateEnd) { %>
-      <div id="election-status-message" class="w-3/4 m-auto mt-4 text-lg font-bold text-center text-gray-500 lg:text-2xl">The election has ended. You can now view the results.</div>
-      <% } %>
-
-      <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>
-      <button id="vote-now-button" class="relative px-3 py-1 mt-6 font-semibold text-white transform -translate-x-1/2 bg-blue-500 rounded-full ring-0 hover:ring-2 left-1/2">Vote Now</button>
-      <% } else if (presentDate < dateStart) { %>
-      <button id="vote-now-button" class="relative px-3 py-1 mt-6 font-semibold text-gray-100 transform -translate-x-1/2 bg-gray-400 rounded-full ring-0 ring-gray-300 hover:ring-2 left-1/2">Vote Now</button>
-      <% } else if (presentDate > dateEnd) { %>
-      <button id="vote-now-button" class="relative px-3 py-1 mt-6 font-semibold text-white transform -translate-x-1/2 bg-green-500 rounded-full ring-green-300 ring-0 hover:ring-2 left-1/2">View Result</button>
-      <% } %>
-
-    </section>
-    <% }) %>
-
-    <% } %>
-
-  </main>
-</body>
-
-</html>
+  </html>

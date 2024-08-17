@@ -12,4 +12,5 @@ router
     .delete(election_1.deleteElection)
     .put(election_1.updateElection)
     .patch(election_1.updateElectionStatus);
+router.put('/election-overview/:id', election_1.closeElectionDashboard);
 exports.default = router;

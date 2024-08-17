@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
+exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
@@ -138,3 +138,21 @@ function updateElectionStatus(req, res, next) {
     });
 }
 exports.updateElectionStatus = updateElectionStatus;
+function closeElectionDashboard(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const electionId = req.params.id;
+            console.log(electionId);
+            if (!electionId)
+                throw new customErrors_1.BadRequestError('Election Id is missing!');
+            const updateResult = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE elections SET is_close = 1 WHERE election_id = ?', [electionId]);
+            if (updateResult.affectedRows === 0)
+                throw new customErrors_1.BadRequestError('No changes were made, election not found');
+            return res.status(200).json({ message: 'Election successfully closed' });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.closeElectionDashboard = closeElectionDashboard;

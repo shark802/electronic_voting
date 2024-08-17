@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createElection, deleteElection, findElectionByID, updateElection, updateElectionStatus } from "../controllers/election";
+import { closeElectionDashboard, createElection, deleteElection, findElectionByID, updateElection, updateElectionStatus } from "../controllers/election";
 
 const router = Router();
 
@@ -13,5 +13,7 @@ router
 	.delete(deleteElection)
 	.put(updateElection)
 	.patch(updateElectionStatus)
+
+router.put('/election-overview/:id', closeElectionDashboard);
 
 export default router;

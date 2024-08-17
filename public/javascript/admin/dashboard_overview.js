@@ -22,51 +22,91 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 });
 
 
-
-
 // Event listener for opening update population form
 document.querySelector('#overview-container').addEventListener('click', (event) => {
     if (event.target.id !== 'manage') return;
 
-    document.querySelector('#manage-population-modal').showModal();
+    const electionContainerSection = event.target.closest('section');
 
-    displayPopulationInput(event);
-    calculateTotalVoterOnInputEvent()
+    const electionId = electionContainerSection.querySelector('#election-id').textContent.trim();
+    const dateEnd = electionContainerSection.querySelector('#date-end').value;
+    const timeEnd = electionContainerSection.querySelector('#time-end').value;
 
+    const PRESENT_DATE = new Date();
+    const endDate = new Date(dateEnd);
+    const [hourEnd, minuteEnd] = timeEnd.split(':');
+    endDate.setHours(hourEnd, minuteEnd);
+
+    if (PRESENT_DATE > endDate) {
+
+        document.querySelector('#close-election').showModal();
+
+        document.querySelector('#close-election-button').addEventListener('click', async () => {
+            document.querySelector('#close-election').close();
+
+            const action = await confirmAlert('Are you sure you want to close the election dashboard?')
+            if (!action.isConfirmed) return document.querySelector('#close-election').showModal();
+
+            try {
+                const response = await putRequestToCloseElection(electionId);
+                const responseObject = await response.json();
+
+                if (!response.ok) {
+                    return confirmErrorAlert(responseObject.message);
+                }
+
+                electionContainerSection.remove();
+                return showSwalSuccessToast(responseObject.message);
+            } catch (error) {
+                console.log(error);
+            }
+
+        })
+    } else {
+
+        document.querySelector('#manage-population-modal').showModal();
+
+        displayPopulationInput(event);
+        calculateTotalVoterOnInputEvent();
+        listenForFormSubmitEvent();
+    }
 });
 
-// Event listener for submitting update population form
-document.querySelector('#manage-election-population').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    try {
-        if (Object.entries(getInputPopulationPerProgram()).length < 1) return; // return when nothing inputted.
+function listenForFormSubmitEvent() {
+    document.querySelector('#manage-election-population').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            if (Object.entries(getInputPopulationPerProgram()).length < 1) return; // return when nothing inputted.
 
-        document.querySelector('#manage-population-modal').close();
-        const action = await confirmAlert('Confirm submission');
-        if (!action.isConfirmed) return document.querySelector('#manage-population-modal').showModal(); // return if not confirmed submission.
+            document.querySelector('#manage-population-modal').close();
+            const action = await confirmAlert('Confirm submission');
+            if (!action.isConfirmed) return document.querySelector('#manage-population-modal').showModal(); // return if not confirmed submission.
 
-        const response = await submitUpdateVoterPopulationForm();
-        const responseObject = await response.json();
+            const response = await submitUpdateVoterPopulationForm();
+            const responseObject = await response.json();
 
-        if (!response.ok) return confirmErrorAlert(responseObject.message);
+            if (!response.ok) return confirmErrorAlert(responseObject.message);
 
-        showSwalSuccessToast(responseObject.message);
-
-
-        // update election overview display
-
-        // const electionId = event.target.querySelector('#hidden-election-id').value;
-        // console.log(electionId);
+            showSwalSuccessToast(responseObject.message);
 
 
-    } catch (error) {
-        console.error(error);
-    }
+            // update election overview display
 
-})
+            // const electionId = event.target.querySelector('#hidden-election-id').value;
+            // console.log(electionId);
+
+
+
+        } catch (error) {
+            console.error(error);
+        }
+
+    })
+}
 
 // Event listener for closing the modal
-document.querySelector('#manage-population-modal-exit').addEventListener('click', (event) => event.target.closest('dialog').close())
+document.querySelector('#close-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
+document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
 
 
 function displayPopulationInput(event) {
@@ -136,6 +176,13 @@ function updateElectionOverviewDisplay(electionId, total, populationPerProgramOb
     console.log(electionId);
     console.log(total);
     console.log(populationPerProgramObject);
+}
+
+async function putRequestToCloseElection(electionId) {
+    const result = await fetch(`/api/election-overview/${electionId}`, {
+        method: 'PUT',
+    })
+    return result;
 }
 
 
