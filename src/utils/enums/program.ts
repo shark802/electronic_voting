@@ -3,5 +3,4 @@ export enum Program {
     bscrim = "CRIM",
     ab = "AB",
     educ = "EDUC",
-    bsedfil = "BSEDFIL"
 }

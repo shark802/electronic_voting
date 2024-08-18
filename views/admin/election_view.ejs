@@ -23,7 +23,7 @@
 
   <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5">
 
-    <div class="flex items-center w-full h-20 py-2 m-0 lg:pt-7 ">
+    <div class="flex items-center w-full py-2 m-0 lg:h-20 lg:pt-7 ">
       <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden">
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Manage Election</h1>
     </div>
@@ -138,9 +138,8 @@
   </main>
 
   <!-- Modal edit election -->
-
   <dialog id="election-edit-modal" class="rounded-lg">
-    <div class="self-center mt-12 bg-white rounded-xl lg:w-[700px] min-h-96 max-w-4/5 auto max-h-3/5 shadow-lg">
+    <div class="self-center mt-5 bg-white rounded-xl lg:w-[700px] min-h-96 max-w-4/5 auto max-h-3/5 shadow-lg">
 
       <form id="update_election_form" class="px-24 py-14">
         <span class="flex justify-end gap-2 text-sm text-gray-400">
@@ -189,7 +188,6 @@
         <div class="flex justify-end gap-2">
           <button id="closeModal" formmethod="dialog" type="button" class="px-3 py-1 mb-4 font-bold text-white bg-red-500 rounded-lg w-fit">CANCEL</button>
           <input type="submit" value="SAVE" class="px-3 py-1 mb-4 font-bold text-white bg-blue-500 rounded-lg">
-
         </div>
       </form>
 

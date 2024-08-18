@@ -39,6 +39,20 @@ document.querySelector('#overview-container').addEventListener('click', (event) 
 
     if (PRESENT_DATE > endDate) {
 
+        const dateString = endDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const timeString = endDate.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        // Combine the date and time strings
+        const formattedDateTime = `${dateString} ${timeString}`;
+
+        document.querySelector('#close-election').querySelector('underline').textContent = formattedDateTime;
         document.querySelector('#close-election').showModal();
 
         document.querySelector('#close-election-button').addEventListener('click', async () => {

@@ -17,13 +17,13 @@
   </style>
 </head>
 
-<body class="w-[100vw] m-0 bg-blue-600 dvh flex overflow-hidden">`
+<body class="w-[100vw] m-0 bg-blue-600 dvh flex overflow-hidden">
 
   <%- include("../partials/sidebar.ejs") %>
 
   <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5">
 
-    <div class="flex items-center w-full h-20 py-3 m-0 lg:pt-7">
+    <div class="flex items-center w-full py-3 m-0 lg:h-20 lg:pt-7">
       <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Election Overview</h1>
     </div>
@@ -195,7 +195,7 @@
       </div>
 
       <div class="py-2 m-auto lg:w-2/3">
-        <label for='total-voter' class="inline-block w-1/3 text-sm font-bold text-blue-500">Total Voter</label>
+        <label for='total-voter' class="inline-block w-1/3 font-bold text-blue-500">Total Voter</label>
         <input type="text" id='total-voter' value="" disabled class="py-2 pl-3 text-blue-500 bg-blue-100 border-2 border-blue-400 rounded-md focus:outline-blue-500">
       </div>
 
@@ -207,10 +207,9 @@
   </dialog>
 
 
-  <dialog id="close-election" class="w-[95%] px-5 py-9 lg:py-8 lg:px-12 max-w-[600px] min-h-fit rounded-md shadow-md">
-    <img src="/img/x.webp" id="exit-close-election-modal" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
+  <dialog id="close-election" class="w-[95%] px-5 py-5 lg:py-8 lg:px-12 max-w-[600px] min-h-fit rounded-md shadow-md">
 
-    <div class="px-5 py-6 bg-yellow-100 border-t-4 border-yellow-500 shadow-md mt-7">
+    <div class="px-5 py-6 bg-yellow-100 border-t-4 border-yellow-500 shadow-md">
       <div class="">
         <div class="flex items-center gap-2 ">
           <svg class="flex-shrink-0 w-4 h-4 text-[#eab308]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -221,13 +220,17 @@
         </div>
 
         <div class="pt-4 pl-4">
-          The election has successfully concluded. All results have been recorded, and no further changes can be made. Please review the final outcomes and ensure all data is properly archived.
+          The election has successfully concluded at <underline class="underline underline-offset-1"></underline>. All results have been recorded, and no further changes can be made. Please review the final outcomes and ensure all data is properly archived.
         </div>
 
       </div>
     </div>
-    <p class="px-3 mt-5 font-medium text-gray-600 lg:px-5">Close Election Dashboard: Click the button to stop displaying election dashboard.</p>
-    <button id="close-election-button" class="px-3 py-1 mt-4 text-sm font-semibold text-white bg-yellow-500 rounded-md hover:bg-yellow-600">Close Election</button>
+    <p class="px-3 mt-5 font-medium text-gray-400 lg:px-5">Close Election Dashboard: Click the button to stop displaying election dashboard.</p>
+
+    <div class="flex items-center justify-center gap-4 lg:gap-6">
+      <button id="exit-close-election-modal" class="relative underline underline-offset-4 top-1">Cancel</button>
+      <button id="close-election-button" class="px-3 py-2 mt-4 text-sm font-semibold text-white bg-yellow-500 rounded-md hover:bg-yellow-600">Close Election</button>
+    </div>
 
   </dialog>
 

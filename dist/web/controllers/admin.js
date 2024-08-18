@@ -107,7 +107,7 @@ function manageCandidate(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const positions = Object.values(position_1.Position);
-            const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND  time_start > CURTIME()))";
+            const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
             const elections = yield (0, query_1.selectQuery)(database_1.pool, selectElectioQuery);
             // const elections: Election[] = []
             res.render("admin/candidate_manage", { elections, positions });
@@ -135,12 +135,37 @@ function addCandidate(req, res, next) {
 exports.addCandidate = addCandidate;
 // Voter
 function manageVoter(req, res, next) {
-    try {
-        res.render("admin/voter_manage");
-    }
-    catch (error) {
-        next(error);
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const electionId = req.params.id;
+            let votedUsers;
+            if (electionId) {
+                const selectAllVotedByElectionQuery = `
+                SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
+                FROM users u JOIN votes v ON u.id_number = v.voter_id
+                JOIN elections e ON v.election_id = e.election_id
+                WHERE v.election_id = ? 
+                GROUP BY v.election_id, u.id_number
+                LIMIT 50`;
+                votedUsers = yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedByElectionQuery, [electionId]);
+                console.log(votedUsers);
+            }
+            else {
+                const selectAllVotedQuery = `
+                SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
+                FROM users u JOIN votes v ON u.id_number = v.voter_id
+                JOIN elections e ON v.election_id = e.election_id
+                GROUP BY v.election_id, u.id_number
+                LIMIT 50`;
+                votedUsers = yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedQuery, [electionId]);
+                console.log(votedUsers);
+            }
+            res.render("admin/voter_manage", { votedUsers });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
 }
 exports.manageVoter = manageVoter;
 // Register device

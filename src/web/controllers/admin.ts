@@ -85,7 +85,7 @@ export async function manageCandidate(req: Request, res: Response, next: NextFun
     try {
         const positions = Object.values(Position);
 
-        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND  time_start > CURTIME()))";
+        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
         // const elections: Election[] = []
 
@@ -109,10 +109,35 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
 }
 
 // Voter
-export function manageVoter(req: Request, res: Response, next: NextFunction) {
-
+export async function manageVoter(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/voter_manage")
+        const electionId = req.params.id;
+
+        let votedUsers: unknown[];
+        if (electionId) {
+            const selectAllVotedByElectionQuery = `
+                SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
+                FROM users u JOIN votes v ON u.id_number = v.voter_id
+                JOIN elections e ON v.election_id = e.election_id
+                WHERE v.election_id = ? 
+                GROUP BY v.election_id, u.id_number
+                LIMIT 50`
+
+            votedUsers = await selectQuery(pool, selectAllVotedByElectionQuery, [electionId]);
+            console.log(votedUsers);
+        } else {
+            const selectAllVotedQuery = `
+                SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
+                FROM users u JOIN votes v ON u.id_number = v.voter_id
+                JOIN elections e ON v.election_id = e.election_id
+                GROUP BY v.election_id, u.id_number
+                LIMIT 50`
+
+            votedUsers = await selectQuery(pool, selectAllVotedQuery, [electionId]);
+            console.log(votedUsers);
+        }
+
+        res.render("admin/voter_manage", { votedUsers })
     } catch (error) {
         next(error)
     }
