@@ -19,3 +19,28 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
     $("#sidebar").hide(100);
 });
 
+filterVotedUserByElection();
+
+async function filterVotedUserByElection() {
+    const selectElement = document.querySelector('#filter-by-election');
+    selectElement.addEventListener('change', async () => {
+        if (!selectElement.value) return window.location = '/admin/voter/manage';
+
+        const form = document.querySelector('#filter-voted-users-form');
+        if (form) {
+            console.log('submit');
+            return form.submit();
+        }
+    })
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const selectedElection = searchParams.get('election_id');
+
+    document.querySelector('#filter-by-election').querySelectorAll('option').forEach(option => {
+        if (option.value === selectedElection) {
+            return option.selected = true;
+        }
+    })
+})

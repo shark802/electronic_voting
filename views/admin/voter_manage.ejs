@@ -24,6 +24,75 @@
 
     <div class="relative h-full mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:mb-3 bg-blue-50 no-scrollbar">
 
+      <div class="p-4 bg-white lg:h-[87px]">
+        <form action="/admin/voter/manage" method="get" id="filter-voted-users-form" class="flex flex-col">
+          <label for="filter-by-election" class="text-sm font-medium text-gray-500">Filter by recent election: </label>
+          <select name="election_id" id="filter-by-election" class="py-1 border border-gray-300 rounded-sm min-w-32 w-fit focus:outline-none lg:px-2">
+            <option value="">--</option>
+            <%
+            if (availableElections && availableElections.length > 0) {
+              availableElections.forEach(election => {
+            %>
+
+            <option value="<%= election.election_id %>"> <%= election.election_name %> </option>
+
+            <%
+              })
+            }
+            %>
+          </select>
+        </form>
+      </div>
+
+      <div class="w-full lg:px-3 h-[calc(100%-87px)] overflow-auto  ">
+
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th class="sticky top-0 py-1 font-medium text-white bg-blue-500">Fullname</th>
+              <th class="sticky top-0 py-1 font-medium text-white bg-blue-500">Id number</th>
+              <th class="sticky top-0 py-1 font-medium text-white bg-blue-500">Election name</th>
+              <th class="sticky top-0 py-1 font-medium text-white bg-blue-500">Election id</th>
+              <th class="sticky top-0 py-1 font-medium text-white bg-blue-500">Time voted</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <%
+            if(votedUsers && votedUsers.length > 0) {
+              votedUsers.forEach(voter => {
+
+                let candidateAddedAt = new Date(voter.time_casted);
+                const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                };
+
+                const timeVoted = candidateAddedAt.toLocaleString('en-US', options);
+
+            %>
+
+            <tr class="tablerow">
+              <td class="py-2 pl-2 text-xs font-medium text-gray-600 text-nowrap"> <%= voter.lastname %>, <%= voter.firstname %> </td>
+              <td class="py-2 pl-2 text-xs font-medium text-center text-gray-600 text-nowrap"> <%= voter.id_number %> </td>
+              <td class="py-2 pl-2 text-xs font-medium text-center text-gray-600 text-nowrap"> <%= voter.election_name %> </td>
+              <td class="py-2 pl-2 text-xs font-medium text-center text-gray-600 text-nowrap"> <%= voter.election_id %> </td>
+              <td class="py-2 pl-2 text-xs font-medium text-center text-gray-600 text-nowrap"> <%= timeVoted %> </td>
+            </tr>
+
+            <%
+              });
+
+            }
+            %>
+          </tbody>
+        </table>
+
+      </div>
+
     </div>
 
   </main>

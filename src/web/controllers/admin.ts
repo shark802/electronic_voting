@@ -111,7 +111,7 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
 // Voter
 export async function manageVoter(req: Request, res: Response, next: NextFunction) {
     try {
-        const electionId = req.params.id;
+        const electionId = req.query['election_id'];
 
         let votedUsers: unknown[];
         if (electionId) {
@@ -124,7 +124,6 @@ export async function manageVoter(req: Request, res: Response, next: NextFunctio
                 LIMIT 50`
 
             votedUsers = await selectQuery(pool, selectAllVotedByElectionQuery, [electionId]);
-            console.log(votedUsers);
         } else {
             const selectAllVotedQuery = `
                 SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
@@ -134,10 +133,12 @@ export async function manageVoter(req: Request, res: Response, next: NextFunctio
                 LIMIT 50`
 
             votedUsers = await selectQuery(pool, selectAllVotedQuery, [electionId]);
-            console.log(votedUsers);
         }
 
-        res.render("admin/voter_manage", { votedUsers })
+        const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC   LIMIT 10";
+        const availableElections = await selectQuery(pool, availableElectionQuery);
+
+        res.render("admin/voter_manage", { votedUsers, availableElections })
     } catch (error) {
         next(error)
     }

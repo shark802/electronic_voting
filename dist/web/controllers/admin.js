@@ -137,7 +137,7 @@ exports.addCandidate = addCandidate;
 function manageVoter(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const electionId = req.params.id;
+            const electionId = req.query['election_id'];
             let votedUsers;
             if (electionId) {
                 const selectAllVotedByElectionQuery = `
@@ -148,7 +148,6 @@ function manageVoter(req, res, next) {
                 GROUP BY v.election_id, u.id_number
                 LIMIT 50`;
                 votedUsers = yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedByElectionQuery, [electionId]);
-                console.log(votedUsers);
             }
             else {
                 const selectAllVotedQuery = `
@@ -158,9 +157,10 @@ function manageVoter(req, res, next) {
                 GROUP BY v.election_id, u.id_number
                 LIMIT 50`;
                 votedUsers = yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedQuery, [electionId]);
-                console.log(votedUsers);
             }
-            res.render("admin/voter_manage", { votedUsers });
+            const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC   LIMIT 10";
+            const availableElections = yield (0, query_1.selectQuery)(database_1.pool, availableElectionQuery);
+            res.render("admin/voter_manage", { votedUsers, availableElections });
         }
         catch (error) {
             next(error);
