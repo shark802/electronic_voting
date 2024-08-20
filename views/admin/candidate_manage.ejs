@@ -30,7 +30,7 @@
         <% }) %>
       </div>
 
-      <div id="election-box" class="flex flex-wrap pb-6 gap-6 px-3 items-end overflow-y-auto max-h-[calc(100%-80px)] no-scrollbar lg:px-7">
+      <div id="election-box" class="flex flex-wrap pb-24 gap-6 px-3 items-end overflow-x-auto overflow-y-auto max-h-[calc(100%-80px)] lg:px-7">
         <% if (elections.length < 1) { %>
 
         <!-- Display no election -->
@@ -42,14 +42,13 @@
         <% } else { %>
 
         <% elections.forEach(election => { %>
-        <section id="election" class="w-full transition-colors bg-blue-100 rounded-lg shadow h-fit min-h-16">
+        <section id="election" class="w-full transition-colors bg-blue-100 rounded-lg shadow min-w-fit h-fit min-h-16">
           <div class="px-8 py-5">
             <h2 class="text-xl font-semibold"><%= election.election_name %></h2>
             <p id="election-id" class="text-gray-400"><%= election.election_id %></p>
-            <!-- <img src="/img/chevron.webp" alt="chevron" class="absolute w-5 opacity-70 bottom-3 right-5"> -->
           </div>
 
-          <div id="candidates-display" class="hidden p-1 pb-0 rounded-lg rounded-bl-lg rounded-br-lg h-fit">
+          <div id="candidates-display" class="hidden p-1 pb-0 rounded-lg rounded-bl-lg rounded-br-lg h-fit ">
 
             <hr class="mb-2 border-t border-gray-300">
 

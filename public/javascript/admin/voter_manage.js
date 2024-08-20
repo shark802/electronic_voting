@@ -20,11 +20,12 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 });
 
 filterVotedUserByElection();
+searchUser();
+clearSearch()
 
-async function filterVotedUserByElection() {
+function filterVotedUserByElection() {
     const selectElement = document.querySelector('#filter-by-election');
     selectElement.addEventListener('change', async () => {
-        if (!selectElement.value) return window.location = '/admin/voter/manage';
 
         const form = document.querySelector('#filter-voted-users-form');
         if (form) {
@@ -34,13 +35,38 @@ async function filterVotedUserByElection() {
     })
 }
 
+function clearSearch() {
+    const searchInput = document.querySelector('#search-user');
+    searchInput.addEventListener('input', (event) => {
+        if (searchInput.value.trim() === "") return document.querySelector('#filter-voted-users-form').submit();
+    })
+}
+
+function searchUser() {
+    const searchUserForm = document.querySelector('#filter-voted-users-form');
+    searchUserForm.addEventListener('submit', () => {
+        if (document.querySelector('#search-user').value.trim() === "") {
+            document.querySelector('#search-user').value = "";
+            return
+        };
+        searchUser.submit();
+    })
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const searchParams = new URLSearchParams(window.location.search);
-    const selectedElection = searchParams.get('election_id');
+    const selectedElection = searchParams.get('election');
 
     document.querySelector('#filter-by-election').querySelectorAll('option').forEach(option => {
         if (option.value === selectedElection) {
             return option.selected = true;
         }
     })
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const userId = searchParams.get('user_id');
+
+    document.querySelector('#search-user').value = userId;
 })

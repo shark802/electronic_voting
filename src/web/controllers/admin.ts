@@ -6,6 +6,7 @@ import { Position } from "../../utils/enums/position";
 import { Program } from "../../utils/enums/program";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
 import { totalUserVotedPerElection, totalUserVotedPerProgram } from "../../data_access/election";
+import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVotedInElection, getAllUserElectionParticipatedIn } from "../../data_access/voterService";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -111,28 +112,22 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
 // Voter
 export async function manageVoter(req: Request, res: Response, next: NextFunction) {
     try {
-        const electionId = req.query['election_id'];
+        const { election, user_id } = req.query;
 
         let votedUsers: unknown[];
-        if (electionId) {
-            const selectAllVotedByElectionQuery = `
-                SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
-                FROM users u JOIN votes v ON u.id_number = v.voter_id
-                JOIN elections e ON v.election_id = e.election_id
-                WHERE v.election_id = ? 
-                GROUP BY v.election_id, u.id_number
-                LIMIT 50`
 
-            votedUsers = await selectQuery(pool, selectAllVotedByElectionQuery, [electionId]);
+        if (election && user_id) {
+
+            votedUsers = await findOneUserVotedInElection(election as string, user_id as string);
+        } else if (election && !user_id) {
+
+            votedUsers = await getAllRecentUsersVotedInElection(election as string);
+        } else if (user_id && !election) {
+
+            votedUsers = await getAllUserElectionParticipatedIn(user_id as string);
         } else {
-            const selectAllVotedQuery = `
-                SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
-                FROM users u JOIN votes v ON u.id_number = v.voter_id
-                JOIN elections e ON v.election_id = e.election_id
-                GROUP BY v.election_id, u.id_number
-                LIMIT 50`
 
-            votedUsers = await selectQuery(pool, selectAllVotedQuery, [electionId]);
+            votedUsers = await getAllRecentUsersVoted();
         }
 
         const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC   LIMIT 10";

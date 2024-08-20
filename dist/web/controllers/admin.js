@@ -15,6 +15,7 @@ const database_1 = require("../../config/database");
 const position_1 = require("../../utils/enums/position");
 const program_1 = require("../../utils/enums/program");
 const election_1 = require("../../data_access/election");
+const voterService_1 = require("../../data_access/voterService");
 function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -137,26 +138,19 @@ exports.addCandidate = addCandidate;
 function manageVoter(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const electionId = req.query['election_id'];
+            const { election, user_id } = req.query;
             let votedUsers;
-            if (electionId) {
-                const selectAllVotedByElectionQuery = `
-                SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
-                FROM users u JOIN votes v ON u.id_number = v.voter_id
-                JOIN elections e ON v.election_id = e.election_id
-                WHERE v.election_id = ? 
-                GROUP BY v.election_id, u.id_number
-                LIMIT 50`;
-                votedUsers = yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedByElectionQuery, [electionId]);
+            if (election && user_id) {
+                votedUsers = yield (0, voterService_1.findOneUserVotedInElection)(election, user_id);
+            }
+            else if (election && !user_id) {
+                votedUsers = yield (0, voterService_1.getAllRecentUsersVotedInElection)(election);
+            }
+            else if (user_id && !election) {
+                votedUsers = yield (0, voterService_1.getAllUserElectionParticipatedIn)(user_id);
             }
             else {
-                const selectAllVotedQuery = `
-                SELECT u.id_number, u.firstname, u.lastname, u.course, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
-                FROM users u JOIN votes v ON u.id_number = v.voter_id
-                JOIN elections e ON v.election_id = e.election_id
-                GROUP BY v.election_id, u.id_number
-                LIMIT 50`;
-                votedUsers = yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedQuery, [electionId]);
+                votedUsers = yield (0, voterService_1.getAllRecentUsersVoted)();
             }
             const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC   LIMIT 10";
             const availableElections = yield (0, query_1.selectQuery)(database_1.pool, availableElectionQuery);

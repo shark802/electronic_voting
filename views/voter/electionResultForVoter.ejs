@@ -33,7 +33,7 @@
 
       <% 
       if (positionList && positionList.length > 0) { 
-        if (candidatesVoteTally.length < 1) {
+        if (candidatesVoteTally.length < 1 && allCandidatesInElection.length < 1) {
       %>
       <div class="px-3 py-6 mt-6 text-lg font-semibold text-center text-blue-700 bg-blue-200 rounded-lg">
         <p class="text-2xl font-bold">No Candidates to display on this election</p>
@@ -41,6 +41,7 @@
       <%
         }
 
+        // Display 
         allCandidatesInElection.forEach(candidate => {
 
           if (!candidatesVoteTally.some(talliedCandidate => candidate.id_number === talliedCandidate.id_number)) {
@@ -92,7 +93,9 @@
 
             <div class="flex items-end gap-2">
 
-              <p id="vote-percentage" class="text-2xl font-bold text-green-600 lg:text-4xl"> <%= ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) %>%</p>
+              <p id="vote-percentage" class="text-2xl font-bold text-green-600 lg:text-4xl">
+                <%= totalVotesInPosition == 0 ? '0%' : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) + '%' %>
+              </p>
             </div>
           </div>
 
@@ -101,7 +104,6 @@
 
         <div id="rest-candidates" class="hidden">
           <% restOfCandidates.forEach(candidate => { %>
-
           <div class="flex items-center justify-between gap-2 py-1 pl-2 border-b lg:px-7">
             <div>
               <div class="flex items-end">
@@ -111,17 +113,19 @@
 
               <div class="flex items-center text-sm font-semibold">
                 <p class="text-gray-400">Votes:</p>
-                <p class="ml-2 text-lg font-bold text-green-400"><%= 0 %></p>
+                <p class="ml-2 text-lg font-bold text-green-400"><%= candidate.vote_count %></p>
               </div>
             </div>
 
             <div>
-              <p id="vote-percentage" class="text-xl font-bold text-gray-500 lg:text-2xl"> <%= ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) %>%</p>
+              <p id="vote-percentage" class="text-xl font-bold text-gray-500 lg:text-2xl">
+                <%= totalVotesInPosition == 0 ? '0%' : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) + '%' %>
+              </p>
             </div>
           </div>
-
           <% }) %>
         </div>
+
 
       </section>
 
