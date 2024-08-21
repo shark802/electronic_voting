@@ -163,3 +163,27 @@ export async function getUserCandidateData(req: Request, res: Response, next: Ne
         next(error);
     }
 }
+
+export async function getAllcandidatesInActiveElection(req: Request, res: Response, next: NextFunction) {
+    try {
+        const sqlQuery = `
+            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, e.election_id, COUNT(v.candidate_id) AS vote_count
+            FROM candidates c
+            JOIN elections e ON c.election_id = e.election_id
+            LEFT JOIN users u ON c.id_number = u.id_number
+            LEFT JOIN votes v ON c.id_number = v.candidate_id AND e.election_id = v.election_id
+            WHERE e.deleted_at IS NULL AND e.is_close = 0
+            GROUP BY c.election_id, u.id_number, c.position, v.election_id
+            ORDER BY vote_count DESC;
+        `
+
+        const candidatesData = await selectQuery(pool, sqlQuery);
+
+        console.log(candidatesData);
+
+        res.status(200).json({ candidatesData });
+
+    } catch (error) {
+        next(error);
+    }
+}

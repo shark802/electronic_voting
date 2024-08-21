@@ -1,12 +1,16 @@
 import { Router } from "express";
-import { addCandidateFunction, deleteCandidateFunction, getCandidateById, getManageCandidates, getUserCandidateData, updateCandidateFunction, updateCandidateStatus } from "../controllers/candidate";
+import { addCandidateFunction, deleteCandidateFunction, getAllcandidatesInActiveElection, getCandidateById, getManageCandidates, getUserCandidateData, updateCandidateFunction, updateCandidateStatus } from "../controllers/candidate";
 import { toUpperCase } from "../../middlewares/toUpperCase";
 
 const router = Router();
 
 router.use(toUpperCase);
 
-router.post("/candidate", addCandidateFunction);
+router.route('/candidate')
+    .post(addCandidateFunction)
+
+router.route('/candidate/data')
+    .get(getAllcandidatesInActiveElection)
 
 router
     .route("/candidate/:id")

@@ -5,7 +5,10 @@ const candidate_1 = require("../controllers/candidate");
 const toUpperCase_1 = require("../../middlewares/toUpperCase");
 const router = (0, express_1.Router)();
 router.use(toUpperCase_1.toUpperCase);
-router.post("/candidate", candidate_1.addCandidateFunction);
+router.route('/candidate')
+    .post(candidate_1.addCandidateFunction);
+router.route('/candidate/data')
+    .get(candidate_1.getAllcandidatesInActiveElection);
 router
     .route("/candidate/:id")
     .put(candidate_1.updateCandidateFunction)

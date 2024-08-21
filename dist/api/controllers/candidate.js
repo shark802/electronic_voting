@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserCandidateData = exports.updateCandidateStatus = exports.getCandidateById = exports.getManageCandidates = exports.deleteCandidateFunction = exports.updateCandidateFunction = exports.addCandidateFunction = void 0;
+exports.getAllcandidatesInActiveElection = exports.getUserCandidateData = exports.updateCandidateStatus = exports.getCandidateById = exports.getManageCandidates = exports.deleteCandidateFunction = exports.updateCandidateFunction = exports.addCandidateFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const database_1 = require("../../config/database");
 const query_1 = require("../../data_access/query");
@@ -183,3 +183,26 @@ function getUserCandidateData(req, res, next) {
     });
 }
 exports.getUserCandidateData = getUserCandidateData;
+function getAllcandidatesInActiveElection(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sqlQuery = `
+            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, e.election_id, COUNT(v.candidate_id) AS vote_count
+            FROM candidates c
+            JOIN elections e ON c.election_id = e.election_id
+            LEFT JOIN users u ON c.id_number = u.id_number
+            LEFT JOIN votes v ON c.id_number = v.candidate_id AND e.election_id = v.election_id
+            WHERE e.deleted_at IS NULL AND e.is_close = 0
+            GROUP BY c.election_id, u.id_number, c.position, v.election_id
+            ORDER BY vote_count DESC;
+        `;
+            const candidatesData = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery);
+            console.log(candidatesData);
+            res.status(200).json({ candidatesData });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getAllcandidatesInActiveElection = getAllcandidatesInActiveElection;

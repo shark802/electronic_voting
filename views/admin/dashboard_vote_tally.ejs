@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
+  <!-- <script src="/javascript/lib/chart.min.js" defer></script> -->
   <script type="module" src="/javascript/admin/dashboard_vote_tally.js" defer></script>
 </head>
 
@@ -40,7 +41,7 @@
         elections.forEach(election => {
       %>
 
-      <section data-election-id="<%= election.election_id %>" class="pb-3 mb-5 bg-white border-2 border-gray-300">
+      <section data-election-id="<%= election.election_id %>" class="pb-3 max-w-[1300px] m-auto mb-5 bg-white border-2 border-gray-300">
 
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
@@ -62,7 +63,7 @@
               if ( position === 'SENATOR') {
           %>
 
-          <div class="mt-5 border shadow-sm">
+          <div data-position="<%= position %>" id="position-container" class="mt-5 border shadow-sm">
             <div class="text-lg font-semibold text-center text-white bg-blue-400"> <%= position %> </div>
             <div class="flex flex-col w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
               <%
@@ -75,7 +76,7 @@
 
               <div class="bg-gray-100">
                 <div class="text-lg font-semibold text-center text-white bg-blue-300"> <%= program %> </div>
-                <canvas id="<%= position %>"></canvas>
+                <canvas id="<%= program %>"></canvas>
               </div>
 
               <%
@@ -89,7 +90,7 @@
               } else {
           %>
 
-            <div class="bg-gray-100">
+            <div data-position="<%= position %>" id="position-container" class="bg-gray-100">
               <div class="text-lg font-semibold text-center text-white bg-blue-400"> <%= position %> </div>
               <canvas id="<%= position %>"></canvas>
             </div>
