@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Voter</title>
+  <title>Voter Activity</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
@@ -19,16 +19,16 @@
 
     <div class="flex items-center w-full py-3 m-0 lg:h-20 lg:pt-7">
       <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
-      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Manage Voter</h1>
+      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Voter Activity</h1>
     </div>
 
     <div class="relative h-full mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:mb-3 bg-blue-50 no-scrollbar">
 
-      <div class="lg:p-4 flex items-center justify-between p-2 pb-4  bg-white lg:h-[87px]">
+      <div class="lg:p-4 flex items-center justify-between p-2 pb-4  bg-white lg:h-[70px]">
         <form action="/admin/voter/manage" method="get" id="filter-voted-users-form" class="flex justify-between w-full">
-          <div>
-            <label for="filter-by-election" class="text-sm font-medium text-gray-500">Filter by recent election: </label>
-            <select name="election" id="filter-by-election" class="text-xs border border-gray-300 rounded-sm lg:text-sm lg:py-1 min-w-32 w-fit focus:outline-none lg:px-2">
+          <div class="flex items-center gap-2">
+            <label for="filter-by-election" class="hidden text-sm font-medium text-gray-500 lg:block">Filter by recent election: </label>
+            <select name="election" id="filter-by-election" class="py-1 text-xs border border-gray-300 rounded-sm lg:text-sm lg:py-1 min-w-32 w-fit focus:outline-none lg:px-2">
               <option value="">--</option>
               <%
             if (availableElections && availableElections.length > 0) {
@@ -44,9 +44,9 @@
             </select>
           </div>
 
-          <div class="flex items-center border border-gray-200 rounded-full">
-            <input type="search" name="user_id" id="search-user" placeholder="Id number to search" class="py-1 rounded-full rounded-tr-none rounded-br-none lg:px-3 focus:outline-none focus:bg-blue-50">
-            <button type="submit" class="px-2"><img src="/img/magnifying-glass.webp" alt="search" class="w-6 m-auto opacity-80"></button>
+          <div class="relative flex items-center py-0 text-xs border border-gray-300 rounded-full h-fit lg:text-sm">
+            <input type="search" name="user_id" id="search-user" placeholder="Id number to search" class="px-2 py-1 rounded-full rounded-tr-none rounded-br-none lg:px-3 focus:outline-none focus:bg-blue-50">
+            <button type="submit" class="relative w-6 px-2 lg:w-8"><img src="/img/magnifying-glass.webp" alt="search" class="absolute w-4 m-auto transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 lg:w-6 opacity-80"></button>
           </div>
         </form>
       </div>
@@ -99,6 +99,19 @@
             %>
           </tbody>
         </table>
+
+        <%
+        if (votedUsers.length <= 0) {
+          %>
+        <div class="p-3">
+          <div class="m-auto text-center max-w-[600px] mt-2 rounded-md shadow-md bg-blue-100 p-7">
+            <p class="text-xl font-semibold text-gray-600 lg:text-3xl">No Result Found</p>
+          </div>
+        </div>
+        <%
+        }
+        
+        %>
 
       </div>
 

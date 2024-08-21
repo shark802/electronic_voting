@@ -13,10 +13,14 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
 
         const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
         const totalVotedPerElection = await totalUserVotedPerElection();
-        const totalVotedPerProgram = await totalUserVotedPerProgram()
+        const totalVotedPerProgram = await totalUserVotedPerProgram();
+
         const electionIdList = elections.map(election => election.election_id);
-        const populationPerProgram = await selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList])
-        // const courses = Object.values(Program);
+        let populationPerProgram: unknown[] = []
+
+        if (electionIdList.length > 0) {
+            populationPerProgram = await selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList])
+        }
 
         res.render("admin/dashboard_overview", { elections, totalVotedPerElection, populationPerProgram, totalVotedPerProgram })
     } catch (error) {
@@ -24,9 +28,20 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
     }
 }
 
-export function dashboardVoteTally(req: Request, res: Response, next: NextFunction) {
+export async function dashboardVoteTally(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/dashboard_vote_tally")
+        const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
+        const candidatePosition = Object.values(Position);
+        const programs = Object.values(Program);
+
+        const electionIdList = elections.map(election => election.election_id);
+        let candidates: unknown[] = []
+
+        if (electionIdList.length > 0) {
+            candidates = await selectQuery(pool, 'SELECT * FROM candidates WHERE election_id IN ( ? )', [electionIdList])
+        }
+
+        res.render("admin/dashboard_vote_tally", { elections, candidatePosition, programs, candidates })
     } catch (error) {
         next(error)
     }

@@ -48,7 +48,7 @@
             <p id="election-id" class="text-sm text-blue-100"> <%= election.election_id %> </p>
           </div>
 
-          <button id="manage" class="text-sm font-medium">MANAGE</button>
+          <button id="manage" class="text-sm font-medium focus:outline-none">MANAGE</button>
         </div>
 
         <div class="flex flex-grow w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
@@ -78,18 +78,18 @@
                 <%
                const findAvailableTotalVotes = totalVotedPerElection.filter(total => total.election_id === election.election_id);
                const totalVoted = findAvailableTotalVotes.length > 0 ? findAvailableTotalVotes[0].total_voted : 0;              
-              %>
+               %>
                 <p class="text-lg font-bold text-green-600 lg:text-4xl"><%= totalVoted %></p>
 
                 <%
                 if (totalVoted) {
                 %>
 
-                <span class="mx-3 text-lg font-bold text-green-600 lg:text-4xl lg:mx-8"> (<%= ((totalVoted / totalPopulation )* 100).toFixed(2) %>%) </span>
+                <span class="mx-3 text-lg font-bold text-green-600 lg:text-4xl lg:mx-5"> (<%= ((totalVoted / totalPopulation )* 100).toFixed(2) %>%) </span>
 
                 <%
                 } else {
-%>
+                %>
                 <span class="mx-3 text-lg font-bold text-green-600 lg:text-4xl lg:mx-8"> (0.00%) </span>
 
                 <%
@@ -118,7 +118,7 @@
                 if (notVotedInElection != 'N/A') {
                 %>
 
-                <span class="mx-3 text-xl font-bold text-red-600 tet-lg lg:text-4xl lg:mx-8"> (<%= ((notVotedInElection / totalPopulation )* 100).toFixed(2) %>%) </span>
+                <span class="mx-3 text-xl font-bold text-red-600 tet-lg lg:text-4xl lg:mx-5"> (<%= ((notVotedInElection / totalPopulation )* 100).toFixed(2) %>%) </span>
 
                 <%
                 }
@@ -176,8 +176,21 @@
 
       <%
         })
+     } else { 
+      %>
+
+      <section class="lg:w-[700px] border-2 border-gray-300 lg:px-10 box-border shadow-sm bg-white rounded-md min-h-28 grid m-auto py-6 mt-7">
+        <img src="/img/empty-folder.webp" alt="empty folder" class="m-auto w-28 h-28">
+        <h1 class="m-auto mt-3 text-lg font-semibold text-center lg:w-3/5">It seems there are no active election at the moment</h1>
+
+        <a href="/admin/election/new" class="m-auto">
+          <button class="px-2 py-1 m-auto mt-5 text-white bg-blue-500 rounded-md w-fit">Create Election?</button>
+        </a>
+      </section>
+
+      <%
      }
-    %>
+      %>
 
     </div>
 
@@ -186,7 +199,7 @@
   <dialog id="manage-population-modal" class="w-[95%] px-5 py-9 lg:py-8 lg:px-12 max-w-[600px] min-h-fit rounded-md shadow-md">
     <img src="/img/x.webp" id="close-modal" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
 
-    <form id="manage-election-population">
+    <form id="manage-election-population" class="focus:outline-none">
       <input type="hidden" id="hidden-election-id">
       <h2 class="mb-5 text-xl font-bold text-center ">Manage voter population</h2>
 
@@ -228,8 +241,8 @@
     <p class="px-3 mt-5 font-medium text-gray-400 lg:px-5">Close Election Dashboard: Click the button to stop displaying election dashboard.</p>
 
     <div class="flex items-center justify-center gap-4 lg:gap-6">
-      <button id="exit-close-election-modal" class="relative underline underline-offset-4 top-1">Cancel</button>
-      <button id="close-election-button" class="px-3 py-2 mt-4 text-sm font-semibold text-white bg-yellow-500 rounded-md hover:bg-yellow-600">Close Election</button>
+      <button id="exit-close-election-modal" class="relative underline focus:outline-none underline-offset-4 top-1">Cancel</button>
+      <button id="close-election-button" class="px-3 py-2 mt-4 text-sm font-semibold text-white bg-yellow-500 rounded-md focus:outline-none hover:bg-yellow-600">Close Election</button>
     </div>
 
   </dialog>

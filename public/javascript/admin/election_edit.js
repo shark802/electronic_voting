@@ -56,7 +56,7 @@ electionCardEditButons.forEach(cardButton => {
                 // Watch for input value if valid
                 changeEventListener(isValidText, [election_name], election_name_error_message) // Validate the election name if user change focus from input
                 // changeEventListener(isValidStartDate, [date_start], startDateErrorMessage); // Validate the start date input 
-                changeEventListener(isValidEndDate, [date_end, date_start], endDateErrorMessage); // Validate the end date input
+                // changeEventListener(isValidEndDate, [date_end, date_start], endDateErrorMessage); // Validate the end date input
                 changeEventListener(isValidStartTime, [time_end, time_start], startTimeErrorMessage)
                 changeEventListener(isValidEndTime, [time_end, time_start, date_start, date_end], endTimeErrorMessage)
 
@@ -89,7 +89,7 @@ async function updateElection(event, parent) {
         if (
             !isValidText([electionName], election_name_error_message) ||
             // !isValidStartDate([dateStart], startDateErrorMessage) ||
-            !isValidEndDate([dateEnd, dateStart], endDateErrorMessage) ||
+            // !isValidEndDate([dateEnd, dateStart], endDateErrorMessage) ||
             !isValidStartTime([timeStart], startTimeErrorMessage) ||
             !isValidEndTime([time_end, time_start, date_start, date_end], endTimeErrorMessage)
         ) {

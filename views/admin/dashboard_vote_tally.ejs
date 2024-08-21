@@ -22,7 +22,92 @@
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Election Tally</h1>
     </div>
 
-    <div class="relative h-full mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:mb-3 bg-blue-50 no-scrollbar">
+    <div id="vote-tally-container" class="relative h-full p-2 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:p-5 lg:mb-3 bg-blue-50 no-scrollbar">
+
+      <% if (elections && elections.length < 1) { %>
+
+      <section class="lg:w-[700px] border-2 border-gray-300 lg:px-10 box-border shadow-sm bg-white rounded-md min-h-28 grid m-auto py-6 mt-7">
+        <img src="/img/empty-folder.webp" alt="empty folder" class="m-auto w-28 h-28">
+        <h1 class="m-auto mt-3 text-lg font-semibold text-center lg:w-3/5">It seems there are no active election at the moment</h1>
+
+        <a href="/admin/election/new" class="m-auto">
+          <button class="px-2 py-1 m-auto mt-5 text-white bg-blue-500 rounded-md w-fit">Create Election?</button>
+        </a>
+      </section>
+
+      <% 
+      } else { 
+        elections.forEach(election => {
+      %>
+
+      <section data-election-id="<%= election.election_id %>" class="pb-3 mb-5 bg-white border-2 border-gray-300">
+
+        <input id="date-end" type="hidden" value="<%= election.date_end %>">
+        <input id="time-end" type="hidden" value="<%= election.time_end %>">
+
+        <div class="flex justify-between p-3 text-white bg-blue-600 rounded-sm shadow-md lg:px-4">
+          <div>
+            <h2 class="text-lg font-semibold lg:text-2xl"> <%= election.election_name %> </h2>
+            <p id="election-id" class="text-sm text-blue-100"> <%= election.election_id %> </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
+          <% 
+          candidatePosition.forEach(position => {
+            
+            const candidatesPerPosition = candidates.filter(candidate => candidate.position === position && candidate.election_id === election.election_id );
+            if (candidatesPerPosition.length > 0 ) {
+
+              if ( position === 'SENATOR') {
+          %>
+
+          <div class="mt-5 border shadow-sm">
+            <div class="text-lg font-semibold text-center text-white bg-blue-400"> <%= position %> </div>
+            <div class="flex flex-col w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
+              <%
+                programs.forEach(program => {
+                  const senatorCandidatesPerProgram = candidates.filter(candidate => candidate.position === 'SENATOR' && candidate.election_id === election.election_id );
+                  if (senatorCandidatesPerProgram.length > 0) {
+
+                    
+            %>
+
+              <div class="bg-gray-100">
+                <div class="text-lg font-semibold text-center text-white bg-blue-300"> <%= program %> </div>
+                <canvas id="<%= position %>"></canvas>
+              </div>
+
+              <%
+                  }
+                })
+            %>
+
+            </div>
+
+            <%
+              } else {
+          %>
+
+            <div class="bg-gray-100">
+              <div class="text-lg font-semibold text-center text-white bg-blue-400"> <%= position %> </div>
+              <canvas id="<%= position %>"></canvas>
+            </div>
+
+            <%
+              }
+            }
+          })  
+          %>
+          </div>
+        </div>
+
+      </section>
+
+      <%
+    })  
+  } 
+  %>
 
     </div>
 

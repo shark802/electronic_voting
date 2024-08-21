@@ -23,8 +23,10 @@ function dashboardOverview(req, res, next) {
             const totalVotedPerElection = yield (0, election_1.totalUserVotedPerElection)();
             const totalVotedPerProgram = yield (0, election_1.totalUserVotedPerProgram)();
             const electionIdList = elections.map(election => election.election_id);
-            const populationPerProgram = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList]);
-            // const courses = Object.values(Program);
+            let populationPerProgram = [];
+            if (electionIdList.length > 0) {
+                populationPerProgram = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList]);
+            }
             res.render("admin/dashboard_overview", { elections, totalVotedPerElection, populationPerProgram, totalVotedPerProgram });
         }
         catch (error) {
@@ -34,12 +36,22 @@ function dashboardOverview(req, res, next) {
 }
 exports.dashboardOverview = dashboardOverview;
 function dashboardVoteTally(req, res, next) {
-    try {
-        res.render("admin/dashboard_vote_tally");
-    }
-    catch (error) {
-        next(error);
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
+            const candidatePosition = Object.values(position_1.Position);
+            const programs = Object.values(program_1.Program);
+            const electionIdList = elections.map(election => election.election_id);
+            let candidates = [];
+            if (electionIdList.length > 0) {
+                candidates = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE election_id IN ( ? )', [electionIdList]);
+            }
+            res.render("admin/dashboard_vote_tally", { elections, candidatePosition, programs, candidates });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
 }
 exports.dashboardVoteTally = dashboardVoteTally;
 // Election
