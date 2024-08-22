@@ -1,11 +1,11 @@
 import "/javascript/logout.js"
+// import Chart from '/javascript/lib/chart.js';
 
 const dashboard_nav = document.querySelector("#dashboard_nav")
 const vote_tally_page = document.querySelector("#vote_tally_page")
 
 dashboard_nav.classList.remove("font-normal")
 dashboard_nav.classList.add("active-page")
-// dashboard_nav.style.color = "green"
 
 $("#dashboard_subpage").show()
 
@@ -28,20 +28,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeElections.forEach(election => {
         const electionId = election.dataset.electionId;
 
-        const positionDivContainer = election.querySelectorAll('#position-container'); // select all div that will serve as container of candidate position per election 
+        const positionDivContainer = election.querySelectorAll('#position-container'); // select all div that serve as container for group of candidate per position
         positionDivContainer.forEach(div => {
-            const positionDataAttribute = div.dataset.position;
+            const positionDataAttribute = div.dataset.position; // contain data attribute (data-position) to provide info what position the container holds. // Example: 'PRESIDENT', VICE_PRESIDENT', 'SENATOR'
 
             if (positionDataAttribute === 'SENATOR') {
 
-                const senatorPositionPerProgam = div.querySelectorAll('canvas');
+                const senatorPositionPerProgam = div.querySelectorAll('#senator-by-program'); // SENATOR div container holds multiple canvas per program
+                senatorPositionPerProgam.forEach(program => {
+                    const canvas = program.querySelector('canvas'); // Represent as canvas element for each program on senator position
+                    const candidatesToDisplay = electionsCandidateData.filter(candidate => candidate.position === 'SENATOR' && candidate.election_id === electionId && candidate.course === canvas.id);
+
+                    new Chart(canvas, {
+                        type: 'bar',
+                        data: transformDataset(candidatesToDisplay),
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: calculateStepSize(candidatesToDisplay)
+                                    }
+                                }
+                            },
+                            layout: {
+                                padding: 20
+                            }
+                        }
+                    })
+                })
 
             } else {
 
-                const position = div.querySelector('canvas');
-                const candidatesToDisplay = electionsCandidateData.filter(candidate => candidate.position === position.id && candidate.election_id === electionId);
+                const canvas = div.querySelector('canvas');
+                const candidatesToDisplay = electionsCandidateData.filter(candidate => candidate.position === canvas.id && candidate.election_id === electionId);
 
-                console.log(candidatesToDisplay);
+                new Chart(canvas, {
+                    type: 'bar',
+                    data: transformDataset(candidatesToDisplay),
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: calculateStepSize(candidatesToDisplay)
+                                }
+                            }
+                        },
+                        layout: {
+                            padding: 20
+                        }
+                    }
+                });
             }
         });
 
@@ -66,7 +104,14 @@ function transformDataset(dataset) {
     return {
         labels: dataset.map(candidate => `${candidate.firstname} ${candidate.lastname}`),
         datasets: [{
-            data: dataset.map(candidate => candidate.vote_count),
+            label: 'Vote count',
+            data: dataset.map(candidate => Math.round(candidate.vote_count)),
+            borderWidth: 1
         }]
     }
+}
+
+function calculateStepSize(dataset) {
+    const range = Math.max(...dataset.map(item => item.vote_count)) - Math.min(...dataset.map(item => item.vote_count));
+    return range < 100 ? 1 : 10;
 }

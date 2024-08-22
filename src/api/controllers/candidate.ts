@@ -172,15 +172,12 @@ export async function getAllcandidatesInActiveElection(req: Request, res: Respon
             JOIN elections e ON c.election_id = e.election_id
             LEFT JOIN users u ON c.id_number = u.id_number
             LEFT JOIN votes v ON c.id_number = v.candidate_id AND e.election_id = v.election_id
-            WHERE e.deleted_at IS NULL AND e.is_close = 0
+            WHERE e.deleted_at IS NULL AND e.is_close = 0 AND c.deleted IS NULL AND c.enabled = 1
             GROUP BY c.election_id, u.id_number, c.position, v.election_id
-            ORDER BY vote_count DESC;
+            ORDER BY lastname;
         `
 
         const candidatesData = await selectQuery(pool, sqlQuery);
-
-        console.log(candidatesData);
-
         res.status(200).json({ candidatesData });
 
     } catch (error) {

@@ -8,8 +8,9 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
-  <!-- <script src="/javascript/lib/chart.min.js" defer></script> -->
+  <script src="/javascript/lib/chart.umd.min.js"></script>
   <script type="module" src="/javascript/admin/dashboard_vote_tally.js" defer></script>
+
 </head>
 
 <body class="w-[100vw] m-0 bg-blue-600 dvh flex overflow-hidden">
@@ -53,7 +54,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
+        <div class="flex flex-col w-full md:w-[90%] lg:w-[85%] m-auto gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
           <% 
           candidatePosition.forEach(position => {
             
@@ -74,9 +75,9 @@
                     
             %>
 
-              <div class="bg-gray-100">
-                <div class="text-lg font-semibold text-center text-white bg-blue-300"> <%= program %> </div>
-                <canvas id="<%= program %>"></canvas>
+              <div id="senator-by-program" class="mb-4 bg-gray-100 rounded-md shadow-md lg:mb-8">
+                <div class="text-lg font-semibold text-center text-white bg-blue-400 rounded-t-md"> <%= program %> </div>
+                <canvas id="<%= program %>" class="min-h-[450px]"></canvas>
               </div>
 
               <%
@@ -90,9 +91,9 @@
               } else {
           %>
 
-            <div data-position="<%= position %>" id="position-container" class="bg-gray-100">
-              <div class="text-lg font-semibold text-center text-white bg-blue-400"> <%= position %> </div>
-              <canvas id="<%= position %>"></canvas>
+            <div data-position="<%= position %>" id="position-container" class="mb-4 bg-gray-100 rounded-md shadow-md lg:mb-8">
+              <div class="text-lg font-semibold text-center text-white bg-blue-400 rounded-t-md"> <%= position %> </div>
+              <canvas id="<%= position %>" class="min-h-[450px]"></canvas>
             </div>
 
             <%
