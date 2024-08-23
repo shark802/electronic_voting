@@ -120,7 +120,7 @@ function listenForFormSubmitEvent() {
 
 // Event listener for closing the modal
 document.querySelector('#close-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
-document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
+document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
 
 
 function displayPopulationInput(event) {

@@ -24,7 +24,7 @@
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Election Tally</h1>
     </div>
 
-    <div id="vote-tally-container" class="relative h-full p-2 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:p-5 lg:mb-3 bg-blue-50 no-scrollbar">
+    <div id="vote-tally-container" class="relative h-full p-2 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:gap-3 lg:p-5 lg:mb-3 bg-blue-50">
 
       <% if (elections && elections.length < 1) { %>
 
@@ -54,7 +54,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col w-full md:w-[90%] lg:w-[85%] m-auto gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
+        <div class="flex lg:flex-row basis[48%] grow lg:justify-evenly lg:flex-wrap lg:grow flex-col w-full md:w-[90%] lg:w-full m-auto gap-1 px-1 py-2 mt-2 lg:px-1">
           <% 
           candidatePosition.forEach(position => {
             
@@ -64,9 +64,9 @@
               if ( position === 'SENATOR') {
           %>
 
-          <div data-position="<%= position %>" id="position-container" class="mt-5 border shadow-sm">
-            <div class="text-lg font-semibold text-center text-white bg-blue-400"> <%= position %> </div>
-            <div class="flex flex-col w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
+          <div data-position="<%= position %>" id="position-container" class="mt-5 border shadow-sm lg:w-full">
+            <div class="py-2 text-lg font-semibold text-center text-white bg-blue-400 rounded-t-md"> <%= position %> </div>
+            <div class="flex flex-col w-full gap-1 px-1 py-2 mt-2 justify-evenly lg:flex-row lg:flex-wrap">
               <%
                 programs.forEach(program => {
                   const senatorCandidatesPerProgram = candidates.filter(candidate => candidate.position === 'SENATOR' && candidate.election_id === election.election_id );
@@ -75,9 +75,9 @@
                     
             %>
 
-              <div id="senator-by-program" class="mb-4 bg-gray-100 rounded-md shadow-md lg:mb-8">
-                <div class="text-lg font-semibold text-center text-white bg-blue-400 rounded-t-md"> <%= program %> </div>
-                <canvas id="<%= program %>" class="min-h-[450px]"></canvas>
+              <div id="senator-by-program" class="mb-4 bg-gray-100 rounded-md shadow-md lg:mb-8 lg:w-[48%]">
+                <div class="text-lg font-semibold text-center text-white bg-blue-300 rounded-t-md"> <%= program %> </div>
+                <canvas id="<%= program %>" class="lg:min-h-[280px]"></canvas>
               </div>
 
               <%
@@ -91,9 +91,9 @@
               } else {
           %>
 
-            <div data-position="<%= position %>" id="position-container" class="mb-4 bg-gray-100 rounded-md shadow-md lg:mb-8">
-              <div class="text-lg font-semibold text-center text-white bg-blue-400 rounded-t-md"> <%= position %> </div>
-              <canvas id="<%= position %>" class="min-h-[450px]"></canvas>
+            <div data-position="<%= position %>" id="position-container" class="mb-4 bg-gray-100 rounded-md shadow-md lg:m-0 lg:w-[48%] lg:mb-8">
+              <div class="py-2 text-lg font-semibold text-center text-white bg-blue-400 rounded-t-md"> <%= position %> </div>
+              <canvas id="<%= position %>" class="lg:min-h-[280px]"></canvas>
             </div>
 
             <%
