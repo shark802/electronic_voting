@@ -33,6 +33,7 @@ document.querySelector('#overview-container').addEventListener('click', (event) 
     const timeEnd = electionContainerSection.querySelector('#time-end').value;
 
     const PRESENT_DATE = new Date();
+
     const endDate = new Date(dateEnd);
     const [hourEnd, minuteEnd] = timeEnd.split(':');
     endDate.setHours(hourEnd, minuteEnd);
@@ -49,9 +50,9 @@ document.querySelector('#overview-container').addEventListener('click', (event) 
             minute: "2-digit",
         });
 
-        // Combine the date and time strings
         const formattedDateTime = `${dateString} ${timeString}`;
 
+        // This display the date and time when modal is display after ended
         document.querySelector('#close-election').querySelector('underline').textContent = formattedDateTime;
         document.querySelector('#close-election').showModal();
 
@@ -81,6 +82,7 @@ document.querySelector('#overview-container').addEventListener('click', (event) 
         document.querySelector('#manage-population-modal').showModal();
 
         displayPopulationInput(event);
+        displayTotalPopulationOnModal(getInputPopulationPerProgram());
         calculateTotalVoterOnInputEvent();
         listenForFormSubmitEvent();
     }
@@ -106,10 +108,10 @@ function listenForFormSubmitEvent() {
 
             // update election overview display
 
-            // const electionId = event.target.querySelector('#hidden-election-id').value;
-            // console.log(electionId);
+            const electionId = event.target.querySelector('#hidden-election-id').value;
+            const populationPerProgramObject = getInputPopulationPerProgram();
 
-
+            updateElectionOverviewDisplay(electionId, populationPerProgramObject);
 
         } catch (error) {
             console.error(error);
@@ -122,7 +124,7 @@ function listenForFormSubmitEvent() {
 document.querySelector('#close-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
 document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
 
-
+// construct the input element for each program to insert population data
 function displayPopulationInput(event) {
     const electionId = event.target.closest('section').querySelector('#election-id').textContent;
     const programList = event.target.closest('section').querySelectorAll('#program');
@@ -144,6 +146,11 @@ function displayPopulationInput(event) {
 
     document.querySelector('#manage-election-population').querySelector('#input-container').innerHTML = input;
 
+}
+
+function displayTotalPopulationOnModal(populationPerProgramObject) {
+    const totalPopulation = Object.values(populationPerProgramObject).reduce((total, currentProgramPopulation) => total + Number(currentProgramPopulation), 0);
+    document.querySelector('#manage-population-modal').querySelector('#total-voter').value = totalPopulation;
 }
 
 function calculateTotalVoterOnInputEvent() {
@@ -173,6 +180,7 @@ async function submitUpdateVoterPopulationForm() {
 
 }
 
+// return an object containing
 function getInputPopulationPerProgram() {
     const populationPerProgramObject = Array.from(document.querySelector('#input-container').querySelectorAll('input[type=number')).reduce((object, currentInput) => {
         const programCode = currentInput.id.trim();
@@ -186,10 +194,23 @@ function getInputPopulationPerProgram() {
     return populationPerProgramObject;
 }
 
-function updateElectionOverviewDisplay(electionId, total, populationPerProgramObject) {
-    console.log(electionId);
-    console.log(total);
-    console.log(populationPerProgramObject);
+function updateElectionOverviewDisplay(electionId, populationPerProgramObject) {
+    const electionSection = document.querySelector(`section[data-election-id="${electionId.trim()}"]`);
+
+    if (!electionSection) return;
+
+    const totalPopulation = Object.values(populationPerProgramObject).reduce((total, population) => total + Number(population), 0);
+
+    electionSection.querySelectorAll('#program').forEach(program => {
+        const programCode = program.querySelector('#program-code').textContent.trim();
+        const programPopulation = populationPerProgramObject[programCode];
+
+        if (programPopulation !== undefined) {
+            program.querySelector('#program-population').textContent = programPopulation;
+        }
+    });
+
+    electionSection.querySelector('#total-population').textContent = totalPopulation;
 }
 
 async function putRequestToCloseElection(electionId) {

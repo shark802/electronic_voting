@@ -42,7 +42,7 @@
         elections.forEach(election => {
       %>
 
-      <section data-election-id="<%= election.election_id %>" class="pb-3 max-w-[1300px] m-auto mb-5 bg-white border-2 border-gray-300">
+      <section data-election-id="<%= election.election_id %>" class="pb-3 max-w-[1300px] rounded-md m-auto mb-5 bg-gray-100 border-2 border-gray-300">
 
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
@@ -64,9 +64,9 @@
               if ( position === 'SENATOR') {
           %>
 
-          <div data-position="<%= position %>" id="position-container" class="mt-5 border shadow-sm lg:w-full">
-            <div class="py-2 text-lg font-semibold text-center text-white bg-blue-400 rounded-t-md"> <%= position %> </div>
-            <div class="flex flex-col w-full gap-1 px-1 py-2 mt-2 justify-evenly lg:flex-row lg:flex-wrap">
+          <div data-position="<%= position %>" id="position-container" class="mt-5 border-2 rounded-md bg-gray-50 lg:w-full lg:mx-3">
+            <div class="py-2 pl-2 text-lg font-bold text-black rounded-t-md"> <%= position %> </div>
+            <div class="flex flex-col w-full px-1 py-2 lg:px-3 justify-evenly lg:flex-row lg:flex-wrap">
               <%
                 programs.forEach(program => {
                   const senatorCandidatesPerProgram = candidates.filter(candidate => candidate.position === 'SENATOR' && candidate.election_id === election.election_id );
@@ -75,9 +75,9 @@
                     
             %>
 
-              <div id="senator-by-program" class="mb-4 bg-gray-100 rounded-md shadow-md lg:mb-8 lg:w-[48%]">
-                <div class="text-lg font-semibold text-center text-white bg-blue-300 rounded-t-md"> <%= program %> </div>
-                <canvas id="<%= program %>" class="lg:min-h-[280px]"></canvas>
+              <div id="senator-by-program" class="mb-4 border bg-gray-100 rounded-md shadow-md lg:mb-8 lg:w-[48%]">
+                <div class="py-2 pl-2 font-bold text-black bg-white rounded-t-md"> <%= program %> </div>
+                <canvas id="<%= program %>" class="lg:min-h-[280px] bg-white"></canvas>
               </div>
 
               <%
@@ -91,9 +91,9 @@
               } else {
           %>
 
-            <div data-position="<%= position %>" id="position-container" class="mb-4 bg-gray-100 rounded-md shadow-md lg:m-0 lg:w-[48%] lg:mb-8">
-              <div class="py-2 text-lg font-semibold text-center text-white bg-blue-400 rounded-t-md"> <%= position %> </div>
-              <canvas id="<%= position %>" class="lg:min-h-[280px]"></canvas>
+            <div data-position="<%= position %>" id="position-container" class="mb-4 border bg-gray-100 rounded-md shadow-md lg:m-0 lg:w-[48%] lg:mb-8">
+              <div class="py-2 pl-2 text-lg font-bold text-black bg-white rounded-t-md"> <%= position %> </div>
+              <canvas id="<%= position %>" class="lg:min-h-[280px] bg-white"></canvas>
             </div>
 
             <%

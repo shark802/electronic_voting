@@ -62,7 +62,7 @@
               %>
 
               <div class="min-h-8">
-                <p class="text-xl font-bold text-white lg:text-4xl"><%= totalPopulation %></p>
+                <p id="total-population" class="text-xl font-bold text-white lg:text-4xl"><%= totalPopulation %></p>
               </div>
             </div>
 
@@ -82,18 +82,13 @@
                 <p class="text-lg font-bold text-green-600 lg:text-4xl"><%= totalVoted %></p>
 
                 <%
-                if (totalVoted) {
+                if (totalVoted && totalPopulation != 'N/A') {
                 %>
 
                 <span class="mx-3 text-lg font-bold text-green-600 lg:text-4xl lg:mx-5"> (<%= ((totalVoted / totalPopulation )* 100).toFixed(2) %>%) </span>
 
                 <%
-                } else {
-                %>
-                <span class="mx-3 text-lg font-bold text-green-600 lg:text-4xl lg:mx-8"> (0.00%) </span>
-
-                <%
-                }
+                } 
                 %>
 
               </div>
@@ -115,7 +110,7 @@
                 <p class="text-xl font-bold text-red-600 lg:text-4xl"> <%= notVotedInElection  %> </p>
 
                 <%
-                if (notVotedInElection != 'N/A') {
+                if (notVotedInElection !== 'N/A') {
                 %>
 
                 <span class="mx-3 text-xl font-bold text-red-600 tet-lg lg:text-4xl lg:mx-5"> (<%= ((notVotedInElection / totalPopulation )* 100).toFixed(2) %>%) </span>
