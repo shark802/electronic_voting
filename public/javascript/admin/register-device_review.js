@@ -36,24 +36,7 @@ function declineDeviceRegistration() {
         displayRegistrationRequestInfo(declineModal, codename, uuid, requestDate);
 
         // initiate to submit request if the decline modal is confirmed.
-        declineModal.addEventListener('click', async (event) => {
-            if (event.target.id !== "confirm-decline") return;
 
-            try {
-                const response = await submitDeclineToServer(uuid);
-                const responseObject = await response.json();
-                if (!response.ok) {
-                    return confirmErrorAlert(responseObject.message);
-                }
-
-                rowClicked.remove();
-                return showSwalSuccessToast(responseObject.message);
-
-            } catch (error) {
-                console.error(error);
-            }
-
-        }, { once: true })
     })
 }
 
@@ -78,28 +61,50 @@ function acceptDeviceRegistration() {
         const requestDate = rowClicked.querySelector('#request-date').textContent;
 
         const acceptModal = document.querySelector('#accept-request-modal');
+
         displayRegistrationRequestInfo(acceptModal, codename, uuid, requestDate);
-
-        // initiate to submit request if the decline modal is confirmed.
-        acceptModal.addEventListener('click', async (event) => {
-            if (event.target.id !== "confirm-accept") return;
-
-            try {
-                const response = await submitAcceptToServer(uuid);
-                const responseObject = await response.json();
-
-                if (!response.ok) return confirmErrorAlert(responseObject.message);
-
-                rowClicked.remove();
-                return showSwalSuccessToast(responseObject.message);
-
-            } catch (error) {
-                console.error(error);
-            }
-
-        }, { once: true })
     })
 }
+
+document.querySelector('#decline-request-modal').addEventListener('click', async (event) => {
+    if (event.target.id !== "confirm-decline") return;
+
+    const uuid = event.target.closest('#decline-request-modal').querySelector('#uuid').textContent;
+
+    try {
+        const response = await submitDeclineToServer(uuid);
+        const responseObject = await response.json();
+        if (!response.ok) {
+            return confirmErrorAlert(responseObject.message);
+        }
+
+        document.querySelector(`tr[data-uuid="${uuid}"]`).remove();
+        return showSwalSuccessToast(responseObject.message);
+
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+document.querySelector('#accept-request-modal').addEventListener('click', async (event) => {
+    if (event.target.id !== "confirm-accept") return;
+
+    const uuid = event.target.closest('#accept-request-modal').querySelector('#uuid').textContent;
+
+    try {
+        const response = await submitAcceptToServer(uuid);
+        const responseObject = await response.json();
+
+        if (!response.ok) return confirmErrorAlert(responseObject.message);
+
+        document.querySelector(`tr[data-uuid="${uuid}"]`).remove();
+        return showSwalSuccessToast(responseObject.message);
+
+    } catch (error) {
+        console.error(error);
+    }
+
+})
 
 async function submitAcceptToServer(uuid) {
     const response = await fetch(`/api/uuid/${uuid}`, {

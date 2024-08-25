@@ -34,25 +34,29 @@ function removeRegisteredDevice() {
         const removeModal = document.querySelector('#remove-device-modal');
 
         displayRegisteredDeviceInfo(removeModal, codename, uuid, requestDate);
-
-        removeModal.addEventListener('click', async (event) => {
-            if (event.target.id !== 'confirm-remove') return;
-
-            try {
-                const response = await sendRequestToRemoveDevice(uuid);
-                const responseObject = await response.json();
-
-                if (!response.ok) return confirmErrorAlert(responseObject.message);
-
-                tableRow.remove();
-                return showSwalSuccessToast(responseObject.message);
-
-            } catch (error) {
-                console.error(error);
-            }
-        })
     })
 }
+
+document.querySelector('#remove-device-modal').addEventListener('click', async (event) => {
+    if (event.target.id !== "confirm-remove") return;
+
+    const uuid = event.target.closest('#remove-device-modal').querySelector('#uuid').textContent;
+    console.log(uuid);
+
+    try {
+        const response = await sendRequestToRemoveDevice(uuid);
+        const responseObject = await response.json();
+        if (!response.ok) {
+            return confirmErrorAlert(responseObject.message);
+        }
+
+        document.querySelector(`tr[data-uuid="${uuid}"]`).remove();
+        return showSwalSuccessToast(responseObject.message);
+
+    } catch (error) {
+        console.error(error);
+    }
+})
 
 function displayRegisteredDeviceInfo(modal, codename, uuid, requestDate) {
     modal.querySelector('#codename').textContent = codename

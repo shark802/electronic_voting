@@ -55,7 +55,7 @@
             let dateCreated = new Date(device.date_created).toLocaleString('en-US', formatOptions);
             
           %>
-          <tr class="transition-all tablerow">
+          <tr data-uuid="<%= device.uuid %>" class="transition-all tablerow">
             <td id="codename" class="py-1 text-xs font-medium text-center text-gray-700 rounded-tl-lg rounded-bl-lg"><%= device.codename %></td>
             <td id="uuid" class="py-1 text-xs font-medium text-center text-gray-700"><%= device.uuid %></td>
             <td id="request-date" class="py-1 text-xs font-medium text-center text-gray-700 "><%= dateCreated%></td>

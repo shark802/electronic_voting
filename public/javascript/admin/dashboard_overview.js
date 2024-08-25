@@ -54,29 +54,9 @@ document.querySelector('#overview-container').addEventListener('click', (event) 
 
         // This display the date and time when modal is display after ended
         document.querySelector('#close-election').querySelector('underline').textContent = formattedDateTime;
+        document.querySelector('#close-election').querySelector('#election-id').value = electionId;
         document.querySelector('#close-election').showModal();
 
-        document.querySelector('#close-election-button').addEventListener('click', async () => {
-            document.querySelector('#close-election').close();
-
-            const action = await confirmAlert('Are you sure you want to close the election dashboard?')
-            if (!action.isConfirmed) return document.querySelector('#close-election').showModal();
-
-            try {
-                const response = await putRequestToCloseElection(electionId);
-                const responseObject = await response.json();
-
-                if (!response.ok) {
-                    return confirmErrorAlert(responseObject.message);
-                }
-
-                electionContainerSection.remove();
-                return showSwalSuccessToast(responseObject.message);
-            } catch (error) {
-                console.log(error);
-            }
-
-        })
     } else {
 
         document.querySelector('#manage-population-modal').showModal();
@@ -84,9 +64,10 @@ document.querySelector('#overview-container').addEventListener('click', (event) 
         displayPopulationInput(event);
         displayTotalPopulationOnModal(getInputPopulationPerProgram());
         calculateTotalVoterOnInputEvent();
-        listenForFormSubmitEvent();
     }
 });
+
+listenForFormSubmitEvent();
 
 function listenForFormSubmitEvent() {
     document.querySelector('#manage-election-population').addEventListener('submit', async (event) => {
@@ -107,11 +88,11 @@ function listenForFormSubmitEvent() {
 
 
             // update election overview display
-
             const electionId = event.target.querySelector('#hidden-election-id').value;
             const populationPerProgramObject = getInputPopulationPerProgram();
 
-            updateElectionOverviewDisplay(electionId, populationPerProgramObject);
+            updatePopulationOverview(electionId, populationPerProgramObject);
+            updateNumberOfNotVoted(electionId);
 
         } catch (error) {
             console.error(error);
@@ -123,6 +104,34 @@ function listenForFormSubmitEvent() {
 // Event listener for closing the modal
 document.querySelector('#close-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
 document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
+
+confirmCloseElection();
+
+function confirmCloseElection() {
+    document.querySelector('#close-election-button').addEventListener('click', async () => {
+        document.querySelector('#close-election').close();
+
+        const electionId = document.querySelector('#close-election').querySelector('#election-id').value;
+
+        const action = await confirmAlert('Are you sure you want to close the election dashboard?')
+        if (!action.isConfirmed) return document.querySelector('#close-election').showModal();
+
+        try {
+            const response = await putRequestToCloseElection(electionId);
+            const responseObject = await response.json();
+
+            if (!response.ok) {
+                return confirmErrorAlert(responseObject.message);
+            }
+
+            electionContainerSection.remove();
+            return showSwalSuccessToast(responseObject.message);
+        } catch (error) {
+            console.log(error);
+        }
+
+    })
+}
 
 // construct the input element for each program to insert population data
 function displayPopulationInput(event) {
@@ -194,7 +203,7 @@ function getInputPopulationPerProgram() {
     return populationPerProgramObject;
 }
 
-function updateElectionOverviewDisplay(electionId, populationPerProgramObject) {
+function updatePopulationOverview(electionId, populationPerProgramObject) {
     const electionSection = document.querySelector(`section[data-election-id="${electionId.trim()}"]`);
 
     if (!electionSection) return;
@@ -213,11 +222,44 @@ function updateElectionOverviewDisplay(electionId, populationPerProgramObject) {
     electionSection.querySelector('#total-population').textContent = totalPopulation;
 }
 
+function updateNumberOfNotVoted(electionId) {
+    const electionSection = document.querySelector(`section[data-election-id="${electionId.trim()}"]`);
+
+    if (!electionSection) return;
+
+    const totalPopulation = Number(electionSection.querySelector('#total-population').textContent);
+    const totalVoted = Number(electionSection.querySelector('#total-voted').textContent);
+
+    const numberOfNotVoted = totalPopulation - totalVoted;
+
+    // Calculate the percentage only if numberOfNotVoted is greater than 0
+    const notVotedPercentage = numberOfNotVoted > 0
+        ? ((numberOfNotVoted / totalPopulation) * 100).toFixed(2)
+        : null;
+
+    const notVotedElement = electionSection.querySelector('#number-of-not-voted');
+    const notVotedOverview = electionSection.querySelector('#not-voted-overview');
+    let notVotedPercentageSpan = electionSection.querySelector('#not-voted-percentage');
+
+    // Update the number of people who haven't voted
+    notVotedElement.textContent = numberOfNotVoted;
+
+    if (notVotedPercentageSpan) {
+        // If the span exists, update its content or clear it
+        notVotedPercentageSpan.textContent = notVotedPercentage ? `(${notVotedPercentage}%)` : '';
+    } else if (notVotedPercentage) {
+        // If the span does not exist and there is a valid percentage, create and append it
+        notVotedOverview.innerHTML += `
+            <span id="not-voted-percentage" class="mx-3 text-xl font-bold text-red-600 tet-lg lg:text-4xl lg:mx-5"> (${notVotedPercentage}%) </span>
+        `;
+    }
+}
+
+
+
 async function putRequestToCloseElection(electionId) {
     const result = await fetch(`/api/election-overview/${electionId}`, {
         method: 'PUT',
     })
     return result;
 }
-
-

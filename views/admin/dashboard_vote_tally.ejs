@@ -24,7 +24,7 @@
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Election Tally</h1>
     </div>
 
-    <div id="vote-tally-container" class="relative h-full p-2 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:gap-3 lg:p-5 lg:mb-3 bg-blue-50">
+    <div id="vote-tally-container" class="relative h-screen p-2 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:gap-3 lg:p-5 lg:mb-3 bg-blue-50">
 
       <% if (elections && elections.length < 1) { %>
 
@@ -39,10 +39,11 @@
 
       <% 
       } else { 
+        
         elections.forEach(election => {
       %>
 
-      <section data-election-id="<%= election.election_id %>" class="pb-3 max-w-[1300px] rounded-md m-auto mb-5 bg-gray-100 border-2 border-gray-300">
+      <section data-election-id="<%= election.election_id %>" class="pb-3 max-w-[1300px] w-full rounded-md m-auto mb-5 bg-gray-100 border-2 border-gray-300">
 
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
