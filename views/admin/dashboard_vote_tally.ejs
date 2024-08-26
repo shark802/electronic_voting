@@ -55,7 +55,7 @@
           </div>
         </div>
 
-        <div class="flex lg:flex-row basis[48%] grow lg:justify-evenly lg:flex-wrap lg:grow flex-col w-full md:w-[90%] lg:w-full m-auto gap-1 px-1 py-2 mt-2 lg:px-1">
+        <div class="flex lg:flex-row grow lg:justify-evenly lg:flex-wrap lg:grow flex-col w-full md:w-[90%] lg:w-full m-auto px-1 py-4 mt-2 lg:px-1">
           <% 
           candidatePosition.forEach(position => {
             
@@ -65,7 +65,7 @@
               if ( position === 'SENATOR') {
           %>
 
-          <div data-position="<%= position %>" id="position-container" class="mt-5 border-2 rounded-md bg-gray-50 lg:w-full lg:mx-3">
+          <div data-position="<%= position %>" id="position-container" class="border-2 rounded-md bg-gray-50 lg:w-full lg:mx-3">
             <div class="py-2 pl-2 text-lg font-bold text-black rounded-t-md"> <%= position %> </div>
             <div class="flex flex-col w-full px-1 py-2 lg:px-3 justify-evenly lg:flex-row lg:flex-wrap">
               <%
@@ -76,7 +76,7 @@
                     
             %>
 
-              <div id="senator-by-program" class="mb-4 border bg-gray-100 rounded-md shadow-md lg:mb-8 lg:w-[48%]">
+              <div id="senator-by-program" class="mb-2 border bg-gray-100 rounded-md shadow-md lg:w-[49%]">
                 <div class="py-2 pl-2 font-bold text-black bg-white rounded-t-md"> <%= program %> </div>
                 <canvas id="<%= program %>" class="lg:min-h-[280px] bg-white"></canvas>
               </div>
@@ -92,7 +92,7 @@
               } else {
           %>
 
-            <div data-position="<%= position %>" id="position-container" class="mb-4 border bg-gray-100 rounded-md shadow-md lg:m-0 lg:w-[48%] lg:mb-8">
+            <div data-position="<%= position %>" id="position-container" class="mb-4 border bg-gray-100 rounded-md shadow-md lg:m-0 lg:w-[49%] lg:mb-2">
               <div class="py-2 pl-2 text-lg font-bold text-black bg-white rounded-t-md"> <%= position %> </div>
               <canvas id="<%= position %>" class="lg:min-h-[280px] bg-white"></canvas>
             </div>

@@ -42,8 +42,8 @@
         <% } else { %>
 
         <% elections.forEach(election => { %>
-        <section id="election" class="w-full transition-colors bg-blue-100 rounded-lg shadow min-w-fit h-fit min-h-16">
-          <div class="px-8 py-5">
+        <section id="election" class="w-full transition-colors border border-t-2 rounded-lg shadow bg-blue-50 min-w-fit h-fit min-h-16">
+          <div class="px-8 py-5 bg-white rounded-t-md">
             <h2 class="text-xl font-semibold"><%= election.election_name %></h2>
             <p id="election-id" class="text-gray-400"><%= election.election_id %></p>
           </div>

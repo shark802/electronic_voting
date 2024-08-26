@@ -59,6 +59,8 @@ function loginFunction(req, res, next) {
             };
             if (userRoleRow.admin)
                 return res.status(302).redirect('/admin/dashboard/overview');
+            if (userRoleRow.program_head)
+                return res.status(302).redirect('/program-head/dashboard/overview');
             return res.status(302).redirect('/election');
         }
         catch (error) {

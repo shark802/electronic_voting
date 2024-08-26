@@ -37,7 +37,7 @@
 
       %>
 
-      <section data-election-id="<%= election.election_id %>" class="pb-3 mb-5 bg-white border-2 border-gray-300">
+      <section data-election-id="<%= election.election_id %>" class="pb-3 mb-5 bg-gray-100 border border-gray-300 rounded-sm shadow-md">
 
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
@@ -53,7 +53,7 @@
 
         <div class="flex flex-grow w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
 
-          <div class="w-1/3 p-2 bg-blue-500 border border-blue-700 rounded-sm lg:py-4 lg:px-4 min-h-20">
+          <div class="w-1/3 p-2 bg-blue-500 border border-blue-700 rounded-md lg:py-4 lg:px-4 min-h-20">
 
             <div class="flex flex-wrap items-center lg:flex-nowrap">
               <img src="/img/population.webp" class="relative w-5 mr-1 lg:mr-3 lg:w-8 lg:top-[2px]" alt="population">
@@ -69,7 +69,7 @@
             <p class="pt-1 text-xs font-medium text-white lg:text-sm">Total students</p>
           </div>
 
-          <div class="w-1/3 p-2 bg-green-200 border border-green-500 rounded-sm lg:py-4 lg:px-4 min-h-20">
+          <div class="w-1/3 p-2 bg-green-200 border border-green-500 rounded-md lg:py-4 lg:px-4 min-h-20">
 
             <div class="min-h-8">
               <div class="flex flex-wrap items-center lg:flex-nowrap">
@@ -97,7 +97,7 @@
             <p class="pt-1 text-xs font-medium text-green-600 lg:text-sm">Voted</p>
           </div>
 
-          <div class="w-1/3 p-2 bg-red-200 border border-red-500 rounded-sm lg:py-4 lg:px-4 min-h-20">
+          <div class="w-1/3 p-2 bg-red-200 border border-red-500 rounded-md lg:py-4 lg:px-4 min-h-20">
 
             <div class="min-h-8">
               <div id="not-voted-overview" class="flex flex-wrap items-center lg:flex-nowrap">
@@ -136,7 +136,7 @@
             const totalVotedInProgram = findTotalVotedInProgram.length > 0 ? findTotalVotedInProgram[0].total_voted : 0;
           %>
 
-          <div id="program" class="w-full pb-2 text-center bg-blue-100 border border-gray-400 rounded-sm min-h-10">
+          <div id="program" class="w-full pb-2 text-center bg-white border rounded-md shadow-sm min-h-10">
 
             <div id="program-code" class="py-1 text-sm font-bold text-center"> <%= course.program_code %> </div>
 

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Election Tally</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
+  <script src="/javascript/lib/sweetalert2@11.js"></script>
+  <script src="/javascript/lib/chart.umd.min.js"></script>
+  <script type="module" src="/javascript/admin/dashboard_vote_tally.js" defer></script>
+
+</head>
+
+<body class="w-[100vw] m-0 bg-blue-600 dvh flex overflow-hidden">
+
+  <div id="sidebar" class="absolute z-10 w-full bg-black rounded-tr-md rounded-br-md bg-opacity-40 lg:block h-dvh lg:relative lg:w-1/5">
+
+    <img id="hide-sidebar" src="/img/x.webp" alt="exit" class="absolute w-8 m-2 bg-opacity-50 rounded-md right-4 top-4 bg-slate-500 lg:hidden">
+
+    <nav class="relative z-10 flex flex-col w-4/5 px-2 pt-2 bg-white rounded-tr-lg rounded-br-lg h-dvh lg:w-full">
+
+      <div class="relative flex w-full text-xs min-h-20 rounded-tr-md">
+        <div class="w-[30%] flex items-center">
+          <img src="/img/bcc-logo.webp" alt="bago-city-college_logo" class="w-16 h-16 m-auto">
+        </div>
+
+        <div class="max-w-[70%] relative">
+          <h1 class="relative w-full text-sm font-bold text-left transform -translate-y-1/2 top-1/2">BCC E-VOTING WITH FACIAL RECOGNITION AUTHENTICATOR</h1>
+        </div>
+      </div>
+
+      <hr class="shadow-md">
+
+      <ul class=" no-scrollbar overflow-auto overflow-x-hidden max-h-[77%] scroll-m-0 py-7 pb-14">
+
+        <li class="w-full mb-3 max-h-max min-h-11">
+          <div class="relative block w-full h-full grid-rows-1">
+
+            <a href="/program-head/dashboard/overview" class="relative block w-full h-full">
+              <div class="relative flex items-center w-full gap-2 py-2 ml-4">
+
+                <img src="/img/dashboard.webp" alt="dashboard" class="w-4 h-4">
+
+                <p id="dashboard_nav" class="w-full m-0 ml-2 text-lg font-normal transform lg:text-xl">Dashboard</p>
+              </div>
+            </a>
+
+            <div id="dashboard_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid">
+              <a id="overview_page" href="/program-head/dashboard/overview" class="block p-1 pl-3 text-sm font-normal text-gray-800">Overview</a>
+              <a id="vote_tally_page" href="/program-head/dashboard/vote-tally" class="block p-1 pl-3 text-sm font-normal text-gray-800">Vote Tally</a>
+            </div>
+
+          </div>
+        </li>
+
+      </ul>
+
+
+      <div class="absolute bottom-0 left-0 w-full bg-white border-t border-solid lg:bottom-0 lg:w-full min-h-20 rounded-br-md lg:pb-0">
+        <div id="logout-button" class="absolute flex items-center gap-2 px-2 py-1 transform -translate-x-1/2 -translate-y-1/2 bg-gray-300 border border-solid rounded-lg top-1/2 left-1/2">
+
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#292929" width="20" height="20">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+              <path d="M9.00195 7C9.01406 4.82497 9.11051 3.64706 9.87889 2.87868C10.7576 2 12.1718 2 15.0002 2L16.0002 2C18.8286 2 20.2429 2 21.1215 2.87868C22.0002 3.75736 22.0002 5.17157 22.0002 8L22.0002 16C22.0002 18.8284 22.0002 20.2426 21.1215 21.1213C20.2429 22 18.8286 22 16.0002 22H15.0002C12.1718 22 10.7576 22 9.87889 21.1213C9.11051 20.3529 9.01406 19.175 9.00195 17" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="M15 12L2 12M2 12L5.5 9M2 12L5.5 15" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+          </svg>
+
+          <p class="text-sm font-medium cursor-pointer">LOGOUT</p>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5">
+
+    <div class="flex items-center w-full py-3 m-0 lg:h-20 lg:pt-7">
+      <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
+      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Election Tally</h1>
+    </div>
+
+    <div id="vote-tally-container" class="relative h-screen p-2 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:gap-3 lg:p-5 lg:mb-3 bg-blue-50">
+
+    </div>
+
+  </main>
+
+</body>
+
+</html>

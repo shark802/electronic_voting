@@ -54,6 +54,7 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
         }
 
         if (userRoleRow.admin) return res.status(302).redirect('/admin/dashboard/overview');
+        if (userRoleRow.program_head) return res.status(302).redirect('/program-head/dashboard/overview');
 
         return res.status(302).redirect('/election');
 
