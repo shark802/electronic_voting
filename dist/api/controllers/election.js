@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
+exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
@@ -156,3 +156,20 @@ function closeElectionDashboard(req, res, next) {
     });
 }
 exports.closeElectionDashboard = closeElectionDashboard;
+function getElectionPopulation(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const electionIdQueryParams = req.query.election_id;
+            if (!electionIdQueryParams)
+                throw new customErrors_1.BadRequestError('No election id provided');
+            const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams];
+            const sqlQuery = 'SELECT election_id, total_populations FROM elections WHERE election_id IN (?)';
+            const elections = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, electionIdArray);
+            return res.status(200).json({ elections });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getElectionPopulation = getElectionPopulation;

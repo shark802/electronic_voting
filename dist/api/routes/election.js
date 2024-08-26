@@ -13,4 +13,5 @@ router
     .put(election_1.updateElection)
     .patch(election_1.updateElectionStatus);
 router.put('/election-overview/:id', election_1.closeElectionDashboard);
+router.get('/election-population', election_1.getElectionPopulation);
 exports.default = router;

@@ -149,3 +149,20 @@ export async function closeElectionDashboard(req: Request, res: Response, next: 
 		next(error);
 	}
 }
+
+export async function getElectionPopulation(req: Request, res: Response, next: NextFunction) {
+	try {
+
+		const electionIdQueryParams = req.query.election_id;
+		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
+
+		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
+
+		const sqlQuery = 'SELECT election_id, total_populations FROM elections WHERE election_id IN (?)'
+		const elections = await selectQuery(pool, sqlQuery, electionIdArray);
+
+		return res.status(200).json({ elections })
+	} catch (error) {
+		next(error);
+	}
+}

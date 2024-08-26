@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js" defer></script>
   <script src="/javascript/lib/sweetalert2@11.js" defer></script>
-  <script type="module" src="/javascript/admin/dashboard_overview.js" defer></script>
+  <script type="module" src="/javascript/programHead/dashboard-overview-program-head.js" defer></script>
 
   <style>
     #manage-population-modal::backdrop {
@@ -47,11 +47,11 @@
 
                 <img src="/img/dashboard.webp" alt="dashboard" class="w-4 h-4">
 
-                <p id="dashboard_nav" class="w-full m-0 ml-2 text-lg font-normal transform lg:text-xl">Dashboard</p>
+                <p id="dashboard_nav" class="w-full m-0 ml-2 text-lg font-medium text-blue-500 transform lg:text-xl">Dashboard</p>
               </div>
             </a>
 
-            <div id="dashboard_subpage" class="relative hidden pl-3 ml-6 mr-2 border-l-2 border-black border-solid">
+            <div id="dashboard_subpage" class="relative pl-3 ml-6 mr-2 border-l-2 border-black border-solid">
               <a id="overview_page" href="/program-head/dashboard/overview" class="block p-1 pl-3 text-sm font-normal text-gray-800">Overview</a>
               <a id="vote_tally_page" href="/program-head/dashboard/vote-tally" class="block p-1 pl-3 text-sm font-normal text-gray-800">Vote Tally</a>
             </div>
@@ -97,7 +97,7 @@
 
       %>
 
-      <section data-election-id="<%= election.election_id %>" class="pb-3 mb-5 bg-gray-100 border border-gray-300 rounded-sm shadow-md">
+      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-3 mb-5 bg-gray-100 border border-gray-300 rounded-sm shadow-md">
 
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
