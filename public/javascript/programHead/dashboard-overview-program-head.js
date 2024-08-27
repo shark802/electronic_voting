@@ -5,6 +5,7 @@ overview_page.classList.add("active-nav");
 
 document.addEventListener('DOMContentLoaded', async () => {
 
+    const programCode = document.querySelector('#program').value;
     const electionIdList = Array.from(document.querySelectorAll('#election-section')).map(election => election.dataset.electionId);
     const urlParams = electionIdList.map(electionId => `election_id=${electionId}`).join('&');
 
@@ -13,7 +14,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     displayElectionPopulationInDashboard(electionTotalPopulation);
     displayElectionNumberOfVotedInDashboard(electionTotalVoted, electionTotalPopulation);
-    displayElectionNumberOfNotVotedInDashboard(electionTotalPopulation, electionTotalVoted)
+    displayElectionNumberOfNotVotedInDashboard(electionTotalPopulation, electionTotalVoted);
+
+    const programPopulation = await fetchTotalPopulationByProgram(programCode, urlParams);
+    console.log(programPopulation);
 })
 
 
@@ -94,3 +98,16 @@ function displayElectionNumberOfNotVotedInDashboard(electionTotalPopulationArray
     })
 }
 
+async function fetchTotalPopulationByProgram(programCode, urlParams) {
+    try {
+        const url = `/api/program-population?program=${programCode}&${urlParams}`
+        const response = await fetch(url);
+        const responseObject = await response.json()
+
+        if (!response.ok) return showSwalErrorToast(responseObject.message);
+
+        return responseObject.programPopulation;
+    } catch (error) {
+        console.error(error);
+    }
+}

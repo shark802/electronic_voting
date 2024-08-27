@@ -183,3 +183,22 @@ export async function getNumberOfVoted(req: Request, res: Response, next: NextFu
 		next(error)
 	}
 }
+
+export async function getTotalPopulationByProgram(req: Request, res: Response, next: NextFunction) {
+	try {
+		const electionIdQueryParams = req.query.election_id;
+		const programCode = req.query.program;
+
+		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
+		if (!programCode) throw new BadRequestError('No program provided');
+
+		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
+
+		const sqlQuery = `SELECT program_population, program_code, election_id FROM program_populations WHERE program_code = ? AND election_id IN (?)`
+		const programPopulation = await selectQuery(pool, sqlQuery, [programCode, electionIdArray]);
+
+		return res.status(200).json({ programPopulation });
+	} catch (error) {
+		next(error)
+	}
+}
