@@ -137,7 +137,6 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 export async function closeElectionDashboard(req: Request, res: Response, next: NextFunction) {
 	try {
 		const electionId = req.params.id;
-		console.log(electionId);
 		if (!electionId) throw new BadRequestError('Election Id is missing!');
 
 		const updateResult = await updateQuery(pool, 'UPDATE elections SET is_close = 1 WHERE election_id = ?', [electionId]);
@@ -158,11 +157,29 @@ export async function getElectionPopulation(req: Request, res: Response, next: N
 
 		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
 
-		const sqlQuery = 'SELECT election_id, total_populations FROM elections WHERE election_id IN (?)'
-		const elections = await selectQuery(pool, sqlQuery, electionIdArray);
+		const sqlQuery = `SELECT election_id, total_populations FROM elections WHERE election_id IN (?)`
+		const elections = await selectQuery(pool, sqlQuery, [electionIdArray]);
 
 		return res.status(200).json({ elections })
 	} catch (error) {
 		next(error);
+	}
+}
+
+export async function getNumberOfVoted(req: Request, res: Response, next: NextFunction) {
+	try {
+
+		const electionIdQueryParams = req.query.election_id;
+		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
+
+		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
+
+		const sqlQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as voted FROM votes WHERE election_id IN (?) GROUP BY election_id`
+		const elections = await selectQuery(pool, sqlQuery, [electionIdArray]);
+
+		return res.status(200).json({ elections })
+
+	} catch (error) {
+		next(error)
 	}
 }

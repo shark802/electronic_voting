@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
+exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
@@ -142,7 +142,6 @@ function closeElectionDashboard(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const electionId = req.params.id;
-            console.log(electionId);
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election Id is missing!');
             const updateResult = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE elections SET is_close = 1 WHERE election_id = ?', [electionId]);
@@ -163,8 +162,8 @@ function getElectionPopulation(req, res, next) {
             if (!electionIdQueryParams)
                 throw new customErrors_1.BadRequestError('No election id provided');
             const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams];
-            const sqlQuery = 'SELECT election_id, total_populations FROM elections WHERE election_id IN (?)';
-            const elections = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, electionIdArray);
+            const sqlQuery = `SELECT election_id, total_populations FROM elections WHERE election_id IN (?)`;
+            const elections = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionIdArray]);
             return res.status(200).json({ elections });
         }
         catch (error) {
@@ -173,3 +172,20 @@ function getElectionPopulation(req, res, next) {
     });
 }
 exports.getElectionPopulation = getElectionPopulation;
+function getNumberOfVoted(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const electionIdQueryParams = req.query.election_id;
+            if (!electionIdQueryParams)
+                throw new customErrors_1.BadRequestError('No election id provided');
+            const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams];
+            const sqlQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as voted FROM votes WHERE election_id IN (?) GROUP BY election_id`;
+            const elections = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionIdArray]);
+            return res.status(200).json({ elections });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getNumberOfVoted = getNumberOfVoted;

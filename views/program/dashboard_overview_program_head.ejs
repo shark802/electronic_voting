@@ -97,7 +97,7 @@
 
       %>
 
-      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-3 mb-5 bg-gray-100 border border-gray-300 rounded-sm shadow-md">
+      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-2 mb-8 bg-gray-100 border border-gray-300 rounded-sm shadow-md ">
 
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
@@ -133,7 +133,7 @@
 
                 <p id="total-voted" class="text-lg font-bold text-green-600 lg:text-4xl">0</p>
 
-                <span class="mx-3 text-lg font-bold text-green-600 lg:text-4xl lg:mx-5"> </span>
+                <span id="total-voted-percentage" class="mx-3 text-lg font-bold text-green-600 lg:text-4xl lg:mx-5"> </span>
 
               </div>
             </div>
@@ -161,13 +161,12 @@
 
         <div class="grid gap-1 px-1 py-2 lg:gap-2 lg:px-3">
           <%
-          const courses = populationPerProgram.filter(program => program.election_id === election.election_id).sort((a, b) => a.program_code.localeCompare(b.program_code));
-          courses.forEach(course => {
+          if (user) {
           %>
 
           <div id="program" class="w-full pb-2 text-center bg-white border rounded-md shadow-sm min-h-10">
 
-            <div id="program-code" class="py-1 text-sm font-bold text-center"> <%= course.program_code %> </div>
+            <div id="program-code" class="py-1 text-sm font-bold text-center"> <%= user.course %> </div>
 
             <div class="flex flex-grow w-full gap-1 px-1 mt-2 lg:px-3 lg:gap-3">
 
@@ -190,18 +189,14 @@
 
           </div>
 
-          <%
-          })
-          %>
-
         </div>
 
       </section>
 
       <%
-        })
-        
-      } else { 
+       }
+       })
+        } else { 
       %>
 
       <section class="lg:w-[600px] border-2 border-gray-300 lg:px-10 box-border shadow-sm bg-white rounded-md min-h-28 grid m-auto py-6 mt-7">

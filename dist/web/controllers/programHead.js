@@ -15,14 +15,17 @@ const query_1 = require("../../data_access/query");
 function programHeadDashboardOverviewPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const userSession = req.session.user;
+            if (!userSession)
+                return res.redirect('/?redirectMessage=You need to login first');
+            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ?', [userSession.user_id]);
             const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
             const electionIdList = elections.map(election => election.election_id);
             let populationPerProgram = [];
             if (electionIdList.length > 0) {
                 populationPerProgram = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList]);
             }
-            console.log(populationPerProgram);
-            res.render("program/dashboard_overview_program_head", { elections, populationPerProgram });
+            res.render("program/dashboard_overview_program_head", { elections, user, populationPerProgram });
         }
         catch (error) {
             next(error);
