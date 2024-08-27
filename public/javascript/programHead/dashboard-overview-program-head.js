@@ -5,19 +5,24 @@ overview_page.classList.add("active-nav");
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-    const programCode = document.querySelector('#program').value;
     const electionIdList = Array.from(document.querySelectorAll('#election-section')).map(election => election.dataset.electionId);
+    const programCode = document.querySelector('#program').value;
     const urlParams = electionIdList.map(electionId => `election_id=${electionId}`).join('&');
 
     const electionTotalPopulation = await fetchElectionTotalPopulation(urlParams);
     const electionTotalVoted = await fetchElectionTotalVoted(urlParams);
 
+    // display the summary of total population, voted, not voted by election
     displayElectionPopulationInDashboard(electionTotalPopulation);
     displayElectionNumberOfVotedInDashboard(electionTotalVoted, electionTotalPopulation);
     displayElectionNumberOfNotVotedInDashboard(electionTotalPopulation, electionTotalVoted);
 
     const programPopulation = await fetchTotalPopulationByProgram(programCode, urlParams);
+    const programVoteCount = await fetchProgramTotalVoteCount(programCode, urlParams);
+
+    // display the total population, number of voted and not voted by program (depends on program head's program)
     console.log(programPopulation);
+    console.log(programVoteCount);
 })
 
 
@@ -107,6 +112,20 @@ async function fetchTotalPopulationByProgram(programCode, urlParams) {
         if (!response.ok) return showSwalErrorToast(responseObject.message);
 
         return responseObject.programPopulation;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function fetchProgramTotalVoteCount(programCode, urlParams) {
+    try {
+        const url = `/api/program-voted?program=${programCode}&${urlParams}`
+        const response = await fetch(url);
+        const responseObject = await response.json()
+
+        if (!response.ok) return showSwalErrorToast(responseObject.message);
+
+        return responseObject.programVoteCount;
     } catch (error) {
         console.error(error);
     }

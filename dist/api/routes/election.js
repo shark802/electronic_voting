@@ -16,4 +16,5 @@ router.put('/election-overview/:id', election_1.closeElectionDashboard);
 router.get('/election-population', election_1.getElectionPopulation);
 router.get('/election-voted', election_1.getNumberOfVoted);
 router.get('/program-population', election_1.getTotalPopulationByProgram);
+router.get('/program-voted', election_1.getTotalVotedInElectionByProgram);
 exports.default = router;

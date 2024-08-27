@@ -202,3 +202,31 @@ export async function getTotalPopulationByProgram(req: Request, res: Response, n
 		next(error)
 	}
 }
+
+export async function getTotalVotedInElectionByProgram(req: Request, res: Response, next: NextFunction) {
+	try {
+
+		const electionIdQueryParams = req.query.election_id;
+		const programCode = req.query.program;
+
+		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
+		if (!programCode) throw new BadRequestError('No program provided');
+
+		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
+
+		const sqlQuery = `
+			SELECT COUNT( DISTINCT v.voter_id ) as total_voted, v.election_id, u.course 
+			FROM votes v
+			LEFT JOIN users u
+			ON v.voter_id = u.id_number
+			WHERE u.course = ? AND v.election_id IN (?) 
+			GROUP BY v.election_id
+		`
+
+		const programVoteCount = await selectQuery(pool, sqlQuery, [programCode, electionIdArray]);
+
+		return res.status(200).json({ programVoteCount });
+	} catch (error) {
+		next(error)
+	}
+}

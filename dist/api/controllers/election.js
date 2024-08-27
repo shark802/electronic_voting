@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
+exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
@@ -209,3 +209,30 @@ function getTotalPopulationByProgram(req, res, next) {
     });
 }
 exports.getTotalPopulationByProgram = getTotalPopulationByProgram;
+function getTotalVotedInElectionByProgram(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const electionIdQueryParams = req.query.election_id;
+            const programCode = req.query.program;
+            if (!electionIdQueryParams)
+                throw new customErrors_1.BadRequestError('No election id provided');
+            if (!programCode)
+                throw new customErrors_1.BadRequestError('No program provided');
+            const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams];
+            const sqlQuery = `
+			SELECT COUNT( DISTINCT v.voter_id ) as total_voted, v.election_id, u.course 
+			FROM votes v
+			LEFT JOIN users u
+			ON v.voter_id = u.id_number
+			WHERE u.course = ? AND v.election_id IN (?) 
+			GROUP BY v.election_id
+		`;
+            const programVoteCount = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [programCode, electionIdArray]);
+            return res.status(200).json({ programVoteCount });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getTotalVotedInElectionByProgram = getTotalVotedInElectionByProgram;
