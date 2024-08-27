@@ -21,8 +21,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const programVoteCount = await fetchProgramTotalVoteCount(programCode, urlParams);
 
     // display the total population, number of voted and not voted by program (depends on program head's program)
-    console.log(programPopulation);
-    console.log(programVoteCount);
+    displayProgramTotalPopulation(programPopulation);
+    displayTotalVoteCountInProgram(programVoteCount, programPopulation);
+    displayProgramNumberOfNotVoted(programPopulation, programVoteCount);
 })
 
 
@@ -129,4 +130,39 @@ async function fetchProgramTotalVoteCount(programCode, urlParams) {
     } catch (error) {
         console.error(error);
     }
+}
+
+function displayProgramTotalPopulation(programPopulationObject) {
+
+    programPopulationObject.forEach(program => {
+        if (program.program_population > 0) {
+            const electionSection = document.querySelector(`section[data-election-id="${program.election_id}"]`);
+            electionSection.querySelector('#program-population').textContent = program.program_population;
+        }
+    })
+}
+
+function displayTotalVoteCountInProgram(programVoteCountObject) {
+
+    programVoteCountObject.forEach(programVoteCount => {
+        if (programVoteCount.total_voted > 0) {
+            const electionSection = document.body.querySelector(`section[data-election-id="${programVoteCount.election_id}"]`);
+            electionSection.querySelector('#program-vote-count').textContent = programVoteCount.total_voted;
+        }
+    })
+}
+
+function displayProgramNumberOfNotVoted(programPopulationObject, programVoteCountObject) {
+
+    programPopulationObject.forEach(program => {
+        if (program.program_population > 0) {
+            const electionSection = document.body.querySelector(`section[data-election-id="${program.election_id}"]`);
+
+            const findProgramVoteCount = programVoteCountObject.find(programObject => programObject.election_id === program.election_id);
+            const programPopulation = program.program_population;
+            const numberOfNotVoted = findProgramVoteCount ? (programPopulation - findProgramVoteCount.total_voted) : programPopulation;
+
+            electionSection.querySelector('#program-number-of-not-voted').textContent = numberOfNotVoted;
+        }
+    })
 }
