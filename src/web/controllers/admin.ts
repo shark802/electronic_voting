@@ -178,7 +178,9 @@ export async function viewRegisterDevice(req: Request, res: Response, next: Next
 export function fetchUser(req: Request, res: Response, next: NextFunction) {
 
     try {
-        res.render("admin/control-panel_fetch-user")
+        const programs = Object.values(Program)
+
+        res.render("admin/control-panel-user", { programs })
     } catch (error) {
         next(error)
     }

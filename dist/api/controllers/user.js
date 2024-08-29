@@ -9,16 +9,55 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.creatUser = void 0;
-function creatUser(req, res, next) {
+exports.updateUserFunction = exports.newUserFunction = void 0;
+const customErrors_1 = require("../../utils/customErrors");
+const query_1 = require("../../data_access/query");
+const database_1 = require("../../config/database");
+function newUserFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const {} = req.body;
+            const { idNumber, course, firstname, lastname } = req.body;
+            if (!idNumber)
+                throw new customErrors_1.BadRequestError('Missing Id number');
+            if (!course)
+                throw new customErrors_1.BadRequestError('Missing course');
+            if (!firstname)
+                throw new customErrors_1.BadRequestError('Missing firstname');
+            if (!lastname)
+                throw new customErrors_1.BadRequestError('Missing lastname');
+            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [idNumber]);
+            if (user)
+                throw new customErrors_1.ConflictError(`User ${idNumber} already created`);
+            const result = yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO users (id_number, firstname, lastname, course) VALUES(?, ?, ?, ?)', [idNumber, firstname, lastname, course]);
+            if (result.affectedRows < 1)
+                throw new Error("Adding user failed");
+            return res.status(200).json({ message: 'Succesfully added new user' });
         }
         catch (error) {
             next(error);
         }
     });
 }
-exports.creatUser = creatUser;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3NyYy9hcGkvY29udHJvbGxlcnMvdXNlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFFQSxTQUFzQixTQUFTLENBQUMsR0FBWSxFQUFFLEdBQWEsRUFBRSxJQUFrQjs7UUFDM0UsSUFBSSxDQUFDO1lBRUQsTUFBTSxFQUFFLEdBQUcsR0FBRyxDQUFDLElBQUksQ0FBQTtRQUV2QixDQUFDO1FBQUMsT0FBTyxLQUFLLEVBQUUsQ0FBQztZQUNiLElBQUksQ0FBQyxLQUFLLENBQUMsQ0FBQztRQUNoQixDQUFDO0lBQ0wsQ0FBQztDQUFBO0FBUkQsOEJBUUMifQ==
+exports.newUserFunction = newUserFunction;
+function updateUserFunction(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { idNumber, userObject, userRoles } = req.body;
+            if (!idNumber)
+                throw new customErrors_1.BadRequestError('User id number is missing');
+            if (!userObject)
+                throw new customErrors_1.BadRequestError('User data need for update is missing');
+            if (!userRoles)
+                throw new customErrors_1.BadRequestError('User roles object is missing');
+            const userUpdateResult = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE users SET = ? WHERE id_number = ?', [userObject, idNumber]);
+            const userRolesUpdateResult = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE roles SET = ? WHERE id_number = ?', [userRoles, idNumber]);
+            if (userUpdateResult.affectedRows <= 0 || userRolesUpdateResult.affectedRows <= 0)
+                throw new customErrors_1.NotFoundError('No user updated, please check if user exist');
+            return res.status(200).json({ messasge: 'Update successfull' });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.updateUserFunction = updateUserFunction;

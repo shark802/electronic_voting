@@ -155,6 +155,7 @@ function displayTotalVoteCountInProgram(programVoteCountObject) {
 function displayProgramNumberOfNotVoted(programPopulationObject, programVoteCountObject) {
 
     programPopulationObject.forEach(program => {
+
         if (program.program_population > 0) {
             const electionSection = document.body.querySelector(`section[data-election-id="${program.election_id}"]`);
 

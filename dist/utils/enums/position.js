@@ -5,6 +5,5 @@ var Position;
 (function (Position) {
     Position["President"] = "PRESIDENT";
     Position["Vice_president"] = "VICE_PRESIDENT";
-    Position["Treasurer"] = "TREASURER";
     Position["Senator"] = "SENATOR";
 })(Position || (exports.Position = Position = {}));

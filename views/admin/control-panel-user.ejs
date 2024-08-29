@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Users</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
+  <script src="/javascript/lib/sweetalert2@11.js"></script>
+  <script type="module" src="/javascript/admin/control-panel-user.js" defer></script>
+</head>
+
+<body class="w-[100vw] m-0 bg-blue-600 dvh flex overflow-hidden">
+
+  <%- include("../partials/sidebar.ejs") %>
+
+  <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5">
+
+    <div class="flex items-center w-full py-3 m-0 lg:h-20 lg:pt-7">
+      <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
+      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Manage User</h1>
+    </div>
+
+    <div class="relative flex flex-wrap justify-start flex-grow h-full mt-3 overflow-hidden overflow-x-hidden bg-white rounded-lg lg:overflow-y-hidden lg:mb-3 no-scrollbar">
+      <div class="flex items-center justify-end w-full gap-2 p-2 bg-white lg:h-14">
+        <form id="search-user" class="flex border border-gray-400 rounded-full">
+          <input type="search" id="id_number" placeholder="Search" class="pl-3 rounded-tl-full rounded-bl-full focus:outline-none">
+          <button type="submit" class="relative w-6 px-2 lg:w-8"><img src="/img/magnifying-glass.webp" alt="search" class="absolute w-4 m-auto transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 lg:w-6 opacity-70"></button>
+        </form>
+        <button class="px-2 py-1 text-sm font-medium text-white bg-blue-500 rounded-sm hover:bg-blue-600">New user</button>
+      </div>
+
+      <div class="w-1/2 p-2">
+        <form data-method="POST" id="user-form" class="flex flex-wrap w-full gap-2">
+          <h3 class="w-full pb-8 font-bold text-blue-500 lg:text-3xl">Add new user</h3>
+
+          <div class="grid pb-2 lg:w-[49%]">
+            <label for="id-number" class="text-sm text-gray-500">Id number <span class="text-red-500">*</span></label>
+            <input id="id-number" type="text" class="py-1 border border-gray-400 rounded-sm focus:bg-blue-50 focus:outline-blue-500">
+            <div class="text-sm text-red-500"></div>
+          </div>
+
+          <div class="grid pb-2 lg:w-[49%]">
+            <label for="course" class="text-sm text-gray-500">Course <span class="text-red-500">*</span></label>
+            <select id="course" class="py-1 border border-gray-400 rounded-sm focus:bg-blue-50 focus:outline-blue-500">
+              <option value="">--</option>
+              <% programs.sort().forEach(program => { %>
+              <option value="<%= program %>" class="text-sm font-medium text-gray-600 hover:bg-blue-300"> <%= program %> </option>
+              <% }) %>
+            </select>
+            <span class="text-sm text-red-500"></span>
+          </div>
+
+
+          <div class="grid pb-2 lg:w-[49%]">
+            <label for="firstname" class="text-sm text-gray-500">Firstname <span class="text-red-500">*</span></label>
+            <input id="firstname" type="text" class="py-1 border border-gray-400 rounded-sm focus:bg-blue-50 focus:outline-blue-500">
+            <div class="text-sm text-red-500"></div>
+          </div>
+
+          <div class="grid pb-2 lg:w-[49%]">
+            <label for="lastname" class="text-sm text-gray-500">Lastname <span class="text-red-500"> *</span></label>
+            <input id="lastname" type="text" class="py-1 border border-gray-400 rounded-sm focus:bg-blue-50 focus:outline-blue-500">
+            <div class="text-sm text-red-500"></div>
+          </div>
+
+          <div id="user-roles" class="w-full py-5 pl-4">
+            <h3 class="mb-4 text-gray-500">Roles</h3>
+            <div>
+
+              <label class="inline-flex items-center cursor-pointer">
+                <input id="voter" type="checkbox" value="voter" class="sr-only peer">
+                <div class=" relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span class="text-sm font-medium text-gray-700 ms-3">Voter</span>
+              </label>
+
+            </div>
+            <div>
+
+              <label class="inline-flex items-center cursor-pointer">
+                <input id="program-head" type="checkbox" value="program_head" class="sr-only peer">
+                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span class="text-sm font-medium text-gray-700 ms-3">Program head</span>
+              </label>
+
+            </div>
+            <div>
+
+              <label class="inline-flex items-center cursor-pointer">
+                <input id="admin" type="checkbox" value="admin" class="sr-only peer">
+                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span class="text-sm font-medium text-gray-700 ms-3">Admin</span>
+              </label>
+
+            </div>
+          </div>
+
+          <input type="submit" value="Save user" class="w-full py-2 font-medium text-center text-white bg-blue-500 rounded-md hover:bg-blue-600">
+        </form>
+      </div>
+
+      <div class="w-1/2 p-2 lg:h-full">
+
+      </div>
+    </div>
+
+  </main>
+
+</body>
+
+</html>

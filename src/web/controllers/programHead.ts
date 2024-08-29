@@ -3,6 +3,8 @@ import { pool } from "../../config/database";
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { User } from "../../utils/types/User";
+import { Program } from "../../utils/enums/program";
+import { Position } from "../../utils/enums/position";
 
 export async function programHeadDashboardOverviewPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -26,10 +28,31 @@ export async function programHeadDashboardOverviewPage(req: Request, res: Respon
 
 export async function programHeadDashboardVoteTallyPage(req: Request, res: Response, next: NextFunction) {
     try {
+        const userSession = req.session.user;
+        if (!userSession) return res.redirect('/?redirectMessage=You need to login first');
+        const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [userSession.user_id]);
 
-        res.render('program/dashboard-vote-tally-program-head')
+        const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
+        const candidatePosition = Object.values(Position);
+        const programs = Object.values(Program);
 
+        const electionIdList = elections.map(election => election.election_id);
+        let candidates: unknown[] = []
+
+        if (electionIdList.length > 0) {
+            candidates = await selectQuery(pool, 'SELECT * FROM candidates WHERE election_id IN ( ? )', [electionIdList])
+        }
+
+        res.render('program/dashboard-vote-tally-program-head', { elections, candidatePosition, programs, candidates, user })
     } catch (error) {
-        next(error);
+        next(error)
     }
+
+    // try {
+
+    //     res.render('program/dashboard-vote-tally-program-head')
+
+    // } catch (error) {
+    //     next(error);
+    // }
 }

@@ -202,7 +202,8 @@ exports.viewRegisterDevice = viewRegisterDevice;
 // Control Panel
 function fetchUser(req, res, next) {
     try {
-        res.render("admin/control-panel_fetch-user");
+        const programs = Object.values(program_1.Program);
+        res.render("admin/control-panel-user", { programs });
     }
     catch (error) {
         next(error);
