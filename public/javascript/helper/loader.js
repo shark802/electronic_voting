@@ -31,6 +31,16 @@ export function showLoading() {
          </svg>
 
         <style>
+            .loader {
+                width: 100vw;
+                height: 100vh;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 9999; /* Ensure it's on top of other elements */
+            }
+
             .container {
                 --uib-size: 45px;
                 --uib-color: white;

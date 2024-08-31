@@ -9,29 +9,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserFunction = exports.newUserFunction = void 0;
+exports.getUserByIdNumber = exports.updateUserFunction = exports.newUserFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 function newUserFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { idNumber, course, firstname, lastname } = req.body;
-            if (!idNumber)
-                throw new customErrors_1.BadRequestError('Missing Id number');
-            if (!course)
-                throw new customErrors_1.BadRequestError('Missing course');
+            const { userObject, userRoles } = req.body;
+            if (!userObject)
+                throw new customErrors_1.BadRequestError('Missing object of user data');
+            if (!userRoles)
+                throw new customErrors_1.BadRequestError('Missing object of user roles');
+            Object.keys(userObject).forEach(key => {
+                if (typeof userObject[key] === 'string') {
+                    userObject[key] = userObject[key].toUpperCase();
+                }
+            });
+            const { id_number, firstname, lastname, course } = userObject;
+            const { voter, program_head, admin } = userRoles;
+            if (!id_number)
+                throw new customErrors_1.BadRequestError('Missing user id number');
             if (!firstname)
-                throw new customErrors_1.BadRequestError('Missing firstname');
+                throw new customErrors_1.BadRequestError('Missing user firstname');
             if (!lastname)
-                throw new customErrors_1.BadRequestError('Missing lastname');
-            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [idNumber]);
+                throw new customErrors_1.BadRequestError('Missing user lastname');
+            if (!course)
+                throw new customErrors_1.BadRequestError('Missing user course');
+            if (!('voter' in userRoles))
+                throw new customErrors_1.BadRequestError('Missing user voter role');
+            if (!('program_head' in userRoles))
+                throw new customErrors_1.BadRequestError('Missing user program head role');
+            if (!('admin' in userRoles))
+                throw new customErrors_1.BadRequestError('Missing user admin role');
+            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [id_number]);
             if (user)
-                throw new customErrors_1.ConflictError(`User ${idNumber} already created`);
-            const result = yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO users (id_number, firstname, lastname, course) VALUES(?, ?, ?, ?)', [idNumber, firstname, lastname, course]);
-            if (result.affectedRows < 1)
-                throw new Error("Adding user failed");
-            return res.status(200).json({ message: 'Succesfully added new user' });
+                throw new customErrors_1.ConflictError(`${userObject.id_number} already exist`);
+            const connection = yield database_1.pool.getConnection();
+            try {
+                yield connection.beginTransaction();
+                yield connection.execute('INSERT INTO users (id_number, firstname, lastname, course) VALUES(?, ?, ?, ?)', [id_number, firstname, lastname, course]);
+                yield connection.execute('INSERT INTO roles (id_number, voter, program_head, admin) VALUES(?, ?, ?, ?)', [id_number, voter, program_head, admin]);
+                yield connection.commit();
+                return res.status(200).json({ message: 'Succesfully added new user' });
+            }
+            catch (error) {
+                yield connection.rollback();
+            }
+            finally {
+                yield connection.release();
+            }
         }
         catch (error) {
             next(error);
@@ -42,7 +69,8 @@ exports.newUserFunction = newUserFunction;
 function updateUserFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { idNumber, userObject, userRoles } = req.body;
+            const idNumber = req.params.id;
+            const { userObject, userRoles } = req.body;
             if (!idNumber)
                 throw new customErrors_1.BadRequestError('User id number is missing');
             if (!userObject)
@@ -61,3 +89,18 @@ function updateUserFunction(req, res, next) {
     });
 }
 exports.updateUserFunction = updateUserFunction;
+function getUserByIdNumber(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const idNumber = req.params.id;
+            if (!idNumber)
+                throw new customErrors_1.BadRequestError('Id number is missing');
+            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [idNumber]);
+            return res.status(200).json({ user });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getUserByIdNumber = getUserByIdNumber;
