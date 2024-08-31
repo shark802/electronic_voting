@@ -1,13 +1,13 @@
-import {Router} from "express"
-import { 
-    dashboardOverview, 
-    dashboardVoteTally, 
-    newElection, 
-    viewElection, 
-    manageCandidate, 
-    addCandidate, 
-    manageVoter ,
-    reviewRegisterDevice ,
+import { Router } from "express"
+import {
+    dashboardOverview,
+    dashboardVoteTally,
+    newElection,
+    viewElection,
+    manageCandidate,
+    addCandidate,
+    manageVoter,
+    reviewRegisterDevice,
     viewRegisterDevice,
     fetchUser,
     editElection,
@@ -38,6 +38,6 @@ router.get("/register-device/request", reviewRegisterDevice);
 router.get("/register-device/registered", viewRegisterDevice);
 
 // Control Panel
-router.get("/control-panel/import-user", fetchUser);
+router.get("/control-panel/user", fetchUser);
 
 export default router

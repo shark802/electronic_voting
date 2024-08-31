@@ -77,7 +77,8 @@ export async function getUserByIdNumber(req: Request, res: Response, next: NextF
         const idNumber = req.params.id;
         if (!idNumber) throw new BadRequestError('Id number is missing');
 
-        const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [idNumber]);
+        const sqlQuery = 'SELECT * FROM users JOIN roles ON users.id_number = roles.id_number WHERE users.id_number = ? LIMIT 1'
+        const [user] = await selectQuery<User>(pool, sqlQuery, [idNumber]);
         return res.status(200).json({ user });
     } catch (error) {
         next(error)

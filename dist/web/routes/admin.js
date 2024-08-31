@@ -20,5 +20,5 @@ router.get("/voter/manage", admin_1.manageVoter);
 router.get("/register-device/request", admin_1.reviewRegisterDevice);
 router.get("/register-device/registered", admin_1.viewRegisterDevice);
 // Control Panel
-router.get("/control-panel/import-user", admin_1.fetchUser);
+router.get("/control-panel/user", admin_1.fetchUser);
 exports.default = router;

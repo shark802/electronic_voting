@@ -1,7 +1,7 @@
 import { hideLoader, showLoading } from "/javascript/helper/loader.js";
 import { isInputNotEmpty } from "/javascript/formInputValidator/isInputNotEmpty.js";
 import "/javascript/logout.js"
-import { confirmErrorAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js";
+import { confirmAlert, confirmErrorAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js";
 
 const control_panel_nav = document.querySelector("#control_panel_nav");
 const fetch_user = document.querySelector("#fetch_user")
@@ -43,9 +43,14 @@ document.querySelector('#user-form').addEventListener('submit', async (event) =>
     const isValidCourse = isInputNotEmpty([course], courseErrorMessage)
     const isValidFirstname = isInputNotEmpty([firstname], firstnameErrorMessage)
     const isValidLastname = isInputNotEmpty([lastname], lastnameErrorMessage)
-    await fetchUser(idNumber.value)
+
+    if (formSubmitMethod === 'POST') await fetchUser(idNumber.value)
 
     if (!isValidIdNumber || !isValidCourse || !isValidFirstname || !isValidLastname) return;
+
+    const confirmActionMessage = formSubmitMethod === 'POST' ? 'Are you sure you want to add new user?' : 'Are you sure you want to update this user information?'
+    const action = await confirmAlert(confirmActionMessage);
+    if (!action.isConfirmed) return;
 
     const url = fetchUrlByFormMethod(formSubmitMethod);
     const userObject = {
@@ -62,6 +67,29 @@ document.querySelector('#user-form').addEventListener('submit', async (event) =>
     if (!response.ok) return confirmErrorAlert(responseObject.message);
     else return showSwalSuccessToast(responseObject.message);
 });
+
+document.querySelector('#search-user').addEventListener('submit', async event => {
+    event.preventDefault();
+
+    const searchInput = event.target.querySelector('#id_number');
+    const searchIdNumberValue = searchInput.value;
+
+    const response = await fetch(`/api/user/${searchIdNumberValue}`);
+    const responseObject = await response.json();
+
+    if (!response.ok) return confirmErrorAlert(responseObject.message)
+    if (!responseObject.user) return confirmErrorAlert(`User ${searchIdNumberValue} has no record in the system`)
+
+    const formContentObject = {
+        formMethod: 'PUT',
+        title: 'Edit user',
+        submitButtonText: 'Update user',
+        user: responseObject.user
+    }
+    changeUserForm(formContentObject);
+
+});
+
 
 function getUserRoles() {
     const rolesCheckBox = document.querySelector('#user-roles').querySelectorAll('input[type=checkbox]');
@@ -130,16 +158,41 @@ document.querySelector('#id-number').addEventListener('change', async (event) =>
     const userId = event.target.value;
     try {
         showLoading();
-        const user = await fetchUser(userId);
+        await fetchUser(userId);
         hideLoader();
-
-        if (user) {
-            form.querySelector('#id-number-error-message').textContent = 'Id number already exist';
-        } else {
-            form.querySelector('#id-number-error-message').textContent = '';
-        }
 
     } catch (error) {
         console.error(error);
     }
-})
+});
+
+function changeUserForm(formContentObject) {
+    console.log(formContentObject);
+    const form = document.querySelector('#user-form');
+    form.reset();
+
+    form.dataset.method = formContentObject.formMethod;
+    form.querySelector('h3').textContent = formContentObject.title;
+    form.querySelector('#user-form-submit-button').value = formContentObject.submitButtonText;
+
+    if (formContentObject.formMethod === 'PUT') {
+        form.querySelector('#id-number').readonly = true;
+        form.querySelector('#id-number').value = formContentObject.user.id_number
+        form.querySelector('#firstname').value = formContentObject.user.firstname
+        form.querySelector('#lastname').value = formContentObject.user.lastname
+
+        const options = form.querySelector('#course').querySelectorAll('option');
+        for (const option of options) {
+            if (option.value === formContentObject.user.course) {
+                option.selected = true;
+                break;
+            }
+        }
+
+        if (formContentObject.user.voter) form.querySelector('#voter').checked = true;
+        if (formContentObject.user.program_head) form.querySelector('#voter').checked = true;
+        if (formContentObject.user.admin) form.querySelector('#voter').checked = true;
+    }
+
+
+}
