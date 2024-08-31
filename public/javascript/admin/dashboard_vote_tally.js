@@ -47,7 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 y: {
                                     beginAtZero: true,
                                     ticks: {
-                                        stepSize: calculateStepSize(candidatesToDisplay)
+                                        stepSize: calculateStepSize(candidatesToDisplay),
+                                        font: {
+                                            size: 9
+                                        }
                                     }
                                 },
                                 x: {
@@ -79,7 +82,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    stepSize: calculateStepSize(candidatesToDisplay)
+                                    stepSize: calculateStepSize(candidatesToDisplay),
+                                    font: {
+                                        size: 9
+                                    }
                                 }
                             },
                             x: {
@@ -137,7 +143,8 @@ function transformDataset(dataset) {
                 'rgba(153, 102, 255, 0.8)',
                 'rgba(255, 159, 64, 0.8)'
             ],
-            borderWidth: 1
+            borderWidth: 1,
+            maxBarThickness: 90
         }]
     }
 }

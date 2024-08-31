@@ -108,7 +108,7 @@ function fetchUrlByFormMethod(formSubmitMethod) {
     switch (formSubmitMethod) {
         case "POST": fetchUrl = '/api/user-new'
             break;
-        case "PUT": fetchUrl = '/api/user-update'
+        case "PUT": fetchUrl = '/api/user'
             break;
         default:
             break;
@@ -137,6 +137,10 @@ async function fetchUser(userId) {
 
 async function userFormSubmitToServer(formSubmitMethod, fetchUrl, userObject, userRoles) {
     try {
+        if (formSubmitMethod === 'PUT') {
+            fetchUrl = `${fetchUrl}/${userObject.id_number}`
+        }
+
         const response = await fetch(fetchUrl, {
             method: formSubmitMethod,
             headers: { 'Content-Type': 'application/json' },
@@ -190,8 +194,8 @@ function changeUserForm(formContentObject) {
         }
 
         if (formContentObject.user.voter) form.querySelector('#voter').checked = true;
-        if (formContentObject.user.program_head) form.querySelector('#voter').checked = true;
-        if (formContentObject.user.admin) form.querySelector('#voter').checked = true;
+        if (formContentObject.user.program_head) form.querySelector('#program-head').checked = true;
+        if (formContentObject.user.admin) form.querySelector('#admin').checked = true;
     }
 
 

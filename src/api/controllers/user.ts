@@ -3,6 +3,7 @@ import { BadRequestError, ConflictError, NotFoundError } from "../../utils/custo
 import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { User } from "../../utils/types/User";
 import { pool } from "../../config/database";
+import { ResultSetHeader } from "mysql2";
 
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
@@ -56,17 +57,47 @@ export async function updateUserFunction(req: Request, res: Response, next: Next
     try {
         const idNumber = req.params.id;
         const { userObject, userRoles } = req.body;
+        if (!userObject) throw new BadRequestError('Missing object of user data');
+        if (!userRoles) throw new BadRequestError('Missing object of user roles');
 
-        if (!idNumber) throw new BadRequestError('User id number is missing');
-        if (!userObject) throw new BadRequestError('User data need for update is missing');
-        if (!userRoles) throw new BadRequestError('User roles object is missing');
+        Object.keys(userObject).forEach(key => {
+            if (typeof userObject[key] === 'string') {
+                userObject[key] = userObject[key].toUpperCase();
+            }
+        });
 
-        const userUpdateResult = await updateQuery(pool, 'UPDATE users SET = ? WHERE id_number = ?', [userObject, idNumber]);
-        const userRolesUpdateResult = await updateQuery(pool, 'UPDATE roles SET = ? WHERE id_number = ?', [userRoles, idNumber]);
+        const { id_number, firstname, lastname, course } = userObject;
+        const { voter, program_head, admin } = userRoles
 
-        if (userUpdateResult.affectedRows <= 0 || userRolesUpdateResult.affectedRows <= 0) throw new NotFoundError('No user updated, please check if user exist');
+        if (!id_number) throw new BadRequestError('Missing user id number');
+        if (!firstname) throw new BadRequestError('Missing user firstname');
+        if (!lastname) throw new BadRequestError('Missing user lastname');
+        if (!course) throw new BadRequestError('Missing user course');
+        if (!('voter' in userRoles)) throw new BadRequestError('Missing user voter role');
+        if (!('program_head' in userRoles)) throw new BadRequestError('Missing user program head role');
+        if (!('admin' in userRoles)) throw new BadRequestError('Missing user admin role');
 
-        return res.status(200).json({ messasge: 'Update successfull' });
+        const connection = await pool.getConnection();
+        try {
+            await connection.beginTransaction();
+
+            const [userUpdateResult] = await connection.execute<ResultSetHeader>('UPDATE users SET firstname = ?, lastname = ?, course = ? WHERE id_number = ?', [firstname, lastname, course, idNumber]);
+            const [userRolesUpdateResult] = await connection.execute<ResultSetHeader>('UPDATE roles SET voter = ?, program_head = ?, admin = ? WHERE id_number = ?', [voter, program_head, admin, idNumber]);
+            await connection.commit();
+
+            if (userUpdateResult.affectedRows <= 0 || userRolesUpdateResult.affectedRows <= 0) throw new NotFoundError('No user updated, please check if user exist');
+
+            return res.status(200).json({ message: 'Update successfull' });
+        } catch (error) {
+            await connection.rollback();
+        } finally {
+            await connection.release();
+        }
+
+        // const userUpdateResult = await updateQuery(pool, 'UPDATE users SET firstname = ?, lastname = ?, course = ? WHERE id_number = ?', [firstname, lastname, course, idNumber]);
+        // const userRolesUpdateResult = await updateQuery(pool, 'UPDATE roles SET voter = ?, program_head = ?, admin = ? WHERE id_number = ?', [voter, program_head, admin, idNumber]);
+
+
     } catch (error) {
         next(error)
     }
