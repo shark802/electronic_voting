@@ -28,12 +28,12 @@
           <input type="search" id="id_number" placeholder="Search" class="pl-3 rounded-tl-full rounded-bl-full focus:outline-none">
           <button id="search-user-button" type="submit" class="relative w-6 px-2 lg:w-8"><img src="/img/magnifying-glass.webp" alt="search" class="absolute w-4 m-auto transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 lg:w-6 opacity-70"></button>
         </form>
-        <button class="px-2 py-1 text-sm font-medium text-white bg-blue-500 rounded-sm hover:bg-blue-600">New user</button>
+        <button id="add-user-button" class="px-2 py-1 text-sm font-medium text-white bg-blue-500 rounded-sm hover:bg-blue-600">New user</button>
       </div>
 
       <div class="w-1/2 p-2">
         <form data-method="POST" id="user-form" class="flex flex-wrap w-full gap-2">
-          <h3 class="w-full pb-8 font-bold text-blue-500 lg:text-3xl">Add new user</h3>
+          <h3 class="w-full pb-6 font-bold text-blue-500 lg:text-3xl">Add new user</h3>
 
           <div class="grid pb-1 lg:w-[49%]">
             <label for="id-number" class="text-sm text-gray-500">Id number <span class="text-red-500">*</span></label>
@@ -100,7 +100,7 @@
         </form>
       </div>
 
-      <div class="w-1/2 p-2 lg:h-full">
+      <div id="user-info" class="w-1/2 p-2 lg:px-6 lg:pt-14 lg:h-full">
 
       </div>
     </div>

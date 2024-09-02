@@ -26,7 +26,10 @@ module.exports = {
     'z-30',
     'pb-3',
     'w-1/3',
-    'inline-block'
+    'inline-block',
+    'animate-slide-in',
+    'lg:pl-12',
+    'inline'
   ],
   theme: {
     extend: {

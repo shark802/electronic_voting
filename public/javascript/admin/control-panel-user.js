@@ -87,6 +87,7 @@ document.querySelector('#search-user').addEventListener('submit', async event =>
         user: responseObject.user
     }
     changeUserForm(formContentObject);
+    displayUserInfo(responseObject.user)
 
 });
 
@@ -171,7 +172,6 @@ document.querySelector('#id-number').addEventListener('change', async (event) =>
 });
 
 function changeUserForm(formContentObject) {
-    console.log(formContentObject);
     const form = document.querySelector('#user-form');
     form.reset();
 
@@ -200,3 +200,51 @@ function changeUserForm(formContentObject) {
 
 
 }
+
+function displayUserInfo(userObject) {
+    const displayUserInfo = document.querySelector('#user-info');
+    displayUserInfo.innerHTML = '';
+
+    const userInfoDiv = document.createElement('div');
+    userInfoDiv.id = 'user-info-container';
+    userInfoDiv.classList.add('animate-slide-in', 'bg-blue-100', 'rounded-md', 'lg:pl-12', 'py-5', 'shadow-sm');
+
+    displayUserInfo.append(userInfoDiv);
+
+    let additionalInfo = '';
+    if (userObject.user_group === "STUDENT") {
+        additionalInfo = `<div class="flex">Year/section:<p class="pl-2 text-gray-700"> ${userObject.year_level}-${userObject.section}</p></div>`;
+    }
+
+    const email = userObject.email ? `<div class="flex">Email:<p class="pl-2 text-gray-700"> ${userObject.email}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700"> N/A </p> </div>`
+    const cpNumber = userObject.cp_number ? `<div class="flex">Cp number:<p class="pl-2 text-gray-700"> ${userObject.cp_number}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700"> N/A </p> </div>`
+
+    // let roles = ''
+    // if (userObject.voter || userObject.program_head || userObject.admin) {
+
+    // }
+
+    const userInfoContent = `
+        <div class="flex">Id number:<p class="pl-2 text-gray-700"> ${userObject.id_number}</p> </div>
+        <div class="flex">Fullname: <p class="pl-2 text-gray-700">${userObject.firstname} ${userObject.lastname} </p></div>
+        <div class="flex">Program:<p class="pl-2 text-gray-700"> ${userObject.course}</p> </div>
+        ${additionalInfo}
+        <br>
+        ${email}
+        ${cpNumber}
+        <br>
+        `
+    userInfoDiv.innerHTML = userInfoContent;
+
+}
+
+document.body.querySelector('#add-user-button').addEventListener('click', () => {
+    const formContentObject = {
+        formMethod: 'POST',
+        title: 'Add new user',
+        submitButtonText: 'Save user',
+    }
+    changeUserForm(formContentObject);
+
+    document.querySelector('#user-info').innerHTML = '';
+})
