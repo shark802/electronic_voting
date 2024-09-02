@@ -26,65 +26,80 @@
 
       <form id="candidate-form" class="flex lg:pb-0 lg:justify-center flex-col mb-7 lg:min-h-fit rounded-lg lg:w-[800px] w-full lg:px-11 px-4 pb-16 m-auto mt-7 min-h-96 no-scrollbar lg:pt-1">
 
-        <label class="text-sm text-gray-700" for="election">Election *</label>
-        <select id="election" class="py-1 pl-2 text-sm border border-gray-400 rounded-sm lg:text-base focus:outline-blue-500">
+        <label class="text-sm font-semibold text-gray-500" for="election">Election <span class="text-red-400">*</span></label>
+        <select id="election" name="election_id" class="py-2 pl-2 text-sm font-semibold border border-gray-300 rounded-sm lg:text-base focus:outline-blue-500">
           <option value="">--</option>
           <% electionList.forEach(election => { %>
           <option value="<%= election.election_id %>"><%= election.election_name %></option>
           <% }) %>
         </select>
-        <div id="electionErrorMessage" class="text-sm text-red-500 min-h-5"></div>
+        <div id="electionErrorMessage" class="text-sm font-medium text-red-500 min-h-5"></div>
 
-        <label class="text-sm text-gray-700" for="id-number">Id number *</label>
-        <input id="id-number" type="number" class="py-1 pl-3 text-sm border border-gray-400 rounded-sm lg:text-base focus:outline-blue-500">
-        <div id="idNumberErrorMessage" class="text-sm text-red-500 min-h-5"></div>
+        <label class="text-sm font-semibold text-gray-500" for="id-number">Id number <span class="text-red-400">*</span></label>
+        <input id="id-number" type="number" name="id_number" class="py-2 pl-3 text-sm font-semibold border border-gray-300 rounded-sm lg:text-base focus:outline-blue-500">
+        <div id="idNumberErrorMessage" class="text-sm font-medium text-red-500 min-h-5"></div>
 
         <div class="gap-6 lg:flex">
 
           <div class="flex flex-col lg:w-1/2">
-            <label class="text-sm text-gray-700" for="firstname">Firstname *</label>
-            <input id="firstname" type="text" class="py-1 pl-3 text-sm border border-gray-400 rounded-sm lg:text-base focus:outline-blue-500">
-            <div id="firstnameErrorMessage" class="text-sm text-red-500 min-h-5"></div>
+            <label class="text-sm font-semibold text-gray-500" for="firstname">Firstname <span class="text-red-400">*</span></label>
+            <input id="firstname" type="text" name="firstname" class="py-2 pl-3 text-sm font-semibold border border-gray-300 rounded-sm lg:text-base focus:outline-blue-500">
+            <div id="firstnameErrorMessage" class="text-sm font-medium text-red-500 min-h-5"></div>
           </div>
 
           <div class="flex flex-col lg:w-1/2">
-            <label class="text-sm text-gray-700" for="lastname">Lastname *</label>
-            <input id="lastname" type="text" class="py-1 pl-3 text-sm border border-gray-400 rounded-sm lg:text-base focus:outline-blue-500">
-            <div id="lastnameErrorMessage" class="text-sm text-red-500 min-h-5"></div>
+            <label class="text-sm font-semibold text-gray-500" for="lastname">Lastname <span class="text-red-400">*</span></label>
+            <input id="lastname" type="text" name="lastname" class="py-2 pl-3 text-sm font-semibold border border-gray-300 rounded-sm lg:text-base focus:outline-blue-500">
+            <div id="lastnameErrorMessage" class="text-sm font-medium text-red-500 min-h-5"></div>
           </div>
 
         </div>
 
-        <label class="text-sm text-gray-700" for="program">Program *</label>
-        <select id="program" class="py-1 pl-3 text-sm border border-gray-400 rounded-sm lg:text-base focus:outline-blue-500">
+        <label class="text-sm font-semibold text-gray-500" for="program">Program <span class="text-red-400">*</span></label>
+        <select id="program" name="course" class="py-2 pl-3 text-sm font-semibold border border-gray-300 rounded-sm lg:text-base focus:outline-blue-500">
           <option value="">--</option>
           <% programs.forEach((value) => { %>
           <option value="<%= value %>"> <%= value%> </option>
           <% }) %>
         </select>
-        <div id="programErrorMessage" class="text-sm text-red-500 min-h-5"></div>
+        <div id="programErrorMessage" class="text-sm font-medium text-red-500 min-h-5"></div>
 
         <br>
 
-        <label class="text-sm text-gray-700" for="alias">Alias *</label>
-        <input id="alias" type="text" class="py-1 pl-3 text-sm border border-gray-400 rounded-sm lg:text-base focus:outline-blue-500">
-        <div id="aliasErrorMessage" class="text-sm text-red-500 min-h-5"></div>
+        <div class="gap-6 lg:flex">
 
-        <label class="text-sm text-gray-700" for="party">Party *</label>
-        <input id="party" type="text" class="py-1 pl-3 text-sm border border-gray-400 rounded-sm lg:text-base focus:outline-blue-500">
-        <div id="partyErrorMessage" class="text-sm text-red-500 min-h-5"></div>
+          <div class="flex flex-col lg:w-1/2">
+            <label class="text-sm font-semibold text-gray-500" for="alias">Alias <span class="text-red-400">*</span></label>
+            <input id="alias" name="alias" type="text" class="py-2 pl-3 text-sm font-semibold border border-gray-300 rounded-sm lg:text-base focus:outline-blue-500">
+            <div id="aliasErrorMessage" class="text-sm font-medium text-red-500 min-h-5"></div>
+          </div>
 
-        <label class="text-sm text-gray-700" for="position">Position *</label>
-        <select id="position" class="py-1 pl-3 text-sm border border-gray-400 rounded-sm lg:text-base focus:outline-blue-500">
+          <div class="flex flex-col lg:w-1/2">
+            <label class="text-sm font-semibold text-gray-500" for="party">Party <span class="text-red-400">*</span></label>
+            <input id="party" name="party" type="text" class="py-2 pl-3 text-sm font-semibold border border-gray-300 rounded-sm lg:text-base focus:outline-blue-500">
+            <div id="partyErrorMessage" class="text-sm font-medium text-red-500 min-h-5"></div>
+          </div>
+
+        </div>
+
+        <label class="text-sm font-semibold text-gray-500" for="position">Position <span class="text-red-400">*</span></label>
+        <select id="position" name="position" class="py-2 pl-3 text-sm font-semibold border border-gray-300 rounded-sm lg:text-base focus:outline-blue-500">
           <option value="">--</option>
           <% positions.forEach((value) => { %>
           <option value="<%= value %>"> <%= value %> </option>
           <% }) %>
         </select>
-        <div id="positionErrorMessage" class="text-sm text-red-500 min-h-5"></div>
+        <div id="positionErrorMessage" class="text-sm font-medium text-red-500 min-h-5"></div>
 
 
-        <button type="submit" class="w-full px-5 py-1 m-auto mt-1 text-lg font-semibold text-white bg-green-500 rounded-sm ring-green-400 lg:mb-0 hover:ring-2 ">Save</button>
+        <div class="font-[sans-serif] max-w-md py-5">
+          <label class="block mb-2 text-base font-semibold text-gray-500">Upload profile</label>
+          <input type="file" name="candidate_profile" class="w-full text-sm font-semibold text-gray-400 bg-white border rounded cursor-pointer file:cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-gray-500" />
+          <p class="mt-2 text-xs text-gray-400">PNG, JPG and WEBP are Allowed.</p>
+        </div>
+
+
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Save</button>
       </form>
     </div>
 

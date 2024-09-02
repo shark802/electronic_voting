@@ -6,12 +6,24 @@ import { Candidate } from "../../utils/types/Candidate";
 import { ulid } from "ulid";
 import { User } from "../../utils/types/User";
 import { getUserCandidate } from "../../data_access/candidateService";
+import path from "node:path";
 
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {
     try {
-        let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
 
-        if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
+        Object.entries(req.body).forEach(([key, value]) => {
+            if (typeof value === 'string') {
+                req.body[key] = value.toUpperCase();
+            }
+        });
+
+        let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
+        // console.log(req.body);
+        // console.log(req.file);
+        const candidate_profile = req.file ? path.join('public', 'img', 'candidate_profiles', req.file.filename) : null;
+        console.log(candidate_profile);
+
+        if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position || !course) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
 
         const findCandidateAccount = await selectQuery<Candidate>(pool, "SELECT * FROM users WHERE id_number = ?", [id_number]);
         if (findCandidateAccount.length < 1) {

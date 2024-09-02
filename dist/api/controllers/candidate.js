@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllcandidatesInActiveElection = exports.getUserCandidateData = exports.updateCandidateStatus = exports.getCandidateById = exports.getManageCandidates = exports.deleteCandidateFunction = exports.updateCandidateFunction = exports.addCandidateFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
@@ -15,11 +18,21 @@ const database_1 = require("../../config/database");
 const query_1 = require("../../data_access/query");
 const ulid_1 = require("ulid");
 const candidateService_1 = require("../../data_access/candidateService");
+const node_path_1 = __importDefault(require("node:path"));
 function addCandidateFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            Object.entries(req.body).forEach(([key, value]) => {
+                if (typeof value === 'string') {
+                    req.body[key] = value.toUpperCase();
+                }
+            });
             let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
-            if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position)
+            // console.log(req.body);
+            // console.log(req.file);
+            const candidate_profile = req.file ? node_path_1.default.join('public', 'img', 'candidate_profiles', req.file.filename) : null;
+            console.log(candidate_profile);
+            if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position || !course)
                 return next(new customErrors_1.BadRequestError("Cannot proceed adding candidate due to missing info"));
             const findCandidateAccount = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM users WHERE id_number = ?", [id_number]);
             if (findCandidateAccount.length < 1) {

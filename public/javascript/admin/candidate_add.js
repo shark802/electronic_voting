@@ -53,16 +53,25 @@ changeEventListener(isInputNotEmpty, [position], positionErrorMessage);
 
 document.querySelector("#candidate-form").addEventListener('submit', async (event) => {
     event.preventDefault();
-    const requestBody = {
-        election_id: election.value,
-        id_number: idNumber.value,
-        firstname: firstname.value,
-        lastname: lastname.value,
-        alias: alias.value,
-        course: program.value,
-        party: party.value,
-        position: position.value
+
+    console.log(election.value);
+    const addCandidateForm = new FormData(event.target)
+
+    for (let [key, value] of addCandidateForm.entries()) {
+        console.log(`${key}: ${value}`);
     }
+    // const requestBody = {
+    //     election_id: election.value,
+    //     id_number: idNumber.value,
+    //     firstname: firstname.value,
+    //     lastname: lastname.value,
+    //     alias: alias.value,
+    //     course: program.value,
+    //     party: party.value,
+    //     position: position.value
+    // }
+
+    console.log(addCandidateForm);
 
     if (
         !isInputNotEmpty([election], electionErrorMessage) ||
@@ -89,8 +98,7 @@ document.querySelector("#candidate-form").addEventListener('submit', async (even
 
         const response = await fetch("/api/candidate", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody)
+            body: addCandidateForm
         })
 
         if (!response.ok) {
