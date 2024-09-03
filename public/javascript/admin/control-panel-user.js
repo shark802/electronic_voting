@@ -70,6 +70,7 @@ document.querySelector('#user-form').addEventListener('submit', async (event) =>
 
 document.querySelector('#search-user').addEventListener('submit', async event => {
     event.preventDefault();
+    document.querySelector('#id-number-error-message').textContent = ''
 
     const searchInput = event.target.querySelector('#id_number');
     const searchIdNumberValue = searchInput.value;
@@ -90,7 +91,6 @@ document.querySelector('#search-user').addEventListener('submit', async event =>
     displayUserInfo(responseObject.user)
 
 });
-
 
 function getUserRoles() {
     const rolesCheckBox = document.querySelector('#user-roles').querySelectorAll('input[type=checkbox]');
@@ -159,6 +159,7 @@ document.querySelector('#id-number').addEventListener('change', async (event) =>
     const form = event.target.closest('#user-form');
     const formMethod = form.dataset.method;
     if (formMethod !== 'POST') return;
+    if (!event.target.value) return document.querySelector('#id-number-error-message').textContent = '';
 
     const userId = event.target.value;
     try {
@@ -213,11 +214,11 @@ function displayUserInfo(userObject) {
 
     let additionalInfo = '';
     if (userObject.user_group === "STUDENT") {
-        additionalInfo = `<div class="flex">Year/section:<p class="pl-2 text-gray-700"> ${userObject.year_level}-${userObject.section}</p></div>`;
+        additionalInfo = `<div class="flex">Year/section:<p class="pl-2 text-gray-700 font-medium"> ${userObject.year_level}-${userObject.section}</p></div>`;
     }
 
-    const email = userObject.email ? `<div class="flex">Email:<p class="pl-2 text-gray-700"> ${userObject.email}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700"> N/A </p> </div>`
-    const cpNumber = userObject.cp_number ? `<div class="flex">Cp number:<p class="pl-2 text-gray-700"> ${userObject.cp_number}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700"> N/A </p> </div>`
+    const email = userObject.email ? `<div class="flex">Email:<p class="pl-2 text-gray-700 font-medium"> ${userObject.email}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700 font-medium"> N/A </p> </div>`
+    const cpNumber = userObject.cp_number ? `<div class="flex">Cp number:<p class="pl-2 text-gray-700 font-medium"> ${userObject.cp_number}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700 font-medium"> N/A </p> </div>`
 
     // let roles = ''
     // if (userObject.voter || userObject.program_head || userObject.admin) {
@@ -225,9 +226,9 @@ function displayUserInfo(userObject) {
     // }
 
     const userInfoContent = `
-        <div class="flex">Id number:<p class="pl-2 text-gray-700"> ${userObject.id_number}</p> </div>
-        <div class="flex">Fullname: <p class="pl-2 text-gray-700">${userObject.firstname} ${userObject.lastname} </p></div>
-        <div class="flex">Program:<p class="pl-2 text-gray-700"> ${userObject.course}</p> </div>
+        <div class="flex">Id number:<p class="pl-2 text-gray-700 font-medium"> ${userObject.id_number}</p> </div>
+        <div class="flex">Fullname: <p class="pl-2 text-gray-700 font-medium">${userObject.firstname} ${userObject.lastname} </p></div>
+        <div class="flex">Program:<p class="pl-2 text-gray-700 font-medium"> ${userObject.course}</p> </div>
         ${additionalInfo}
         <br>
         ${email}

@@ -124,7 +124,7 @@ function confirmCloseElection() {
                 return confirmErrorAlert(responseObject.message);
             }
 
-            electionContainerSection.remove();
+            document.querySelector(`section[data-election-id="${electionId}"]`).remove();
             return showSwalSuccessToast(responseObject.message);
         } catch (error) {
             console.log(error);

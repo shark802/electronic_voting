@@ -30,7 +30,7 @@
 
     <form id="ballot-form" class="m-auto align-middle py-5 px-3 bg-white rounded-lg lg:p-3 h-fit max-w-[700px] min-h-4/5">
 
-      <h1 class="text-2xl font-bold text-center"><%= election ? election.election_name : "Official Ballot" %></h1>
+      <h1 class="text-2xl font-bold text-center text-gray-600"><%= election ? election.election_name : "Official Ballot" %></h1>
 
       <% 
     if (candidatePositionList && candidatePositionList.length > 0) {
@@ -62,9 +62,18 @@
         <div id="position-label" class="w-full py-1 mb-3 font-bold text-center text-white bg-blue-500 rounded-tl-md rounded-tr-md"> <%= position %> </div>
         <div>
           <% candidatePerPosition.forEach(candidateOfPosition => { %>
-          <div class="flex gap-2 py-1 pl-2 lg:px-7">
-            <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-4">
-            <label for="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="text-sm font-semibold text-gray-600"> <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %> </label>
+          <div class="flex items-center gap-2 py-1 pl-2 lg:px-7">
+
+            <% if (candidateOfPosition.candidate_profile) { %>
+            <img src="/img/candidate_profiles/<%=candidateOfPosition.candidate_profile%>" alt="candidate-profile" class="lg:w-24">
+            <% } else {%>
+            <img src="/img/default-profile.webp" alt="candidate-profile" class="lg:w-24">
+
+            <% } %>
+            <span>
+              <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600">
+              <label for="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="relative text-sm lg:text-base font-semibold text-gray-500 -top-[3px]"> <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %> </label>
+            </span>
           </div>
           <% }) %>
         </div>

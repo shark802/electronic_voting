@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS `candidates` (
    `enabled` TINYINT(1) NOT NULL,
    `deleted` TIMESTAMP NULL,
    `vote_count` INT DEFAULT 0,
+   `candidate_profile` VARCHAR(250),
    `election_id` VARCHAR(50),
    `added_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),

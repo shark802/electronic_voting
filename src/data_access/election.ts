@@ -26,7 +26,7 @@ export async function getAllCandidatesInElection(electionId: string) {
         SELECT u.id_number, u.firstname, u.lastname, u.course, c.position
         FROM users u
         JOIN candidates c ON u.id_number = c.id_number
-        WHERE election_id = ?
+        WHERE election_id = ? AND c.deleted IS NULL AND c.enabled = 1
     `
 
     const candidates = await selectQuery(pool, sqlQuery, [electionId]); // Assuming selectQuery automatically binds parameters

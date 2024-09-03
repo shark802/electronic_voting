@@ -40,7 +40,7 @@ function getAllCandidatesInElection(electionId) {
         SELECT u.id_number, u.firstname, u.lastname, u.course, c.position
         FROM users u
         JOIN candidates c ON u.id_number = c.id_number
-        WHERE election_id = ?
+        WHERE election_id = ? AND c.deleted IS NULL AND c.enabled = 1
     `;
         const candidates = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionId]); // Assuming selectQuery automatically binds parameters
         return candidates;

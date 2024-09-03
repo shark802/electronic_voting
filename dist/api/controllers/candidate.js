@@ -28,10 +28,7 @@ function addCandidateFunction(req, res, next) {
                 }
             });
             let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
-            // console.log(req.body);
-            // console.log(req.file);
             const candidate_profile = req.file ? node_path_1.default.join('public', 'img', 'candidate_profiles', req.file.filename) : null;
-            console.log(candidate_profile);
             if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position || !course)
                 return next(new customErrors_1.BadRequestError("Cannot proceed adding candidate due to missing info"));
             const findCandidateAccount = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM users WHERE id_number = ?", [id_number]);
@@ -56,8 +53,8 @@ function addCandidateFunction(req, res, next) {
             if (findCandidateIfExist.length > 0)
                 return next(new customErrors_1.ConflictError(`Unable to add ${id_number} in election due to conflict, candidate already exist`));
             const candidate_id = (0, ulid_1.ulid)();
-            const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, alias, party, election_id) VALUES (?, ?, ?, ?, ?, ?)";
-            const candidateParameter = [candidate_id, id_number, position, alias, party, election_id];
+            const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, alias, party, election_id, candidate_profile) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            const candidateParameter = [candidate_id, id_number, position, alias, party, election_id, candidate_profile];
             const newCandidate = yield (0, query_1.insertQuery)(database_1.pool, addNewCandidateQuery, candidateParameter);
             if (newCandidate.affectedRows > 0) {
                 return res.status(201).json({ message: "New candidate successfully added" });
