@@ -15,7 +15,6 @@ import { Worker } from "worker_threads";
 export function importUsersToDatabase(csvUsersFile: CsvUserObject[]) {
     return new Promise((resolve, reject) => {
         const worker = new Worker(path.join(__dirname, './workerFiles/importUsersWorker.js'));
-
         worker.postMessage(csvUsersFile);
 
         worker.on('message', (result: number) => {

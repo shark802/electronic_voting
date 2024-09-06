@@ -124,7 +124,6 @@ export async function getUserByIdNumber(req: Request, res: Response, next: NextF
 export async function importUsers(req: Request, res: Response, next: NextFunction) {
     try {
         const usersFile = req.file;
-
         if (!usersFile) throw new BadRequestError('Users data file is not provided');
 
         const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);

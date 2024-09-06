@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS `users` (
    `program_description` VARCHAR(255),
 	`is_active` TINYINT(1),
 	`user_group` VARCHAR(255),
+	`password` VARCHAR(255),
+	`year_active` INT(4),
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -100,8 +102,8 @@ CREATE TABLE IF NOT EXISTS `register_devices` (
    `codename` VARCHAR(50) NOT NULL,
    `date_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
    `is_registered` TINYINT(1) DEFAULT 0,
-   `updated_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   `deleted_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP
+   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   `deleted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `otp_codes` (
@@ -117,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `face_image` (
    `id` VARCHAR(50) NOT NULL PRIMARY KEY,
    `id_number` INT(10) NOT NULL,
    `face_image` BLOB, 
-   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP.
+   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`)
 ) ENGINE=InnoDB;
 
