@@ -9,8 +9,8 @@ import { selectQuery } from "../../data_access/query";
 import { RowDataPacket } from 'mysql2/promise';
 
 export async function loginFunction(req: Request, res: Response, next: NextFunction) {
+    const { id_number, password } = req.body;
     try {
-        const { id_number, password } = req.body;
         if (!id_number || !password) throw new BadRequestError("Missing credentials!");
 
         const response = await fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);

@@ -52,7 +52,7 @@ function renderElectionBallot(req, res, next) {
                 // redirect user to face authentication
             }
             const sqlQuery = `
-        SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position, c.candidate_profile
+        SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position, c.candidate_profile, c.party
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.election_id = ?

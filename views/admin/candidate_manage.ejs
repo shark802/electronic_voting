@@ -58,6 +58,7 @@
                   <th class="w-32 px-2 py-2 text-base font-medium ">ID</th>
                   <th class="py-2 text-base font-medium">Name</th>
                   <th class="py-2 text-base font-medium ">Alias</th>
+                  <th class="py-2 text-base font-medium ">Party</th>
                   <th class="py-2 text-base font-medium w-36">Course</th>
                   <th class="w-48 py-2 text-base font-medium">Created At</th>
                   <th class="py-2 text-base font-medium ">Status</th>
@@ -83,16 +84,16 @@
 
   <!-- Edit candidate Modal -->
   <dialog class="rounded-lg">
-    <form id="editCandidateForm" class="lg:min-w-[500px] lg: px-7 py-5 rounded-lg shadow-lg">
+    <form id="editCandidateForm" class="lg:min-w-[500px] lg:px-14 px-5 py-5 rounded-lg shadow-lg">
 
-      <div id="fullname" class="my-1 text-sm text-gray-600">Name: </div>
-      <div id="id-number" class="my-1 text-sm text-gray-600">ID: </div>
-      <div id="course" class="my-1 text-sm text-gray-600">Course: </div>
+      <div id="fullname" class="my-1 text-sm font-medium text-gray-600">Name: </div>
+      <div id="id-number" class="my-1 text-sm font-medium text-gray-600">ID: </div>
+      <div id="course" class="my-1 text-sm font-medium text-gray-600">Course: </div>
 
       <br>
 
-      <label class="text-sm text-gray-500" for="position">Position</label>
-      <select id="selectPosition" class="w-full py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
+      <label class="text-sm font-medium text-gray-500" for="position">Position</label>
+      <select id="selectPosition" class="w-full py-1 pl-3 font-medium border rounded-lg focus:outline-blue-500">
         <option value="">--</option>
         <% positions.forEach((value) => { %>
         <option value="<%= value %>" class="text-sm"> <%= value %> </option>
@@ -100,17 +101,23 @@
       </select>
       <div id="positionErrorMessage" class="text-sm text-red-500 min-h-5"></div>
 
-      <label class="text-sm text-gray-500" for="alias">Alias</label>
-      <input id="alias" type="text" class="w-full py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
+      <label class="text-sm font-medium text-gray-500" for="alias">Alias</label>
+      <input id="alias" type="text" class="w-full py-1 pl-3 font-medium border rounded-lg focus:outline-blue-500">
       <div id="aliasErrorMessage" class="text-sm text-red-500 min-h-5"></div>
 
-      <label class="text-sm text-gray-500" for="party">Party</label>
-      <input id="party" type="text" class="w-full py-1 pl-3 border border-gray-400 rounded-lg focus:outline-blue-500">
+      <label class="text-sm font-medium text-gray-500" for="party">Party</label>
+      <input id="party" type="text" class="w-full py-1 pl-3 font-medium border rounded-lg focus:outline-blue-500">
       <div id="partyErrorMessage" class="text-sm text-red-500 min-h-5"></div>
 
+      <!-- <div class="font-[sans-serif] max-w-md py-5">
+        <label class="block mb-2 text-base font-semibold text-gray-500">Upload profile</label>
+        <input type="file" name="candidate_profile" class="w-full text-sm font-semibold text-gray-400 bg-white border rounded cursor-pointer file:cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-gray-500" />
+        <p class="mt-2 text-xs text-gray-400">PNG, JPG and WEBP are Allowed.</p>
+      </div> -->
+
       <div class="flex justify-end gap-2">
-        <button id="closeModal" formmethod="dialog" type="button" class="px-3 py-1 mb-4 font-bold text-white bg-red-500 rounded-lg w-fit">CANCEL</button>
-        <input type="submit" value="SAVE" class="px-3 py-1 mb-4 font-bold text-white bg-blue-500 rounded-lg">
+        <button id="closeModal" formmethod="dialog" type="button" class="px-3 py-1 mb-4 font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 w-fit">CANCEL</button>
+        <input type="submit" value="SAVE" class="px-3 py-1 mb-4 font-bold text-white bg-blue-500 rounded-lg hover:bg-blue-600">
       </div>
 
     </form>

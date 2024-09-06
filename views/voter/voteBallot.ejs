@@ -29,8 +29,9 @@
   <div class="pb-32 mt-11">
 
     <form id="ballot-form" class="m-auto align-middle py-5 px-3 bg-white rounded-lg lg:p-3 h-fit max-w-[700px] min-h-4/5">
-
-      <h1 class="text-2xl font-bold text-center text-gray-600"><%= election ? election.election_name : "Official Ballot" %></h1>
+      <div class="py-2">
+        <h1 class="text-2xl font-bold text-center text-gray-600"><%= election ? election.election_name : "Official Ballot" %></h1>
+      </div>
 
       <% 
     if (candidatePositionList && candidatePositionList.length > 0) {
@@ -72,7 +73,7 @@
             <% } %>
             <span>
               <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600">
-              <label for="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="relative text-sm lg:text-base font-semibold text-gray-500 -top-[3px]"> <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %> </label>
+              <label for="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="relative text-sm lg:text-base font-bold text-gray-500 -top-[3px]"> <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %> - <span class="text-sm font-normal text-gray-400"> <%= candidateOfPosition.party %> </span> </label>
             </span>
           </div>
           <% }) %>

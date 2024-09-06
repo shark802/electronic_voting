@@ -17,8 +17,8 @@ const createUser_1 = require("../../utils/createUser");
 const query_1 = require("../../data_access/query");
 function loginFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { id_number, password } = req.body;
         try {
-            const { id_number, password } = req.body;
             if (!id_number || !password)
                 throw new customErrors_1.BadRequestError("Missing credentials!");
             const response = yield fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);

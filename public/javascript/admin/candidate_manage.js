@@ -220,9 +220,10 @@ function displayFetchCandidate(candidates) {
         const tableRow = `
             <tr data-candidate-id="${candidate.candidate_id}" class="rounded-xl transition-all tablerow">
                 <td class="text-xs font-medium py-2 pl-2 text-gray-60 rounded-tl-lg rounded-bl-lg text-center">${candidate.id_number}</td>
-                <td class="text-xs font-medium py-2 pl-4 text-gray-600 text-nowrap">${candidate.lastname}, ${candidate.firstname}</td>
+                <td class="text-xs font-medium py-2 pl-4 text-gray-600 text-nowrap">${candidate.firstname}, ${candidate.lastname}</td>
                 <td class="text-xs pl-4 font-medium py-2 text-gray-600">${candidate.alias}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600">${candidate.course}</td>
+                <td class="text-xs pl-4 font-medium py-2 text-gray-600 text-center">${candidate.party}</td>
+                <td class="text-xs font-medium py-2 pl-2 text-gray-600 text-center">${candidate.course}</td>
                 <td class="text-xs font-medium py-2 pl-2 text-gray-600">${candidateAddedAt}</td>
                 <td data-status="${candidate.enabled}" class="text-xs font-medium py-2 pl-2 text-gray-60 text-center">${status}</td>
                 <td class="rounded-tr-lg rounded-br-lg">

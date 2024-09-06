@@ -218,7 +218,7 @@ function displayUserInfo(userObject) {
     }
 
     const email = userObject.email ? `<div class="flex">Email:<p class="pl-2 text-gray-700 font-medium"> ${userObject.email}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700 font-medium"> N/A </p> </div>`
-    const cpNumber = userObject.cp_number ? `<div class="flex">Cp number:<p class="pl-2 text-gray-700 font-medium"> ${userObject.cp_number}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700 font-medium"> N/A </p> </div>`
+    const cpNumber = userObject.cp_number ? `<div class="flex">Cp number:<p class="pl-2 text-gray-700 font-medium"> ${userObject.cp_number}</p> </div>` : `<div class="flex">Cp number:<p class="pl-2 text-gray-700 font-medium"> N/A </p> </div>`
 
     // let roles = ''
     // if (userObject.voter || userObject.program_head || userObject.admin) {

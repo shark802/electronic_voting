@@ -4,7 +4,12 @@ import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { User } from "../../utils/types/User";
 import { pool } from "../../config/database";
 import { ResultSetHeader } from "mysql2";
-
+import csv from 'csvtojson';
+import fs from "fs";
+import { CsvUserObject } from "../../utils/types/CsvUserObject";
+import { Worker } from "worker_threads";
+import path from "path";
+import { importUsersToDatabase } from "../../utils/importUserToDatabase";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -113,5 +118,24 @@ export async function getUserByIdNumber(req: Request, res: Response, next: NextF
         return res.status(200).json({ user });
     } catch (error) {
         next(error)
+    }
+}
+
+export async function importUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+        const usersFile = req.file;
+
+        if (!usersFile) throw new BadRequestError('Users data file is not provided');
+
+        const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);
+        fs.unlinkSync(usersFile.path);
+
+        const importProcessResult = await importUsersToDatabase(userCsvFile);
+
+
+        res.status(200).json({ message: `Successfully processed ${importProcessResult} users.` })
+
+    } catch (error) {
+        next(error);
     }
 }

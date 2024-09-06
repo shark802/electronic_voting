@@ -6,7 +6,6 @@ import { Candidate } from "../../utils/types/Candidate";
 import { ulid } from "ulid";
 import { User } from "../../utils/types/User";
 import { getUserCandidate } from "../../data_access/candidateService";
-import path from "node:path";
 
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -18,7 +17,7 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
         });
 
         let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
-        const candidate_profile = req.file ? path.join('public', 'img', 'candidate_profiles', req.file.filename) : null;
+        const candidate_profile = req.file ? req.file.filename : null;
 
         if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position || !course) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
 

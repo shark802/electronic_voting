@@ -22,7 +22,7 @@ const upload = (0, multer_1.default)({
         fileSize: 1024 * 1024 * 5 // Limit file size to 5MB
     },
     fileFilter: (req, file, cb) => {
-        const filetypes = /jpeg|jpg|png/;
+        const filetypes = /jpeg|jpg|png|xls|csv/;
         const mimetype = filetypes.test(file.mimetype);
         const extname = filetypes.test(path_1.default.extname(file.originalname).toLowerCase());
         if (mimetype && extname) {

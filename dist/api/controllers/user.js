@@ -8,11 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserByIdNumber = exports.updateUserFunction = exports.newUserFunction = void 0;
+exports.importUsers = exports.getUserByIdNumber = exports.updateUserFunction = exports.newUserFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
+const csvtojson_1 = __importDefault(require("csvtojson"));
+const fs_1 = __importDefault(require("fs"));
+const importUserToDatabase_1 = require("../../utils/importUserToDatabase");
 function newUserFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -137,3 +143,20 @@ function getUserByIdNumber(req, res, next) {
     });
 }
 exports.getUserByIdNumber = getUserByIdNumber;
+function importUsers(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const usersFile = req.file;
+            if (!usersFile)
+                throw new customErrors_1.BadRequestError('Users data file is not provided');
+            const userCsvFile = yield (0, csvtojson_1.default)().fromFile(usersFile.path);
+            fs_1.default.unlinkSync(usersFile.path);
+            const importProcessResult = yield (0, importUserToDatabase_1.importUsersToDatabase)(userCsvFile);
+            res.status(200).json({ message: `Successfully processed ${importProcessResult} users.` });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.importUsers = importUsers;
