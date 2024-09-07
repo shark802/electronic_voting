@@ -82,8 +82,8 @@ export async function validateUuid(req: Request, res: Response, next: NextFuncti
     try {
         const uuid = req.body.uuid;
         if (!uuid) throw new BadRequestError('Uuid is undefined');
-        const [uuidRow] = await selectQuery<RegisterDevice>(pool, 'SELECT * FROM register_devices WHERE uuid = ? AND deleted_at IS NULL', [uuid]);
 
+        const [uuidRow] = await selectQuery<RegisterDevice>(pool, 'SELECT * FROM register_devices WHERE uuid = ? AND deleted_at IS NULL', [uuid]);
         if (!uuidRow) throw new NotFoundError('Uuid not found!');
 
         const isUuidRegistered = uuidRow.is_registered === 1 ? "REGISTERED" : "UNREGISTERED";

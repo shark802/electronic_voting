@@ -170,6 +170,8 @@ async function fetchCandidates(position) {
             return `election_id=${electionId}`;
         }).join("&");
 
+        if (!electionsQueryParameter) return; // return if no election exist
+
         const url = `/api/candidate?position=${position}&${electionsQueryParameter}`
 
         const response = await fetch(url);

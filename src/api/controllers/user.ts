@@ -129,10 +129,19 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
         const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);
         fs.unlinkSync(usersFile.path);
 
-        const importProcessResult = await importUsersToDatabase(userCsvFile);
+        const startTime = Date.now();
+        const importSize = await importUsersToDatabase(userCsvFile); // This function offload the process of importing the users in database on workter threads
+        const endTime = Date.now();
 
+        const importTimeInMinutes = (endTime - startTime) / 1000;
 
-        res.status(200).json({ message: `Successfully processed ${importProcessResult} users.` })
+        const processResult = {
+            timeTaken: importTimeInMinutes,
+            importSize: importSize
+        }
+
+        console.log(`Successfully processed ${importSize} users. \n Time taken: ${importTimeInMinutes} mins.`);
+        res.status(200).json({ message: `Successfully processed ${importSize} users.` })
 
     } catch (error) {
         next(error);

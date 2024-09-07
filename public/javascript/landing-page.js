@@ -26,6 +26,7 @@ submitRegisterDeviceForm();
 function updateUuidStatusOnLoad() {
     document.addEventListener('DOMContentLoaded', async () => {
         const uuid = getRegisterDeviceUuidIfExist();
+        console.log(uuid);
         if (!uuid) return;
 
         const response = await fetch(`/api/uuid/${uuid}`);

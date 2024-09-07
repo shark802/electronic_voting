@@ -248,4 +248,39 @@ document.body.querySelector('#add-user-button').addEventListener('click', () => 
     changeUserForm(formContentObject);
 
     document.querySelector('#user-info').innerHTML = '';
+});
+
+document.body.querySelector('#import-user-button').addEventListener('click', (event) => {
+    const importUserDropdown = event.target.closest('#import-user-container').querySelector('#import-user-dropdown');
+    $(importUserDropdown).show(400);
+});
+
+document.body.querySelector('#close-import-user-dropdown').addEventListener('click', (event) => {
+    const importUserDropdown = event.target.closest('#import-user-dropdown');
+    $(importUserDropdown).hide(400);
+});
+
+// submit import user form
+document.body.querySelector('#import-user-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    try {
+        const response = await fetch('/api/import-user', {
+            method: 'POST',
+            body: formData
+        });
+
+        const responseObject = await response.json();
+
+        if (!response.ok) {
+            return confirmErrorAlert(responseObject.message);
+        }
+
+        return showSwalSuccessToast(responseObject.message);
+
+    } catch (error) {
+        console.error(error);
+
+    }
 })
