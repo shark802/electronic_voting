@@ -126,5 +126,7 @@ CREATE TABLE IF NOT EXISTS `face_image` (
 CREATE TABLE IF NOT EXISTS `program_populations` (
    `id` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
    `program_code` VARCHAR(100) NOT NULL,
-   `program_population` INT DEFAULT 0
+   `program_population` INT DEFAULT 0,
+   `election_id` VARCHAR(50),
+   FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
 ) ENGINE=InnoDB;

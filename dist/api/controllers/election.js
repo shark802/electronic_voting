@@ -22,6 +22,9 @@ function createElection(req, res, next) {
             if (!election_name || !date_start || !time_start || !date_end || !time_end) {
                 return next(new customErrors_1.BadRequestError("Bad request, some required data is missing"));
             }
+            const openElection = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0');
+            if (openElection.length > 0)
+                throw new customErrors_1.ConflictError('An existing election is already running');
             const election_id = (0, ulid_1.ulid)();
             const connection = yield database_1.pool.getConnection();
             try {

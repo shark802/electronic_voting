@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { pool } from "../../config/database";
 import { ulid } from "ulid"
-import { BadRequestError, NotFoundError } from "../../utils/customErrors";
+import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
 import { Program } from "../../utils/enums/program";
 import { selectQuery, updateQuery } from "../../data_access/query";
@@ -13,6 +13,10 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 		if (!election_name || !date_start || !time_start || !date_end || !time_end) {
 			return next(new BadRequestError("Bad request, some required data is missing"));
 		}
+
+		const openElection = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0');
+		if (openElection.length > 0) throw new ConflictError('An existing election is already running');
+
 		const election_id = ulid();
 
 		const connection = await pool.getConnection();

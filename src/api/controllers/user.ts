@@ -127,8 +127,10 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
         if (!usersFile) throw new BadRequestError('Users data file is not provided');
 
         const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);
+        const fileName = usersFile.filename;
         fs.unlinkSync(usersFile.path);
 
+        console.log(`Importing ${fileName}`);
         const startTime = Date.now();
         const importSize = await importUsersToDatabase(userCsvFile); // This function offload the process of importing the users in database on workter threads
         const endTime = Date.now();

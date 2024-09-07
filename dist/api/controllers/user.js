@@ -150,7 +150,9 @@ function importUsers(req, res, next) {
             if (!usersFile)
                 throw new customErrors_1.BadRequestError('Users data file is not provided');
             const userCsvFile = yield (0, csvtojson_1.default)().fromFile(usersFile.path);
+            const fileName = usersFile.filename;
             fs_1.default.unlinkSync(usersFile.path);
+            console.log(`Importing ${fileName}`);
             const startTime = Date.now();
             const importSize = yield (0, importUserToDatabase_1.importUsersToDatabase)(userCsvFile); // This function offload the process of importing the users in database on workter threads
             const endTime = Date.now();
