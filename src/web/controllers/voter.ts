@@ -9,7 +9,7 @@ import { checkIfUserHasVoted } from "../../data_access/voteService";
 import { hasUserRegisterFaceImage } from "../../utils/hasUserRegisterFaceImage";
 import { getAllCandidatesInElection, getCandidatesTotalTally, getElectionInfoById } from "../../data_access/election";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
-import { isElectionEnded } from "../../utils/isElectionEnded";
+import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {

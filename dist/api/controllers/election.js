@@ -15,6 +15,7 @@ const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
 const program_1 = require("../../utils/enums/program");
 const query_1 = require("../../data_access/query");
+const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
 function createElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -22,9 +23,9 @@ function createElection(req, res, next) {
             if (!election_name || !date_start || !time_start || !date_end || !time_end) {
                 return next(new customErrors_1.BadRequestError("Bad request, some required data is missing"));
             }
-            const openElection = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0');
+            const openElection = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_active = 1');
             if (openElection.length > 0)
-                throw new customErrors_1.ConflictError('An existing election is already running');
+                throw new customErrors_1.ConflictError('An active election is currrently running');
             const election_id = (0, ulid_1.ulid)();
             const connection = yield database_1.pool.getConnection();
             try {
@@ -85,6 +86,11 @@ function deleteElection(req, res, next) {
             if (!election_id) {
                 return next(new customErrors_1.BadRequestError("Election Id is missing"));
             }
+            const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
+            if ((0, checkElectionTimeStatus_1.isElectionStarted)(election))
+                throw new customErrors_1.BadRequestError('Cannot delete an election that has already started.');
+            if ((0, checkElectionTimeStatus_1.isElectionEnded)(election))
+                throw new customErrors_1.BadRequestError('Cannot delete an election that has already ended.');
             const query = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";
             const value = [election_id];
             const result = yield (0, query_1.updateQuery)(database_1.pool, query, value);
@@ -128,6 +134,11 @@ function updateElectionStatus(req, res, next) {
             const electionStatus = req.query.status;
             if (!electionID || !electionStatus)
                 return next(new customErrors_1.BadRequestError());
+            if (electionStatus === '1') {
+                const activeElection = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_active = 1');
+                if (activeElection.length > 0)
+                    throw new customErrors_1.BadRequestError('An active election is currently running');
+            }
             const query = "UPDATE elections SET is_active = ? WHERE election_id = ? AND deleted_at IS NULL";
             const sqlParams = [electionStatus, electionID];
             const result = yield (0, query_1.updateQuery)(database_1.pool, query, sqlParams);

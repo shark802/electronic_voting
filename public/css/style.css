@@ -797,6 +797,14 @@ video {
   top: 3px;
 }
 
+.-top-2 {
+  top: -0.5rem;
+}
+
+.-top-5 {
+  top: -1.25rem;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -1750,6 +1758,16 @@ video {
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
+}
+
+.bg-green-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(134 239 172 / var(--tw-bg-opacity));
+}
+
+.bg-green-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 252 231 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-40 {

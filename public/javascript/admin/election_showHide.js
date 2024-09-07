@@ -5,12 +5,12 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
 
         let viewStatus = event.target.closest("#electionSection").querySelector("#viewStatus");
         let viewStatusImage = event.target.closest("#electionSection").querySelector("#viewStatusImage"); // div element text content contains Hide=(0) or Show=(1)
-        if (viewStatus.textContent === "Hide") {
+        if (viewStatus.textContent === "Deactivate") {
             electionStatus = 0;
             const updateOutcome = await updateElectionStatus(electionId, electionStatus)
             if (updateOutcome) {
                 viewStatusImage.src = "/img/view.webp"
-                viewStatus.textContent = "Show";
+                viewStatus.textContent = "Activate";
             }
 
         } else {
@@ -19,7 +19,7 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
 
             if (updateOutcome) {
                 viewStatusImage.src = "/img/hide.webp"
-                viewStatus.textContent = "Hide";
+                viewStatus.textContent = "Deactivate";
             }
         }
     })
@@ -51,7 +51,7 @@ async function updateElectionStatus(electionId, electionStatus) {
             });
             return true;
         } else {
-            responseMessage = await response.json();
+            const responseMessage = await response.json();
             Swal.fire({
                 showConfirmButton: false,
                 title: responseMessage.message,
@@ -65,6 +65,6 @@ async function updateElectionStatus(electionId, electionStatus) {
         }
 
     } catch (error) {
-
+        console.log(error.message);
     }
 };

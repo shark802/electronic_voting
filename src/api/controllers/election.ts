@@ -5,6 +5,7 @@ import { BadRequestError, ConflictError, NotFoundError } from "../../utils/custo
 import { Election } from "../../utils/types/Election";
 import { Program } from "../../utils/enums/program";
 import { selectQuery, updateQuery } from "../../data_access/query";
+import { isElectionEnded, isElectionStarted } from "../../utils/checkElectionTimeStatus";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
@@ -14,8 +15,8 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 			return next(new BadRequestError("Bad request, some required data is missing"));
 		}
 
-		const openElection = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0');
-		if (openElection.length > 0) throw new ConflictError('An existing election is already running');
+		const openElection = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_active = 1');
+		if (openElection.length > 0) throw new ConflictError('An active election is currrently running');
 
 		const election_id = ulid();
 
@@ -80,6 +81,10 @@ export async function deleteElection(req: Request, res: Response, next: NextFunc
 			return next(new BadRequestError("Election Id is missing"))
 		}
 
+		const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
+		if (isElectionStarted(election)) throw new BadRequestError('Cannot delete an election that has already started.');
+		if (isElectionEnded(election)) throw new BadRequestError('Cannot delete an election that has already ended.');
+
 		const query = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";
 		const value = [election_id]
 
@@ -125,6 +130,11 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 		const electionID = req.params.id;
 		const electionStatus = req.query.status
 		if (!electionID || !electionStatus) return next(new BadRequestError());
+
+		if ((electionStatus as string) === '1') {
+			const activeElection = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_active = 1');
+			if (activeElection.length > 0) throw new BadRequestError('An active election is currently running')
+		}
 
 		const query = "UPDATE elections SET is_active = ? WHERE election_id = ? AND deleted_at IS NULL";
 		const sqlParams = [electionStatus, electionID]

@@ -49,8 +49,9 @@
 
         <div id="electionSection" class="relative flex justify-between pb-1">
 
-          <div class="relative ml-2">
-            <h2 id="election-title" class="pt-4 font-semibold text-gray-700 lg:text-3xl"><%= element.election_name %></h2>
+          <div class="relative pt-4 ml-2">
+            <p class="px-3 text-sm text-green-500 bg-green-100 rounded-full w-fit">Active</p>
+            <h2 id="election-title" class="font-semibold text-gray-700 lg:text-3xl"><%= element.election_name %> </h2>
             <p id="election-card-id" class="mb-4 text-gray-400"><%= element.election_id %></p>
           </div>
 
@@ -67,13 +68,13 @@
               <% if (element.is_active === 1) { %>
               <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                 <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4">
-                <p id="viewStatus" class="ml-2">Hide</p>
+                <p id="viewStatus" class="ml-2">Deactivate</p>
               </div>
 
               <% } else { %>
               <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
                 <img id="viewStatusImage" src="/img/view.webp" alt="view" class="w-4 h-4">
-                <p id="viewStatus" class="ml-2">Show</p>
+                <p id="viewStatus" class="ml-2">Activate</p>
               </div>
 
               <% } %>
