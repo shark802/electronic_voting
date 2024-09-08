@@ -50,7 +50,17 @@
         <div id="electionSection" class="relative flex justify-between pb-1">
 
           <div class="relative pt-4 ml-2">
-            <p class="px-3 text-sm text-green-500 bg-green-100 rounded-full w-fit">Active</p>
+
+            <%  if (element.is_active) { %>
+
+            <p id="display-status" class="px-3 text-sm font-medium text-green-500 bg-green-100 rounded-full w-fit">Active</p>
+
+            <% } else { %>
+
+            <p id="display-status" class="px-3 text-sm font-medium text-red-500 bg-red-100 rounded-full w-fit">Inactive</p>
+
+            <% } %>
+
             <h2 id="election-title" class="font-semibold text-gray-700 lg:text-3xl"><%= element.election_name %> </h2>
             <p id="election-card-id" class="mb-4 text-gray-400"><%= element.election_id %></p>
           </div>

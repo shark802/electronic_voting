@@ -134,8 +134,11 @@ function updateElectionStatus(req, res, next) {
             const electionStatus = req.query.status;
             if (!electionID || !electionStatus)
                 return next(new customErrors_1.BadRequestError());
-            if (electionStatus === '1') {
-                const activeElection = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_active = 1');
+            const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ?', [electionID]);
+            const isElectionEnd = (0, checkElectionTimeStatus_1.isElectionEnded)(election);
+            // if request is to activate the election, check first if there is active election running before allowing to activate the election except for active election but already ended.
+            if (electionStatus === '1' && !isElectionEnd) {
+                const activeElection = yield (0, query_1.selectQuery)(database_1.pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME()))`);
                 if (activeElection.length > 0)
                     throw new customErrors_1.BadRequestError('An active election is currently running');
             }

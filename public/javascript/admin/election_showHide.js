@@ -5,21 +5,35 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
 
         let viewStatus = event.target.closest("#electionSection").querySelector("#viewStatus");
         let viewStatusImage = event.target.closest("#electionSection").querySelector("#viewStatusImage"); // div element text content contains Hide=(0) or Show=(1)
+        let displayStatus = event.target.closest("#electionSection").querySelector("#display-status");
+
         if (viewStatus.textContent === "Deactivate") {
+            // Request to deactivate the election
+
             electionStatus = 0;
-            const updateOutcome = await updateElectionStatus(electionId, electionStatus)
+            const updateOutcome = await updateElectionStatus(electionId, electionStatus) // return true if update is successful, false otherwise
             if (updateOutcome) {
                 viewStatusImage.src = "/img/view.webp"
                 viewStatus.textContent = "Activate";
+
+                displayStatus.textContent = 'Inactive'
+                displayStatus.style.color = '#ef4444';
+                displayStatus.style.backgroundColor = '#fee2e2';
             }
 
         } else {
+            // Request to activate the election
+
             electionStatus = 1;
-            const updateOutcome = await updateElectionStatus(electionId, electionStatus)
+            const updateOutcome = await updateElectionStatus(electionId, electionStatus) // return true if update is successful, false otherwise
 
             if (updateOutcome) {
                 viewStatusImage.src = "/img/hide.webp"
                 viewStatus.textContent = "Deactivate";
+
+                displayStatus.textContent = 'Active';
+                displayStatus.style.color = '#22c55e';
+                displayStatus.style.backgroundColor = '#dcfce7 ';
             }
         }
     })
