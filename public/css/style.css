@@ -1101,6 +1101,10 @@ video {
   max-height: max-content;
 }
 
+.max-h-screen {
+  max-height: 100vh;
+}
+
 .min-h-10 {
   min-height: 2.5rem;
 }
@@ -1360,6 +1364,10 @@ video {
 
 .grid-rows-1 {
   grid-template-rows: repeat(1, minmax(0, 1fr));
+}
+
+.flex-row {
+  flex-direction: row;
 }
 
 .flex-col {
@@ -1760,6 +1768,11 @@ video {
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
+}
+
+.bg-blue-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(147 197 253 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-40 {

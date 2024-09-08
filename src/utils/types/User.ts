@@ -11,6 +11,8 @@ type User = {
 	program_description: string;
 	is_active: number;
 	user_group: string;
+	password: string;
+	year_active: number;
 	created_at: string;
 };
 
