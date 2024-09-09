@@ -17,6 +17,7 @@ const query_1 = require("../../data_access/query");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
 const globalEventEmitterInstance_1 = require("../../events/globalEventEmitterInstance");
 const BccDepartments_1 = require("../../config/constants/BccDepartments");
+const voterService_1 = require("../../data_access/voterService");
 function createElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -28,11 +29,12 @@ function createElection(req, res, next) {
             if (openElection.length > 0)
                 throw new customErrors_1.ConflictError('An active election is currrently running');
             const election_id = (0, ulid_1.ulid)();
+            const totalQualifiedVoter = yield (0, voterService_1.countAllQualifiedVoterForElection)();
             const connection = yield database_1.pool.getConnection();
             try {
                 yield connection.beginTransaction();
-                const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
-                const values = [election_id, election_name, date_start, time_start, date_end, time_end];
+                const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end, total_populations) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                const values = [election_id, election_name, date_start, time_start, date_end, time_end, totalQualifiedVoter];
                 yield connection.execute(query, values);
                 for (const [department, programs] of Object.entries(BccDepartments_1.DEPARTMENT)) {
                     const year_active = new Date().getFullYear();

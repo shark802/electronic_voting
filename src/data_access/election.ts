@@ -1,4 +1,4 @@
-import { RowDataPacket } from "mysql2";
+import { QueryResult, RowDataPacket } from "mysql2";
 import { pool } from "../config/database";
 import { Election } from "../utils/types/Election";
 import { selectQuery } from "./query";
@@ -57,8 +57,4 @@ export async function totalUserVotedPerProgram() {
     `
     const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
     return totalVoted
-}
-
-export async function setTotalVoterPopulationOfgElection(electionId: string, connection: PoolConnection) {
-
 }

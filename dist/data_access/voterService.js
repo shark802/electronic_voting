@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllUserElectionParticipatedIn = exports.findOneUserVotedInElection = exports.getAllRecentUsersVotedInElection = exports.getAllRecentUsersVoted = void 0;
+exports.countAllQualifiedVoterForElection = exports.getAllUserElectionParticipatedIn = exports.findOneUserVotedInElection = exports.getAllRecentUsersVotedInElection = exports.getAllRecentUsersVoted = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
+// Select all recent log of user voted in the system
 function getAllRecentUsersVoted() {
     return __awaiter(this, void 0, void 0, function* () {
         const selectAllVotedQuery = `
@@ -28,6 +29,7 @@ function getAllRecentUsersVoted() {
     });
 }
 exports.getAllRecentUsersVoted = getAllRecentUsersVoted;
+// Select all recent user voted in one specific election
 function getAllRecentUsersVotedInElection(electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const selectAllVotedByElectionQuery = `
@@ -45,6 +47,7 @@ function getAllRecentUsersVotedInElection(electionId) {
     });
 }
 exports.getAllRecentUsersVotedInElection = getAllRecentUsersVotedInElection;
+// function for finding voter base on id_number and election_id provided
 function findOneUserVotedInElection(electionId, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         const findOneUserVotedInElectionQuery = `
@@ -62,6 +65,7 @@ function findOneUserVotedInElection(electionId, userId) {
     });
 }
 exports.findOneUserVotedInElection = findOneUserVotedInElection;
+// Select all election that user participated or voted in
 function getAllUserElectionParticipatedIn(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         const getAllUserElectionParticipatedQuery = `
@@ -79,3 +83,12 @@ function getAllUserElectionParticipatedIn(userId) {
     });
 }
 exports.getAllUserElectionParticipatedIn = getAllUserElectionParticipatedIn;
+// Count all total voter for election
+function countAllQualifiedVoterForElection() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const year_active = new Date().getFullYear();
+        const [totalPopulation] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT COUNT(*) as total_population FROM users WHERE year_active = ?', [year_active]);
+        return totalPopulation.total_population;
+    });
+}
+exports.countAllQualifiedVoterForElection = countAllQualifiedVoterForElection;

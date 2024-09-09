@@ -8,6 +8,7 @@ import { selectQuery, updateQuery } from "../../data_access/query";
 import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
 import { eventEmitter } from '../../events/globalEventEmitterInstance';
 import { DEPARTMENT } from "../../config/constants/BccDepartments";
+import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
@@ -21,13 +22,14 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 		if (openElection.length > 0) throw new ConflictError('An active election is currrently running');
 
 		const election_id = ulid();
+		const totalQualifiedVoter = await countAllQualifiedVoterForElection();
 
 		const connection = await pool.getConnection();
 		try {
 			await connection.beginTransaction();
 
-			const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
-			const values = [election_id, election_name, date_start, time_start, date_end, time_end];
+			const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end, total_populations) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			const values = [election_id, election_name, date_start, time_start, date_end, time_end, totalQualifiedVoter];
 
 			await connection.execute(query, values);
 

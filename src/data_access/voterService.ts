@@ -1,6 +1,8 @@
+import { RowDataPacket } from "mysql2";
 import { pool } from "../config/database";
 import { selectQuery } from "./query";
 
+// Select all recent log of user voted in the system
 export async function getAllRecentUsersVoted() {
     const selectAllVotedQuery = `
                 SELECT * FROM (
@@ -16,6 +18,7 @@ export async function getAllRecentUsersVoted() {
     return await selectQuery(pool, selectAllVotedQuery);
 }
 
+// Select all recent user voted in one specific election
 export async function getAllRecentUsersVotedInElection(electionId: string) {
     const selectAllVotedByElectionQuery = `
                 SELECT * FROM (
@@ -30,9 +33,9 @@ export async function getAllRecentUsersVotedInElection(electionId: string) {
                 LIMIT 50;`
 
     return await selectQuery(pool, selectAllVotedByElectionQuery, [electionId]);
-
 }
 
+// function for finding voter base on id_number and election_id provided
 export async function findOneUserVotedInElection(electionId: string, userId: string) {
     const findOneUserVotedInElectionQuery = `
                 SELECT * FROM (
@@ -49,6 +52,7 @@ export async function findOneUserVotedInElection(electionId: string, userId: str
     return await selectQuery(pool, findOneUserVotedInElectionQuery, [electionId, userId])
 }
 
+// Select all election that user participated or voted in
 export async function getAllUserElectionParticipatedIn(userId: string) {
     const getAllUserElectionParticipatedQuery = `
                 SELECT * FROM (
@@ -63,4 +67,17 @@ export async function getAllUserElectionParticipatedIn(userId: string) {
                 LIMIT 50;`
 
     return await selectQuery(pool, getAllUserElectionParticipatedQuery, [userId])
+}
+
+// Count all total voter for election
+export async function countAllQualifiedVoterForElection() {
+    const year_active = new Date().getFullYear();
+
+    interface TotalPopulation extends RowDataPacket {
+        total_population: number
+    }
+
+    const [totalPopulation] = await selectQuery<TotalPopulation>(pool, 'SELECT COUNT(*) as total_population FROM users WHERE year_active = ?', [year_active]);
+    return totalPopulation.total_population;
+
 }
