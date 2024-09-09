@@ -31,7 +31,6 @@ function importUsersWorker(csvUsersData) {
             }
             catch (error) {
                 console.error(`Error inserting batch ${i + 1}:`, error);
-                throw error;
             }
         }
         return csvUsersData.length;

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.totalUserVotedPerProgram = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
+exports.setTotalVoterPopulationOfgElection = exports.totalUserVotedPerProgram = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
 function getElectionInfoById(electionId) {
@@ -76,3 +76,8 @@ function totalUserVotedPerProgram() {
     });
 }
 exports.totalUserVotedPerProgram = totalUserVotedPerProgram;
+function setTotalVoterPopulationOfgElection(electionId, connection) {
+    return __awaiter(this, void 0, void 0, function* () {
+    });
+}
+exports.setTotalVoterPopulationOfgElection = setTotalVoterPopulationOfgElection;

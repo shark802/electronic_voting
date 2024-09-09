@@ -26,7 +26,6 @@ export async function importUsersWorker(csvUsersData: CsvUserObject[]): Promise<
 
         } catch (error) {
             console.error(`Error inserting batch ${i + 1}:`, error);
-            throw error;
         }
     }
 

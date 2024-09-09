@@ -27,7 +27,7 @@ const election = document.querySelector("#election");
 const idNumber = document.querySelector("#id-number");
 const firstname = document.querySelector("#firstname");
 const lastname = document.querySelector("#lastname");
-const alias = document.querySelector("#alias");
+// const alias = document.querySelector("#alias");
 const program = document.querySelector("#program");
 const party = document.querySelector("#party");
 const position = document.querySelector("#position");
@@ -37,7 +37,7 @@ const electionErrorMessage = document.querySelector("#electionErrorMessage");
 const idNumberErrorMessage = document.querySelector("#idNumberErrorMessage");
 const firstnameErrorMessage = document.querySelector("#firstnameErrorMessage");
 const lastnameErrorMessage = document.querySelector("#lastnameErrorMessage");
-const aliasErrorMessage = document.querySelector("#aliasErrorMessage");
+// const aliasErrorMessage = document.querySelector("#aliasErrorMessage");
 const programErrorMessage = document.querySelector("#programErrorMessage");
 const partyErrorMessage = document.querySelector("#partyErrorMessage");
 const positionErrorMessage = document.querySelector("#positionErrorMessage");
@@ -46,7 +46,7 @@ changeEventListener(isInputNotEmpty, [election], electionErrorMessage);
 changeEventListener(isInputNotEmpty, [idNumber], idNumberErrorMessage);
 changeEventListener(isInputNotEmpty, [firstname], firstnameErrorMessage);
 changeEventListener(isInputNotEmpty, [lastname], lastnameErrorMessage);
-changeEventListener(isInputNotEmpty, [alias], aliasErrorMessage);
+// changeEventListener(isInputNotEmpty, [alias], aliasErrorMessage);
 changeEventListener(isInputNotEmpty, [program], programErrorMessage);
 changeEventListener(isInputNotEmpty, [party], partyErrorMessage);
 changeEventListener(isInputNotEmpty, [position], positionErrorMessage);
@@ -54,31 +54,17 @@ changeEventListener(isInputNotEmpty, [position], positionErrorMessage);
 document.querySelector("#candidate-form").addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    console.log(election.value);
     const addCandidateForm = new FormData(event.target)
 
     for (let [key, value] of addCandidateForm.entries()) {
         console.log(`${key}: ${value}`);
     }
-    // const requestBody = {
-    //     election_id: election.value,
-    //     id_number: idNumber.value,
-    //     firstname: firstname.value,
-    //     lastname: lastname.value,
-    //     alias: alias.value,
-    //     course: program.value,
-    //     party: party.value,
-    //     position: position.value
-    // }
-
-    console.log(addCandidateForm);
 
     if (
         !isInputNotEmpty([election], electionErrorMessage) ||
         !isInputNotEmpty([idNumber], idNumberErrorMessage) ||
         !isInputNotEmpty([firstname], firstnameErrorMessage) ||
         !isInputNotEmpty([lastname], lastnameErrorMessage) ||
-        !isInputNotEmpty([alias], lastnameErrorMessage) ||
         !isInputNotEmpty([program], programErrorMessage) ||
         !isInputNotEmpty([party], partyErrorMessage) ||
         !isInputNotEmpty([position], positionErrorMessage)

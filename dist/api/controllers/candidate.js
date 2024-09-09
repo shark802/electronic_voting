@@ -25,7 +25,7 @@ function addCandidateFunction(req, res, next) {
             });
             let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
             const candidate_profile = req.file ? req.file.filename : null;
-            if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position || !course)
+            if (!election_id || !id_number || !firstname || !lastname || !party || !position || !course)
                 return next(new customErrors_1.BadRequestError("Cannot proceed adding candidate due to missing info"));
             const findCandidateAccount = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM users WHERE id_number = ?", [id_number]);
             if (findCandidateAccount.length < 1) {
@@ -49,8 +49,8 @@ function addCandidateFunction(req, res, next) {
             if (findCandidateIfExist.length > 0)
                 return next(new customErrors_1.ConflictError(`Unable to add ${id_number} in election due to conflict, candidate already exist`));
             const candidate_id = (0, ulid_1.ulid)();
-            const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, alias, party, election_id, candidate_profile) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            const candidateParameter = [candidate_id, id_number, position, alias, party, election_id, candidate_profile];
+            const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, party, election_id, candidate_profile) VALUES (?, ?, ?, ?, ?, ?)";
+            const candidateParameter = [candidate_id, id_number, position, party, election_id, candidate_profile];
             const newCandidate = yield (0, query_1.insertQuery)(database_1.pool, addNewCandidateQuery, candidateParameter);
             if (newCandidate.affectedRows > 0) {
                 return res.status(201).json({ message: "New candidate successfully added" });
@@ -68,11 +68,11 @@ function updateCandidateFunction(req, res, next) {
             const candidate_id = req.params.id;
             if (!candidate_id)
                 return next(new customErrors_1.BadRequestError("Election Id is missing"));
-            let { alias, party, position } = req.body;
-            if (!alias || !party || !position)
+            let { party, position } = req.body;
+            if (!party || !position)
                 return next(new customErrors_1.BadRequestError("Candidate is lacking some information to proceed update"));
-            const updateSqlQuery = "UPDATE candidates SET alias = ?, party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
-            const updateParameter = [alias, party, position, candidate_id];
+            const updateSqlQuery = "UPDATE candidates SET party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
+            const updateParameter = [party, position, candidate_id];
             const updateResult = yield (0, query_1.updateQuery)(database_1.pool, updateSqlQuery, updateParameter);
             if (updateResult.affectedRows < 0)
                 return next(new customErrors_1.NotFoundError('Resource not found or no changes were made'));
@@ -113,7 +113,7 @@ function getManageCandidates(req, res, next) {
                 throw new customErrors_1.BadRequestError('Atleast 1 election Id is required');
             const electionList = Array.isArray(electionIds) ? electionIds : [electionIds];
             const sqlSelectUserCandidateQuery = `
-        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.alias, c.party, c.added_at
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.party, c.added_at
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.position = ?

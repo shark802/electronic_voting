@@ -13,9 +13,10 @@ exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram =
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
-const program_1 = require("../../utils/enums/program");
 const query_1 = require("../../data_access/query");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
+const globalEventEmitterInstance_1 = require("../../events/globalEventEmitterInstance");
+const BccDepartments_1 = require("../../config/constants/BccDepartments");
 function createElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -23,7 +24,7 @@ function createElection(req, res, next) {
             if (!election_name || !date_start || !time_start || !date_end || !time_end) {
                 return next(new customErrors_1.BadRequestError("Bad request, some required data is missing"));
             }
-            const openElection = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_active = 1');
+            const openElection = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME())) AND deleted_at IS NULL');
             if (openElection.length > 0)
                 throw new customErrors_1.ConflictError('An active election is currrently running');
             const election_id = (0, ulid_1.ulid)();
@@ -33,11 +34,15 @@ function createElection(req, res, next) {
                 const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
                 const values = [election_id, election_name, date_start, time_start, date_end, time_end];
                 yield connection.execute(query, values);
-                for (const program of Object.values(program_1.Program)) {
-                    const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
-                    yield connection.execute(insertProgramPopulationQuery, [program, election_id]);
+                for (const [department, programs] of Object.entries(BccDepartments_1.DEPARTMENT)) {
+                    const year_active = new Date().getFullYear();
+                    const [countDepartmentPopulation] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT COUNT(*) as population FROM users WHERE course IN (?) AND year_active = ?', [programs, year_active]);
+                    const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, program_population, election_id) VALUES(?, ?, ?)';
+                    yield connection.execute(insertProgramPopulationQuery, [department, countDepartmentPopulation.population, election_id]);
                 }
                 yield connection.commit();
+                // Emit an event to register voters for election that just created
+                globalEventEmitterInstance_1.eventEmitter.emit('addCandidateEvent', election_id);
                 res.status(201).json({ message: "Election created" });
             }
             catch (error) {
@@ -138,7 +143,7 @@ function updateElectionStatus(req, res, next) {
             const isElectionEnd = (0, checkElectionTimeStatus_1.isElectionEnded)(election);
             // if request is to activate the election, check first if there is active election running before allowing to activate the election except for active election but already ended.
             if (electionStatus === '1' && !isElectionEnd) {
-                const activeElection = yield (0, query_1.selectQuery)(database_1.pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME()))`);
+                const activeElection = yield (0, query_1.selectQuery)(database_1.pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME()) AND deleted_at IS NULL)`);
                 if (activeElection.length > 0)
                     throw new customErrors_1.BadRequestError('An active election is currently running');
             }

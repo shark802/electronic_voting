@@ -2,6 +2,7 @@ import { RowDataPacket } from "mysql2";
 import { pool } from "../config/database";
 import { Election } from "../utils/types/Election";
 import { selectQuery } from "./query";
+import { PoolConnection } from "mysql2/promise";
 
 export async function getElectionInfoById(electionId: string) {
     const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL', [electionId]);
@@ -56,4 +57,8 @@ export async function totalUserVotedPerProgram() {
     `
     const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
     return totalVoted
+}
+
+export async function setTotalVoterPopulationOfgElection(electionId: string, connection: PoolConnection) {
+
 }

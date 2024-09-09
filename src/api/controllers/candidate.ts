@@ -19,7 +19,7 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
         let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
         const candidate_profile = req.file ? req.file.filename : null;
 
-        if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position || !course) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
+        if (!election_id || !id_number || !firstname || !lastname || !party || !position || !course) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
 
         const findCandidateAccount = await selectQuery<Candidate>(pool, "SELECT * FROM users WHERE id_number = ?", [id_number]);
         if (findCandidateAccount.length < 1) {
@@ -41,8 +41,8 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
         if (findCandidateIfExist.length > 0) return next(new ConflictError(`Unable to add ${id_number} in election due to conflict, candidate already exist`));
 
         const candidate_id = ulid();
-        const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, alias, party, election_id, candidate_profile) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        const candidateParameter = [candidate_id, id_number, position, alias, party, election_id, candidate_profile];
+        const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, party, election_id, candidate_profile) VALUES (?, ?, ?, ?, ?, ?)";
+        const candidateParameter = [candidate_id, id_number, position, party, election_id, candidate_profile];
         const newCandidate = await insertQuery(pool, addNewCandidateQuery, candidateParameter);
 
         if (newCandidate.affectedRows > 0) {
@@ -58,11 +58,11 @@ export async function updateCandidateFunction(req: Request, res: Response, next:
         const candidate_id = req.params.id;
         if (!candidate_id) return next(new BadRequestError("Election Id is missing"));
 
-        let { alias, party, position } = req.body;
-        if (!alias || !party || !position) return next(new BadRequestError("Candidate is lacking some information to proceed update"));
+        let { party, position } = req.body;
+        if (!party || !position) return next(new BadRequestError("Candidate is lacking some information to proceed update"));
 
-        const updateSqlQuery = "UPDATE candidates SET alias = ?, party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
-        const updateParameter = [alias, party, position, candidate_id];
+        const updateSqlQuery = "UPDATE candidates SET party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
+        const updateParameter = [party, position, candidate_id];
 
         const updateResult = await updateQuery(pool, updateSqlQuery, updateParameter);
         if (updateResult.affectedRows < 0) return next(new NotFoundError('Resource not found or no changes were made'));
@@ -101,10 +101,10 @@ export async function getManageCandidates(req: Request, res: Response, next: Nex
 
         const electionList = Array.isArray(electionIds) ? electionIds : [electionIds];
 
-        type userCandidate = Pick<User, "id_number" | 'firstname' | 'lastname' | 'year_level' | 'section' | 'course'> & Pick<Candidate, 'candidate_id' | 'election_id' | 'position' | 'enabled' | 'alias' | 'party'>;
+        type userCandidate = Pick<User, "id_number" | 'firstname' | 'lastname' | 'year_level' | 'section' | 'course'> & Pick<Candidate, 'candidate_id' | 'election_id' | 'position' | 'enabled' | 'party'>;
 
         const sqlSelectUserCandidateQuery = `
-        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.alias, c.party, c.added_at
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.party, c.added_at
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.position = ?

@@ -223,7 +223,6 @@ function displayFetchCandidate(candidates) {
             <tr data-candidate-id="${candidate.candidate_id}" class="rounded-xl transition-all tablerow">
                 <td class="text-xs font-medium py-2 pl-2 text-gray-60 rounded-tl-lg rounded-bl-lg text-center">${candidate.id_number}</td>
                 <td class="text-xs font-medium py-2 pl-4 text-gray-600 text-nowrap">${candidate.firstname}, ${candidate.lastname}</td>
-                <td class="text-xs pl-4 font-medium py-2 text-gray-600">${candidate.alias}</td>
                 <td class="text-xs pl-4 font-medium py-2 text-gray-600 text-center">${candidate.party}</td>
                 <td class="text-xs font-medium py-2 pl-2 text-gray-600 text-center">${candidate.course}</td>
                 <td class="text-xs font-medium py-2 pl-2 text-gray-600">${candidateAddedAt}</td>
@@ -305,7 +304,7 @@ async function displayEditForm(event) {
         dialog.querySelector('#id-number').textContent = `ID:  ${responseObject.id_number}`;
         dialog.querySelector('#course').textContent = `Course:  ${responseObject.course}`;
 
-        dialog.querySelector("#alias").value = responseObject.alias;
+        // dialog.querySelector("#alias").value = responseObject.alias;
         dialog.querySelector("#party").value = responseObject.party;
         const positionOptions = dialog.querySelector("#selectPosition").querySelectorAll('option');
         for (let option of positionOptions) {
@@ -343,13 +342,12 @@ async function confirmCandidateUpdate(candidateId) {
             if (!action.isConfirmed) return;
 
             const position = event.target.querySelector('#selectPosition').value;
-            const alias = event.target.querySelector('#alias').value;
             const party = event.target.querySelector('#party').value;
 
             const response = await fetch(`/api/candidate/${candidateId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ position, alias, party })
+                body: JSON.stringify({ position, party })
             });
             const responseObject = await response.json();
             if (!response.ok) {
@@ -372,15 +370,12 @@ async function confirmCandidateUpdate(candidateId) {
 
 function validateFormBeforeSubmit(event) {
     const positionInput = event.target.querySelector("#selectPosition");
-    const aliasInput = event.target.querySelector("#alias");
     const partyInput = event.target.querySelector("#party");
 
     const positionErrorMessage = event.target.querySelector("#positionErrorMessage")
-    const aliasErrorMessage = event.target.querySelector("#aliasErrorMessage")
     const partyErrorMessage = event.target.querySelector("#partyErrorMessage")
     if (
         !isInputNotEmpty([positionInput], positionErrorMessage) ||
-        !isInputNotEmpty([aliasInput], aliasErrorMessage) ||
         !isInputNotEmpty([partyInput], partyErrorMessage)
     ) {
         return false;

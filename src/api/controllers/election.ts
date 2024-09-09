@@ -6,6 +6,8 @@ import { Election } from "../../utils/types/Election";
 import { Program } from "../../utils/enums/program";
 import { selectQuery, updateQuery } from "../../data_access/query";
 import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
+import { eventEmitter } from '../../events/globalEventEmitterInstance';
+import { DEPARTMENT } from "../../config/constants/BccDepartments";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
@@ -15,7 +17,7 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 			return next(new BadRequestError("Bad request, some required data is missing"));
 		}
 
-		const openElection = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_active = 1');
+		const openElection = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME())) AND deleted_at IS NULL');
 		if (openElection.length > 0) throw new ConflictError('An active election is currrently running');
 
 		const election_id = ulid();
@@ -29,12 +31,20 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 
 			await connection.execute(query, values);
 
-			for (const program of Object.values(Program)) {
-				const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
-				await connection.execute(insertProgramPopulationQuery, [program, election_id]);
+			for (const [department, programs] of Object.entries(DEPARTMENT)) {
+
+				const year_active = new Date().getFullYear();
+				const [countDepartmentPopulation] = await selectQuery<{ population: number }>(pool, 'SELECT COUNT(*) as population FROM users WHERE course IN (?) AND year_active = ?', [programs, year_active])
+
+				const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, program_population, election_id) VALUES(?, ?, ?)';
+				await connection.execute(insertProgramPopulationQuery, [department, countDepartmentPopulation.population, election_id]);
 			}
 
 			await connection.commit();
+
+			// Emit an event to register voters for election that just created
+			eventEmitter.emit('addCandidateEvent', election_id);
+
 			res.status(201).json({ message: "Election created" });
 		} catch (error) {
 			await connection.rollback();
@@ -136,7 +146,7 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 
 		// if request is to activate the election, check first if there is active election running before allowing to activate the election except for active election but already ended.
 		if ((electionStatus as string) === '1' && !isElectionEnd) {
-			const activeElection = await selectQuery<Election>(pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME()))`);
+			const activeElection = await selectQuery<Election>(pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME()) AND deleted_at IS NULL)`);
 			if (activeElection.length > 0) throw new BadRequestError('An active election is currently running')
 		}
 
