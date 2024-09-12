@@ -9,7 +9,7 @@ import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTim
 import { eventEmitter } from '../../events/globalEventEmitterInstance';
 import { DEPARTMENT } from "../../config/constants/BccDepartments";
 import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
-import { getDepartmentsTotalVotes } from "../../data_access/election";
+import { getDepartmentsTotalPopulation, getDepartmentsTotalVotes } from "../../data_access/election";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
@@ -218,17 +218,12 @@ export async function getNumberOfVoted(req: Request, res: Response, next: NextFu
 export async function getTotalPopulationByProgram(req: Request, res: Response, next: NextFunction) {
 	try {
 		const electionIdQueryParams = req.query.election_id;
-		const programCode = req.query.program;
-
 		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
-		if (!programCode) throw new BadRequestError('No program provided');
 
 		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
+		const electionsDepartmentPopulation = await getDepartmentsTotalPopulation(electionIdArray);
 
-		const sqlQuery = `SELECT program_population, program_code, election_id FROM program_populations WHERE program_code = ? AND election_id IN (?)`
-		const programPopulation = await selectQuery(pool, sqlQuery, [programCode, electionIdArray]);
-
-		return res.status(200).json({ programPopulation });
+		return res.status(200).json({ electionPopulationSummary: electionsDepartmentPopulation });
 	} catch (error) {
 		next(error)
 	}

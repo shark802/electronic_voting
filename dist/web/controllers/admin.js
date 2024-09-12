@@ -14,20 +14,19 @@ const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const position_1 = require("../../utils/enums/position");
 const program_1 = require("../../utils/enums/program");
-const election_1 = require("../../data_access/election");
 const voterService_1 = require("../../data_access/voterService");
 function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-            const totalVotedPerElection = yield (0, election_1.totalUserVotedPerElection)();
-            const totalVotedPerProgram = yield (0, election_1.totalUserVotedPerProgram)();
+            // const totalVotedPerElection = await totalUserVotedPerElection();
+            // const totalVotedPerProgram = await totalUserVotedPerProgram();
             const electionIdList = elections.map(election => election.election_id);
             let populationPerProgram = [];
             if (electionIdList.length > 0) {
                 populationPerProgram = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList]);
             }
-            res.render("admin/dashboard_overview", { elections, totalVotedPerElection, populationPerProgram, totalVotedPerProgram });
+            res.render("admin/dashboard_overview", { elections, populationPerProgram });
         }
         catch (error) {
             next(error);

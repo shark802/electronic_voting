@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDepartmentsTotalVotes = exports.totalUserVotedPerProgram = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
+exports.getDepartmentsTotalVotes = exports.getDepartmentsTotalPopulation = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
 const BccDepartments_1 = require("../config/constants/BccDepartments");
@@ -62,21 +62,37 @@ function totalUserVotedPerElection() {
     });
 }
 exports.totalUserVotedPerElection = totalUserVotedPerElection;
-function totalUserVotedPerProgram() {
+// export async function totalUserVotedPerProgram() {
+//     const sqlQuery = `
+//         SELECT e.election_id, u.course, COUNT(DISTINCT v.voter_id) AS total_voted
+//         FROM elections e
+//         JOIN votes v ON e.election_id = v.election_id
+//         JOIN users u ON v.voter_id = u.id_number
+//         WHERE e.is_close = 0
+//         GROUP BY e.election_id, u.course;
+//     `
+//     const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
+//     return totalVoted
+// }
+function getDepartmentsTotalPopulation(electionIdArray) {
     return __awaiter(this, void 0, void 0, function* () {
-        const sqlQuery = `
-        SELECT e.election_id, u.course, COUNT(DISTINCT v.voter_id) AS total_voted
-        FROM elections e
-        JOIN votes v ON e.election_id = v.election_id
-        JOIN users u ON v.voter_id = u.id_number
-        WHERE e.is_close = 0
-        GROUP BY e.election_id, u.course;
-    `;
-        const totalVoted = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery);
-        return totalVoted;
+        const sqlQuery = `SELECT * FROM program_populations WHERE election_id = ? AND program_code = ?`;
+        const electionDepartmentTotalPopulation = []; // will accumulate all elections vote summary per department
+        for (const electionId of electionIdArray) {
+            const departmentTotalPopulation = {
+                election_id: electionId,
+                department_total_population: {}
+            };
+            for (const departmentCode of Object.keys(BccDepartments_1.DEPARTMENT)) {
+                const [result] = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionId, departmentCode]);
+                departmentTotalPopulation.department_total_population[departmentCode] = (result ? result.program_population : 0);
+            }
+            electionDepartmentTotalPopulation.push(departmentTotalPopulation);
+        }
+        return electionDepartmentTotalPopulation;
     });
 }
-exports.totalUserVotedPerProgram = totalUserVotedPerProgram;
+exports.getDepartmentsTotalPopulation = getDepartmentsTotalPopulation;
 function getDepartmentsTotalVotes(electionIdArray) {
     return __awaiter(this, void 0, void 0, function* () {
         const sqlQuery = `

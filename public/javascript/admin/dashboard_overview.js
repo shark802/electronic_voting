@@ -36,13 +36,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     displayElectionNumberOfVotedInDashboard(electionTotalVoted, electionTotalPopulation);
     displayElectionNumberOfNotVotedInDashboard(electionTotalPopulation, electionTotalVoted);
 
-    // const programPopulation = await fetchTotalPopulationByProgram(departmentsPerElectionArray);
+    const programPopulation = await fetchTotalPopulationByProgram(urlParams);
     const programVoteCount = await fetchProgramTotalVoteCount(urlParams);
 
-    console.log(programVoteCount);
 
     // display the total population, number of voted and not voted by program (depends on program head's program)
-    // displayProgramTotalPopulation(programPopulation);
+    displayProgramTotalPopulation(programPopulation);
     displayTotalVoteCountInProgram(programVoteCount);
     displayProgramNumberOfNotVoted(programPopulation, programVoteCount);
 })
@@ -125,15 +124,15 @@ function displayElectionNumberOfNotVotedInDashboard(electionTotalPopulationArray
     })
 }
 
-async function fetchTotalPopulationByProgram(programCode, urlParams) {
+async function fetchTotalPopulationByProgram(urlParams) {
     try {
-        const url = `/api/program-population?program=${programCode}&${urlParams}`
+        const url = `/api/program-population?${urlParams}`
         const response = await fetch(url);
         const responseObject = await response.json()
 
         if (!response.ok) return showSwalErrorToast(responseObject.message);
 
-        return responseObject.programPopulation;
+        return responseObject.electionPopulationSummary;
     } catch (error) {
         console.error(error);
     }
@@ -172,24 +171,7 @@ function displayTotalVoteCountInProgram(programVoteCountObject) {
             const departmentCode = department.querySelector('#program-code').textContent.trim();
 
             department.querySelector('#departmentTotalVotes').textContent = electionVotesSummary.department_votes[departmentCode];
-        })
-        // // if (electionVotesSummary.length !== 0) {
-        // console.log(electionVotesSummary.department_votes);
-
-        // Object.entries(electionVotesSummary.department_votes).forEach(electionVotes => {
-        //     console.log(electionVotes);
-        //     const electionSection = document.body.querySelector(`section[data-election-id="${electionVotes.election_id}"]`);
-
-        //     electionSection.querySelectorAll('#program').forEach(program => {
-        //         const programCode = program.querySelector('#program-code').textContent.trim();
-
-        //         program.querySelector('#departmentTotalVotes').textContent = electionVotes.departmentVotes[programCode];
-        //     })
-
-        // })
-
-        // electionSection.querySelector('#program-vote-count').textContent = programVoteCount.total_voted;
-        // // }
+        });
     })
 }
 

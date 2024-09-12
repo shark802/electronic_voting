@@ -218,15 +218,11 @@ function getTotalPopulationByProgram(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const electionIdQueryParams = req.query.election_id;
-            const programCode = req.query.program;
             if (!electionIdQueryParams)
                 throw new customErrors_1.BadRequestError('No election id provided');
-            if (!programCode)
-                throw new customErrors_1.BadRequestError('No program provided');
             const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams];
-            const sqlQuery = `SELECT program_population, program_code, election_id FROM program_populations WHERE program_code = ? AND election_id IN (?)`;
-            const programPopulation = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [programCode, electionIdArray]);
-            return res.status(200).json({ programPopulation });
+            const electionsDepartmentPopulation = yield (0, election_1.getDepartmentsTotalPopulation)(electionIdArray);
+            return res.status(200).json({ electionPopulationSummary: electionsDepartmentPopulation });
         }
         catch (error) {
             next(error);

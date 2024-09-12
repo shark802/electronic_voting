@@ -4,6 +4,7 @@ import { Election } from "../utils/types/Election";
 import { selectQuery } from "./query";
 import { PoolConnection } from "mysql2/promise";
 import { DEPARTMENT } from "../config/constants/BccDepartments";
+import { ProgramPopulations } from "../utils/types/ProgramPopulations";
 
 export async function getElectionInfoById(electionId: string) {
     const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL', [electionId]);
@@ -47,17 +48,50 @@ export async function totalUserVotedPerElection() {
     return totalVoted
 }
 
-export async function totalUserVotedPerProgram() {
-    const sqlQuery = `
-        SELECT e.election_id, u.course, COUNT(DISTINCT v.voter_id) AS total_voted
-        FROM elections e
-        JOIN votes v ON e.election_id = v.election_id
-        JOIN users u ON v.voter_id = u.id_number
-        WHERE e.is_close = 0
-        GROUP BY e.election_id, u.course;
-    `
-    const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
-    return totalVoted
+// export async function totalUserVotedPerProgram() {
+//     const sqlQuery = `
+//         SELECT e.election_id, u.course, COUNT(DISTINCT v.voter_id) AS total_voted
+//         FROM elections e
+//         JOIN votes v ON e.election_id = v.election_id
+//         JOIN users u ON v.voter_id = u.id_number
+//         WHERE e.is_close = 0
+//         GROUP BY e.election_id, u.course;
+//     `
+//     const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
+//     return totalVoted
+// }
+
+export async function getDepartmentsTotalPopulation(electionIdArray: string[]) {
+
+    // Index for departments_votes object
+    type DepartmentCode = keyof typeof DEPARTMENT;
+
+    // shape of object that summarize all department votes per election
+    type ElectionDepartmentTotalPopulation = {
+        election_id: string;
+        department_total_population: Record<DepartmentCode, number>;
+    };
+
+    const sqlQuery = `SELECT * FROM program_populations WHERE election_id = ? AND program_code = ?`
+
+    const electionDepartmentTotalPopulation: ElectionDepartmentTotalPopulation[] = []; // will accumulate all elections vote summary per department
+    for (const electionId of electionIdArray) {
+
+        const departmentTotalPopulation: ElectionDepartmentTotalPopulation = {
+            election_id: electionId,
+            department_total_population: {} as Record<DepartmentCode, number>
+        }
+
+        for (const departmentCode of Object.keys(DEPARTMENT)) {
+            const [result] = await selectQuery<ProgramPopulations>(pool, sqlQuery, [electionId, departmentCode]);
+
+            departmentTotalPopulation.department_total_population[departmentCode as DepartmentCode] = (result ? result.program_population : 0);
+        }
+
+        electionDepartmentTotalPopulation.push(departmentTotalPopulation);
+    }
+
+    return electionDepartmentTotalPopulation;
 }
 
 export async function getDepartmentsTotalVotes(electionIdArray: string[]) {
@@ -89,6 +123,7 @@ export async function getDepartmentsTotalVotes(electionIdArray: string[]) {
     const departmentVotesSummary: ElectionDepartmentVoteSummary[] = []; // will accumulate all elections vote summary per department
 
     for (const electionId of electionIdArray) {
+
         const electionDepartmentVoteSummary: ElectionDepartmentVoteSummary = {
             election_id: electionId as string,
             department_votes: {} as Record<DepartmentCode, number> // Initialized as an empty object with correct type
