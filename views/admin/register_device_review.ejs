@@ -56,10 +56,10 @@
             
           %>
           <tr data-uuid="<%= device.uuid %>" class="transition-all tablerow">
-            <td id="codename" class="py-1 text-xs font-medium text-center text-gray-700 rounded-tl-lg rounded-bl-lg"><%= device.codename %></td>
-            <td id="uuid" class="py-1 text-xs font-medium text-center text-gray-700"><%= device.uuid %></td>
-            <td id="request-date" class="py-1 text-xs font-medium text-center text-gray-700 "><%= dateCreated%></td>
-            <td class="py-1 text-xs font-medium text-center text-gray-700 rounded-tr-lg rounded-br-lg ">
+            <td id="codename" class="py-1 text-sm font-medium text-center text-gray-700 rounded-tl-lg rounded-bl-lg"><%= device.codename %></td>
+            <td id="uuid" class="py-1 text-sm font-medium text-center text-gray-700"><%= device.uuid %></td>
+            <td id="request-date" class="py-1 text-sm font-medium text-center text-gray-700 "><%= dateCreated%></td>
+            <td class="py-1 text-sm font-medium text-center text-gray-700 rounded-tr-lg rounded-br-lg ">
               <button popovertarget="decline-request-modal" id="decline-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-red-500 rounded-lg hover:bg-red-600">DECLINE</button>
               <button popovertarget="accept-request-modal" id="accept-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-green-500 rounded-lg hover:bg-green-600">ACCEPT</button>
             </td>

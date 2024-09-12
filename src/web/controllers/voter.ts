@@ -45,7 +45,7 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         }
 
         const sqlQuery = `
-        SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position, c.candidate_profile, c.party
+        SELECT u.id_number, u.firstname, u.lastname , u.course, c.position, c.candidate_profile, c.party
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.election_id = ?

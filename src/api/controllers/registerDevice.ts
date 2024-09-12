@@ -25,6 +25,8 @@ export async function declineRequestFunction(req: Request, res: Response, next: 
         const uuid = req.params.id;
         if (!uuid) throw new BadRequestError("Missing UUID");
 
+        console.log(uuid);
+
         const deleteResult = await updateQuery(pool, 'UPDATE register_devices SET deleted_at = CURDATE() WHERE uuid = ? AND deleted_at IS NULL', [uuid]);
         if (deleteResult.affectedRows < 1) throw new NotFoundError('No resource modified, check the uuid if correct');
         return res.status(200).json({ message: 'Request declined' });

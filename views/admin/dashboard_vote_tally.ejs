@@ -16,14 +16,14 @@
 
   <%- include("../partials/sidebar.ejs") %>
 
-  <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5">
+  <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-2">
 
     <div class="flex items-center w-full py-3 m-0 lg:h-20 lg:pt-7">
       <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
       <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Election Tally</h1>
     </div>
 
-    <div id="vote-tally-container" class="relative h-screen p-2 mt-3 overflow-x-hidden overflow-y-auto rounded-lg bg-blue-50 lg:gap-3 lg:px-10 lg:p-5 lg:mb-3">
+    <div id="vote-tally-container" class="relative h-screen p-2 mt-3 overflow-x-hidden overflow-y-auto rounded-lg bg-blue-50 lg:gap-3 lg:px-10 lg:p-5 lg:mb-2">
 
       <% if (elections && elections.length === 0) { %>
 

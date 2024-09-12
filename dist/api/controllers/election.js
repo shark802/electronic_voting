@@ -18,6 +18,7 @@ const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus")
 const globalEventEmitterInstance_1 = require("../../events/globalEventEmitterInstance");
 const BccDepartments_1 = require("../../config/constants/BccDepartments");
 const voterService_1 = require("../../data_access/voterService");
+const election_1 = require("../../data_access/election");
 function createElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -236,23 +237,43 @@ exports.getTotalPopulationByProgram = getTotalPopulationByProgram;
 function getTotalVotedInElectionByProgram(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const electionIdQueryParams = req.query.election_id;
-            const programCode = req.query.program;
+            let electionIdQueryParams = req.query.election_id;
             if (!electionIdQueryParams)
                 throw new customErrors_1.BadRequestError('No election id provided');
-            if (!programCode)
-                throw new customErrors_1.BadRequestError('No program provided');
-            const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams];
-            const sqlQuery = `
-			SELECT COUNT( DISTINCT v.voter_id ) as total_voted, v.election_id, u.course 
-			FROM votes v
-			LEFT JOIN users u
-			ON v.voter_id = u.id_number
-			WHERE u.course = ? AND v.election_id IN (?) 
-			GROUP BY v.election_id
-		`;
-            const programVoteCount = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [programCode, electionIdArray]);
-            return res.status(200).json({ programVoteCount });
+            electionIdQueryParams = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams];
+            const departmentVoteSummary = yield (0, election_1.getDepartmentsTotalVotes)(electionIdQueryParams);
+            // const sqlQuery = `
+            // 	SELECT COUNT(DISTINCT v.voter_id) as total_voted, v.election_id
+            // 	FROM votes v
+            // 	LEFT JOIN users u
+            // 	ON v.voter_id = u.id_number
+            // 	WHERE u.course IN (?) AND v.election_id = ?
+            // 	GROUP BY v.election_id
+            // 	`;
+            // type queryResultType = {
+            // 	total_voted: number;
+            // 	election_id: string;
+            // };
+            // type DepartmentCode = keyof typeof DEPARTMENT;
+            // type ElectionDepartmentVoteSummary = {
+            // 	election_id: string;
+            // 	department_votes: Record<DepartmentCode, number>;
+            // };
+            // const departmentVotesSummary: ElectionDepartmentVoteSummary[] = [];
+            // for (const electionId of electionIdQueryParams) {
+            // 	const electionDepartmentVoteSummary: ElectionDepartmentVoteSummary = {
+            // 		election_id: electionId as string,
+            // 		department_votes: {} as Record<DepartmentCode, number> // Initialized as an empty object with correct type
+            // 	};
+            // 	for (const [departmentCode, programList] of Object.entries(DEPARTMENT)) {
+            // 		const [result] = await selectQuery<queryResultType>(pool, sqlQuery, [programList, electionId]);
+            // 		// Cast departmentCode to DepartmentCode type
+            // 		electionDepartmentVoteSummary.department_votes[departmentCode as DepartmentCode] = result ? result.total_voted : 0;
+            // 	}
+            // 	departmentVotesSummary.push(electionDepartmentVoteSummary);
+            // }
+            console.log(departmentVoteSummary);
+            return res.status(200).json(departmentVoteSummary);
         }
         catch (error) {
             next(error);

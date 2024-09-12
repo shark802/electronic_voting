@@ -15,7 +15,7 @@ const query_1 = require("./query");
 function getUserCandidate(candidateIdList, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const sqlSelectUserCandidateQuery = `
-        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.alias, c.party, c.added_at
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.party, c.added_at
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE u.id_number IN (?)

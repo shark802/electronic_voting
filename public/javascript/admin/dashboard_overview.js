@@ -1,4 +1,4 @@
-import { confirmErrorAlert, confirmAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js"
+import { confirmErrorAlert, confirmAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js"
 import "/javascript/logout.js"
 
 const dashboard_nav = document.querySelector("#dashboard_nav")
@@ -22,244 +22,234 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 });
 
 
-// Event listener for opening update population form
-document.querySelector('#overview-container').addEventListener('click', (event) => {
-    if (event.target.id !== 'manage') return;
+document.addEventListener('DOMContentLoaded', async () => {
 
-    const electionContainerSection = event.target.closest('section');
+    const electionIdList = Array.from(document.querySelectorAll('#election-section')).map(election => election.dataset.electionId);
+    const programCode = document.querySelector('#program').value;
+    const urlParams = electionIdList.map(electionId => `election_id=${electionId}`).join('&');
 
-    const electionId = electionContainerSection.querySelector('#election-id').textContent.trim();
-    const dateEnd = electionContainerSection.querySelector('#date-end').value;
-    const timeEnd = electionContainerSection.querySelector('#time-end').value;
+    const electionTotalPopulation = await fetchElectionTotalPopulation(urlParams);
+    const electionTotalVoted = await fetchElectionTotalVoted(urlParams);
 
-    const PRESENT_DATE = new Date();
+    // display the summary of total population, voted, not voted by election
+    displayElectionPopulationInDashboard(electionTotalPopulation);
+    displayElectionNumberOfVotedInDashboard(electionTotalVoted, electionTotalPopulation);
+    displayElectionNumberOfNotVotedInDashboard(electionTotalPopulation, electionTotalVoted);
 
-    const endDate = new Date(dateEnd);
-    const [hourEnd, minuteEnd] = timeEnd.split(':');
-    endDate.setHours(hourEnd, minuteEnd);
+    // const programPopulation = await fetchTotalPopulationByProgram(departmentsPerElectionArray);
+    const programVoteCount = await fetchProgramTotalVoteCount(urlParams);
 
-    if (PRESENT_DATE > endDate) {
+    console.log(programVoteCount);
 
-        const dateString = endDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        const timeString = endDate.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
+    // display the total population, number of voted and not voted by program (depends on program head's program)
+    displayProgramTotalPopulation(programPopulation);
+    displayTotalVoteCountInProgram(programVoteCount, programPopulation);
+    displayProgramNumberOfNotVoted(programPopulation, programVoteCount);
+})
 
-        const formattedDateTime = `${dateString} ${timeString}`;
 
-        // This display the date and time when modal is display after ended
-        document.querySelector('#close-election').querySelector('underline').textContent = formattedDateTime;
-        document.querySelector('#close-election').querySelector('#election-id').value = electionId;
-        document.querySelector('#close-election').showModal();
+// helper functions
 
-    } else {
+async function fetchElectionTotalPopulation(urlParams) { // return array of objects {election_id, total_populations}
+    try {
+        const url = `/api/election-population?${urlParams}`
+        const response = await fetch(url);
+        const responseObject = await response.json()
 
-        document.querySelector('#manage-population-modal').showModal();
+        if (!response.ok) return showSwalErrorToast(responseObject.message);
 
-        displayPopulationInput(event);
-        displayTotalPopulationOnModal(getInputPopulationPerProgram());
-        calculateTotalVoterOnInputEvent();
+        return responseObject.elections;
+    } catch (error) {
+        console.error(error);
     }
-});
+}
 
-listenForFormSubmitEvent();
+function displayElectionPopulationInDashboard(electionTotalPopulationArrayObject) {
 
-function listenForFormSubmitEvent() {
-    document.querySelector('#manage-election-population').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        try {
-            if (Object.entries(getInputPopulationPerProgram()).length < 1) return; // return when nothing inputted.
-
-            document.querySelector('#manage-population-modal').close();
-            const action = await confirmAlert('Confirm submission');
-            if (!action.isConfirmed) return document.querySelector('#manage-population-modal').showModal(); // return if not confirmed submission.
-
-            const response = await submitUpdateVoterPopulationForm();
-            const responseObject = await response.json();
-
-            if (!response.ok) return confirmErrorAlert(responseObject.message);
-
-            showSwalSuccessToast(responseObject.message);
-
-
-            // update election overview display
-            const electionId = event.target.querySelector('#hidden-election-id').value;
-            const populationPerProgramObject = getInputPopulationPerProgram();
-
-            updatePopulationOverview(electionId, populationPerProgramObject);
-            updateNumberOfNotVoted(electionId);
-
-        } catch (error) {
-            console.error(error);
+    electionTotalPopulationArrayObject.forEach(electionObject => {
+        if (electionObject.total_populations > 0) {
+            const electionSection = document.body.querySelector(`section[data-election-id="${electionObject.election_id}"]`);
+            electionSection.querySelector('#total-population').textContent = electionObject.total_populations
         }
-
     })
 }
+
+async function fetchElectionTotalVoted(urlParams) { // return array of objects {election_id, voted}. voted property contains the total number of voted in election 
+    try {
+        const url = `/api/election-voted?${urlParams}`
+        const response = await fetch(url);
+        const responseObject = await response.json()
+
+        if (!response.ok) return showSwalErrorToast(responseObject.message);
+
+        return responseObject.elections;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function displayElectionNumberOfVotedInDashboard(electionTotalVotedArrayObject, electionTotalPopulationArrayObject) {
+
+    electionTotalVotedArrayObject.forEach((electionObject) => {
+        if (electionObject.voted > 0) {
+            const electionSection = document.body.querySelector(`section[data-election-id="${electionObject.election_id}"]`);
+
+            const findElectionsTotalPopulation = electionTotalPopulationArrayObject.find(election => election.election_id === electionObject.election_id);
+            const totalPopulation = findElectionsTotalPopulation.total_populations;
+
+            electionSection.querySelector('#total-voted').textContent = electionObject.voted;
+
+            // display election turnout percentage if total population is truthy (not zero)
+            if (totalPopulation) {
+                const votedPercentage = ((electionObject.voted / totalPopulation) * 100).toFixed(2);
+                electionSection.querySelector('#total-voted-percentage').textContent = `(${votedPercentage}%)`;
+            }
+        }
+    })
+}
+
+function displayElectionNumberOfNotVotedInDashboard(electionTotalPopulationArrayObject, electionTotalVotedArrayObject) {
+
+    electionTotalPopulationArrayObject.forEach(election => {
+
+        const electionSection = document.body.querySelector(`section[data-election-id="${election.election_id}"]`);
+        const findElectionTotalVoted = electionTotalVotedArrayObject.find(electionObject => electionObject.election_id === election.election_id);
+
+        if (election.total_populations) {
+            const numberOfNotVoted = findElectionTotalVoted ? (election.total_populations - findElectionTotalVoted.voted) : election.total_populations;
+            const numberOfNotVotedPercentage = ((numberOfNotVoted / election.total_populations) * 100).toFixed(2);
+
+            electionSection.querySelector('#number-of-not-voted').textContent = numberOfNotVoted;
+            electionSection.querySelector('#total-not-voted-percentage').textContent = `(${numberOfNotVotedPercentage}%)`;
+        }
+    })
+}
+
+async function fetchTotalPopulationByProgram(programCode, urlParams) {
+    try {
+        const url = `/api/program-population?program=${programCode}&${urlParams}`
+        const response = await fetch(url);
+        const responseObject = await response.json()
+
+        if (!response.ok) return showSwalErrorToast(responseObject.message);
+
+        return responseObject.programPopulation;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function fetchProgramTotalVoteCount(urlParams) {
+    try {
+        const response = await fetch(`/api/program-voted?${urlParams}`);
+
+        const responseObject = await response.json()
+        if (!response.ok) return showSwalErrorToast(responseObject.message);
+
+        return responseObject.programVoteCount;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function displayProgramTotalPopulation(programPopulationObject) {
+
+    programPopulationObject.forEach(program => {
+        if (program.program_population > 0) {
+            const electionSection = document.querySelector(`section[data-election-id="${program.election_id}"]`);
+            electionSection.querySelector('#program-population').textContent = program.program_population;
+        }
+    })
+}
+
+function displayTotalVoteCountInProgram(programVoteCountObject) {
+
+    programVoteCountObject.forEach(programVoteCount => {
+        if (programVoteCount.total_voted > 0) {
+            const electionSection = document.body.querySelector(`section[data-election-id="${programVoteCount.election_id}"]`);
+            electionSection.querySelector('#program-vote-count').textContent = programVoteCount.total_voted;
+        }
+    })
+}
+
+function displayProgramNumberOfNotVoted(programPopulationObject, programVoteCountObject) {
+
+    programPopulationObject.forEach(program => {
+
+        if (program.program_population > 0) {
+            const electionSection = document.body.querySelector(`section[data-election-id="${program.election_id}"]`);
+
+            const findProgramVoteCount = programVoteCountObject.find(programObject => programObject.election_id === program.election_id);
+            const programPopulation = program.program_population;
+            const numberOfNotVoted = findProgramVoteCount ? (programPopulation - findProgramVoteCount.total_voted) : programPopulation;
+
+            electionSection.querySelector('#program-number-of-not-voted').textContent = numberOfNotVoted;
+        }
+    })
+}
+
+/**
+ * This function accept array of election id and find each elections available department code (ex. AB, CRIM, EDUC, IS)
+ *  
+ * @param {Array} electionIdList - array of election id
+ * @returns {Array}- return a key value pair array. Key is electionId value is array contains department code
+ */
+function getAllDepartmentPerElection(electionIdList) {
+
+    const departmentsForEachElection = electionIdList.reduce((electionObject, electionId) => {
+        const electionSection = document.body.querySelector(`section[data-election-id="${electionId}"]`);
+
+        // Collect department codes for each election
+        const departmentsOnEachElection = Array.from(electionSection.querySelectorAll('#program-code')).reduce((programArray, programCode) => {
+            programArray.push(programCode.textContent);
+            return programArray;
+        }, []);
+
+        // Add departments array to the electionObject
+        electionObject[electionId] = departmentsOnEachElection;
+        return electionObject; // Return the updated electionObject
+    }, {});
+
+    return departmentsForEachElection;
+}
+
 
 // Event listener for closing the modal
-document.querySelector('#close-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
-document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
+// document.querySelector('#close-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
+// document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
 
-confirmCloseElection();
+// confirmCloseElection();
 
-function confirmCloseElection() {
-    document.querySelector('#close-election-button').addEventListener('click', async () => {
-        document.querySelector('#close-election').close();
+// function confirmCloseElection() {
+//     document.querySelector('#exit-close-election-button').addEventListener('click', async () => {
+//         document.querySelector('#close-election').close();
 
-        const electionId = document.querySelector('#close-election').querySelector('#election-id').value;
+//         const electionId = document.querySelector('#close-election').querySelector('#election-id').value;
 
-        const action = await confirmAlert('Are you sure you want to close the election dashboard?')
-        if (!action.isConfirmed) return document.querySelector('#close-election').showModal();
+//         const action = await confirmAlert('Are you sure you want to close the election dashboard?')
+//         if (!action.isConfirmed) return document.querySelector('#close-election').showModal();
 
-        try {
-            const response = await putRequestToCloseElection(electionId);
-            const responseObject = await response.json();
+//         try {
+//             const response = await putRequestToCloseElection(electionId);
+//             const responseObject = await response.json();
 
-            if (!response.ok) {
-                return confirmErrorAlert(responseObject.message);
-            }
+//             if (!response.ok) {
+//                 return confirmErrorAlert(responseObject.message);
+//             }
 
-            document.querySelector(`section[data-election-id="${electionId}"]`).remove();
-            return showSwalSuccessToast(responseObject.message);
-        } catch (error) {
-            console.log(error);
-        }
+//             document.querySelector(`section[data-election-id="${electionId}"]`).remove();
+//             return showSwalSuccessToast(responseObject.message);
+//         } catch (error) {
+//             console.log(error);
+//         }
 
-    })
-}
-
-// construct the input element for each program to insert population data
-function displayPopulationInput(event) {
-    const electionId = event.target.closest('section').querySelector('#election-id').textContent;
-    const programList = event.target.closest('section').querySelectorAll('#program');
-
-    document.querySelector('#manage-election-population').querySelector('#hidden-election-id').value = electionId;
-
-    const input = Array.from(programList).map(element => {
-        const programCode = element.querySelector('#program-code').textContent.trim();
-        const programPopulationDiv = element.querySelector('#program-population').textContent.trim();
-        const programPopulationInput = programPopulationDiv == 'N/A' ? `<input type="number" id=${programCode} class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">` : `<input type="number" value=${programPopulationDiv} id=${programCode} class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">`;
-
-        return `
-            <div class="my-2">
-                <label for=${programCode} class="w-1/3 inline-block text-sm font-medium">${programCode}</label>
-                ${programPopulationInput}
-            </div>
-        `
-    }).join(' ');
-
-    document.querySelector('#manage-election-population').querySelector('#input-container').innerHTML = input;
-
-}
-
-function displayTotalPopulationOnModal(populationPerProgramObject) {
-    const totalPopulation = Object.values(populationPerProgramObject).reduce((total, currentProgramPopulation) => total + Number(currentProgramPopulation), 0);
-    document.querySelector('#manage-population-modal').querySelector('#total-voter').value = totalPopulation;
-}
-
-function calculateTotalVoterOnInputEvent() {
-    const form = document.querySelector('#manage-election-population');
-
-    form.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('input', () => {
-            const total = Array.from(form.querySelectorAll('input[type="number"]')).reduce((total, currentInput) => total + Number(currentInput.value), 0);
-
-            form.querySelector('#total-voter').value = total;
-        });
-    });
-}
-
-async function submitUpdateVoterPopulationForm() {
-    const populationPerProgram = getInputPopulationPerProgram();
-    const total = document.querySelector('#total-voter').value.trim();
-    const electionId = document.querySelector('#hidden-election-id').value.trim();
-
-    const response = await fetch(`/api/population/${electionId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ total, populationPerProgram })
-    });
-
-    return response;
-
-}
-
-// return an object containing
-function getInputPopulationPerProgram() {
-    const populationPerProgramObject = Array.from(document.querySelector('#input-container').querySelectorAll('input[type=number')).reduce((object, currentInput) => {
-        const programCode = currentInput.id.trim();
-        const programPopulation = currentInput.value.trim();
-
-        if (programPopulation) object[programCode] = programPopulation;
-
-        return object;
-    }, {})
-
-    return populationPerProgramObject;
-}
-
-function updatePopulationOverview(electionId, populationPerProgramObject) {
-    const electionSection = document.querySelector(`section[data-election-id="${electionId.trim()}"]`);
-
-    if (!electionSection) return;
-
-    const totalPopulation = Object.values(populationPerProgramObject).reduce((total, population) => total + Number(population), 0);
-
-    electionSection.querySelectorAll('#program').forEach(program => {
-        const programCode = program.querySelector('#program-code').textContent.trim();
-        const programPopulation = populationPerProgramObject[programCode];
-
-        if (programPopulation !== undefined) {
-            program.querySelector('#program-population').textContent = programPopulation;
-        }
-    });
-
-    electionSection.querySelector('#total-population').textContent = totalPopulation;
-}
-
-function updateNumberOfNotVoted(electionId) {
-    const electionSection = document.querySelector(`section[data-election-id="${electionId.trim()}"]`);
-
-    if (!electionSection) return;
-
-    const totalPopulation = Number(electionSection.querySelector('#total-population').textContent);
-    const totalVoted = Number(electionSection.querySelector('#total-voted').textContent);
-
-    const numberOfNotVoted = totalPopulation - totalVoted;
-
-    // Calculate the percentage only if numberOfNotVoted is greater than 0
-    const notVotedPercentage = numberOfNotVoted > 0
-        ? ((numberOfNotVoted / totalPopulation) * 100).toFixed(2)
-        : null;
-
-    const notVotedElement = electionSection.querySelector('#number-of-not-voted');
-    const notVotedOverview = electionSection.querySelector('#not-voted-overview');
-    let notVotedPercentageSpan = electionSection.querySelector('#not-voted-percentage');
-
-    // Update the number of people who haven't voted
-    notVotedElement.textContent = numberOfNotVoted;
-
-    if (notVotedPercentageSpan) {
-        // If the span exists, update its content or clear it
-        notVotedPercentageSpan.textContent = notVotedPercentage ? `(${notVotedPercentage}%)` : '';
-    } else if (notVotedPercentage) {
-        // If the span does not exist and there is a valid percentage, create and append it
-        notVotedOverview.innerHTML += `
-            <span id="not-voted-percentage" class="mx-3 text-xl font-bold text-red-600 tet-lg lg:text-4xl lg:mx-5"> (${notVotedPercentage}%) </span>
-        `;
-    }
-}
+//     })
+// }
 
 
-
-async function putRequestToCloseElection(electionId) {
-    const result = await fetch(`/api/election-overview/${electionId}`, {
-        method: 'PUT',
-    })
-    return result;
-}
+// async function putRequestToCloseElection(electionId) {
+//     const result = await fetch(`/api/election-overview/${electionId}`, {
+//         method: 'PUT',
+//     })
+//     return result;
+// }

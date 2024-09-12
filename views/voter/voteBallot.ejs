@@ -73,7 +73,7 @@
             <% } %>
             <span>
               <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600">
-              <label for="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="relative text-sm lg:text-base font-bold text-gray-500 -top-[3px]"> <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %> - <span class="text-sm font-normal text-gray-400"> <%= candidateOfPosition.party %> </span> </label>
+              <label for="<%= candidateOfPosition.id_number %>" class="relative text-sm lg:text-base font-bold text-gray-500 -top-[3px]"> <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %> - <span class="text-sm font-normal text-gray-400"> <%= candidateOfPosition.party %> </span> </label>
             </span>
           </div>
           <% }) %>

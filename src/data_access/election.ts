@@ -3,6 +3,7 @@ import { pool } from "../config/database";
 import { Election } from "../utils/types/Election";
 import { selectQuery } from "./query";
 import { PoolConnection } from "mysql2/promise";
+import { DEPARTMENT } from "../config/constants/BccDepartments";
 
 export async function getElectionInfoById(electionId: string) {
     const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL', [electionId]);
@@ -57,4 +58,52 @@ export async function totalUserVotedPerProgram() {
     `
     const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
     return totalVoted
+}
+
+export async function getDepartmentsTotalVotes(electionIdArray: string[]) {
+
+    // type for select query return result
+    type queryResultType = {
+        total_voted: number;
+        election_id: string;
+    };
+
+    // Index for departments_votes object
+    type DepartmentCode = keyof typeof DEPARTMENT;
+
+    // shape of object that summarize all department votes per election
+    type ElectionDepartmentVoteSummary = {
+        election_id: string;
+        department_votes: Record<DepartmentCode, number>;
+    };
+
+    const sqlQuery = `
+        SELECT COUNT(DISTINCT v.voter_id) as total_voted, v.election_id
+        FROM votes v
+        LEFT JOIN users u
+        ON v.voter_id = u.id_number
+        WHERE u.course IN (?) AND v.election_id = ?
+        GROUP BY v.election_id
+    `;
+
+    const departmentVotesSummary: ElectionDepartmentVoteSummary[] = []; // will accumulate all elections vote summary per department
+
+    for (const electionId of electionIdArray) {
+        const electionDepartmentVoteSummary: ElectionDepartmentVoteSummary = {
+            election_id: electionId as string,
+            department_votes: {} as Record<DepartmentCode, number> // Initialized as an empty object with correct type
+        };
+
+        for (const [departmentCode, programList] of Object.entries(DEPARTMENT)) {
+            const [result] = await selectQuery<queryResultType>(pool, sqlQuery, [programList, electionId]);
+
+            // Cast departmentCode to DepartmentCode type
+            electionDepartmentVoteSummary.department_votes[departmentCode as DepartmentCode] = result ? result.total_voted : 0;
+        }
+
+        departmentVotesSummary.push(electionDepartmentVoteSummary);
+    }
+
+    return departmentVotesSummary;
+
 }
