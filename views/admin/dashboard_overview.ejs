@@ -82,18 +82,22 @@
           <div id="program" class="w-full text-center transition-all bg-white border-2 rounded-md shadow-sm border-gray-50 lg:flex min-h-10 lg:py-4 hover:bg-blue-50 hover:border-blue-200">
             <div id="program-code" class="flex items-center justify-center py-1 text-lg font-bold text-center text-gray-700 lg:text-4xl lg:w-1/4"> <%= course.program_code %> </div>
             <div class="flex flex-grow w-full gap-1 px-1 pb-2 mt-2 lg:px-10 lg:gap-3">
+
               <div class="w-1/3 rounded-sm min-h-10">
                 <p id="program-population" class="text-lg font-bold text-gray-600 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
                 <p class="font-medium text-gray-500">Total voter</p>
               </div>
+
               <div class="w-1/3 rounded-sm min-h-10">
-                <p class="text-lg font-bold text-gray-600 lg:text-3xl">0</p>
+                <p id="departmentTotalVotes" class="text-lg font-bold text-gray-600 lg:text-3xl">0</p>
                 <p class="font-medium text-gray-500">Voted</p>
               </div>
+
               <div class="w-1/3 rounded-sm min-h-10">
                 <p class="text-lg font-bold text-gray-600 lg:text-3xl">N/A</p>
                 <p class="font-medium text-gray-500">Not voted</p>
               </div>
+
             </div>
           </div>
           <% }) %>
