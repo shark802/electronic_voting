@@ -89,6 +89,7 @@ function findElectionByID(req, res, next) {
 exports.findElectionByID = findElectionByID;
 function deleteElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        const connection = yield database_1.pool.getConnection(); // Get a connection from the pool
         try {
             const election_id = req.params.id;
             if (!election_id) {
@@ -99,16 +100,26 @@ function deleteElection(req, res, next) {
                 throw new customErrors_1.BadRequestError('Cannot delete an election that has already started.');
             if ((0, checkElectionTimeStatus_1.isElectionEnded)(election))
                 throw new customErrors_1.BadRequestError('Cannot delete an election that has already ended.');
-            const query = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";
-            const value = [election_id];
-            const result = yield (0, query_1.updateQuery)(database_1.pool, query, value);
-            if (result.affectedRows < 1) {
+            yield connection.beginTransaction(); // Start the transaction
+            // Update the election with a soft delete
+            const updateQuery = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";
+            const [updateResult] = yield connection.query(updateQuery, [election_id]);
+            if (updateResult.affectedRows === 0) {
+                yield connection.rollback(); // Roll back the transaction if no rows were updated
                 return next(new customErrors_1.NotFoundError("No changes were made"));
             }
+            // Delete voters associated with this election
+            const deleteVotersQuery = 'DELETE FROM voters WHERE election_id = ?';
+            yield connection.query(deleteVotersQuery, [election_id]);
+            yield connection.commit();
             res.sendStatus(200);
         }
         catch (error) {
+            yield connection.rollback();
             return next(error);
+        }
+        finally {
+            connection.release();
         }
     });
 }
@@ -144,9 +155,10 @@ function updateElectionStatus(req, res, next) {
                 return next(new customErrors_1.BadRequestError());
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ?', [electionID]);
             const isElectionEnd = (0, checkElectionTimeStatus_1.isElectionEnded)(election);
+            console.log(typeof electionStatus);
             // if request is to activate the election, check first if there is active election running before allowing to activate the election except for active election but already ended.
             if (electionStatus === '1' && !isElectionEnd) {
-                const activeElection = yield (0, query_1.selectQuery)(database_1.pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME()) AND deleted_at IS NULL)`);
+                const activeElection = yield (0, query_1.selectQuery)(database_1.pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end > CURTIME())) AND deleted_at IS NULL`);
                 if (activeElection.length > 0)
                     throw new customErrors_1.BadRequestError('An active election is currently running');
             }

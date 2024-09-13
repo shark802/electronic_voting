@@ -17,20 +17,23 @@
   </style>
 </head>
 
-<body class="w-full px-3 overflow-hidden overflow-y-auto bg-blue-600 lg:px-0 h-dvh">
+<body class="w-full px-3 overflow-hidden overflow-y-auto lg:px-0 h-dvh">
 
-  <a href="/election">
-    <header class="flex items-center gap-3 pl-6 min-h-20">
-      <img src="/img/back.webp" alt="back" class="w-6 aspect-square">
-      <p class="text-white">Back to Home</p>
-    </header>
-  </a>
+  <header class="flex items-center justify-between w-full px-4 py-3 bg-gradient-to-r from-blue-800 to-blue-600 shadow-md">
+    <a href="/election" class="flex items-center gap-2 text-white hover:text-blue-200 transition-colors duration-200 bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-full shadow-md">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+      <span class="text-sm font-medium">Back</span>
+    </a>
+  </header>
 
   <div class="pb-32 mt-11">
 
-    <form id="ballot-form" class="m-auto align-middle py-5 px-3 bg-white rounded-lg lg:p-3 h-fit max-w-[700px] min-h-4/5">
-      <div class="py-2">
-        <h1 class="text-2xl font-bold text-center text-gray-600"><%= election ? election.election_name : "Official Ballot" %></h1>
+    <form id="ballot-form" class="m-auto align-middle py-5 px-3 bg-white rounded-lg lg:p-6 h-fit max-w-[800px] min-h-4/5 shadow-lg">
+      <div class="py-2 mb-6">
+        <h1 class="text-3xl font-bold text-center text-gray-800"><%= election ? election.election_name : "Official Ballot" %></h1>
+        <p class="text-center text-gray-600 mt-2">Please select one candidate for each position</p>
       </div>
 
       <% 
@@ -38,8 +41,8 @@
       
       if(candidateList.length <= 0) {
     %>
-      <div class="px-3 py-6 mt-6 text-lg font-semibold text-center text-blue-700 bg-blue-200 rounded-lg">
-        <p>No Candidates to display on this election</p>
+      <div class="px-3 py-6 mt-6 text-lg font-semibold text-center text-blue-700 bg-blue-100 rounded-lg border border-blue-300">
+        <p>No candidates to display for this election</p>
       </div>
       <%
       }
@@ -58,23 +61,26 @@
     %>
 
       <% if (candidatePerPosition.length > 0) { %>
-      <section class="my-3 border-2 rounded-md shadow-gray-400 lg:mb-7">
+      <section class="my-3 border-2 rounded-md shadow-md lg:mb-7 hover:shadow-lg transition-shadow duration-300">
 
-        <div id="position-label" class="w-full py-1 mb-3 font-bold text-center text-white bg-blue-500 rounded-tl-md rounded-tr-md"> <%= position %> </div>
-        <div>
+        <div id="position-label" class="w-full py-2 mb-3 font-bold text-center text-white bg-blue-600 rounded-tl-md rounded-tr-md text-lg"> <%= position %> </div>
+        <div class="p-4">
           <% candidatePerPosition.forEach(candidateOfPosition => { %>
-          <div class="flex items-center gap-2 py-1 pl-2 lg:px-7">
-
+          <div class="flex items-center gap-4 py-3 pl-2 lg:px-7 hover:bg-gray-50 rounded-md transition-colors duration-200">
             <% if (candidateOfPosition.candidate_profile) { %>
-            <img src="/img/candidate_profiles/<%=candidateOfPosition.candidate_profile%>" alt="candidate-profile" class="lg:w-24">
+            <img src="/img/candidate_profiles/<%=candidateOfPosition.candidate_profile%>" alt="candidate-profile" class="w-16 h-16 lg:w-24 lg:h-24 object-cover rounded-full">
             <% } else {%>
-            <img src="/img/default-profile.webp" alt="candidate-profile" class="lg:w-24">
-
+            <img src="/img/default-profile.webp" alt="candidate-profile" class="w-16 h-16 lg:w-24 lg:h-24 object-cover rounded-full">
             <% } %>
-            <span>
-              <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600">
-              <label for="<%= candidateOfPosition.id_number %>" class="relative text-sm lg:text-base font-bold text-gray-500 -top-[3px]"> <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %> - <span class="text-sm font-normal text-gray-400"> <%= candidateOfPosition.party %> </span> </label>
-            </span>
+            <div class="flex-grow">
+              <label for="<%= candidateOfPosition.id_number %>" class="flex items-center cursor-pointer">
+                <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600 mr-3">
+                <div>
+                  <span class="text-base lg:text-lg font-bold text-gray-700"><%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %></span>
+                  <span class="block text-sm font-normal text-gray-500"><%= candidateOfPosition.party %></span>
+                </div>
+              </label>
+            </div>
           </div>
           <% }) %>
         </div>
@@ -89,9 +95,9 @@
     if (candidateList.length > 0) {
     %>
 
-      <div class="relative flex justify-end gap-3">
-        <button type="reset" class="px-2 py-1 text-sm font-semibold text-gray-400 transition-all bg-gray-200 rounded-md hover:bg-gray-300 hover:text-gray-500">Reset</button>
-        <button class="px-6 py-1 font-semibold text-white transition-all bg-green-500 rounded-md hover:ring-2 ring-green-300" type="submit">Save Vote</button>
+      <div class="relative flex justify-end gap-3 mt-8">
+        <button type="reset" class="px-4 py-2 text-sm font-semibold text-gray-600 transition-all bg-gray-200 rounded-md hover:bg-gray-300 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400">Reset</button>
+        <button class="px-6 py-2 font-semibold text-white transition-all bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400" type="submit">Submit Ballot</button>
       </div>
 
 

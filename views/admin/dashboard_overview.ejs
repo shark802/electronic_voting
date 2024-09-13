@@ -37,13 +37,19 @@
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
 
-        <div class="flex justify-between p-3 text-white rounded-sm shadow-md bg-gradient-to-r from-blue-600 to-blue-700 lg:px-4 lg:py-5">
+        <div class="flex items-center justify-between p-4 text-white rounded-lg shadow-lg bg-gradient-to-r from-blue-600 to-blue-700">
           <div>
-            <h2 class="text-lg font-semibold lg:text-2xl"> <%= election.election_name %> </h2>
-            <p id="election-id" class="text-sm font-medium text-blue-100"> <%= election.election_id %> </p>
+            <h2 class="text-xl font-bold lg:text-2xl"><%= election.election_name %></h2>
+            <p id="election-id" class="mt-1 text-sm text-blue-100 opacity-80"><%= election.election_id %></p>
           </div>
-
-          <!-- <button id="manage" class="text-sm font-medium focus:outline-none">MANAGE</button> -->
+          <div class="flex items-center space-x-2">
+            <span id="election-status" class="px-3 py-1 text-xs font-medium bg-blue-500 rounded-full"><%= election.is_active ? 'Active' : 'Inactive' %></span>
+            <button id="manage" class="hidden p-2 text-blue-100 transition-colors duration-200 hover:text-white focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div class="flex flex-grow w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
@@ -79,25 +85,34 @@
 
         <div class="grid gap-1 px-1 py-2 lg:gap-2 lg:px-3">
           <% populationPerProgram.filter(program => program.election_id === election.election_id).forEach(course => { %>
-          <div id="program" class="w-full text-center transition-all bg-white border-2 rounded-md shadow-sm border-gray-50 lg:flex min-h-10 lg:py-4 hover:bg-blue-50 hover:border-blue-200">
-            <div id="program-code" class="flex items-center justify-center py-1 text-lg font-bold text-center text-gray-700 lg:text-4xl lg:w-1/4"> <%= course.program_code %> </div>
-            <div class="flex flex-grow w-full gap-1 px-1 pb-2 mt-2 lg:px-10 lg:gap-3">
-
-              <div class="w-1/3 rounded-sm min-h-10">
-                <p id="program-population" class="text-lg font-bold text-gray-600 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
-                <p class="font-medium text-gray-500">Total voter</p>
+          <div id="program" class="w-full bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group">
+            <div class="flex flex-col lg:flex-row">
+              <div id="program-code" data-program-code="<%= course.program_code %>" class="flex items-center justify-center text-2xl font-bold text-white bg-blue-600 lg:py-5 lg:px-6 lg:w-1/4">
+                <div class="text-center">
+                  <p class="mb-1 text-3xl font-bold"><%= course.program_code %></p>
+                  <p class="text-xs tracking-wider uppercase opacity-75">Department</p>
+                </div>
               </div>
-
-              <div class="w-1/3 rounded-sm min-h-10">
-                <p id="departmentTotalVotes" class="text-lg font-bold text-gray-600 lg:text-3xl">0</p>
-                <p class="font-medium text-gray-500">Voted</p>
+              <div class="flex flex-grow w-full gap-2 p-4 lg:gap-4 lg:py-5">
+                <div class="flex-1 text-center">
+                  <p id="program-population" class="text-3xl font-bold text-gray-800"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
+                  <p class="text-sm font-medium text-gray-500">Total voters</p>
+                </div>
+                <div class="relative flex-1 text-center">
+                  <p id="departmentTotalVotes" class="text-3xl font-bold text-green-600">0</p>
+                  <p class="text-sm font-medium text-gray-500">Voted</p>
+                  <button class="absolute bottom-0 px-3 py-1 text-xs text-green-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-green-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-green-200">
+                    View Report
+                  </button>
+                </div>
+                <div class="relative flex-1 text-center">
+                  <p class="text-3xl font-bold text-red-600"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
+                  <p class="text-sm font-medium text-gray-500">Not voted</p>
+                  <button class="absolute bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-red-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
+                    View Report
+                  </button>
+                </div>
               </div>
-
-              <div class="w-1/3 rounded-sm min-h-10">
-                <p class="text-lg font-bold text-gray-600 lg:text-3xl">N/A</p>
-                <p class="font-medium text-gray-500">Not voted</p>
-              </div>
-
             </div>
           </div>
           <% }) %>
@@ -121,36 +136,33 @@
 
   </main>
 
-  <dialog id="manage-population-modal" class="w-[95%] px-5 py-9 lg:py-8 lg:px-12 max-w-[600px] min-h-fit rounded-md shadow-md">
-    <img src="/img/x.webp" id="close-modal" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
-    <form id="manage-election-population" class="focus:outline-none">
-      <input type="hidden" id="hidden-election-id">
-      <h2 class="mb-5 text-xl font-bold text-center ">Manage voter population</h2>
-      <div id="input-container" class="py-4 m-auto lg:w-2/3"></div>
-      <div class="py-2 m-auto lg:w-2/3">
-        <label for='total-voter' class="inline-block w-1/3 font-bold text-blue-500">Total Voter</label>
-        <input type="text" id='total-voter' value="" disabled class="py-2 pl-3 text-blue-500 bg-blue-100 border-2 border-blue-400 rounded-md focus:outline-blue-500">
+  <dialog id="close-election" class="w-[95%] px-5 py-5 lg:py-8 lg:px-12 max-w-[600px] min-h-fit rounded-md shadow-md">
+    <input type="hidden" id="election-id">
+    <div class="px-5 py-6 bg-yellow-100 border-t-4 border-yellow-500 shadow-md">
+      <div class="">
+        <div class="flex items-center gap-2 ">
+          <svg class="flex-shrink-0 w-4 h-4 text-[#eab308]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+          </svg>
+
+          <p class="text-lg text-yellow-500">Election has ended</p>
+        </div>
+
+        <div class="pt-4 pl-4">
+          The election has successfully concluded at <underline class="underline underline-offset-1"></underline>. All results have been recorded, and no further changes can be made. Please review the final outcomes and ensure all data is properly archived.
+        </div>
+
       </div>
-      <div class="flex justify-end pt-3">
-        <button type="submit" class="w-fit block mt-3 text-white bg-blue-600 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center">Save changes</button>
-      </div>
-    </form>
+    </div>
+    <p class="px-3 mt-5 font-medium text-gray-400 lg:px-5">Close Election Dashboard: Click the button to stop displaying election dashboard.</p>
+
+    <div class="flex items-center justify-center gap-4 lg:gap-6">
+      <button id="exit-close-election-modal" class="relative underline focus:outline-none underline-offset-4 top-1">Cancel</button>
+      <button id="close-election-button" class="px-3 py-2 mt-4 text-sm font-semibold text-white bg-yellow-500 rounded-md focus:outline-none hover:bg-yellow-600">Close Election</button>
+    </div>
+
   </dialog>
 
-  <dialog id="close-election" class="w-[95%] px-5 py-9 lg:py-8 lg:px-12 max-w-[600px] min-h-fit rounded-md shadow-md">
-    <img src="/img/x.webp" id="exit-close-election-modal" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
-    <form id="close-election-form" class="focus:outline-none">
-      <input type="hidden" id="hidden-election-close-id">
-      <h2 class="mb-5 text-xl font-bold text-center ">Close election</h2>
-      <div class="py-2 m-auto lg:w-2/3">
-        <label for='total-voters' class="inline-block w-1/3 font-bold text-blue-500">Total Voter</label>
-        <input type="text" id='total-voters' value="" disabled class="py-2 pl-3 text-blue-500 bg-blue-100 border-2 border-blue-400 rounded-md focus:outline-blue-500">
-      </div>
-      <div class="flex justify-end pt-3">
-        <button type="submit" class="w-fit block mt-3 text-white bg-blue-600 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center">Confirm</button>
-      </div>
-    </form>
-  </dialog>
 </body>
 
 </html>

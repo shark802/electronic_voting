@@ -168,7 +168,7 @@ function displayTotalVoteCountInProgram(programVoteCountObject) {
         const electionSection = document.body.querySelector(`section[data-election-id="${electionVotesSummary.election_id}"]`);
 
         electionSection.querySelectorAll('#program').forEach(department => {
-            const departmentCode = department.querySelector('#program-code').textContent.trim();
+            const departmentCode = department.querySelector('#program-code').dataset.programCode
 
             department.querySelector('#departmentTotalVotes').textContent = electionVotesSummary.department_votes[departmentCode];
         });
@@ -191,68 +191,127 @@ function displayProgramNumberOfNotVoted(programPopulationObject, programVoteCoun
     })
 }
 
-/**
- * This function accept array of election id and find each elections available department code (ex. AB, CRIM, EDUC, IS)
- *  
- * @param {Array} electionIdList - array of election id
- * @returns {Array}- return a key value pair array. Key is electionId value is array contains department code
- */
-function getAllDepartmentPerElection(electionIdList) {
+// /**
+//  * This function accept array of election id and find each elections available department code (ex. AB, CRIM, EDUC, IS)
+//  *  
+//  * @param {Array} electionIdList - array of election id
+//  * @returns {Array}- return a key value pair array. Key is electionId value is array contains department code
+//  */
+// function getAllDepartmentPerElection(electionIdList) {
 
-    const departmentsForEachElection = electionIdList.reduce((electionObject, electionId) => {
-        const electionSection = document.body.querySelector(`section[data-election-id="${electionId}"]`);
+//     const departmentsForEachElection = electionIdList.reduce((electionObject, electionId) => {
+//         const electionSection = document.body.querySelector(`section[data-election-id="${electionId}"]`);
 
-        // Collect department codes for each election
-        const departmentsOnEachElection = Array.from(electionSection.querySelectorAll('#program-code')).reduce((programArray, programCode) => {
-            programArray.push(programCode.textContent);
-            return programArray;
-        }, []);
+//         // Collect department codes for each election
+//         const departmentsOnEachElection = Array.from(electionSection.querySelectorAll('#program-code')).reduce((programArray, programCode) => {
+//             programArray.push(programCode.textContent);
+//             return programArray;
+//         }, []);
 
-        // Add departments array to the electionObject
-        electionObject[electionId] = departmentsOnEachElection;
-        return electionObject; // Return the updated electionObject
-    }, {});
+//         // Add departments array to the electionObject
+//         electionObject[electionId] = departmentsOnEachElection;
+//         return electionObject; // Return the updated electionObject
+//     }, {});
 
-    return departmentsForEachElection;
+//     return departmentsForEachElection;
+// }
+
+document.querySelectorAll('section').forEach(electionSection => {
+    const dateEnd = electionSection.querySelector('#date-end')?.value;
+    const timeEnd = electionSection.querySelector('#time-end')?.value;
+
+    if (!dateEnd || !timeEnd) {
+        console.warn('Date or time is missing');
+        return;
+    }
+
+    const PRESENT_DATE = new Date();
+    const endDate = new Date(dateEnd);
+
+    if (isNaN(endDate.getTime())) {
+        console.warn('Invalid date format:', dateEnd);
+        return;
+    }
+
+    const [hourEnd, minuteEnd] = timeEnd.split(':');
+    endDate.setHours(hourEnd, minuteEnd);
+
+    if (PRESENT_DATE > endDate) {
+        electionSection.querySelector('#manage').style.display = 'block';
+    }
+});
+
+
+
+document.querySelector('#overview-container').addEventListener('click', (event) => {
+    if (!event.target.closest('#manage')) return;
+
+    const electionContainerSection = event.target.closest('section');
+
+    const electionId = electionContainerSection.querySelector('#election-id').textContent.trim();
+    const dateEnd = electionContainerSection.querySelector('#date-end').value;
+    const timeEnd = electionContainerSection.querySelector('#time-end').value;
+
+    const PRESENT_DATE = new Date();
+    const endDate = new Date(dateEnd);
+    const [hourEnd, minuteEnd] = timeEnd.split(':');
+    endDate.setHours(hourEnd, minuteEnd);
+
+    if (PRESENT_DATE > endDate) {
+
+        const dateString = endDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const timeString = endDate.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        const formattedDateTime = `${dateString} ${timeString}`;
+
+        // This display the date and time when modal is display after ended
+        document.querySelector('#close-election').querySelector('underline').textContent = formattedDateTime;
+        document.querySelector('#close-election').querySelector('#election-id').value = electionId;
+        document.querySelector('#close-election').showModal();
+    }
+})
+
+document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
+
+confirmCloseElection();
+
+function confirmCloseElection() {
+    document.querySelector('#close-election-button').addEventListener('click', async () => {
+        document.querySelector('#close-election').close();
+
+        const electionId = document.querySelector('#close-election').querySelector('#election-id').value;
+        console.log(electionId);
+
+        const action = await confirmAlert('Are you sure you want to close the election dashboard?')
+        if (!action.isConfirmed) return document.querySelector('#close-election').showModal();
+
+        try {
+            const response = await putRequestToCloseElection(electionId);
+            const responseObject = await response.json();
+
+            if (!response.ok) {
+                return confirmErrorAlert(responseObject.message);
+            }
+
+            document.querySelector(`section[data-election-id="${electionId}"]`).remove();
+            return showSwalSuccessToast(responseObject.message);
+        } catch (error) {
+            console.log(error);
+        }
+
+    })
 }
 
-
-// Event listener for closing the modal
-// document.querySelector('#close-modal').addEventListener('click', (event) => event.target.closest('dialog').close())
-// document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
-
-// confirmCloseElection();
-
-// function confirmCloseElection() {
-//     document.querySelector('#exit-close-election-button').addEventListener('click', async () => {
-//         document.querySelector('#close-election').close();
-
-//         const electionId = document.querySelector('#close-election').querySelector('#election-id').value;
-
-//         const action = await confirmAlert('Are you sure you want to close the election dashboard?')
-//         if (!action.isConfirmed) return document.querySelector('#close-election').showModal();
-
-//         try {
-//             const response = await putRequestToCloseElection(electionId);
-//             const responseObject = await response.json();
-
-//             if (!response.ok) {
-//                 return confirmErrorAlert(responseObject.message);
-//             }
-
-//             document.querySelector(`section[data-election-id="${electionId}"]`).remove();
-//             return showSwalSuccessToast(responseObject.message);
-//         } catch (error) {
-//             console.log(error);
-//         }
-
-//     })
-// }
-
-
-// async function putRequestToCloseElection(electionId) {
-//     const result = await fetch(`/api/election-overview/${electionId}`, {
-//         method: 'PUT',
-//     })
-//     return result;
-// }
+async function putRequestToCloseElection(electionId) {
+    const result = await fetch(`/api/election-overview/${electionId}`, {
+        method: 'PUT',
+    })
+    return result;
+}

@@ -45,53 +45,53 @@
 
       <% elections.forEach(element => { %>
 
-      <section id="election-card" class="lg:w-[700px] shadow-sm border-2 border-gray-300 w-full bg-white rounded-md min-h-fit m-auto py-4 lg:px-12 px-3 pb-7 mb-4">
+      <section id="election-card" class="lg:w-[700px] shadow-md border border-gray-200 w-full bg-white rounded-lg min-h-fit m-auto py-6 lg:px-12 px-4 mb-6">
 
-        <div id="electionSection" class="relative flex justify-between pb-1">
+        <div id="electionSection" class="relative flex justify-between pb-4 border-b border-gray-200">
 
-          <div class="relative pt-4 ml-2">
+          <div class="relative">
 
             <%  if (element.is_active) { %>
 
-            <p id="display-status" class="px-3 text-sm font-medium text-green-500 bg-green-100 rounded-full w-fit">Active</p>
+            <p id="display-status" class="px-3 py-1 mb-2 text-sm font-medium text-green-600 bg-green-100 rounded-full w-fit">Active</p>
 
             <% } else { %>
 
-            <p id="display-status" class="px-3 text-sm font-medium text-red-500 bg-red-100 rounded-full w-fit">Inactive</p>
+            <p id="display-status" class="px-3 py-1 mb-2 text-sm font-medium text-red-600 bg-red-100 rounded-full w-fit">Inactive</p>
 
             <% } %>
 
-            <h2 id="election-title" class="font-semibold text-gray-700 lg:text-3xl"><%= element.election_name %> </h2>
-            <p id="election-card-id" class="mb-4 text-gray-400"><%= element.election_id %></p>
+            <h2 id="election-title" class="mb-1 text-2xl font-bold text-gray-800"><%= element.election_name %></h2>
+            <p id="election-card-id" class="text-sm text-gray-500"><%= element.election_id %></p>
           </div>
 
-          <div id="option-section" class="absolute right-0 w-36 h-fit">
-            <img id="more-button" src="/img/more.webp" alt="more" class="absolute w-6 transition-all rounded-full top-3 hover:cursor-pointer hover:bg-blue-200 right-2">
+          <div id="option-section" class="relative">
+            <img id="more-button" src="/img/more.webp" alt="more" class="w-6 h-6 p-1 transition-colors duration-200 rounded-full cursor-pointer hover:bg-gray-100">
 
-            <div id="more-option" class="absolute hidden gap-2 px-1 py-3 bg-white border border-solid rounded shadow-md w-36 h-fit top-11">
+            <div id="more-option" class="absolute right-0 z-10 hidden w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
 
-              <div id="election-edit-button" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
-                <img src="/img/pencil.webp" alt="edit" class="w-4 h-4">
-                <p class="ml-2">Edit</p>
+              <div id="election-edit-button" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
+                <img src="/img/pencil.webp" alt="edit" class="w-4 h-4 mr-2">
+                <p class="text-gray-700">Edit</p>
               </div>
 
               <% if (element.is_active === 1) { %>
-              <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
-                <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4">
-                <p id="viewStatus" class="ml-2">Deactivate</p>
+              <div id="toggleElectionEventVisibility" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
+                <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4 mr-2">
+                <p id="viewStatus" class="text-gray-700">Deactivate</p>
               </div>
 
               <% } else { %>
-              <div id="toggleElectionEventVisibility" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
-                <img id="viewStatusImage" src="/img/view.webp" alt="view" class="w-4 h-4">
-                <p id="viewStatus" class="ml-2">Activate</p>
+              <div id="toggleElectionEventVisibility" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
+                <img id="viewStatusImage" src="/img/view.webp" alt="view" class="w-4 h-4 mr-2">
+                <p id="viewStatus" class="text-gray-700">Activate</p>
               </div>
 
               <% } %>
 
-              <div id="delete_election_button" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
-                <img src="/img/trash.webp" alt="delete" class="w-4 h-4">
-                <p class="ml-2">Delete</p>
+              <div id="delete_election_button" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
+                <img src="/img/trash.webp" alt="delete" class="w-4 h-4 mr-2">
+                <p class="text-gray-700">Delete</p>
               </div>
 
             </div>
@@ -117,21 +117,32 @@
         const [endHour, endMinute, endSecond] = element.time_end.split(":");
         electionEndDateTime.setHours(endHour, endMinute, endSecond);
         const formattedEndDateTime = electionEndDateTime.toLocaleString('en-US', formatOptions);
-        
-         %>
+        %>
 
-        <div class="flex gap-2 m-auto text-sm text-center w-fit lg:text-base">
-          <p class="font-semibold text-gray-700">Start:</p>
-          <p id="displayStart" class="text-gray-600 "><%= formattedStartDateTime %></p>
+        <div class="p-4 mt-6 space-y-4 rounded-lg bg-gray-50">
+          <div class="flex items-center">
+            <svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-gray-500">Start</p>
+              <p id="displayStart" class="text-base font-semibold text-gray-900"><%= formattedStartDateTime %></p>
+            </div>
+          </div>
+
+          <div class="flex items-center">
+            <svg class="w-6 h-6 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-gray-500">End</p>
+              <p id="displayEnd" class="text-base font-semibold text-gray-900"><%= formattedEndDateTime %></p>
+            </div>
+          </div>
         </div>
 
-        <div class="flex gap-2 m-auto mt-2 text-sm text-center w-fit lg:text-base">
-          <p class="font-semibold text-gray-700">End:</p>
-          <p id="displayEnd" class="text-gray-600 "><%= formattedEndDateTime %></p>
-        </div>
-
-        <div class="flex justify-end">
-          <button id="add-candidate" class="float-right px-3 py-1 mt-6 text-xs font-medium text-white bg-blue-500 rounded-md lg:text-base">Add Candidate</button>
+        <div class="flex justify-end mt-6">
+          <button id="add-candidate" class="px-4 py-2 text-sm font-medium text-white transition-colors duration-200 bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Add Candidate</button>
         </div>
 
         <div id="election-info" class="hidden" data-date-start="<%= element.date_start %>" data-time-start="<%= element.time_start  %>"></div>
@@ -151,57 +162,54 @@
 
       <form id="update_election_form" class="px-24 py-14">
         <span class="flex justify-end gap-2 text-sm text-gray-400">
-          <p>Elecion ID: </p>
+          <p>Election ID: </p>
           <p id="election_id"></p>
         </span>
 
-        <label for="election_name" class="text-sm">Election Name</label>
-        <input id="election_name" type="text" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500">
-        <div id="election_name_error_message" class="mb-2 text-sm text-red-500 h-7"></div>
+        <label for="election_name" class="text-sm font-medium text-gray-700">Election Name</label>
+        <input id="election_name" type="text" class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        <div id="election_name_error_message" class="h-5 mt-1 text-sm text-red-600"></div>
 
-        <h3 class="text-lg font-semibold">Start</h3>
+        <h3 class="mt-6 mb-2 text-lg font-semibold">Start</h3>
 
         <div class="flex flex-1 gap-4">
           <div class="w-1/2">
-            <label for="election_name" class="text-sm">Date</label><br>
-            <input id="date_start" type="date" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500">
-            <div id="startdate_error_message" class="h-5 text-sm text-red-500"></div>
+            <label for="date_start" class="text-sm font-medium text-gray-700">Date</label>
+            <input id="date_start" type="date" class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <div id="startdate_error_message" class="h-5 mt-1 text-sm text-red-600"></div>
           </div>
 
           <div class="w-1/2">
-            <label for="election_name" class="text-sm">Time</label><br>
-            <input id="time_start" type="time" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500">
-            <div id="starttime_error_message" class="h-5 text-sm text-red-500"></div>
+            <label for="time_start" class="text-sm font-medium text-gray-700">Time</label>
+            <input id="time_start" type="time" class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <div id="starttime_error_message" class="h-5 mt-1 text-sm text-red-600"></div>
           </div>
-
         </div>
 
-        <h3 class="m-auto text-lg font-semibold">End</h3>
+        <h3 class="mt-6 mb-2 text-lg font-semibold">End</h3>
 
-        <div class="flex flex-1 gap-4 mb-4">
+        <div class="flex flex-1 gap-4 mb-6">
           <div class="w-1/2">
-            <label for="election_name" class="text-sm">Date</label><br>
-            <input id="date_end" type="date" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500">
-            <div id="enddate_error_message" class="h-5 text-sm text-red-500"></div>
+            <label for="date_end" class="text-sm font-medium text-gray-700">Date</label>
+            <input id="date_end" type="date" class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <div id="enddate_error_message" class="h-5 mt-1 text-sm text-red-600"></div>
           </div>
 
           <div class="w-1/2">
-            <label for="election_name" class="text-sm">Time</label><br>
-            <input id="time_end" type="time" class="w-full py-1 pl-4 mt-1 border-2 border-gray-400 border-solid rounded-sm focus:outline-blue-500">
-            <div id="endtime_error_message" class="h-5 text-sm text-red-500"></div>
+            <label for="time_end" class="text-sm font-medium text-gray-700">Time</label>
+            <input id="time_end" type="time" class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <div id="endtime_error_message" class="h-5 mt-1 text-sm text-red-600"></div>
           </div>
-
         </div>
 
-        <div class="flex justify-end gap-2">
-          <button id="closeModal" formmethod="dialog" type="button" class="px-3 py-1 mb-4 font-bold text-white bg-red-500 rounded-lg w-fit">CANCEL</button>
-          <input type="submit" value="SAVE" class="px-3 py-1 mb-4 font-bold text-white bg-blue-500 rounded-lg">
+        <div class="flex justify-end gap-4">
+          <button id="closeModal" formmethod="dialog" type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Save Changes</button>
         </div>
       </form>
 
     </div>
   </dialog>
-
 
 </body>
 

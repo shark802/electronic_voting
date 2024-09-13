@@ -11,8 +11,6 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
     try {
 
         const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-        // const totalVotedPerElection = await totalUserVotedPerElection();
-        // const totalVotedPerProgram = await totalUserVotedPerProgram();
 
         const electionIdList = elections.map(election => election.election_id);
         let populationPerProgram: unknown[] = []

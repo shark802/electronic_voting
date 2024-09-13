@@ -19,8 +19,6 @@ function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-            // const totalVotedPerElection = await totalUserVotedPerElection();
-            // const totalVotedPerProgram = await totalUserVotedPerProgram();
             const electionIdList = elections.map(election => election.election_id);
             let populationPerProgram = [];
             if (electionIdList.length > 0) {

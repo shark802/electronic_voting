@@ -4,12 +4,13 @@ import { ulid } from "ulid"
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
 import { Program } from "../../utils/enums/program";
-import { selectQuery, updateQuery } from "../../data_access/query";
+import { deleteQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
 import { eventEmitter } from '../../events/globalEventEmitterInstance';
 import { DEPARTMENT } from "../../config/constants/BccDepartments";
 import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
 import { getDepartmentsTotalPopulation, getDepartmentsTotalVotes } from "../../data_access/election";
+import { ResultSetHeader } from "mysql2";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
@@ -87,31 +88,44 @@ export async function findElectionByID(req: Request, res: Response, next: NextFu
 }
 
 export async function deleteElection(req: Request, res: Response, next: NextFunction) {
+	const connection = await pool.getConnection(); // Get a connection from the pool
 	try {
-		const election_id = req.params.id
+		const election_id = req.params.id;
 
 		if (!election_id) {
-			return next(new BadRequestError("Election Id is missing"))
+			return next(new BadRequestError("Election Id is missing"));
 		}
 
 		const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
 		if (isElectionStarted(election)) throw new BadRequestError('Cannot delete an election that has already started.');
 		if (isElectionEnded(election)) throw new BadRequestError('Cannot delete an election that has already ended.');
 
-		const query = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";
-		const value = [election_id]
+		await connection.beginTransaction(); // Start the transaction
 
-		const result = await updateQuery(pool, query, value)
-		if (result.affectedRows < 1) {
-			return next(new NotFoundError("No changes were made"))
+		// Update the election with a soft delete
+		const updateQuery = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";
+		const [updateResult] = await connection.query<ResultSetHeader>(updateQuery, [election_id]);
+
+		if (updateResult.affectedRows === 0) {
+			await connection.rollback(); // Roll back the transaction if no rows were updated
+			return next(new NotFoundError("No changes were made"));
 		}
 
-		res.sendStatus(200)
+		// Delete voters associated with this election
+		const deleteVotersQuery = 'DELETE FROM voters WHERE election_id = ?';
+		await connection.query(deleteVotersQuery, [election_id]);
 
+		await connection.commit();
+
+		res.sendStatus(200);
 	} catch (error) {
-		return next(error)
+		await connection.rollback();
+		return next(error);
+	} finally {
+		connection.release();
 	}
 }
+
 
 export async function updateElection(req: Request, res: Response, next: NextFunction) {
 	try {
@@ -146,10 +160,10 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 
 		const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ?', [electionID]);
 		const isElectionEnd = isElectionEnded(election);
-
+		console.log(typeof electionStatus);
 		// if request is to activate the election, check first if there is active election running before allowing to activate the election except for active election but already ended.
 		if ((electionStatus as string) === '1' && !isElectionEnd) {
-			const activeElection = await selectQuery<Election>(pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME()) AND deleted_at IS NULL)`);
+			const activeElection = await selectQuery<Election>(pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end > CURTIME())) AND deleted_at IS NULL`);
 			if (activeElection.length > 0) throw new BadRequestError('An active election is currently running')
 		}
 

@@ -40,7 +40,7 @@
 
       <% elections.forEach(election => { %>
 
-      <section data-election-id="<%= election.election_id %>" class="pb-3 max-w-[1300px] w-full rounded-md m-auto mb-5 bg-gray-100 border-2 border-gray-300">
+      <section data-election-id="<%= election.election_id %>" class="pb-3 max-w-[1300px] w-full rounded-md m-auto mb-5 bg-white border-2 border-gray-300">
 
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
@@ -52,27 +52,34 @@
           </div>
         </div>
 
-        <div class="flex lg:flex-row grow lg:justify-evenly lg:flex-wrap lg:grow flex-col w-full md:w-[90%] lg:w-full m-auto px-1 py-4 mt-2 lg:px-1">
+        <div class="flex lg:flex-row grow lg:justify-evenly gap-3 lg:flex-wrap lg:grow flex-col w-full md:w-[90%] lg:w-full m-auto px-1 py-4 mt-2 lg:px-1">
           <% candidatePosition.forEach(position => { 
               const candidatesPerPosition = candidates.filter(candidate => candidate.position === position && candidate.election_id === election.election_id);
               if (candidatesPerPosition.length > 0) {
                 if (position === 'SENATOR') { 
           %>
 
-          <div data-position="<%= position %>" id="position-container" class="border-2 rounded-md bg-gray-50 lg:w-full lg:mx-3">
-            <div class="py-2 pl-2 text-lg font-bold text-black rounded-t-md"> <%= position %> </div>
-
-            <div class="flex flex-col w-full px-1 py-2 lg:px-3 justify-evenly lg:flex-row lg:flex-wrap">
+          <div data-position="<%= position %>" id="position-container" class="mb-6 bg-white rounded-lg shadow-lg lg:m-0 lg:w-full overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <div class="py-3 px-4 text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 border-b border-blue-400 flex justify-between items-center">
+              <span><%= position %></span>
+              <span class="text-sm font-normal bg-blue-700 px-2 py-1 rounded-full">
+                <%= candidatesPerPosition.length %> candidates
+              </span>
+            </div>
+            <div class="flex flex-col w-full px-4 py-4 lg:flex-row lg:flex-wrap lg:justify-between">
               <% programs.forEach(program => { 
                   const senatorCandidatesPerProgram = candidates.filter(candidate => candidate.position === 'SENATOR' && candidate.election_id === election.election_id);
                   if (senatorCandidatesPerProgram.length > 0) { 
               %>
+              <div id="senator-by-program" class="mb-4 bg-white rounded-lg shadow-md lg:w-[49%] overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="py-2 px-4 font-bold text-gray-800 bg-gradient-to-r from-blue-100 to-blue-200 border-b border-blue-300 flex justify-between items-center">
+                  <span><%= program %></span>
 
-              <div id="senator-by-program" class="mb-2 border bg-gray-100 rounded-md shadow-md lg:w-[49%]">
-                <div class="py-2 pl-2 font-bold text-black bg-white rounded-t-md"> <%= program %> </div>
-                <canvas id="<%= program %>" class="lg:min-h-[300px] bg-white"></canvas>
+                </div>
+                <div class="p-3">
+                  <canvas id="<%= program %>" class="w-full h-[250px] bg-white rounded-md shadow-sm"></canvas>
+                </div>
               </div>
-
               <% } }) %>
             </div>
 
@@ -80,9 +87,17 @@
 
           <% } else { %>
 
-          <div data-position="<%= position %>" id="position-container" class="mb-4 border bg-gray-100 rounded-md shadow-md lg:m-0 lg:w-[49%] lg:mb-2">
-            <div class="py-2 pl-2 text-lg font-bold text-black bg-white rounded-t-md"> <%= position %> </div>
-            <canvas id="<%= position %>" class="lg:min-h-[300px] bg-white"></canvas>
+          <div data-position="<%= position %>" id="position-container" class="mb-6 bg-white rounded-lg shadow-lg lg:m-0 lg:w-[48%] overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <div class="py-3 px-4 text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 border-b border-blue-400 flex justify-between items-center">
+              <span><%= position %></span>
+              <span class="text-sm font-normal bg-blue-700 px-2 py-1 rounded-full">
+                <%= candidatesPerPosition.length %> candidate<%= candidatesPerPosition.length > 1 ? 's' : '' %>
+              </span>
+            </div>
+            <div class="p-4">
+              <canvas id="<%= position %>" class="w-full h-[300px] bg-white"></canvas>
+            </div>
+
           </div>
 
           <% } } }) %>
