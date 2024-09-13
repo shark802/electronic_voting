@@ -68,41 +68,50 @@
       </table>
     </div>
 
-    <div popover id="remove-device-modal" class=" rounded-lg p-2 lg:p-7 text-center shadow-lg w-[95%] max-w-[600px] h-fit pb-5 pt-5">
-
-      <div class="py-5 border-t-4 border-yellow-500 shadow-sm bg-yellow-50">
-        <div class="flex items-center justify-center gap-1">
-          <svg class="flex-shrink-0 w-4 h-4 lg:w-5 lg:h-5 text-[#eab308]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-          </svg>
-          <h1 class="text-sm font-semibold text-yellow-500 lg:text-lg md:text-xl">Do you want to REMOVE this device?</h1>
-        </div>
-        <p class="text-xs text-yellow-400 lg:text-base">This will remove from registered device</p>
-      </div>
-
-      <div class="py-3 my-3 text-xs font-medium text-gray-700 rounded-sm lg:text-sm md:pl-5">
-
-        <div class="flex">
-          <p class="text-gray-700">Codename: </p>
-          <p id="codename" class="pl-2 md:pl-3">Codename: </p>
-        </div>
-
-        <div class="flex">
-          <p class="text-gray-700 ">UUID: </p>
-          <p id="uuid" class="pl-2 md:pl-3 text-nowrap">UUID: </p>
-        </div>
-
-        <div class="flex">
-          <p class="text-gray-700">Request date: </p>
-          <p id="request-date" class="pl-2 md:pl-3">Requested at: </p>
+    <div popover id="remove-device-modal" class="w-[95%] max-w-[500px] p-0 rounded-lg shadow-xl bg-white overflow-hidden">
+      <div class="p-6 bg-yellow-100 border-b border-gray-200">
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-yellow-500 rounded-full">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold text-yellow-600">Remove Device</h2>
+            <p class="mt-1 text-sm text-yellow-600">
+              Do you want to remove this device?
+            </p>
+          </div>
         </div>
       </div>
 
-      <div class="flex justify-center gap-2 mt-3">
-        <button popovertarget="remove-device-modal" class="w-20 py-1 underline rounded-lg underline-offset-2">Cancel</button>
-        <button popovertarget="remove-device-modal" id="confirm-remove" class="w-20 py-1 font-semibold text-white bg-yellow-500 rounded-lg">Confirm</button>
-      </div>
+      <div class="p-6">
+        <p class="mb-4 text-sm text-gray-700">
+          This will remove the device from the registered devices list.
+        </p>
 
+        <div class="p-4 mb-6 rounded-md bg-gray-50">
+          <div class="grid grid-cols-3 gap-2 text-sm">
+            <p class="text-gray-600">Codename:</p>
+            <p id="codename" class="col-span-2 font-medium text-gray-800"></p>
+
+            <p class="text-gray-600">UUID:</p>
+            <p id="uuid" class="col-span-2 font-medium text-gray-800 break-all"></p>
+
+            <p class="text-gray-600">Request date:</p>
+            <p id="request-date" class="col-span-2 font-medium text-gray-800"></p>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+          <button popovertarget="remove-device-modal" class="px-4 py-2 text-gray-600 transition-colors duration-200 hover:text-gray-800">
+            Cancel
+          </button>
+          <button popovertarget="remove-device-modal" id="confirm-remove" class="px-4 py-2 text-white transition-colors duration-200 bg-yellow-500 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">
+            Confirm
+          </button>
+        </div>
+      </div>
     </div>
 
   </main>

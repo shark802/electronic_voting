@@ -177,44 +177,27 @@ function displayTotalVoteCountInProgram(programVoteCountObject) {
 
 function displayProgramNumberOfNotVoted(programPopulationObject, programVoteCountObject) {
 
-    programPopulationObject.forEach(program => {
+    document.querySelector('#overview-container').querySelectorAll('section').forEach(electionSection => {
 
-        if (program.program_population > 0) {
-            const electionSection = document.body.querySelector(`section[data-election-id="${program.election_id}"]`);
+        const electionId = electionSection.querySelector('#election-id').textContent.trim();
 
-            const findProgramVoteCount = programVoteCountObject.find(programObject => programObject.election_id === program.election_id);
-            const programPopulation = program.program_population;
-            const numberOfNotVoted = findProgramVoteCount ? (programPopulation - findProgramVoteCount.total_voted) : programPopulation;
+        const electionDepartmentsTotalPopulationObject = programPopulationObject.find(populationObject => populationObject.election_id === electionId); // find the object with corresponding election id
+        const electionDepartmentsTotalVotedObject = programVoteCountObject.find(populationObject => populationObject.election_id === electionId); // find the object with corresponding election id
 
-            electionSection.querySelector('#program-number-of-not-voted').textContent = numberOfNotVoted;
-        }
+        // search every department in election and display number of not voted
+        electionSection.querySelectorAll('#program').forEach(departmentSection => {
+            const departmentCode = departmentSection.querySelector('#program-code').dataset.programCode;
+            const numberOfNotVotedDisplaySection = departmentSection.querySelector('#departmentNumberOfNotVoted');
+
+            const departmentPopulation = electionDepartmentsTotalPopulationObject.department_total_population[departmentCode]
+            const departmentVoted = electionDepartmentsTotalVotedObject.department_votes[departmentCode]
+            const totalNotVoted = departmentPopulation - departmentVoted
+
+            numberOfNotVotedDisplaySection.textContent = totalNotVoted;
+
+        })
     })
 }
-
-// /**
-//  * This function accept array of election id and find each elections available department code (ex. AB, CRIM, EDUC, IS)
-//  *  
-//  * @param {Array} electionIdList - array of election id
-//  * @returns {Array}- return a key value pair array. Key is electionId value is array contains department code
-//  */
-// function getAllDepartmentPerElection(electionIdList) {
-
-//     const departmentsForEachElection = electionIdList.reduce((electionObject, electionId) => {
-//         const electionSection = document.body.querySelector(`section[data-election-id="${electionId}"]`);
-
-//         // Collect department codes for each election
-//         const departmentsOnEachElection = Array.from(electionSection.querySelectorAll('#program-code')).reduce((programArray, programCode) => {
-//             programArray.push(programCode.textContent);
-//             return programArray;
-//         }, []);
-
-//         // Add departments array to the electionObject
-//         electionObject[electionId] = departmentsOnEachElection;
-//         return electionObject; // Return the updated electionObject
-//     }, {});
-
-//     return departmentsForEachElection;
-// }
 
 document.querySelectorAll('section').forEach(electionSection => {
     const dateEnd = electionSection.querySelector('#date-end')?.value;

@@ -70,79 +70,96 @@
       </table>
     </div>
 
-    <div popover id="decline-request-modal" class=" rounded-lg p-2 lg:p-7 text-center shadow-lg w-[95%] max-w-[600px] h-fit pb-5 pt-5">
-
-      <div class="py-5 border-t-4 border-red-500 shadow-sm bg-red-50">
-        <div class="flex items-center justify-center gap-1">
-          <svg class="flex-shrink-0 w-4 h-4 lg:w-5 lg:h-5 text-[#ef4444]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-          </svg>
-          <h1 class="text-sm font-semibold text-red-500 lg:text-lg md:text-xl text-nowrap ">Are you sure you want to decline this request?</h1>
-        </div>
-
-        <p class="text-xs text-red-400 lg:text-base">This will remove the request in table</p>
-      </div>
-
-      <div class="py-3 my-3 text-xs font-medium text-gray-700 rounded-sm lg:text-sm md:pl-5">
-
-        <div class="flex flex-nowrap">
-          <p class="text-gray-700">Codename: </p>
-          <p id="codename" class="pl-2 md:pl-3">Codename: </p>
-        </div>
-
-        <div class="flex flex-nowrap">
-          <p class="text-gray-700 ">UUID: </p>
-          <p id="uuid" class="pl-2 md:pl-3 text-nowrap">UUID: </p>
-        </div>
-
-        <div class="flex flex-nowrap">
-          <p class="text-gray-700">Request date: </p>
-          <p id="request-date" class="pl-2 md:pl-3">Requested at: </p>
+    <div popover id="decline-request-modal" class="w-[95%] max-w-[500px] p-0 rounded-lg shadow-xl bg-white overflow-hidden">
+      <div class="p-6 bg-red-100 border-b border-gray-200">
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-red-500 rounded-full">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold text-red-600">Decline Request</h2>
+            <p class="mt-1 text-sm text-red-600">
+              Are you sure you want to decline this request?
+            </p>
+          </div>
         </div>
       </div>
 
-      <div class="flex justify-center gap-2 mt-5">
-        <button popovertarget="decline-request-modal" class="w-20 py-1 underline rounded-lg underline-offset-2">Cancel</button>
-        <button popovertarget="decline-request-modal" id="confirm-decline" class="w-20 py-1 font-semibold text-white bg-red-500 rounded-lg">Confirm</button>
-      </div>
+      <div class="p-6">
+        <p class="mb-4 text-sm text-gray-700">
+          This action will remove the request from the table.
+        </p>
 
+        <div class="p-4 mb-6 rounded-md bg-gray-50">
+          <div class="grid grid-cols-3 gap-2 text-sm">
+            <p class="text-gray-600">Codename:</p>
+            <p id="codename" class="col-span-2 font-medium text-gray-800"></p>
+
+            <p class="text-gray-600">UUID:</p>
+            <p id="uuid" class="col-span-2 font-medium text-gray-800 break-all"></p>
+
+            <p class="text-gray-600">Request date:</p>
+            <p id="request-date" class="col-span-2 font-medium text-gray-800"></p>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+          <button popovertarget="decline-request-modal" class="px-4 py-2 text-gray-600 transition-colors duration-200 hover:text-gray-800">
+            Cancel
+          </button>
+          <button popovertarget="decline-request-modal" id="confirm-decline" class="px-4 py-2 text-white transition-colors duration-200 bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+            Confirm
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div popover id="accept-request-modal" class="bg-white rounded-lg p-7 text-center shadow-lg w-[95%] max-w-[600px] h-fit pb-5 pt-10">
-
-      <div class="py-5 border-t-4 border-green-500 shadow-sm bg-green-50">
-        <div class="flex items-center justify-center gap-1">
-          <svg class="flex-shrink-0 w-4 h-4 lg:w-5 lg:h-5 text-[#22c55e]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-          </svg>
-          <h1 class="text-sm font-semibold text-green-500 lg:text-lg md:text-xl">Do you want to ACCEPT this request?</h1>
-        </div>
-        <p class="text-xs text-green-400 lg:text-base">This will list the device as registered</p>
-      </div>
-
-      <div class="py-4 my-3 text-sm text-gray-700 rounded-sm md:pl-5">
-
-        <div class="flex font-medium">
-          <p class="text-gray-700">Codename: </p>
-          <p id="codename" class="pl-2 md:pl-3">Codename: </p>
-        </div>
-
-        <div class="flex font-medium">
-          <p class="text-gray-700 ">UUID: </p>
-          <p id="uuid" class="pl-2 md:pl-3 text-nowrap">UUID: </p>
-        </div>
-
-        <div class="flex font-medium">
-          <p class="text-gray-700">Request date: </p>
-          <p id="request-date" class="pl-2 md:pl-3">Requested at: </p>
+    <div popover id="accept-request-modal" class="w-[95%] max-w-[500px] p-0 rounded-lg shadow-xl bg-white overflow-hidden">
+      <div class="p-6 bg-green-100 border-b border-gray-200">
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-green-500 rounded-full">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold text-green-600">Accept Request</h2>
+            <p class="mt-1 text-sm text-green-600">
+              Do you want to accept this request?
+            </p>
+          </div>
         </div>
       </div>
 
-      <div class="flex justify-center gap-2 mt-5">
-        <button popovertarget="accept-request-modal" class="w-20 py-1 underline rounded-lg underline-offset-2">Cancel</button>
-        <button popovertarget="accept-request-modal" id="confirm-accept" class="w-20 py-1 font-semibold text-white bg-green-500 rounded-lg">Confirm</button>
-      </div>
+      <div class="p-6">
+        <p class="mb-4 text-sm text-gray-700">
+          This will list the device as registered.
+        </p>
 
+        <div class="p-4 mb-6 rounded-md bg-gray-50">
+          <div class="grid grid-cols-3 gap-2 text-sm">
+            <p class="text-gray-600">Codename:</p>
+            <p id="codename" class="col-span-2 font-medium text-gray-800"></p>
+
+            <p class="text-gray-600">UUID:</p>
+            <p id="uuid" class="col-span-2 font-medium text-gray-800 break-all"></p>
+
+            <p class="text-gray-600">Request date:</p>
+            <p id="request-date" class="col-span-2 font-medium text-gray-800"></p>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+          <button popovertarget="accept-request-modal" class="px-4 py-2 text-gray-600 transition-colors duration-200 hover:text-gray-800">
+            Cancel
+          </button>
+          <button popovertarget="accept-request-modal" id="confirm-accept" class="px-4 py-2 text-white transition-colors duration-200 bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+            Confirm
+          </button>
+        </div>
+      </div>
     </div>
 
   </main>

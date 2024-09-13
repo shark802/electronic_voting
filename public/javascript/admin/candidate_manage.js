@@ -221,11 +221,11 @@ function displayFetchCandidate(candidates) {
 
         const tableRow = `
             <tr data-candidate-id="${candidate.candidate_id}" class="rounded-xl transition-all tablerow">
-                <td class="text-sm font-medium py-2 pl-2 text-gray-60 rounded-tl-lg rounded-bl-lg text-center">${candidate.id_number}</td>
-                <td class="text-sm font-medium py-2 pl-4 text-gray-600 text-nowrap">${candidate.firstname}, ${candidate.lastname}</td>
-                <td class="text-sm pl-4 font-medium py-2 text-gray-600 text-center">${candidate.party}</td>
-                <td class="text-sm font-medium py-2 pl-2 text-gray-600 text-center">${candidate.course}</td>
-                <td class="text-sm font-medium py-2 pl-2 text-gray-600">${candidateAddedAt}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900 text-center">${candidate.id_number}</td>
+                <td class="px-4 py-3 text-sm font-semibold text-gray-800 whitespace-nowrap">${candidate.lastname}, ${candidate.firstname}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-700 text-center">${candidate.party}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-700 text-center">${candidate.course}</td>
+                <td class="px-4 py-3 text-sm text-gray-600">${candidateAddedAt}</td>
                 <td data-status="${candidate.enabled}" class="text-sm font-medium py-2 pl-2 text-gray-60 text-center">${status}</td>
                 <td class="rounded-tr-lg rounded-br-lg">
                     <div class="flex justify-center gap-4 items-center z-10">
@@ -242,7 +242,9 @@ function displayFetchCandidate(candidates) {
 
                             </div>
                         </div> 
-                        <p id="edit" class="font-semibold hover:cursor-pointer text-blue-500">Edit</p>
+                        <button id="edit" class="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200 font-semibold text-sm">
+                            Edit
+                        </button>
                     </div> 
                 </td>
             </tr>

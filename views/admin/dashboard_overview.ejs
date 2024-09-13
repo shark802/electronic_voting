@@ -33,7 +33,7 @@
       <% if (elections && elections.length > 0) { 
         elections.forEach(election => { %>
 
-      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-3 mb-5 border-2 rounded-md">
+      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-3 mb-12 border-2 rounded-md">
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
 
@@ -106,7 +106,7 @@
                   </button>
                 </div>
                 <div class="relative flex-1 text-center">
-                  <p class="text-3xl font-bold text-red-600"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
+                  <p id="departmentNumberOfNotVoted" class="text-3xl font-bold text-red-600"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
                   <p class="text-sm font-medium text-gray-500">Not voted</p>
                   <button class="absolute bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-red-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
                     View Report
@@ -136,31 +136,39 @@
 
   </main>
 
-  <dialog id="close-election" class="w-[95%] px-5 py-5 lg:py-8 lg:px-12 max-w-[600px] min-h-fit rounded-md shadow-md">
+  <dialog id="close-election" class="w-[95%] max-w-[500px] p-0 rounded-lg shadow-xl bg-white overflow-hidden">
     <input type="hidden" id="election-id">
-    <div class="px-5 py-6 bg-yellow-100 border-t-4 border-yellow-500 shadow-md">
-      <div class="">
-        <div class="flex items-center gap-2 ">
-          <svg class="flex-shrink-0 w-4 h-4 text-[#eab308]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+    <div class="p-6 bg-yellow-100 border-b border-gray-200">
+      <div class="flex items-center space-x-4">
+        <div class="p-3 bg-yellow-500 rounded-full">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
-
-          <p class="text-lg text-yellow-500">Election has ended</p>
         </div>
-
-        <div class="pt-4 pl-4">
-          The election has successfully concluded at <underline class="underline underline-offset-1"></underline>. All results have been recorded, and no further changes can be made. Please review the final outcomes and ensure all data is properly archived.
+        <div>
+          <h2 class="text-xl font-semibold text-yellow-600">Election Concluded</h2>
+          <p class="mt-1 text-sm text-yellow-600">
+            Ended at <underline class="font-medium underline underline-offset-2"></underline>
+          </p>
         </div>
-
       </div>
     </div>
-    <p class="px-3 mt-5 font-medium text-gray-400 lg:px-5">Close Election Dashboard: Click the button to stop displaying election dashboard.</p>
 
-    <div class="flex items-center justify-center gap-4 lg:gap-6">
-      <button id="exit-close-election-modal" class="relative underline focus:outline-none underline-offset-4 top-1">Cancel</button>
-      <button id="close-election-button" class="px-3 py-2 mt-4 text-sm font-semibold text-white bg-yellow-500 rounded-md focus:outline-none hover:bg-yellow-600">Close Election</button>
+    <div class="p-6">
+      <p class="mb-6 text-gray-700">
+        All results have been recorded. No further changes can be made.
+        Please review the final outcomes and ensure proper data archiving.
+      </p>
+
+      <div class="flex justify-end space-x-4">
+        <button id="exit-close-election-modal" class="px-4 py-2 text-gray-600 transition-colors duration-200 hover:text-gray-800">
+          Cancel
+        </button>
+        <button id="close-election-button" class="px-4 py-2 text-white transition-colors duration-200 bg-yellow-500 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">
+          Close Election
+        </button>
+      </div>
     </div>
-
   </dialog>
 
 </body>

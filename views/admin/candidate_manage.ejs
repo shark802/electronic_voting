@@ -44,8 +44,13 @@
         <% elections.forEach(election => { %>
         <section id="election" class="w-full transition-colors border border-t-2 rounded-lg shadow bg-blue-50 min-w-fit h-fit min-h-16">
           <div class="px-8 py-5 bg-white rounded-t-md">
-            <h2 class="text-xl font-semibold"><%= election.election_name %></h2>
-            <p id="election-id" class="text-gray-400"><%= election.election_id %></p>
+            <h2 class="mb-1 text-2xl font-bold text-blue-700"><%= election.election_name %></h2>
+            <p id="election-id" class="flex items-center text-sm text-gray-500">
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <%= election.election_id %>
+            </p>
           </div>
 
           <div id="candidates-display" class="p-1 pb-0 rounded-lg rounded-bl-lg rounded-br-lg h-fit ">
@@ -82,43 +87,52 @@
   </main>
 
   <!-- Edit candidate Modal -->
-  <dialog class="rounded-lg">
-    <form id="editCandidateForm" class="lg:min-w-[500px] lg:px-14 px-5 py-5 rounded-lg shadow-lg">
+  <dialog class="rounded-lg shadow-xl">
+    <form id="editCandidateForm" class="w-full min-w-[500px] max-w-lg p-6 bg-white rounded-lg">
+      <h2 class="mb-6 text-2xl font-bold text-gray-800">Edit Candidate</h2>
 
-      <div id="fullname" class="my-1 text-sm font-medium text-gray-600">Name: </div>
-      <div id="id-number" class="my-1 text-sm font-medium text-gray-600">ID: </div>
-      <div id="course" class="my-1 text-sm font-medium text-gray-600">Course: </div>
-
-      <br>
-
-      <label class="text-sm font-medium text-gray-500" for="position">Position</label>
-      <select id="selectPosition" class="w-full py-1 pl-3 font-medium border rounded-lg focus:outline-blue-500">
-        <option value="">--</option>
-        <% positions.forEach((value) => { %>
-        <option value="<%= value %>" class="text-sm"> <%= value %> </option>
-        <% }) %>
-      </select>
-      <div id="positionErrorMessage" class="text-sm text-red-500 min-h-5"></div>
-
-      <!-- <label class="text-sm font-medium text-gray-500" for="alias">Alias</label>
-      <input id="alias" type="text" class="w-full py-1 pl-3 font-medium border rounded-lg focus:outline-blue-500">
-      <div id="aliasErrorMessage" class="text-sm text-red-500 min-h-5"></div> -->
-
-      <label class="text-sm font-medium text-gray-500" for="party">Party</label>
-      <input id="party" type="text" class="w-full py-1 pl-3 font-medium border rounded-lg focus:outline-blue-500">
-      <div id="partyErrorMessage" class="text-sm text-red-500 min-h-5"></div>
-
-      <!-- <div class="font-[sans-serif] max-w-md py-5">
-        <label class="block mb-2 text-base font-semibold text-gray-500">Upload profile</label>
-        <input type="file" name="candidate_profile" class="w-full text-sm font-semibold text-gray-400 bg-white border rounded cursor-pointer file:cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-gray-500" />
-        <p class="mt-2 text-xs text-gray-400">PNG, JPG and WEBP are Allowed.</p>
-      </div> -->
-
-      <div class="flex justify-end gap-2">
-        <button id="closeModal" formmethod="dialog" type="button" class="px-3 py-1 mb-4 font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 w-fit">CANCEL</button>
-        <input type="submit" value="SAVE" class="px-3 py-1 mb-4 font-bold text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+      <div class="flex items-center mb-6 space-x-4">
+        <div class="relative w-24 h-24 overflow-hidden bg-gray-100 rounded-full">
+          <img id="candidateImage" src="/img/default-profile.webp" alt="Candidate" class="object-cover w-full h-full">
+          <label for="imageUpload" class="absolute inset-0 flex items-center justify-center transition-opacity bg-black bg-opacity-50 opacity-0 cursor-pointer hover:opacity-100">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </label>
+          <input id="imageUpload" type="file" accept="image/*" class="hidden">
+        </div>
+        <div>
+          <div id="fullname" class="text-lg font-semibold text-gray-800">Name: </div>
+          <div id="id-number" class="text-sm text-gray-600">ID: </div>
+          <div id="course" class="text-sm text-gray-600">Course: </div>
+        </div>
       </div>
 
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-medium text-gray-700" for="position">Position</label>
+        <select id="selectPosition" class="w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">Select a position</option>
+          <% positions.forEach((value) => { %>
+          <option value="<%= value %>"><%= value %></option>
+          <% }) %>
+        </select>
+        <div id="positionErrorMessage" class="mt-1 text-sm text-red-500"></div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-medium text-gray-700" for="party">Party</label>
+        <input id="party" type="text" class="w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div id="partyErrorMessage" class="mt-1 text-sm text-red-500"></div>
+      </div>
+
+      <div class="flex justify-end space-x-2">
+        <button id="closeModal" formmethod="dialog" type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">
+          Cancel
+        </button>
+        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+          Save Changes
+        </button>
+      </div>
     </form>
   </dialog>
 
