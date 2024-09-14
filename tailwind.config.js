@@ -26,6 +26,7 @@ module.exports = {
     'z-30',
     'pb-3',
     'w-1/3',
+    'w-36',
     'inline-block',
     'animate-slide-in',
     'lg:pl-12',

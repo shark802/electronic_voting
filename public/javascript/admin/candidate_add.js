@@ -132,8 +132,6 @@ document.body.querySelector('#id-number').addEventListener('change', async (even
         const form = document.body.querySelector('#candidate-form');
         form.querySelector('#firstname').value = user.firstname
         form.querySelector('#lastname').value = user.lastname
-        // form.querySelector('#firstname').value = user
-        // form.querySelector('#firstname').value = user
 
         const userCourse = form.querySelector('#program').querySelectorAll('option');
         for (let courseOption of userCourse) {

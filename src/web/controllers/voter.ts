@@ -84,10 +84,8 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
         const positionList = Object.values(Position);
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
         const candidatesVoteTally = await getCandidatesTotalTally(electionId);
-        const allCandidatesInElection = await getAllCandidatesInElection(electionId);
 
-
-        return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, allCandidatesInElection });
+        return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList });
     } catch (error) {
         next(error)
     }

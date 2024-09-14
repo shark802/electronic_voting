@@ -12,13 +12,15 @@ export async function getElectionInfoById(electionId: string) {
 }
 
 export async function getCandidatesTotalTally(electionId: string) {
+
     const sqlQuery = `
-        SELECT u.id_number, u.firstname, u.lastname, u.course, v.position, COUNT(*) as vote_count
-        FROM users u
-        JOIN votes v
-        ON u.id_number = v.candidate_id
-        WHERE election_id = ?
-        GROUP BY v.candidate_id, v.position
+        SELECT c.position, c.party, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, v.election_id, COUNT(v.candidate_id) AS vote_count
+        FROM candidates c
+        LEFT JOIN votes v ON c.id_number = v.candidate_id  
+        LEFT JOIN users u ON u.id_number = c.id_number     
+        WHERE c.election_id = '01J7AVF0C8H3D0FXVK2ES07494' 
+        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, v.election_id, c.party
+        ORDER BY vote_count DESC;
     `
     const candidatesVoteTally = await selectQuery(pool, sqlQuery, [electionId]);
     return candidatesVoteTally;

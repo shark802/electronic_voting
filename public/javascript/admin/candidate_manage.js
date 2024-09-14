@@ -195,14 +195,14 @@ function displayFetchCandidate(candidates) {
         let statusOptionDisplay
         if (candidate.enabled === 0) {
             statusOptionDisplay = `
-            <div id="toggleCandidateStatus" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+            <div id="toggleCandidateStatus" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
                 <img id="viewStatusImage" src="/img/view.webp" alt="view" class="w-4 h-4">
                 <p id="viewStatus" class="ml-2">Activate</p>
             </div>
             `
         } else {
             statusOptionDisplay = `
-            <div id="toggleCandidateStatus" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+            <div id="toggleCandidateStatus" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
                 <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4">
                 <p id="viewStatus" class="ml-2">Deactivate</p>
             </div>
@@ -234,26 +234,32 @@ function displayFetchCandidate(candidates) {
                     </span>
                 </td>
                 <td class="px-2 py-2">
-                    <div class="flex justify-end items-center gap-2">
-                        <button id="edit" class="px-2 py-1 text-xs text-blue-600 hover:text-blue-800 transition-colors duration-200">
-                            Edit
-                        </button>
-                        <div id="option-section" class="relative">
+                    <div class="flex justify-center items-center gap-2">
+                        
+                        <div id="option-section" class="relative px-2">
                             <button class="p-1 hover:bg-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300" aria-label="More options">
                                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                                 </svg>
                             </button>
-                            <div id="more-option" class="absolute z-10 right-0 mt-2 hidden bg-white border border-gray-200 rounded shadow-md w-32">
-                                ${statusOptionDisplay}
-                                <div id="delete_candidate" class="flex items-center px-3 py-2 text-xs transition-all rounded-sm hover:bg-gray-100">
-                                    <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
-                                    <p class="ml-2">Delete</p>
+
+                                <div id="more-option" class="absolute right-0 z-10 hidden w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+
+
+                               ${statusOptionDisplay}
+
+                                <div id="delete_candidate" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
+                                    <img src="/img/trash.webp" alt="delete" class="w-4 h-4 mr-2">
+                                    <p class="text-gray-700">Delete</p>
                                 </div>
+
                             </div>
-                        </div> 
+                        </div>
+                        
+                        <button id="edit" class="px-2 py-1 text-xs text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                            Edit
+                        </button>
+                        
                     </div> 
                 </td>
             </tr>

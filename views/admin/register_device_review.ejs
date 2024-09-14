@@ -22,7 +22,7 @@
 
   <%- include("../partials/sidebar.ejs") %>
 
-  <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5 ">
+  <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-2">
 
     <header class="sticky top-0 flex items-center justify-between w-full px-4 py-3 bg-blue-600 shadow-md lg:h-20 lg:px-6">
       <button id="show-sidebar" class="p-2 text-white transition-colors duration-200 rounded-md lg:hidden hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Toggle sidebar">
@@ -50,9 +50,9 @@
       <table id="register-device-table" class="w-full">
         <thead class="text-xs font-medium text-gray-700 uppercase bg-gray-100 lg:text-sm">
           <tr>
+            <th class="sticky top-0 px-3 py-3 text-center bg-gray-100 text">Codename</th>
             <th class="sticky top-0 px-3 py-3 text-center bg-gray-100 text">UUID</th>
             <th class="sticky top-0 hidden px-3 py-3 text-center bg-gray-100 text sm:table-cell">Date Requested</th>
-            <th class="sticky top-0 px-3 py-3 text-center bg-gray-100 text">Codename</th>
             <th class="sticky top-0 px-3 py-3 text-center bg-gray-100 text">Actions</th>
           </tr>
         </thead>
