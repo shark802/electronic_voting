@@ -135,6 +135,8 @@ function getUserByIdNumber(req, res, next) {
                 throw new customErrors_1.BadRequestError('Id number is missing');
             const sqlQuery = 'SELECT * FROM users JOIN roles ON users.id_number = roles.id_number WHERE users.id_number = ? LIMIT 1';
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [idNumber]);
+            if (!user)
+                throw new customErrors_1.NotFoundError('User Not Found!');
             return res.status(200).json({ user });
         }
         catch (error) {

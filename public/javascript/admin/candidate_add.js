@@ -2,6 +2,8 @@ import "/javascript/logout.js";
 import "/javascript/modules/candidates/candidate_add_default_election.js";
 import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 import { isInputNotEmpty } from "/javascript/formInputValidator/isInputNotEmpty.js";
+import { showSwalErrorToast, confirmErrorAlert } from "/javascript/helper/sweetAlertFunctions.js";
+import { showLoading, hideLoader } from "/javascript/helper/loader.js";
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const add_candidate = document.querySelector("#add_candidate");
@@ -109,4 +111,42 @@ document.querySelector("#candidate-form").addEventListener('submit', async (even
         console.error(error);
     }
 
+})
+
+document.body.querySelector('#id-number').addEventListener('change', async (event) => {
+    try {
+
+        const idNumber = event.target.value.trim();
+
+        showLoading();
+        const response = await fetch(`/api/user/${idNumber}`);
+        hideLoader();
+
+        const responseObject = await response.json();
+
+        if (response.status === 404) return confirmErrorAlert(`User ${idNumber} has no record in the system`)
+        if (!response.ok) return showSwalErrorToast(responseObject.message);
+
+        const user = responseObject.user;
+
+        const form = document.body.querySelector('#candidate-form');
+        form.querySelector('#firstname').value = user.firstname
+        form.querySelector('#lastname').value = user.lastname
+        // form.querySelector('#firstname').value = user
+        // form.querySelector('#firstname').value = user
+
+        const userCourse = form.querySelector('#program').querySelectorAll('option');
+        for (let courseOption of userCourse) {
+
+            if (courseOption.value === user.course) {
+                courseOption.selected = true;
+                break;
+            }
+        }
+
+
+    } catch (error) {
+        console.error(error);
+
+    }
 })

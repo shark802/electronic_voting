@@ -115,6 +115,9 @@ export async function getUserByIdNumber(req: Request, res: Response, next: NextF
 
         const sqlQuery = 'SELECT * FROM users JOIN roles ON users.id_number = roles.id_number WHERE users.id_number = ? LIMIT 1'
         const [user] = await selectQuery<User>(pool, sqlQuery, [idNumber]);
+
+        if (!user) throw new NotFoundError('User Not Found!');
+
         return res.status(200).json({ user });
     } catch (error) {
         next(error)

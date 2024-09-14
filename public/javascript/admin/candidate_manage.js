@@ -220,31 +220,40 @@ function displayFetchCandidate(candidates) {
         candidateAddedAt = candidateAddedAt.toLocaleString('en-US', options);
 
         const tableRow = `
-            <tr data-candidate-id="${candidate.candidate_id}" class="rounded-xl transition-all tablerow">
-                <td class="px-4 py-3 text-sm font-medium text-gray-900 text-center">${candidate.id_number}</td>
-                <td class="px-4 py-3 text-sm font-semibold text-gray-800 whitespace-nowrap">${candidate.lastname}, ${candidate.firstname}</td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-700 text-center">${candidate.party}</td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-700 text-center">${candidate.course}</td>
-                <td class="px-4 py-3 text-sm text-gray-600">${candidateAddedAt}</td>
-                <td data-status="${candidate.enabled}" class="text-sm font-medium py-2 pl-2 text-gray-60 text-center">${status}</td>
-                <td class="rounded-tr-lg rounded-br-lg">
-                    <div class="flex justify-center gap-4 items-center z-10">
-                        <div id="option-section" class="relative">
-                            <img src="/img/more.webp" class="w-5 hover:cursor-pointer opacity-70 hover:rounded-full hover:bg-blue-300"/>
-                            <div id="more-option" class="absolute z-10 right-0 gap-2 px-1 py-3 hidden bg-white border border-solid rounded shadow-md w-36 h-fit top-7">
-
-                               ${statusOptionDisplay}
-
-                                <div id="delete_candidate" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
-                                    <img src="/img/trash.webp" alt="delete" class="w-4 h-4">
-                                    <p class="ml-2">Delete</p>
-                                </div>
-
-                            </div>
-                        </div> 
-                        <button id="edit" class="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200 font-semibold text-sm">
+            <tr data-candidate-id="${candidate.candidate_id}" class="border-b border-gray-200 hover:bg-gray-50">
+                <td class="px-2 py-2 text-xs text-gray-900 text-center">${candidate.id_number}</td>
+                <td class="px-2 py-2 text-xs text-gray-800">
+                    <span class="font-medium">${candidate.lastname}</span>, ${candidate.firstname}
+                </td>
+                <td class="px-2 py-2 text-xs text-gray-700 text-center">${candidate.party}</td>
+                <td class="px-2 py-2 text-xs text-gray-700 text-center">${candidate.course}</td>
+                <td class="px-2 py-2 text-xs text-gray-600 whitespace-nowrap">${candidateAddedAt}</td>
+                <td data-status="${candidate.enabled}" class="px-2 py-2 text-xs text-center">
+                    <span class="px-1.5 py-0.5 text-xs ${candidate.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded">
+                        ${status}
+                    </span>
+                </td>
+                <td class="px-2 py-2">
+                    <div class="flex justify-end items-center gap-2">
+                        <button id="edit" class="px-2 py-1 text-xs text-blue-600 hover:text-blue-800 transition-colors duration-200">
                             Edit
                         </button>
+                        <div id="option-section" class="relative">
+                            <button class="p-1 hover:bg-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300" aria-label="More options">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                </svg>
+                            </button>
+                            <div id="more-option" class="absolute z-10 right-0 mt-2 hidden bg-white border border-gray-200 rounded shadow-md w-32">
+                                ${statusOptionDisplay}
+                                <div id="delete_candidate" class="flex items-center px-3 py-2 text-xs transition-all rounded-sm hover:bg-gray-100">
+                                    <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    <p class="ml-2">Delete</p>
+                                </div>
+                            </div>
+                        </div> 
                     </div> 
                 </td>
             </tr>

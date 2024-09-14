@@ -24,20 +24,36 @@
 
   <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-5 ">
 
-    <div class="flex items-center w-full py-3 m-0 lg:h-20 lg:pt-7">
-      <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
-      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Review Request</h1>
-    </div>
+    <header class="sticky top-0 flex items-center justify-between w-full px-4 py-3 bg-blue-600 shadow-md lg:h-20 lg:px-6">
+      <button id="show-sidebar" class="p-2 text-white transition-colors duration-200 rounded-md lg:hidden hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Toggle sidebar">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <h1 class="font-sans text-2xl font-bold text-white lg:text-3xl">Review Request</h1>
+      <!-- <div class="flex items-center space-x-2">
+        <button id="refresh-data" class="p-2 text-white transition-colors duration-200 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Refresh data">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+        <button id="user-menu" class="p-2 text-white transition-colors duration-200 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="User menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+        </button>
+      </div> -->
+    </header>
 
     <div class="relative h-full px-3 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg bg-blue-50 lg:mb-3">
 
       <table id="register-device-table" class="w-full">
-        <thead class="px-4 py-4 text-gray-600">
-          <tr class="">
-            <th class="w-[30%] py-3 sticky top-0 bg-blue-50">UUID</th>
-            <th class="w-[25%] py-3 sticky top-0 bg-blue-50">Date Requested</th>
-            <th class="w-[20%] py-3 sticky top-0 bg-blue-50"></th>
-            <th class="w-[20%] py-3 sticky top-0 bg-blue-50">Codename</th>
+        <thead class="text-xs font-medium text-gray-700 uppercase bg-gray-100 lg:text-sm">
+          <tr>
+            <th class="sticky top-0 px-3 py-3 text-center bg-gray-100 text">UUID</th>
+            <th class="sticky top-0 hidden px-3 py-3 text-center bg-gray-100 text sm:table-cell">Date Requested</th>
+            <th class="sticky top-0 px-3 py-3 text-center bg-gray-100 text">Codename</th>
+            <th class="sticky top-0 px-3 py-3 text-center bg-gray-100 text">Actions</th>
           </tr>
         </thead>
 
@@ -56,12 +72,24 @@
             
           %>
           <tr data-uuid="<%= device.uuid %>" class="transition-all tablerow">
-            <td id="codename" class="py-1 text-sm font-medium text-center text-gray-700 rounded-tl-lg rounded-bl-lg"><%= device.codename %></td>
+            <td id="codename" class="py-1 text-sm font-medium text-center text-gray-700"><%= device.codename %></td>
             <td id="uuid" class="py-1 text-sm font-medium text-center text-gray-700"><%= device.uuid %></td>
-            <td id="request-date" class="py-1 text-sm font-medium text-center text-gray-700 "><%= dateCreated%></td>
-            <td class="py-1 text-sm font-medium text-center text-gray-700 rounded-tr-lg rounded-br-lg ">
-              <button popovertarget="decline-request-modal" id="decline-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-red-500 rounded-lg hover:bg-red-600">DECLINE</button>
-              <button popovertarget="accept-request-modal" id="accept-request" class="w-20 py-1 m-1 font-semibold text-center text-white bg-green-500 rounded-lg hover:bg-green-600">ACCEPT</button>
+            <td id="request-date" class="hidden py-1 text-sm font-medium text-center text-gray-700 sm:table-cell"><%= dateCreated%></td>
+            <td class="py-2 text-sm font-medium text-center text-gray-700">
+              <div class="flex flex-col items-center justify-center gap-2 sm:flex-row">
+                <button popovertarget="decline-request-modal" id="decline-request" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  Decline
+                </button>
+                <button popovertarget="accept-request-modal" id="accept-request" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  Accept
+                </button>
+              </div>
             </td>
           </tr>
           <% }) %>
@@ -105,12 +133,18 @@
           </div>
         </div>
 
-        <div class="flex justify-end space-x-4">
-          <button popovertarget="decline-request-modal" class="px-4 py-2 text-gray-600 transition-colors duration-200 hover:text-gray-800">
+        <div class="flex justify-end mt-6 space-x-3">
+          <button popovertarget="decline-request-modal" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
             Cancel
           </button>
-          <button popovertarget="decline-request-modal" id="confirm-decline" class="px-4 py-2 text-white transition-colors duration-200 bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-            Confirm
+          <button popovertarget="decline-request-modal" id="confirm-decline" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-colors duration-200 bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Confirm Decline
           </button>
         </div>
       </div>
@@ -151,12 +185,18 @@
           </div>
         </div>
 
-        <div class="flex justify-end space-x-4">
-          <button popovertarget="accept-request-modal" class="px-4 py-2 text-gray-600 transition-colors duration-200 hover:text-gray-800">
+        <div class="flex justify-end mt-6 space-x-3">
+          <button popovertarget="accept-request-modal" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
             Cancel
           </button>
-          <button popovertarget="accept-request-modal" id="confirm-accept" class="px-4 py-2 text-white transition-colors duration-200 bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
-            Confirm
+          <button popovertarget="accept-request-modal" id="confirm-accept" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-colors duration-200 bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Confirm Accept
           </button>
         </div>
       </div>
