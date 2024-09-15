@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `candidates` (
    `id_number` INT(10) NOT NULL,
    `position` VARCHAR(50) NOT NULL,
    -- `alias` VARCHAR(50) NOT NULL,
+   `department` VARCHAR(50) NOT NULL,
    `party` VARCHAR(50) NOT NULL,
    `enabled` TINYINT(1) NOT NULL DEFAULT 1,
    `deleted` TIMESTAMP NULL,

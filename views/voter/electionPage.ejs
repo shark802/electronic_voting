@@ -37,7 +37,7 @@
           <img src="/img/account.webp" alt="profile" class="w-8 h-8 border-2 border-white rounded-full">
         </button>
 
-        <div id="account-section" class="absolute right-0 hidden mt-4 overflow-hidden bg-white border border-blue-100 rounded-lg shadow-xl w-72">
+        <div id="account-section" class="absolute right-0 z-10 hidden mt-4 overflow-hidden bg-white border border-blue-100 rounded-lg shadow-xl w-72">
           <div class="p-6 bg-blue-50">
             <div class="flex items-center mb-4">
               <img src="/img/account.webp" alt="profile" class="w-16 h-16 mr-4 border-2 border-blue-300 rounded-full">
@@ -82,7 +82,7 @@
       <% } else { %>
 
       <% electionList.forEach(element => { %>
-      <section class="lg:max-w-[700px] mx-4 max-w-[500px] bg-white rounded-lg min-h-fit w-full lg:min-w-[500px] py-8 px-10 shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300 transform">
+      <section class="lg:max-w-[700px] mx-4 max-w-[500px] bg-white rounded-lg min-h-fit w-full lg:min-w-[500px] py-8 px-4 shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300 transform">
         <div id="election-id" class="hidden"><%= element.election_id %></div>
         <input type="hidden" value="<%= element.date_start %>" id="date-start">
         <input type="hidden" value="<%= element.time_start %>" id="time-start">

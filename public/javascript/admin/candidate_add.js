@@ -131,20 +131,48 @@ document.body.querySelector('#id-number').addEventListener('change', async (even
 
         const form = document.body.querySelector('#candidate-form');
         form.querySelector('#firstname').value = user.firstname
-        form.querySelector('#lastname').value = user.lastname
+        form.querySelector('#lastname').value = user.lastname;
 
-        const userCourse = form.querySelector('#program').querySelectorAll('option');
-        for (let courseOption of userCourse) {
-
-            if (courseOption.value === user.course) {
-                courseOption.selected = true;
-                break;
-            }
-        }
-
+        await assignDepartment(user.course)
 
     } catch (error) {
         console.error(error);
 
     }
 })
+
+async function assignDepartment(userCourse) {
+    const departmentObject = await fetchDepartmentObject();
+
+    for (const [department, programs] of Object.entries(departmentObject)) {
+        if (programs.find(program => userCourse === program)) {
+
+            const departmentOption = document.body.querySelector('#program').querySelectorAll('option');
+            for (let courseOption of departmentOption) {
+
+                if (courseOption.value === department) {
+                    courseOption.selected = true;
+                    break;
+                }
+            }
+
+        }
+    }
+
+}
+
+async function fetchDepartmentObject() {
+    try {
+
+        const response = await fetch('/api/department');
+
+        if (response.ok) {
+            const responseObject = await response.json();
+            return responseObject.DEPARTMENT;
+        }
+
+    } catch (error) {
+        console.error(error);
+
+    }
+}

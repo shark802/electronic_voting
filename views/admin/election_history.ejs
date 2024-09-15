@@ -49,9 +49,16 @@
       <% if (elections.length < 1) { %>
 
       <!-- Display no election history -->
-      <section class="lg:w-[700px] shadow-md lg:px-10 box-border w-[95%] bg-white rounded-lg min-h-28 grid m-auto mt-5 py-5 lg:py-9">
-        <img src="/img/empty-folder.webp" alt="empty folder" class="m-auto w-28 h-28">
-        <h1 class="m-auto mt-4 text-lg font-semibold text-center text-gray-700 lg:w-3/5">No past elections found!</h1>
+      <section class="max-w-2xl mx-auto overflow-hidden bg-white rounded-lg shadow-lg">
+        <div class="p-8 text-center">
+          <div class="relative mb-6">
+            <img src="/img/empty-folder.webp" alt="Empty folder" class="w-32 h-32 mx-auto opacity-75">
+
+          </div>
+          <h1 class="mb-4 text-2xl font-bold text-gray-800">No Past Elections</h1>
+          <p class="mb-6 text-gray-600">It looks like there aren't any past elections to display at the moment.</p>
+
+        </div>
       </section>
 
       <% } else { %>

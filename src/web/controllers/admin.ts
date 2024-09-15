@@ -6,6 +6,10 @@ import { Position } from "../../utils/enums/position";
 import { Program } from "../../utils/enums/program";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
 import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVotedInElection, getAllUserElectionParticipatedIn } from "../../data_access/voterService";
+import { getElectionInfoById, getCandidatesTotalTally } from "../../data_access/election";
+import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
+import { BadRequestError, NotFoundError } from "../../utils/customErrors";
+import { User } from "../../utils/types/User";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -90,6 +94,28 @@ export async function viewElectionHistory(req: Request, res: Response, next: Nex
         res.render("admin/election_history", { elections });
     } catch (error) {
         next(error);
+    }
+}
+
+export async function renderAdminElectionResult(req: Request, res: Response, next: NextFunction) {
+    try {
+        const electionId = req.params.id;
+
+        if (!electionId) throw new BadRequestError('Election id is missing');
+
+        // retrieve election here
+        const electionInfo = await getElectionInfoById(electionId);
+        if (!electionInfo) throw new NotFoundError('Election not exist');
+
+        // check if the election has ended
+        if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
+
+        const positionList = Object.values(Position);
+        const candidatesVoteTally = await getCandidatesTotalTally(electionId);
+
+        return res.render('voter/electionResultForVoter', { candidatesVoteTally, positionList });
+    } catch (error) {
+        next(error)
     }
 }
 

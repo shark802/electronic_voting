@@ -9,12 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.viewElectionHistory = exports.deleteElection = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
+exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.deleteElection = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const position_1 = require("../../utils/enums/position");
 const program_1 = require("../../utils/enums/program");
 const voterService_1 = require("../../data_access/voterService");
+const election_1 = require("../../data_access/election");
+const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
+const customErrors_1 = require("../../utils/customErrors");
 function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -112,6 +115,29 @@ function viewElectionHistory(req, res, next) {
     });
 }
 exports.viewElectionHistory = viewElectionHistory;
+function renderAdminElectionResult(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const electionId = req.params.id;
+            if (!electionId)
+                throw new customErrors_1.BadRequestError('Election id is missing');
+            // retrieve election here
+            const electionInfo = yield (0, election_1.getElectionInfoById)(electionId);
+            if (!electionInfo)
+                throw new customErrors_1.NotFoundError('Election not exist');
+            // check if the election has ended
+            if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
+                return res.redirect('/election?redirectMessage=Result Not Available Yet');
+            const positionList = Object.values(position_1.Position);
+            const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
+            return res.render('voter/electionResultForVoter', { candidatesVoteTally, positionList });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.renderAdminElectionResult = renderAdminElectionResult;
 // Candidate
 function manageCandidate(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {

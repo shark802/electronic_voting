@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const electionsCandidateData = await fetchAllCandidatesDataForActiveElection();
 
+    console.log(electionsCandidateData);
+
     const activeElections = document.querySelectorAll('section'); // select all section element that represent each active election
     activeElections.forEach(election => {
         const electionId = election.dataset.electionId;
@@ -37,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const senatorPositionPerProgam = div.querySelectorAll('#senator-by-program'); // SENATOR div container holds multiple canvas per program
                 senatorPositionPerProgam.forEach(program => {
                     const canvas = program.querySelector('canvas'); // Represent as canvas element for each program on senator position
-                    const candidatesToDisplay = electionsCandidateData.filter(candidate => candidate.position === 'SENATOR' && candidate.election_id === electionId && candidate.course === canvas.id);
+                    const candidatesToDisplay = electionsCandidateData.filter(candidate => candidate.position === 'SENATOR' && candidate.election_id === electionId && candidate.department === canvas.id);
 
                     new Chart(canvas, {
                         type: 'bar',

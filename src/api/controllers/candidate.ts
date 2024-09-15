@@ -6,6 +6,7 @@ import { Candidate } from "../../utils/types/Candidate";
 import { ulid } from "ulid";
 import { User } from "../../utils/types/User";
 import { getUserCandidate } from "../../data_access/candidateService";
+import { DEPARTMENT } from '../../config/constants/BccDepartments';
 
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -41,8 +42,16 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
         if (findCandidateIfExist.length > 0) return next(new ConflictError(`Unable to add ${id_number} in election due to conflict, candidate already exist`));
 
         const candidate_id = ulid();
-        const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, party, election_id, candidate_profile) VALUES (?, ?, ?, ?, ?, ?)";
-        const candidateParameter = [candidate_id, id_number, position, party, election_id, candidate_profile];
+        // let candidateDepartment: keyof typeof DEPARTMENT | undefined = undefined;
+
+        // for (const [department, programs] of Object.entries(DEPARTMENT)) {
+        //     if (programs.find(course)) {
+        //         candidateDepartment = department as keyof typeof DEPARTMENT;
+        //         break;
+        //     }
+        // }
+        const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, party, election_id, candidate_profile, department) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        const candidateParameter = [candidate_id, id_number, position, party, election_id, candidate_profile, course];
         const newCandidate = await insertQuery(pool, addNewCandidateQuery, candidateParameter);
 
         if (newCandidate.affectedRows > 0) {
@@ -175,13 +184,13 @@ export async function getUserCandidateData(req: Request, res: Response, next: Ne
 export async function getAllcandidatesInActiveElection(req: Request, res: Response, next: NextFunction) {
     try {
         const sqlQuery = `
-            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, e.election_id, COUNT(v.candidate_id) AS vote_count
+            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, c.department, e.election_id, COUNT(v.candidate_id) AS vote_count
             FROM candidates c
             JOIN elections e ON c.election_id = e.election_id
             LEFT JOIN users u ON c.id_number = u.id_number
             LEFT JOIN votes v ON c.id_number = v.candidate_id AND e.election_id = v.election_id
             WHERE e.deleted_at IS NULL AND e.is_close = 0 AND c.deleted IS NULL AND c.enabled = 1
-            GROUP BY c.election_id, u.id_number, c.position, v.election_id
+            GROUP BY c.election_id, u.id_number, c.position, v.election_id, c.department
             ORDER BY lastname;
         `
 

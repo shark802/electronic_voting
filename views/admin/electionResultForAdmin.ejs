@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Result</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- <script src="/javascript/lib/sweetalert2@11.js"></script> -->
+  <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
+  <script type="module" src="/javascript/voter/electionResultForVoter.js"></script>
+
+  <style>
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+
+<body class="w-full bg-blue-50 lg:px-0 h-dvh">
+
+  <header class="flex items-center justify-between w-full px-4 py-3 shadow-md bg-gradient-to-r from-blue-800 to-blue-600">
+    <a href="/election" class="flex items-center gap-2 px-3 py-2 text-white transition-colors duration-200 bg-blue-600 rounded-full shadow-md hover:text-blue-200 hover:bg-blue-700">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+      <span class="text-sm font-medium">Home</span>
+    </a>
+
+  </header>
+
+  <div class="relative mt-24 overflow-y-auto bg-blue-50">
+
+    <div id="result-box" class="w-full lg:max-w-[750px] rounded-lg px-4 py-6 m-auto bg-white shadow-lg mb-10">
+      <div class="mb-8 text-center">
+        <h2 class="mb-2 text-3xl font-bold text-gray-800">Election Results</h2>
+        <!-- -->
+      </div>
+
+      <% if (positionList && positionList.length > 0) { %>
+      <% if (candidatesVoteTally.length < 1 && allCandidatesInElection.length < 1) { %>
+      <div class="px-4 py-6 text-lg font-semibold text-center text-blue-700 bg-blue-100 border border-blue-200 rounded-lg">
+        <p>No candidates to display for this election</p>
+      </div>
+      <% } else { %>
+      <% 
+
+          positionList.forEach(position => {
+            let candidatePerPosition = position === 'SENATOR'
+              ? candidatesVoteTally.filter(candidate => candidate.course === user.course && candidate.position === position)
+              : candidatesVoteTally.filter(candidate => candidate.position === position);
+
+            if (candidatePerPosition.length > 0) {
+              candidatePerPosition.sort((a, b) => b.vote_count - a.vote_count);
+              const totalVotesInPosition = candidatePerPosition.reduce((total, candidateVotes) => total + candidateVotes.vote_count, 0);
+          %>
+      <section class="mb-8 overflow-hidden border border-gray-200 rounded-lg">
+        <h3 class="w-full py-2 text-lg font-bold text-center text-white bg-blue-600"><%= position %></h3>
+
+        <div class="divide-y divide-gray-200">
+          <% candidatePerPosition.forEach((candidate, index) => { %>
+          <div class="flex items-center justify-between p-4 <%= index === 0 ? 'bg-green-50' : 'hover:bg-gray-50' %> transition duration-150 ease-in-out">
+            <div class="flex items-center space-x-4">
+              <div class="flex-shrink-0">
+                <% if (candidate.candidate_profile) { %>
+                <img class="object-cover w-12 h-12 rounded-full" src="/img/candidate_profiles/<%= candidate.candidate_profile %>" alt="<%= candidate.firstname %> <%= candidate.lastname %>">
+                <% } else { %>
+                <div class="flex items-center justify-center w-12 h-12 font-bold text-gray-600 bg-gray-300 rounded-full">
+                  <%= candidate.firstname.charAt(0) %><%= candidate.lastname.charAt(0) %>
+                </div>
+                <% } %>
+              </div>
+              <div>
+                <p class="font-bold text-gray-800"><%= candidate.firstname %> <%= candidate.lastname %></p>
+                <p class="text-sm text-gray-500"><%= candidate.course %></p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-2xl font-bold <%= index === 0 ? 'text-green-600' : 'text-gray-600' %>">
+                <%= totalVotesInPosition === 0 ? '0%' : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) + '%' %>
+              </p>
+              <p class="text-sm text-gray-500"><%= candidate.vote_count %> votes</p>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+      </section>
+      <% 
+            }
+          });
+          %>
+      <% } %>
+      <% } else { %>
+      <div class="px-4 py-6 text-lg font-semibold text-center text-yellow-700 bg-yellow-100 border border-yellow-200 rounded-lg">
+        <p>No positions or results available for this election</p>
+      </div>
+      <% } %>
+    </div>
+
+  </div>
+
+</body>
+
+</html>

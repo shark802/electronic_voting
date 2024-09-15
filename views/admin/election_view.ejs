@@ -48,13 +48,20 @@
 
       <% if (elections.length < 1) { %>
 
-      <section class="lg:w-[700px] border-2 border-gray-300 lg:px-10 box-border shadow-sm bg-white rounded-md min-h-28 grid m-auto py-9">
-        <img src="/img/empty-folder.webp" alt="empty folder" class="m-auto w-28 h-28">
-        <h1 class="m-auto mt-5 text-lg font-semibold text-center lg:w-3/5">It seems there are no elections scheduled at the moment</h1>
-
-        <a href="/admin/election/new" class="m-auto">
-          <button class="px-2 py-1 m-auto mt-5 text-white bg-blue-500 rounded-md w-fit">Create Election?</button>
-        </a>
+      <section class="max-w-2xl mx-auto overflow-hidden bg-white rounded-lg shadow-md">
+        <div class="p-8 text-center w-[90%] m-auto">
+          <img src="/img/empty-folder.webp" alt="Empty folder" class="w-32 h-32 mx-auto mb-6 opacity-75">
+          <h1 class="mb-4 text-2xl font-bold text-gray-800">No Elections Scheduled</h1>
+          <p class="mb-8 text-gray-600">It seems there are no elections scheduled at the moment. Would you like to create a new one?</p>
+          <a href="/admin/election/new" class="inline-block">
+            <button class="px-6 py-3 font-semibold text-white transition duration-300 ease-in-out transform bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 hover:-translate-y-1">
+              <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Create New Election
+            </button>
+          </a>
+        </div>
       </section>
 
       <% } else { %>
