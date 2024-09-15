@@ -12,13 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderElectionResult = exports.renderElectionBallot = exports.electionPage = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
-const position_1 = require("../../utils/enums/position");
 const isValidTimeToVote_1 = require("../../utils/isValidTimeToVote");
 const voteService_1 = require("../../data_access/voteService");
 const hasUserRegisterFaceImage_1 = require("../../utils/hasUserRegisterFaceImage");
 const election_1 = require("../../data_access/election");
 const customErrors_1 = require("../../utils/customErrors");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
+const CandidatePosition_1 = require("../../config/constants/CandidatePosition");
 function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -64,7 +64,7 @@ function renderElectionBallot(req, res, next) {
                 (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL", [election_id]),
                 (0, query_1.selectQuery)(database_1.pool, sqlQuery, [election_id])
             ]);
-            const candidatePositionList = Object.values(position_1.Position);
+            const candidatePositionList = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
             if (!(0, isValidTimeToVote_1.isValidTimeToVote)(election))
                 return res.redirect("/election?redirectMessage=Voting is currently closed");
             return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election });
@@ -80,6 +80,7 @@ function renderElectionResult(req, res, next) {
         try {
             const userId = req.session.user.user_id;
             const electionId = req.params.id;
+            console.log(electionId);
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election id is missing');
             // retrieve election here
@@ -89,7 +90,7 @@ function renderElectionResult(req, res, next) {
             // check if the election has ended
             if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
-            const positionList = Object.values(position_1.Position);
+            const positionList = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
             const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
             return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList });

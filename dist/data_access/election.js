@@ -23,12 +23,12 @@ exports.getElectionInfoById = getElectionInfoById;
 function getCandidatesTotalTally(electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const sqlQuery = `
-        SELECT c.position, c.party, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, v.election_id, COUNT(v.candidate_id) AS vote_count
+        SELECT c.position, c.party, c.department, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, v.election_id, COUNT(v.candidate_id) AS vote_count
         FROM candidates c
         LEFT JOIN votes v ON c.id_number = v.candidate_id  
         LEFT JOIN users u ON u.id_number = c.id_number     
-        WHERE c.election_id = '01J7AVF0C8H3D0FXVK2ES07494' 
-        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, v.election_id, c.party
+        WHERE c.election_id = ? 
+        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, v.election_id, c.party, c.department
         ORDER BY vote_count DESC;
     `;
         const candidatesVoteTally = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionId]);

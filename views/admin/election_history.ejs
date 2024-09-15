@@ -44,7 +44,7 @@
       </div> -->
     </header>
 
-    <div class="relative h-full px-3 pt-10 mt-3 mb-2 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg scroll-smooth bg-blue-50 no-scrollbar">
+    <div id="display-election-history" class="relative h-full px-3 pt-10 mt-3 mb-2 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg scroll-smooth bg-blue-50 no-scrollbar">
 
       <% if (elections.length < 1) { %>
 
@@ -153,9 +153,11 @@
         </div>
 
         <div class="flex justify-end mt-6">
-          <button id="view-result" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-all duration-200 ease-in-out transform bg-green-500 rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:scale-105">
-            View Results
-          </button>
+          <a href="/admin/election/result/<%=election.election_id %>">
+            <button id="view-result" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-all duration-200 ease-in-out transform bg-green-500 rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:scale-105">
+              View Results
+            </button>
+          </a>
         </div>
 
       </section>

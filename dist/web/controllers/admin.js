@@ -18,6 +18,8 @@ const voterService_1 = require("../../data_access/voterService");
 const election_1 = require("../../data_access/election");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
 const customErrors_1 = require("../../utils/customErrors");
+const CandidatePosition_1 = require("../../config/constants/CandidatePosition");
+const BccDepartments_1 = require("../../config/constants/BccDepartments");
 function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,8 +41,8 @@ function dashboardVoteTally(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-            const candidatePosition = Object.values(position_1.Position);
-            const programs = Object.values(program_1.Program);
+            const candidatePosition = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
+            const programs = Object.keys(BccDepartments_1.DEPARTMENT);
             const electionIdList = elections.map(election => election.election_id);
             let candidates = [];
             if (electionIdList.length > 0) {
@@ -128,9 +130,10 @@ function renderAdminElectionResult(req, res, next) {
             // check if the election has ended
             if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
-            const positionList = Object.values(position_1.Position);
+            const positionList = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
+            const departments = Object.keys(BccDepartments_1.DEPARTMENT);
             const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
-            return res.render('voter/electionResultForVoter', { candidatesVoteTally, positionList });
+            return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
         }
         catch (error) {
             next(error);

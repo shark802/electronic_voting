@@ -50,3 +50,9 @@ document.querySelector("body").addEventListener('click', (event) => {
         })
     }
 })
+
+
+// Request election result page
+document.body.querySelector('#display-election-history').addEventListener('click', async(event) => {
+    
+})

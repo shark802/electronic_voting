@@ -9,7 +9,8 @@ import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVo
 import { getElectionInfoById, getCandidatesTotalTally } from "../../data_access/election";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
-import { User } from "../../utils/types/User";
+import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
+import { DEPARTMENT } from "../../config/constants/BccDepartments";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -32,8 +33,8 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
 export async function dashboardVoteTally(req: Request, res: Response, next: NextFunction) {
     try {
         const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-        const candidatePosition = Object.values(Position);
-        const programs = Object.values(Program);
+        const candidatePosition = Object.values(CANDIDATE_POSITION);
+        const programs = Object.keys(DEPARTMENT);
 
         const electionIdList = elections.map(election => election.election_id);
         let candidates: unknown[] = []
@@ -110,10 +111,11 @@ export async function renderAdminElectionResult(req: Request, res: Response, nex
         // check if the election has ended
         if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
 
-        const positionList = Object.values(Position);
+        const positionList = Object.values(CANDIDATE_POSITION);
+        const departments = Object.keys(DEPARTMENT);
         const candidatesVoteTally = await getCandidatesTotalTally(electionId);
 
-        return res.render('voter/electionResultForVoter', { candidatesVoteTally, positionList });
+        return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
     } catch (error) {
         next(error)
     }
