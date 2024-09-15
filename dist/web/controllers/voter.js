@@ -93,7 +93,7 @@ function renderElectionResult(req, res, next) {
             const positionList = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
             const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
-            return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList });
+            return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, electionInfo });
         }
         catch (error) {
             next(error);

@@ -124,7 +124,7 @@ export async function renderAdminElectionResult(req: Request, res: Response, nex
 // Candidate
 export async function manageCandidate(req: Request, res: Response, next: NextFunction) {
     try {
-        const positions = Object.values(Position);
+        const positions = Object.values(CANDIDATE_POSITION);
 
         const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);

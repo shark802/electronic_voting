@@ -145,7 +145,7 @@ exports.renderAdminElectionResult = renderAdminElectionResult;
 function manageCandidate(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const positions = Object.values(position_1.Position);
+            const positions = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
             const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
             const elections = yield (0, query_1.selectQuery)(database_1.pool, selectElectioQuery);
             // const elections: Election[] = []

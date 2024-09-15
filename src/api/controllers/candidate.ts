@@ -42,14 +42,7 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
         if (findCandidateIfExist.length > 0) return next(new ConflictError(`Unable to add ${id_number} in election due to conflict, candidate already exist`));
 
         const candidate_id = ulid();
-        // let candidateDepartment: keyof typeof DEPARTMENT | undefined = undefined;
 
-        // for (const [department, programs] of Object.entries(DEPARTMENT)) {
-        //     if (programs.find(course)) {
-        //         candidateDepartment = department as keyof typeof DEPARTMENT;
-        //         break;
-        //     }
-        // }
         const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, party, election_id, candidate_profile, department) VALUES (?, ?, ?, ?, ?, ?, ?)";
         const candidateParameter = [candidate_id, id_number, position, party, election_id, candidate_profile, course];
         const newCandidate = await insertQuery(pool, addNewCandidateQuery, candidateParameter);

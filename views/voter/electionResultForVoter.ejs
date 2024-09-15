@@ -32,32 +32,59 @@
 
   <div class="relative px-4 mt-24 overflow-y-auto bg-blue-50">
 
+
     <div id="result-box" class="w-full lg:max-w-[750px] rounded-lg px-4 py-6 m-auto bg-white shadow-lg mb-10">
       <div class="mb-8 text-center">
-        <h2 class="mb-2 text-3xl font-bold text-gray-800">Election Results</h2>
-        <!-- -->
-      </div>
-
-      <% if (positionList && positionList.length > 0) { %>
-
-      <% if (candidatesVoteTally.length < 1) { %>
-
-      <div class="max-w-md mx-auto overflow-hidden bg-white rounded-lg shadow-sm">
-        <div class="flex items-center p-6 space-x-4">
-          <div class="flex-shrink-0">
-            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
+        <h2 class="mb-2 text-3xl font-bold text-blue-800 leading-tight"><%= electionInfo.election_name %></h2>
+        <p class="text-lg text-gray-600 mb-4">Election Results</p>
+        <div class="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
+          <div class="text-sm text-gray-500">
+            <span class="font-medium">Start:</span>
+            <%= (function() {
+          var startDate = new Date(electionInfo.date_start);
+          var [hours, minutes] = electionInfo.time_start.split(':');
+          startDate.setHours(parseInt(hours), parseInt(minutes));
+          return startDate.toLocaleString('en-US', { 
+            dateStyle: 'medium', 
+            timeStyle: 'short' 
+          });
+        })() %>
           </div>
-          <div>
-            <h2 class="text-lg font-semibold text-gray-800">No Results to Display</h2>
-            <p class="mt-1 text-sm text-gray-600">There are no candidates or results available for this election at the moment.</p>
+          <div class="text-sm text-gray-500">
+            <span class="font-medium">End:</span>
+            <%= (function() {
+          var endDate = new Date(electionInfo.date_end);
+          var [hours, minutes] = electionInfo.time_end.split(':');
+          endDate.setHours(parseInt(hours), parseInt(minutes));
+          return endDate.toLocaleString('en-US', { 
+            dateStyle: 'medium', 
+            timeStyle: 'short' 
+          });
+        })() %>
           </div>
         </div>
-      </div>
 
-      <% } else { %>
-      <% 
+
+        <% if (positionList && positionList.length > 0) { %>
+
+        <% if (candidatesVoteTally.length < 1) { %>
+
+        <div class="max-w-md mx-auto overflow-hidden bg-white rounded-lg shadow-sm">
+          <div class="flex items-center p-6 space-x-4">
+            <div class="flex-shrink-0">
+              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-800">No Results to Display</h2>
+              <p class="mt-1 text-sm text-gray-600">There are no candidates or results available for this election at the moment.</p>
+            </div>
+          </div>
+        </div>
+
+        <% } else { %>
+        <% 
 
           positionList.forEach(position => {
             let candidatePerPosition = position === 'SENATOR'
@@ -66,52 +93,54 @@
 
             if (candidatePerPosition.length > 0) {
               candidatePerPosition.sort((a, b) => b.vote_count - a.vote_count);
+              const highestVoteInPosition = candidatePerPosition.reduce((highest, currentCandidateIteration) => currentCandidateIteration.vote_count > highest ? currentCandidateIteration.vote_count : highest, 0);
               const totalVotesInPosition = candidatePerPosition.reduce((total, candidateVotes) => total + candidateVotes.vote_count, 0);
           %>
-      <section class="mb-8 overflow-hidden border border-gray-200 rounded-lg">
-        <h3 class="w-full py-2 text-lg font-bold text-center text-white bg-blue-600"><%= position %></h3>
+        <section class="mb-8 overflow-hidden border border-gray-200 rounded-lg">
+          <h3 class="w-full py-2 text-lg font-bold text-center text-white bg-blue-600"><%= position %></h3>
 
-        <div class="divide-y divide-gray-200">
-          <% candidatePerPosition.forEach((candidate, index) => { %>
-          <div class="flex items-center justify-between p-4 <%= index === 0 ? 'bg-green-50' : 'hover:bg-gray-50' %> transition duration-150 ease-in-out">
-            <div class="flex items-center space-x-4">
-              <div class="flex-shrink-0">
-                <% if (candidate.candidate_profile) { %>
-                <img class="object-cover w-12 h-12 rounded-full" src="/img/candidate_profiles/<%= candidate.candidate_profile %>" alt="<%= candidate.firstname %> <%= candidate.lastname %>">
-                <% } else { %>
-                <div class="flex items-center justify-center w-12 h-12 font-bold text-gray-600 bg-gray-300 rounded-full">
-                  <%= candidate.firstname.charAt(0) %><%= candidate.lastname.charAt(0) %>
+          <div class="divide-y divide-gray-200">
+            <% candidatePerPosition.forEach((candidate, index) => { %>
+
+            <div class="flex items-center justify-between p-4 <%= candidate.vote_count === highestVoteInPosition ? 'bg-green-50' : 'hover:bg-gray-50' %> transition duration-150 ease-in-out">
+              <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                  <% if (candidate.candidate_profile) { %>
+                  <img class="object-cover w-12 h-12 rounded-full" src="/img/candidate_profiles/<%= candidate.candidate_profile %>" alt="<%= candidate.firstname %> <%= candidate.lastname %>">
+                  <% } else { %>
+                  <div class="flex items-center justify-center w-12 h-12 font-bold text-gray-600 bg-gray-300 rounded-full">
+                    <%= candidate.firstname.charAt(0) %><%= candidate.lastname.charAt(0) %>
+                  </div>
+                  <% } %>
                 </div>
-                <% } %>
+                <div>
+                  <p class="font-bold text-gray-800"><%= candidate.firstname %> <%= candidate.lastname %></p>
+                  <p class="text-sm text-gray-500"><%= candidate.course %></p>
+                </div>
               </div>
-              <div>
-                <p class="font-bold text-gray-800"><%= candidate.firstname %> <%= candidate.lastname %></p>
-                <p class="text-sm text-gray-500"><%= candidate.course %></p>
+              <div class="text-right">
+                <p class="text-2xl font-bold <%= index === 0 ? 'text-green-600' : 'text-gray-600' %>">
+                  <%= totalVotesInPosition === 0 ? '0%' : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) + '%' %>
+                </p>
+                <p class="text-sm text-gray-500"><%= candidate.vote_count %> votes</p>
               </div>
             </div>
-            <div class="text-right">
-              <p class="text-2xl font-bold <%= index === 0 ? 'text-green-600' : 'text-gray-600' %>">
-                <%= totalVotesInPosition === 0 ? '0%' : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) + '%' %>
-              </p>
-              <p class="text-sm text-gray-500"><%= candidate.vote_count %> votes</p>
-            </div>
+            <% }); %>
           </div>
-          <% }); %>
-        </div>
-      </section>
-      <% 
+        </section>
+        <% 
             }
           });
           %>
-      <% } %>
-      <% } else { %>
-      <div class="px-4 py-6 text-lg font-semibold text-center text-yellow-700 bg-yellow-100 border border-yellow-200 rounded-lg">
-        <p>No positions or results available for this election</p>
+        <% } %>
+        <% } else { %>
+        <div class="px-4 py-6 text-lg font-semibold text-center text-yellow-700 bg-yellow-100 border border-yellow-200 rounded-lg">
+          <p>No positions or results available for this election</p>
+        </div>
+        <% } %>
       </div>
-      <% } %>
-    </div>
 
-  </div>
+    </div>
 
 </body>
 

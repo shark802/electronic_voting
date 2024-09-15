@@ -73,11 +73,33 @@
 
       <% if (electionList.length < 1) { %>
 
-      <section class="lg:w-[700px] p-3 mx-4 w-full lg:px-10 box-border bg-white rounded-md min-h-28 grid m-auto mt-0 py-9 lg:text-base text-xs">
-        <img src="/img/empty-folder.webp" alt="empty folder" class="w-16 m-auto lg:w-28 lg:h-28">
-        <h1 class="m-auto mt-4 font-semibold text-center lg:text-xl lg:w-3/5">It seems there are no elections scheduled at the moment</h1>
-        <p class="mt-1 text-center lg:mt-3">"The next election will be announce soon. Please stay tuned!"</p>
+      <section class="lg:max-w-[700px] mx-4 max-w-[500px] bg-white rounded-lg min-h-fit w-full lg:min-w-[500px] py-8 px-4 shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+        <svg class="w-20 h-20 mx-auto lg:w-32 lg:h-32 text-blue-400 animate-pulse-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+        </svg>
+        <h1 class="m-auto mt-6 font-bold text-center text-blue-800 lg:text-2xl text-lg w-4/5 lg:w-3/5 leading-tight">No Elections Currently Scheduled</h1>
+        <p class="mt-3 text-center text-blue-600 lg:mt-4 lg:text-base text-sm italic font-medium">"The next election will be announced soon. Please stay tuned!"</p>
       </section>
+
+      <!-- <style>
+        @keyframes pulse-slow {
+
+          0%,
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+
+          50% {
+            opacity: 0.8;
+            transform: scale(1.05);
+          }
+        }
+
+        .animate-pulse-slow {
+          animation: pulse-slow 3s ease-in-out infinite;
+        }
+      </style> -->
 
       <% } else { %>
 
