@@ -32,12 +32,36 @@
   <div class="relative px-4 mt-24 overflow-y-auto bg-blue-50">
     <div id="result-box" class="w-full lg:max-w-[750px] rounded-lg px-4 py-6 m-auto bg-white shadow-lg mb-10">
 
-
-
-
-      <div class="mb-8 text-center">
-        <h2 class="mb-2 text-3xl font-bold text-gray-800"><%= electionInfo.election_name  %></h2>
+      <h2 class="mb-2 text-3xl font-bold leading-tight text-center text-blue-800"><%= electionInfo.election_name %></h2>
+      <p class="mb-4 text-lg text-center text-gray-600">Election Results</p>
+      <div class="flex flex-col items-center justify-center mb-4 space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
+        <div class="flex items-center text-sm text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span class="font-medium">Start:</span>
+          <%= formatDateTime(electionInfo.date_start, electionInfo.time_start) %>
+        </div>
+        <div class="flex items-center text-sm text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="font-medium">End:</span>
+          <%= formatDateTime(electionInfo.date_end, electionInfo.time_end) %>
+        </div>
       </div>
+
+      <%
+        function formatDateTime(date, time) {
+          const [hours, minutes] = time.split(':');
+          const dateTime = new Date(date);
+          dateTime.setHours(parseInt(hours), parseInt(minutes));
+          return dateTime.toLocaleString('en-US', { 
+            dateStyle: 'medium', 
+            timeStyle: 'short' 
+          });
+        }
+        %>
 
       <% if (positionList && positionList.length > 0) { %>
       <% if (candidatesVoteTally.length < 1) { %>

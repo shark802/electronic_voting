@@ -80,14 +80,6 @@ export async function editElection(req: Request, res: Response, next: NextFuncti
     }
 };
 
-export async function deleteElection(req: Request, res: Response, next: NextFunction) {
-    try {
-
-    } catch (error) {
-        next(error);
-    }
-}
-
 export async function viewElectionHistory(req: Request, res: Response, next: NextFunction) {
     try {
         const query = "SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
@@ -140,8 +132,8 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
     try {
         const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND time_start > CURTIME())) ORDER BY created_at DESC";
         const electionList = await selectQuery<Election>(pool, query);
-        const positions = Object.values(Position);
-        const programs = Object.values(Program);
+        const positions = Object.values(CANDIDATE_POSITION);
+        const programs = Object.keys(DEPARTMENT);
 
         res.render("admin/candidate_add", { electionList, positions, programs })
     } catch (error) {

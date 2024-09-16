@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllcandidatesInActiveElection = exports.getUserCandidateData = exports.updateCandidateStatus = exports.getCandidateById = exports.getManageCandidates = exports.deleteCandidateFunction = exports.updateCandidateFunction = exports.addCandidateFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
@@ -15,6 +18,8 @@ const database_1 = require("../../config/database");
 const query_1 = require("../../data_access/query");
 const ulid_1 = require("ulid");
 const candidateService_1 = require("../../data_access/candidateService");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 function addCandidateFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -23,7 +28,7 @@ function addCandidateFunction(req, res, next) {
                     req.body[key] = value.toUpperCase();
                 }
             });
-            let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
+            let { election_id, id_number, firstname, lastname, course, party, position } = req.body;
             const candidate_profile = req.file ? req.file.filename : null;
             if (!election_id || !id_number || !firstname || !lastname || !party || !position || !course)
                 return next(new customErrors_1.BadRequestError("Cannot proceed adding candidate due to missing info"));
@@ -69,10 +74,23 @@ function updateCandidateFunction(req, res, next) {
             if (!candidate_id)
                 return next(new customErrors_1.BadRequestError("Election Id is missing"));
             let { party, position } = req.body;
+            const candidateProfile = req.file ? req.file.filename : null;
             if (!party || !position)
                 return next(new customErrors_1.BadRequestError("Candidate is lacking some information to proceed update"));
-            const updateSqlQuery = "UPDATE candidates SET party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
-            const updateParameter = [party, position, candidate_id];
+            // if the request comes with to update candidate profile. check if there is already a candidate profile set then delete the old profile
+            if (candidateProfile) {
+                const [candidate] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE candidate_id = ?', [candidate_id]);
+                if (candidate.candidate_profile) {
+                    const oldProfilePath = path_1.default.join(__dirname, `./../../../public/img/candidate_profiles/${candidate.candidate_profile}`);
+                    fs_1.default.unlink(oldProfilePath, (error) => {
+                        if ((error === null || error === void 0 ? void 0 : error.code) === 'ENOENT') {
+                            console.log(`Could'nt find file ${candidate.candidate_profile}, delete attempt failed`);
+                        }
+                    });
+                }
+            }
+            const updateSqlQuery = "UPDATE candidates SET party = ?, position = ?, candidate_profile = ? WHERE candidate_id = ? AND deleted IS NULL";
+            const updateParameter = [party, position, candidateProfile, candidate_id];
             const updateResult = yield (0, query_1.updateQuery)(database_1.pool, updateSqlQuery, updateParameter);
             if (updateResult.affectedRows < 0)
                 return next(new customErrors_1.NotFoundError('Resource not found or no changes were made'));

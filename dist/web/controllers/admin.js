@@ -9,10 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.deleteElection = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
+exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
-const position_1 = require("../../utils/enums/position");
 const program_1 = require("../../utils/enums/program");
 const voterService_1 = require("../../data_access/voterService");
 const election_1 = require("../../data_access/election");
@@ -94,16 +93,6 @@ function editElection(req, res, next) {
 }
 exports.editElection = editElection;
 ;
-function deleteElection(req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-        }
-        catch (error) {
-            next(error);
-        }
-    });
-}
-exports.deleteElection = deleteElection;
 function viewElectionHistory(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -162,8 +151,8 @@ function addCandidate(req, res, next) {
         try {
             const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND time_start > CURTIME())) ORDER BY created_at DESC";
             const electionList = yield (0, query_1.selectQuery)(database_1.pool, query);
-            const positions = Object.values(position_1.Position);
-            const programs = Object.values(program_1.Program);
+            const positions = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
+            const programs = Object.keys(BccDepartments_1.DEPARTMENT);
             res.render("admin/candidate_add", { electionList, positions, programs });
         }
         catch (error) {

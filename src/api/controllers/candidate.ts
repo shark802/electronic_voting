@@ -6,7 +6,9 @@ import { Candidate } from "../../utils/types/Candidate";
 import { ulid } from "ulid";
 import { User } from "../../utils/types/User";
 import { getUserCandidate } from "../../data_access/candidateService";
+import fs from 'fs';
 import { DEPARTMENT } from '../../config/constants/BccDepartments';
+import path from "path";
 
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -17,7 +19,7 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
             }
         });
 
-        let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
+        let { election_id, id_number, firstname, lastname, course, party, position } = req.body;
         const candidate_profile = req.file ? req.file.filename : null;
 
         if (!election_id || !id_number || !firstname || !lastname || !party || !position || !course) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
@@ -61,10 +63,27 @@ export async function updateCandidateFunction(req: Request, res: Response, next:
         if (!candidate_id) return next(new BadRequestError("Election Id is missing"));
 
         let { party, position } = req.body;
+        const candidateProfile = req.file ? req.file.filename : null;
         if (!party || !position) return next(new BadRequestError("Candidate is lacking some information to proceed update"));
 
-        const updateSqlQuery = "UPDATE candidates SET party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
-        const updateParameter = [party, position, candidate_id];
+        // if the request comes with to update candidate profile. check if there is already a candidate profile set then delete the old profile
+        if (candidateProfile) {
+            const [candidate] = await selectQuery<Candidate>(pool, 'SELECT * FROM candidates WHERE candidate_id = ?', [candidate_id]);
+
+            if (candidate.candidate_profile) {
+
+                const oldProfilePath = path.join(__dirname, `./../../../public/img/candidate_profiles/${candidate.candidate_profile}`);
+
+                fs.unlink(oldProfilePath, (error) => {
+                    if (error?.code === 'ENOENT') {
+                        console.log(`Could'nt find file ${candidate.candidate_profile}, delete attempt failed`);
+                    }
+                })
+            }
+        }
+
+        const updateSqlQuery = "UPDATE candidates SET party = ?, position = ?, candidate_profile = ? WHERE candidate_id = ? AND deleted IS NULL";
+        const updateParameter = [party, position, candidateProfile, candidate_id];
 
         const updateResult = await updateQuery(pool, updateSqlQuery, updateParameter);
         if (updateResult.affectedRows < 0) return next(new NotFoundError('Resource not found or no changes were made'));

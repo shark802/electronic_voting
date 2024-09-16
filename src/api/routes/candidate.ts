@@ -15,7 +15,7 @@ router.route('/candidate/data')
 
 router
     .route("/candidate/:id")
-    .put(updateCandidateFunction)
+    .put(upload.single('candidate_profile'), updateCandidateFunction)
     .delete(deleteCandidateFunction)
     .get(getCandidateById)
 

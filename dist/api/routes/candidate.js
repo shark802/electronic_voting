@@ -15,7 +15,7 @@ router.route('/candidate/data')
     .get(candidate_1.getAllcandidatesInActiveElection);
 router
     .route("/candidate/:id")
-    .put(candidate_1.updateCandidateFunction)
+    .put(multerConfig_1.default.single('candidate_profile'), candidate_1.updateCandidateFunction)
     .delete(candidate_1.deleteCandidateFunction)
     .get(candidate_1.getCandidateById);
 router.get("/candidate", candidate_1.getManageCandidates);

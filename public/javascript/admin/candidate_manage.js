@@ -221,14 +221,14 @@ function displayFetchCandidate(candidates) {
 
         const tableRow = `
             <tr data-candidate-id="${candidate.candidate_id}" class="border-b border-gray-200 hover:bg-gray-50">
-                <td class="px-2 py-2 text-xs text-gray-900 text-center">${candidate.id_number}</td>
-                <td class="px-2 py-2 text-xs text-gray-800">
+                <td class="px-2 py-2 text-sm text-gray-900 text-center">${candidate.id_number}</td>
+                <td class="px-2 py-2 text-sm text-gray-800">
                     <span class="font-medium">${candidate.lastname}</span>, ${candidate.firstname}
                 </td>
-                <td class="px-2 py-2 text-xs text-gray-700 text-center">${candidate.party}</td>
-                <td class="px-2 py-2 text-xs text-gray-700 text-center">${candidate.course}</td>
-                <td class="px-2 py-2 text-xs text-gray-600 whitespace-nowrap">${candidateAddedAt}</td>
-                <td data-status="${candidate.enabled}" class="px-2 py-2 text-xs text-center">
+                <td class="px-2 py-2 text-sm text-gray-700 text-center">${candidate.party}</td>
+                <td class="px-2 py-2 text-sm text-gray-700 text-center">${candidate.course}</td>
+                <td class="px-2 py-2 text-sm text-gray-600 whitespace-nowrap">${candidateAddedAt}</td>
+                <td data-status="${candidate.enabled}" class="px-2 py-2 text-sm text-center">
                     <span class="px-1.5 py-0.5 text-xs ${candidate.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded">
                         ${status}
                     </span>
@@ -256,7 +256,7 @@ function displayFetchCandidate(candidates) {
                             </div>
                         </div>
                         
-                        <button id="edit" class="px-2 py-1 text-xs text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                        <button id="edit" class="px-2 py-1 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
                             Edit
                         </button>
                         
@@ -317,6 +317,11 @@ async function displayEditForm(event) {
         const response = await fetch(`/api/candidate/${candidateId}`);
         const responseObject = await response.json();
 
+        if (responseObject.candidate_profile) {
+            dialog.querySelector('#candidateImage').src = `/img/candidate_profiles/${responseObject.candidate_profile}`;
+        } else {
+            dialog.querySelector('#candidateImage').src = `/img/default-profile.webp`;
+        }
         dialog.querySelector('#fullname').textContent = `Fullname:  ${responseObject.lastname}, ${responseObject.firstname}`;
         dialog.querySelector('#id-number').textContent = `ID:  ${responseObject.id_number}`;
         dialog.querySelector('#course').textContent = `Course:  ${responseObject.course}`;
@@ -355,16 +360,13 @@ async function confirmCandidateUpdate(candidateId) {
             }
 
             const action = await confirmAlert("Confirm Update", "Please confirm to update the candidate");
-
             if (!action.isConfirmed) return;
 
-            const position = event.target.querySelector('#selectPosition').value;
-            const party = event.target.querySelector('#party').value;
+            const formData = new FormData(event.target);
 
             const response = await fetch(`/api/candidate/${candidateId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ position, party })
+                body: formData
             });
             const responseObject = await response.json();
             if (!response.ok) {
