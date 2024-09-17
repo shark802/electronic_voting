@@ -170,6 +170,8 @@ async function fetchCandidates(position) {
             return `election_id=${electionId}`;
         }).join("&");
 
+        if (!electionsQueryParameter) return; // return if no election exist
+
         const url = `/api/candidate?position=${position}&${electionsQueryParameter}`
 
         const response = await fetch(url);
@@ -193,14 +195,14 @@ function displayFetchCandidate(candidates) {
         let statusOptionDisplay
         if (candidate.enabled === 0) {
             statusOptionDisplay = `
-            <div id="toggleCandidateStatus" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+            <div id="toggleCandidateStatus" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
                 <img id="viewStatusImage" src="/img/view.webp" alt="view" class="w-4 h-4">
                 <p id="viewStatus" class="ml-2">Activate</p>
             </div>
             `
         } else {
             statusOptionDisplay = `
-            <div id="toggleCandidateStatus" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
+            <div id="toggleCandidateStatus" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
                 <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4">
                 <p id="viewStatus" class="ml-2">Deactivate</p>
             </div>
@@ -218,29 +220,46 @@ function displayFetchCandidate(candidates) {
         candidateAddedAt = candidateAddedAt.toLocaleString('en-US', options);
 
         const tableRow = `
-            <tr data-candidate-id="${candidate.candidate_id}" class="rounded-xl transition-all tablerow">
-                <td class="text-xs font-medium py-2 pl-2 text-gray-60 rounded-tl-lg rounded-bl-lg text-center">${candidate.id_number}</td>
-                <td class="text-xs font-medium py-2 pl-4 text-gray-600 text-nowrap">${candidate.lastname}, ${candidate.firstname}</td>
-                <td class="text-xs pl-4 font-medium py-2 text-gray-600">${candidate.alias}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600">${candidate.course}</td>
-                <td class="text-xs font-medium py-2 pl-2 text-gray-600">${candidateAddedAt}</td>
-                <td data-status="${candidate.enabled}" class="text-xs font-medium py-2 pl-2 text-gray-60 text-center">${status}</td>
-                <td class="rounded-tr-lg rounded-br-lg">
-                    <div class="flex justify-center gap-4 items-center z-10">
-                        <div id="option-section" class="relative">
-                            <img src="/img/more.webp" class="w-5 hover:cursor-pointer opacity-70 hover:rounded-full hover:bg-blue-300"/>
-                            <div id="more-option" class="absolute z-10 right-0 gap-2 px-1 py-3 hidden bg-white border border-solid rounded shadow-md w-36 h-fit top-7">
+            <tr data-candidate-id="${candidate.candidate_id}" class="border-b border-gray-200 hover:bg-gray-50">
+                <td class="px-2 py-2 text-sm text-gray-900 text-center">${candidate.id_number}</td>
+                <td class="px-2 py-2 text-sm text-gray-800">
+                    <span class="font-medium">${candidate.lastname}</span>, ${candidate.firstname}
+                </td>
+                <td class="px-2 py-2 text-sm text-gray-700 text-center">${candidate.party}</td>
+                <td class="px-2 py-2 text-sm text-gray-700 text-center">${candidate.course}</td>
+                <td class="px-2 py-2 text-sm text-gray-600 whitespace-nowrap">${candidateAddedAt}</td>
+                <td data-status="${candidate.enabled}" class="px-2 py-2 text-sm text-center">
+                    <span class="px-1.5 py-0.5 text-xs ${candidate.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded">
+                        ${status}
+                    </span>
+                </td>
+                <td class="px-2 py-2">
+                    <div class="flex justify-center items-center gap-2">
+                        
+                        <div id="option-section" class="relative px-2">
+                            <button class="p-1 hover:bg-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300" aria-label="More options">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                </svg>
+                            </button>
+
+                                <div id="more-option" class="absolute right-0 z-10 hidden w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+
 
                                ${statusOptionDisplay}
 
-                                <div id="delete_candidate" class="flex items-center px-3 my-2 transition-all rounded-sm hover:bg-blue-200">
-                                    <img src="/img/trash.webp" alt="delete" class="w-4 h-4">
-                                    <p class="ml-2">Delete</p>
+                                <div id="delete_candidate" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
+                                    <img src="/img/trash.webp" alt="delete" class="w-4 h-4 mr-2">
+                                    <p class="text-gray-700">Delete</p>
                                 </div>
 
                             </div>
-                        </div> 
-                        <p id="edit" class="font-semibold hover:cursor-pointer text-blue-500">Edit</p>
+                        </div>
+                        
+                        <button id="edit" class="px-2 py-1 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                            Edit
+                        </button>
+                        
                     </div> 
                 </td>
             </tr>
@@ -298,11 +317,16 @@ async function displayEditForm(event) {
         const response = await fetch(`/api/candidate/${candidateId}`);
         const responseObject = await response.json();
 
+        if (responseObject.candidate_profile) {
+            dialog.querySelector('#candidateImage').src = `/img/candidate_profiles/${responseObject.candidate_profile}`;
+        } else {
+            dialog.querySelector('#candidateImage').src = `/img/default-profile.webp`;
+        }
         dialog.querySelector('#fullname').textContent = `Fullname:  ${responseObject.lastname}, ${responseObject.firstname}`;
         dialog.querySelector('#id-number').textContent = `ID:  ${responseObject.id_number}`;
         dialog.querySelector('#course').textContent = `Course:  ${responseObject.course}`;
 
-        dialog.querySelector("#alias").value = responseObject.alias;
+        // dialog.querySelector("#alias").value = responseObject.alias;
         dialog.querySelector("#party").value = responseObject.party;
         const positionOptions = dialog.querySelector("#selectPosition").querySelectorAll('option');
         for (let option of positionOptions) {
@@ -336,17 +360,13 @@ async function confirmCandidateUpdate(candidateId) {
             }
 
             const action = await confirmAlert("Confirm Update", "Please confirm to update the candidate");
-
             if (!action.isConfirmed) return;
 
-            const position = event.target.querySelector('#selectPosition').value;
-            const alias = event.target.querySelector('#alias').value;
-            const party = event.target.querySelector('#party').value;
+            const formData = new FormData(event.target);
 
             const response = await fetch(`/api/candidate/${candidateId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ position, alias, party })
+                body: formData
             });
             const responseObject = await response.json();
             if (!response.ok) {
@@ -369,15 +389,12 @@ async function confirmCandidateUpdate(candidateId) {
 
 function validateFormBeforeSubmit(event) {
     const positionInput = event.target.querySelector("#selectPosition");
-    const aliasInput = event.target.querySelector("#alias");
     const partyInput = event.target.querySelector("#party");
 
     const positionErrorMessage = event.target.querySelector("#positionErrorMessage")
-    const aliasErrorMessage = event.target.querySelector("#aliasErrorMessage")
     const partyErrorMessage = event.target.querySelector("#partyErrorMessage")
     if (
         !isInputNotEmpty([positionInput], positionErrorMessage) ||
-        !isInputNotEmpty([aliasInput], aliasErrorMessage) ||
         !isInputNotEmpty([partyInput], partyErrorMessage)
     ) {
         return false;

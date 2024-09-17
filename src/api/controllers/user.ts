@@ -4,7 +4,12 @@ import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { User } from "../../utils/types/User";
 import { pool } from "../../config/database";
 import { ResultSetHeader } from "mysql2";
-
+import csv from 'csvtojson';
+import fs from "fs";
+import { CsvUserObject } from "../../utils/types/CsvUserObject";
+import { Worker } from "worker_threads";
+import path from "path";
+import { importUsersToDatabase } from "../../utils/importUserToDatabase";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -110,8 +115,40 @@ export async function getUserByIdNumber(req: Request, res: Response, next: NextF
 
         const sqlQuery = 'SELECT * FROM users JOIN roles ON users.id_number = roles.id_number WHERE users.id_number = ? LIMIT 1'
         const [user] = await selectQuery<User>(pool, sqlQuery, [idNumber]);
+
+        if (!user) throw new NotFoundError('User Not Found!');
+
         return res.status(200).json({ user });
     } catch (error) {
         next(error)
+    }
+}
+
+export async function importUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+        const usersFile = req.file;
+        if (!usersFile) throw new BadRequestError('Users data file is not provided');
+
+        const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);
+        const fileName = usersFile.filename;
+        fs.unlinkSync(usersFile.path);
+
+        console.log(`Importing ${fileName}`);
+        const startTime = Date.now();
+        const importSize = await importUsersToDatabase(userCsvFile); // This function offload the process of importing the users in database on workter threads
+        const endTime = Date.now();
+
+        const importTimeInMinutes = (endTime - startTime) / 1000;
+
+        const processResult = {
+            timeTaken: importTimeInMinutes,
+            importSize: importSize
+        }
+
+        console.log(`Successfully processed ${importSize} users. \n Time taken: ${importTimeInMinutes} mins.`);
+        res.status(200).json({ message: `Successfully processed ${importSize} users.` })
+
+    } catch (error) {
+        next(error);
     }
 }

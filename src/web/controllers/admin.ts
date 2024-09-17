@@ -5,15 +5,17 @@ import { pool } from "../../config/database";
 import { Position } from "../../utils/enums/position";
 import { Program } from "../../utils/enums/program";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
-import { totalUserVotedPerElection, totalUserVotedPerProgram } from "../../data_access/election";
 import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVotedInElection, getAllUserElectionParticipatedIn } from "../../data_access/voterService";
+import { getElectionInfoById, getCandidatesTotalTally } from "../../data_access/election";
+import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
+import { BadRequestError, NotFoundError } from "../../utils/customErrors";
+import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
+import { DEPARTMENT } from "../../config/constants/BccDepartments";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
 
         const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-        const totalVotedPerElection = await totalUserVotedPerElection();
-        const totalVotedPerProgram = await totalUserVotedPerProgram();
 
         const electionIdList = elections.map(election => election.election_id);
         let populationPerProgram: unknown[] = []
@@ -22,7 +24,7 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
             populationPerProgram = await selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList])
         }
 
-        res.render("admin/dashboard_overview", { elections, totalVotedPerElection, populationPerProgram, totalVotedPerProgram })
+        res.render("admin/dashboard_overview", { elections, populationPerProgram })
     } catch (error) {
         next(error)
     }
@@ -31,8 +33,8 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
 export async function dashboardVoteTally(req: Request, res: Response, next: NextFunction) {
     try {
         const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-        const candidatePosition = Object.values(Position);
-        const programs = Object.values(Program);
+        const candidatePosition = Object.values(CANDIDATE_POSITION);
+        const programs = Object.keys(DEPARTMENT);
 
         const electionIdList = elections.map(election => election.election_id);
         let candidates: unknown[] = []
@@ -78,14 +80,6 @@ export async function editElection(req: Request, res: Response, next: NextFuncti
     }
 };
 
-export async function deleteElection(req: Request, res: Response, next: NextFunction) {
-    try {
-
-    } catch (error) {
-        next(error);
-    }
-}
-
 export async function viewElectionHistory(req: Request, res: Response, next: NextFunction) {
     try {
         const query = "SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
@@ -96,10 +90,33 @@ export async function viewElectionHistory(req: Request, res: Response, next: Nex
     }
 }
 
+export async function renderAdminElectionResult(req: Request, res: Response, next: NextFunction) {
+    try {
+        const electionId = req.params.id;
+
+        if (!electionId) throw new BadRequestError('Election id is missing');
+
+        // retrieve election here
+        const electionInfo = await getElectionInfoById(electionId);
+        if (!electionInfo) throw new NotFoundError('Election not exist');
+
+        // check if the election has ended
+        if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
+
+        const positionList = Object.values(CANDIDATE_POSITION);
+        const departments = Object.keys(DEPARTMENT);
+        const candidatesVoteTally = await getCandidatesTotalTally(electionId);
+
+        return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
+    } catch (error) {
+        next(error)
+    }
+}
+
 // Candidate
 export async function manageCandidate(req: Request, res: Response, next: NextFunction) {
     try {
-        const positions = Object.values(Position);
+        const positions = Object.values(CANDIDATE_POSITION);
 
         const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
@@ -115,8 +132,8 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
     try {
         const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND time_start > CURTIME())) ORDER BY created_at DESC";
         const electionList = await selectQuery<Election>(pool, query);
-        const positions = Object.values(Position);
-        const programs = Object.values(Program);
+        const positions = Object.values(CANDIDATE_POSITION);
+        const programs = Object.keys(DEPARTMENT);
 
         res.render("admin/candidate_add", { electionList, positions, programs })
     } catch (error) {

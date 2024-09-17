@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS `users` (
    `program_description` VARCHAR(255),
 	`is_active` TINYINT(1),
 	`user_group` VARCHAR(255),
+	`password` VARCHAR(255),
+	`year_active` INT(4),
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -41,7 +43,6 @@ CREATE TABLE IF NOT EXISTS `voters` (
    `voter_id` VARCHAR(50) NOT NULL PRIMARY KEY,
    `id_number` INT(10) NOT NULL, 
    `voted` TINYINT(1) DEFAULT 0,
-   `enabled` TINYINT(1) DEFAULT 1,
    `election_id` VARCHAR(50),
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
@@ -51,11 +52,13 @@ CREATE TABLE IF NOT EXISTS `candidates` (
    `candidate_id` VARCHAR(50) NOT NULL PRIMARY KEY,
    `id_number` INT(10) NOT NULL,
    `position` VARCHAR(50) NOT NULL,
-   `alias` VARCHAR(50) NOT NULL,
+   -- `alias` VARCHAR(50) NOT NULL,
+   `department` VARCHAR(50) NOT NULL,
    `party` VARCHAR(50) NOT NULL,
-   `enabled` TINYINT(1) NOT NULL,
+   `enabled` TINYINT(1) NOT NULL DEFAULT 1,
    `deleted` TIMESTAMP NULL,
    `vote_count` INT DEFAULT 0,
+   `candidate_profile` VARCHAR(250),
    `election_id` VARCHAR(50),
    `added_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
@@ -99,8 +102,8 @@ CREATE TABLE IF NOT EXISTS `register_devices` (
    `codename` VARCHAR(50) NOT NULL,
    `date_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
    `is_registered` TINYINT(1) DEFAULT 0,
-   `updated_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   `deleted_at` IMESTAMP DEFAULT CURRENT_TIMESTAMP
+   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   `deleted_at` TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `otp_codes` (
@@ -116,12 +119,14 @@ CREATE TABLE IF NOT EXISTS `face_image` (
    `id` VARCHAR(50) NOT NULL PRIMARY KEY,
    `id_number` INT(10) NOT NULL,
    `face_image` BLOB, 
-   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP.
+   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `program_populations` (
    `id` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
    `program_code` VARCHAR(100) NOT NULL,
-   `program_population` INT DEFAULT 0
+   `program_population` INT DEFAULT 0,
+   `election_id` VARCHAR(50),
+   FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
 ) ENGINE=InnoDB;

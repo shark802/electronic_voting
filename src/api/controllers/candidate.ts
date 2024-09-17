@@ -6,12 +6,23 @@ import { Candidate } from "../../utils/types/Candidate";
 import { ulid } from "ulid";
 import { User } from "../../utils/types/User";
 import { getUserCandidate } from "../../data_access/candidateService";
+import fs from 'fs';
+import { DEPARTMENT } from '../../config/constants/BccDepartments';
+import path from "path";
 
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {
     try {
-        let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
 
-        if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
+        Object.entries(req.body).forEach(([key, value]) => {
+            if (typeof value === 'string') {
+                req.body[key] = value.toUpperCase();
+            }
+        });
+
+        let { election_id, id_number, firstname, lastname, course, party, position } = req.body;
+        const candidate_profile = req.file ? req.file.filename : null;
+
+        if (!election_id || !id_number || !firstname || !lastname || !party || !position || !course) return next(new BadRequestError("Cannot proceed adding candidate due to missing info"));
 
         const findCandidateAccount = await selectQuery<Candidate>(pool, "SELECT * FROM users WHERE id_number = ?", [id_number]);
         if (findCandidateAccount.length < 1) {
@@ -33,8 +44,9 @@ export async function addCandidateFunction(req: Request, res: Response, next: Ne
         if (findCandidateIfExist.length > 0) return next(new ConflictError(`Unable to add ${id_number} in election due to conflict, candidate already exist`));
 
         const candidate_id = ulid();
-        const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, alias, party, election_id) VALUES (?, ?, ?, ?, ?, ?)";
-        const candidateParameter = [candidate_id, id_number, position, alias, party, election_id];
+
+        const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, party, election_id, candidate_profile, department) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        const candidateParameter = [candidate_id, id_number, position, party, election_id, candidate_profile, course];
         const newCandidate = await insertQuery(pool, addNewCandidateQuery, candidateParameter);
 
         if (newCandidate.affectedRows > 0) {
@@ -50,11 +62,28 @@ export async function updateCandidateFunction(req: Request, res: Response, next:
         const candidate_id = req.params.id;
         if (!candidate_id) return next(new BadRequestError("Election Id is missing"));
 
-        let { alias, party, position } = req.body;
-        if (!alias || !party || !position) return next(new BadRequestError("Candidate is lacking some information to proceed update"));
+        let { party, position } = req.body;
+        const candidateProfile = req.file ? req.file.filename : null;
+        if (!party || !position) return next(new BadRequestError("Candidate is lacking some information to proceed update"));
 
-        const updateSqlQuery = "UPDATE candidates SET alias = ?, party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
-        const updateParameter = [alias, party, position, candidate_id];
+        // if the request comes with to update candidate profile. check if there is already a candidate profile set then delete the old profile
+        if (candidateProfile) {
+            const [candidate] = await selectQuery<Candidate>(pool, 'SELECT * FROM candidates WHERE candidate_id = ?', [candidate_id]);
+
+            if (candidate.candidate_profile) {
+
+                const oldProfilePath = path.join(__dirname, `./../../../public/img/candidate_profiles/${candidate.candidate_profile}`);
+
+                fs.unlink(oldProfilePath, (error) => {
+                    if (error?.code === 'ENOENT') {
+                        console.log(`Could'nt find file ${candidate.candidate_profile}, delete attempt failed`);
+                    }
+                })
+            }
+        }
+
+        const updateSqlQuery = "UPDATE candidates SET party = ?, position = ?, candidate_profile = ? WHERE candidate_id = ? AND deleted IS NULL";
+        const updateParameter = [party, position, candidateProfile, candidate_id];
 
         const updateResult = await updateQuery(pool, updateSqlQuery, updateParameter);
         if (updateResult.affectedRows < 0) return next(new NotFoundError('Resource not found or no changes were made'));
@@ -93,10 +122,10 @@ export async function getManageCandidates(req: Request, res: Response, next: Nex
 
         const electionList = Array.isArray(electionIds) ? electionIds : [electionIds];
 
-        type userCandidate = Pick<User, "id_number" | 'firstname' | 'lastname' | 'year_level' | 'section' | 'course'> & Pick<Candidate, 'candidate_id' | 'election_id' | 'position' | 'enabled' | 'alias' | 'party'>;
+        type userCandidate = Pick<User, "id_number" | 'firstname' | 'lastname' | 'year_level' | 'section' | 'course'> & Pick<Candidate, 'candidate_id' | 'election_id' | 'position' | 'enabled' | 'party'>;
 
         const sqlSelectUserCandidateQuery = `
-        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.alias, c.party, c.added_at
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.party, c.added_at
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.position = ?
@@ -167,13 +196,13 @@ export async function getUserCandidateData(req: Request, res: Response, next: Ne
 export async function getAllcandidatesInActiveElection(req: Request, res: Response, next: NextFunction) {
     try {
         const sqlQuery = `
-            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, e.election_id, COUNT(v.candidate_id) AS vote_count
+            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, c.department, e.election_id, COUNT(v.candidate_id) AS vote_count
             FROM candidates c
             JOIN elections e ON c.election_id = e.election_id
             LEFT JOIN users u ON c.id_number = u.id_number
             LEFT JOIN votes v ON c.id_number = v.candidate_id AND e.election_id = v.election_id
             WHERE e.deleted_at IS NULL AND e.is_close = 0 AND c.deleted IS NULL AND c.enabled = 1
-            GROUP BY c.election_id, u.id_number, c.position, v.election_id
+            GROUP BY c.election_id, u.id_number, c.position, v.election_id, c.department
             ORDER BY lastname;
         `
 

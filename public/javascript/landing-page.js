@@ -26,6 +26,7 @@ submitRegisterDeviceForm();
 function updateUuidStatusOnLoad() {
     document.addEventListener('DOMContentLoaded', async () => {
         const uuid = getRegisterDeviceUuidIfExist();
+
         if (!uuid) return;
 
         const response = await fetch(`/api/uuid/${uuid}`);
@@ -75,12 +76,17 @@ function submitRegisterDeviceForm() {
         const codeName = document.querySelector('#code-name');
         const codeNameErrorMessage = document.querySelector('#codeNameErrorMessage');
 
+        console.log(codeName);
+
         if (!isValidText([codeName], codeNameErrorMessage)) return;
 
         try {
 
             const response = await fetchUuid(codeName.value) // send codename to server to get uuid as response
             const responseObject = await response.json();
+
+            console.log(responseObject);
+
             hideLoader();
 
             if (!response.ok) {

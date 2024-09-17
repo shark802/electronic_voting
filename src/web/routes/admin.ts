@@ -11,7 +11,8 @@ import {
     viewRegisterDevice,
     fetchUser,
     editElection,
-    viewElectionHistory
+    viewElectionHistory,
+    renderAdminElectionResult
 } from '../controllers/admin';
 
 const router = Router();
@@ -24,7 +25,8 @@ router.get("/dashboard/vote-tally", dashboardVoteTally);
 router.get("/election/view", viewElection);
 router.get("/election/new", newElection);
 router.get("/election/:id/edit", editElection);
-router.get("/election/history", viewElectionHistory)
+router.get("/election/history", viewElectionHistory);
+router.get("/election/result/:id", renderAdminElectionResult);
 
 // Candidate
 router.get("/candidate/manage", manageCandidate);

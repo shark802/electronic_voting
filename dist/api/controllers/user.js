@@ -8,11 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserByIdNumber = exports.updateUserFunction = exports.newUserFunction = void 0;
+exports.importUsers = exports.getUserByIdNumber = exports.updateUserFunction = exports.newUserFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
+const csvtojson_1 = __importDefault(require("csvtojson"));
+const fs_1 = __importDefault(require("fs"));
+const importUserToDatabase_1 = require("../../utils/importUserToDatabase");
 function newUserFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -129,6 +135,8 @@ function getUserByIdNumber(req, res, next) {
                 throw new customErrors_1.BadRequestError('Id number is missing');
             const sqlQuery = 'SELECT * FROM users JOIN roles ON users.id_number = roles.id_number WHERE users.id_number = ? LIMIT 1';
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [idNumber]);
+            if (!user)
+                throw new customErrors_1.NotFoundError('User Not Found!');
             return res.status(200).json({ user });
         }
         catch (error) {
@@ -137,3 +145,30 @@ function getUserByIdNumber(req, res, next) {
     });
 }
 exports.getUserByIdNumber = getUserByIdNumber;
+function importUsers(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const usersFile = req.file;
+            if (!usersFile)
+                throw new customErrors_1.BadRequestError('Users data file is not provided');
+            const userCsvFile = yield (0, csvtojson_1.default)().fromFile(usersFile.path);
+            const fileName = usersFile.filename;
+            fs_1.default.unlinkSync(usersFile.path);
+            console.log(`Importing ${fileName}`);
+            const startTime = Date.now();
+            const importSize = yield (0, importUserToDatabase_1.importUsersToDatabase)(userCsvFile); // This function offload the process of importing the users in database on workter threads
+            const endTime = Date.now();
+            const importTimeInMinutes = (endTime - startTime) / 1000;
+            const processResult = {
+                timeTaken: importTimeInMinutes,
+                importSize: importSize
+            };
+            console.log(`Successfully processed ${importSize} users. \n Time taken: ${importTimeInMinutes} mins.`);
+            res.status(200).json({ message: `Successfully processed ${importSize} users.` });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.importUsers = importUsers;

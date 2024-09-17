@@ -15,10 +15,11 @@ const convertApiObjectToUser_1 = require("../../utils/convertApiObjectToUser");
 const database_1 = require("../../config/database");
 const createUser_1 = require("../../utils/createUser");
 const query_1 = require("../../data_access/query");
+const handleLocalLogin_1 = require("../../utils/handleLocalLogin");
 function loginFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { id_number, password } = req.body;
         try {
-            const { id_number, password } = req.body;
             if (!id_number || !password)
                 throw new customErrors_1.BadRequestError("Missing credentials!");
             const response = yield fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
@@ -33,7 +34,7 @@ function loginFunction(req, res, next) {
                 yield (0, createUser_1.createUser)(connection, user); // save user info in database.
                 const [rowResult] = yield connection.execute("SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
                 // If user dont have role yet, add role
-                if (rowResult.length < 1) {
+                if (rowResult.length === 0) {
                     const voterRole = apiResponseObject.user_group === "STUDENT" ? 1 : 0; // assign the voter role if the user is student.
                     yield connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
                 }
@@ -64,7 +65,12 @@ function loginFunction(req, res, next) {
             return res.status(302).redirect('/election');
         }
         catch (error) {
-            next(error);
+            if (error instanceof Error && error.name === 'TypeError' && error.message === 'fetch failed') {
+                yield (0, handleLocalLogin_1.handleLocalLogin)(id_number, password, req, res, next);
+            }
+            else {
+                next(error);
+            }
         }
     });
 }

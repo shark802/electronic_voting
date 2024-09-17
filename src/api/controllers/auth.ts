@@ -7,10 +7,11 @@ import { createUser } from "../../utils/createUser";
 import { Role } from "../../utils/types/Role";
 import { selectQuery } from "../../data_access/query";
 import { RowDataPacket } from 'mysql2/promise';
+import { handleLocalLogin } from "../../utils/handleLocalLogin";
 
 export async function loginFunction(req: Request, res: Response, next: NextFunction) {
+    const { id_number, password } = req.body;
     try {
-        const { id_number, password } = req.body;
         if (!id_number || !password) throw new BadRequestError("Missing credentials!");
 
         const response = await fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
@@ -29,7 +30,7 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
             const [rowResult] = await connection.execute<RowDataPacket[]>("SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
 
             // If user dont have role yet, add role
-            if (rowResult.length < 1) {
+            if (rowResult.length === 0) {
                 const voterRole = apiResponseObject.user_group === "STUDENT" ? 1 : 0; // assign the voter role if the user is student.
                 await connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
             };
@@ -59,8 +60,15 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
         return res.status(302).redirect('/election');
 
     } catch (error) {
-        next(error);
+        if (error instanceof Error && error.name === 'TypeError' && error.message === 'fetch failed') {
+
+            await handleLocalLogin(id_number, password, req, res, next);
+        } else {
+
+            next(error);
+        }
     }
+
 };
 
 export async function logoutFunction(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -9,7 +9,8 @@ import { checkIfUserHasVoted } from "../../data_access/voteService";
 import { hasUserRegisterFaceImage } from "../../utils/hasUserRegisterFaceImage";
 import { getAllCandidatesInElection, getCandidatesTotalTally, getElectionInfoById } from "../../data_access/election";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
-import { isElectionEnded } from "../../utils/isElectionEnded";
+import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
+import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -45,7 +46,7 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         }
 
         const sqlQuery = `
-        SELECT u.id_number, u.firstname, u.lastname , u.course, c.alias, c.position
+        SELECT u.id_number, u.firstname, u.lastname , u.course, c.position, c.candidate_profile, c.party
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.election_id = ?
@@ -57,7 +58,7 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
             selectQuery<Election>(pool, "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL", [election_id]),
             selectQuery(pool, sqlQuery, [election_id])
         ]);
-        const candidatePositionList = Object.values(Position);
+        const candidatePositionList = Object.values(CANDIDATE_POSITION);
 
         if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=Voting is currently closed")
 
@@ -72,6 +73,8 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
         const userId = req.session.user!.user_id;
         const electionId = req.params.id;
 
+        console.log(electionId);
+
         if (!electionId) throw new BadRequestError('Election id is missing');
 
         // retrieve election here
@@ -81,13 +84,11 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
         // check if the election has ended
         if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
 
-        const positionList = Object.values(Position);
+        const positionList = Object.values(CANDIDATE_POSITION);
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
         const candidatesVoteTally = await getCandidatesTotalTally(electionId);
-        const allCandidatesInElection = await getAllCandidatesInElection(electionId);
 
-
-        return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, allCandidatesInElection });
+        return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, electionInfo });
     } catch (error) {
         next(error)
     }

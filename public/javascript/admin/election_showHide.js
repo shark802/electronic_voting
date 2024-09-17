@@ -5,21 +5,35 @@ document.querySelectorAll("#toggleElectionEventVisibility").forEach(toggleButton
 
         let viewStatus = event.target.closest("#electionSection").querySelector("#viewStatus");
         let viewStatusImage = event.target.closest("#electionSection").querySelector("#viewStatusImage"); // div element text content contains Hide=(0) or Show=(1)
-        if (viewStatus.textContent === "Hide") {
+        let displayStatus = event.target.closest("#electionSection").querySelector("#display-status");
+
+        if (viewStatus.textContent === "Deactivate") {
+            // Request to deactivate the election
+
             electionStatus = 0;
-            const updateOutcome = await updateElectionStatus(electionId, electionStatus)
+            const updateOutcome = await updateElectionStatus(electionId, electionStatus) // return true if update is successful, false otherwise
             if (updateOutcome) {
                 viewStatusImage.src = "/img/view.webp"
-                viewStatus.textContent = "Show";
+                viewStatus.textContent = "Activate";
+
+                displayStatus.textContent = 'Inactive'
+                displayStatus.style.color = '#ef4444';
+                displayStatus.style.backgroundColor = '#fee2e2';
             }
 
         } else {
+            // Request to activate the election
+
             electionStatus = 1;
-            const updateOutcome = await updateElectionStatus(electionId, electionStatus)
+            const updateOutcome = await updateElectionStatus(electionId, electionStatus) // return true if update is successful, false otherwise
 
             if (updateOutcome) {
                 viewStatusImage.src = "/img/hide.webp"
-                viewStatus.textContent = "Hide";
+                viewStatus.textContent = "Deactivate";
+
+                displayStatus.textContent = 'Active';
+                displayStatus.style.color = '#22c55e';
+                displayStatus.style.backgroundColor = '#dcfce7 ';
             }
         }
     })
@@ -51,7 +65,7 @@ async function updateElectionStatus(electionId, electionStatus) {
             });
             return true;
         } else {
-            responseMessage = await response.json();
+            const responseMessage = await response.json();
             Swal.fire({
                 showConfirmButton: false,
                 title: responseMessage.message,
@@ -65,6 +79,6 @@ async function updateElectionStatus(electionId, electionStatus) {
         }
 
     } catch (error) {
-
+        console.log(error.message);
     }
 };

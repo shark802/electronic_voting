@@ -1,20 +1,21 @@
 import { Router } from "express";
 import { addCandidateFunction, deleteCandidateFunction, getAllcandidatesInActiveElection, getCandidateById, getManageCandidates, getUserCandidateData, updateCandidateFunction, updateCandidateStatus } from "../controllers/candidate";
 import { toUpperCase } from "../../middlewares/toUpperCase";
+import upload from "../../config/multerConfig";
 
 const router = Router();
 
 router.use(toUpperCase);
 
 router.route('/candidate')
-    .post(addCandidateFunction)
+    .post(upload.single('candidate_profile'), addCandidateFunction)
 
 router.route('/candidate/data')
     .get(getAllcandidatesInActiveElection)
 
 router
     .route("/candidate/:id")
-    .put(updateCandidateFunction)
+    .put(upload.single('candidate_profile'), updateCandidateFunction)
     .delete(deleteCandidateFunction)
     .get(getCandidateById)
 

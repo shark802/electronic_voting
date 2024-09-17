@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllcandidatesInActiveElection = exports.getUserCandidateData = exports.updateCandidateStatus = exports.getCandidateById = exports.getManageCandidates = exports.deleteCandidateFunction = exports.updateCandidateFunction = exports.addCandidateFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
@@ -15,11 +18,19 @@ const database_1 = require("../../config/database");
 const query_1 = require("../../data_access/query");
 const ulid_1 = require("ulid");
 const candidateService_1 = require("../../data_access/candidateService");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 function addCandidateFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let { election_id, id_number, firstname, lastname, course, alias, party, position } = req.body;
-            if (!election_id || !id_number || !firstname || !lastname || !alias || !party || !position)
+            Object.entries(req.body).forEach(([key, value]) => {
+                if (typeof value === 'string') {
+                    req.body[key] = value.toUpperCase();
+                }
+            });
+            let { election_id, id_number, firstname, lastname, course, party, position } = req.body;
+            const candidate_profile = req.file ? req.file.filename : null;
+            if (!election_id || !id_number || !firstname || !lastname || !party || !position || !course)
                 return next(new customErrors_1.BadRequestError("Cannot proceed adding candidate due to missing info"));
             const findCandidateAccount = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM users WHERE id_number = ?", [id_number]);
             if (findCandidateAccount.length < 1) {
@@ -43,8 +54,8 @@ function addCandidateFunction(req, res, next) {
             if (findCandidateIfExist.length > 0)
                 return next(new customErrors_1.ConflictError(`Unable to add ${id_number} in election due to conflict, candidate already exist`));
             const candidate_id = (0, ulid_1.ulid)();
-            const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, alias, party, election_id) VALUES (?, ?, ?, ?, ?, ?)";
-            const candidateParameter = [candidate_id, id_number, position, alias, party, election_id];
+            const addNewCandidateQuery = "INSERT INTO candidates (candidate_id, id_number, position, party, election_id, candidate_profile, department) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            const candidateParameter = [candidate_id, id_number, position, party, election_id, candidate_profile, course];
             const newCandidate = yield (0, query_1.insertQuery)(database_1.pool, addNewCandidateQuery, candidateParameter);
             if (newCandidate.affectedRows > 0) {
                 return res.status(201).json({ message: "New candidate successfully added" });
@@ -62,11 +73,24 @@ function updateCandidateFunction(req, res, next) {
             const candidate_id = req.params.id;
             if (!candidate_id)
                 return next(new customErrors_1.BadRequestError("Election Id is missing"));
-            let { alias, party, position } = req.body;
-            if (!alias || !party || !position)
+            let { party, position } = req.body;
+            const candidateProfile = req.file ? req.file.filename : null;
+            if (!party || !position)
                 return next(new customErrors_1.BadRequestError("Candidate is lacking some information to proceed update"));
-            const updateSqlQuery = "UPDATE candidates SET alias = ?, party = ?, position = ? WHERE candidate_id = ? AND deleted IS NULL";
-            const updateParameter = [alias, party, position, candidate_id];
+            // if the request comes with to update candidate profile. check if there is already a candidate profile set then delete the old profile
+            if (candidateProfile) {
+                const [candidate] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE candidate_id = ?', [candidate_id]);
+                if (candidate.candidate_profile) {
+                    const oldProfilePath = path_1.default.join(__dirname, `./../../../public/img/candidate_profiles/${candidate.candidate_profile}`);
+                    fs_1.default.unlink(oldProfilePath, (error) => {
+                        if ((error === null || error === void 0 ? void 0 : error.code) === 'ENOENT') {
+                            console.log(`Could'nt find file ${candidate.candidate_profile}, delete attempt failed`);
+                        }
+                    });
+                }
+            }
+            const updateSqlQuery = "UPDATE candidates SET party = ?, position = ?, candidate_profile = ? WHERE candidate_id = ? AND deleted IS NULL";
+            const updateParameter = [party, position, candidateProfile, candidate_id];
             const updateResult = yield (0, query_1.updateQuery)(database_1.pool, updateSqlQuery, updateParameter);
             if (updateResult.affectedRows < 0)
                 return next(new customErrors_1.NotFoundError('Resource not found or no changes were made'));
@@ -107,7 +131,7 @@ function getManageCandidates(req, res, next) {
                 throw new customErrors_1.BadRequestError('Atleast 1 election Id is required');
             const electionList = Array.isArray(electionIds) ? electionIds : [electionIds];
             const sqlSelectUserCandidateQuery = `
-        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.alias, c.party, c.added_at
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, c.candidate_id, c.election_id, c.position, c.enabled, c.party, c.added_at
         FROM users u JOIN candidates c
         ON u.id_number = c.id_number
         WHERE c.position = ?
@@ -187,13 +211,13 @@ function getAllcandidatesInActiveElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const sqlQuery = `
-            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, e.election_id, COUNT(v.candidate_id) AS vote_count
+            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, c.department, e.election_id, COUNT(v.candidate_id) AS vote_count
             FROM candidates c
             JOIN elections e ON c.election_id = e.election_id
             LEFT JOIN users u ON c.id_number = u.id_number
             LEFT JOIN votes v ON c.id_number = v.candidate_id AND e.election_id = v.election_id
             WHERE e.deleted_at IS NULL AND e.is_close = 0 AND c.deleted IS NULL AND c.enabled = 1
-            GROUP BY c.election_id, u.id_number, c.position, v.election_id
+            GROUP BY c.election_id, u.id_number, c.position, v.election_id, c.department
             ORDER BY lastname;
         `;
             const candidatesData = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery);

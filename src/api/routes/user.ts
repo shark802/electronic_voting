@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { getUserByIdNumber, newUserFunction, updateUserFunction } from "../controllers/user";
+import { getUserByIdNumber, importUsers, newUserFunction, updateUserFunction } from "../controllers/user";
 import { toUpperCase } from "../../middlewares/toUpperCase";
+import upload from "../../config/multerConfig";
 
 const router = Router();
 router.use(toUpperCase);
@@ -10,5 +11,6 @@ router.route('/user/:id')
     .put(updateUserFunction)
 
 router.post('/user-new', newUserFunction);
+router.post('/import-user', upload.single('userFile'), importUsers);
 
 export default router;

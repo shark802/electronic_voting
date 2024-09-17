@@ -7,6 +7,7 @@ type Candidate = {
 	enabled: number;
 	deleted: number;
 	vote_count: number;
+	candidate_profile: string;
 	election_id: string;
 	added_at: string;
 };

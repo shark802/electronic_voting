@@ -9,6 +9,10 @@ import { errorHandler } from "./middlewares/errorHandler";
 import apiRoutes from "./api";
 import webRoutes from "./web";
 import expressMysqlSession from "express-mysql-session";
+import upload from './config/multerConfig';
+import './events/addVotersOnElectionEvent';
+
+upload.none();
 
 dotenv.config();
 const app = express();
@@ -16,7 +20,7 @@ const httpServer = http.createServer(app);
 const io = new Server(httpServer);
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../views"));
 app.use(express.static(path.join(__dirname, "../public")));
@@ -61,6 +65,7 @@ app.use(
         },
     })
 );
+
 
 app.set("socket", io);
 

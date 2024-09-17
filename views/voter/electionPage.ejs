@@ -12,85 +12,100 @@
     <script type="module" src="/javascript/voter/election_page.js" defer></script>
 
     <style>
-      main {
+      /* main {
         background-image: url('/img/image.png');
         background-repeat: no-repeat;
         background-position: center center;
         background-size: cover;
-      }
+      } */
     </style>
   </head>
 
-  <body class="w-full overflow-hidden bg-blue-700 h-dvh">
-    <header class="flex relative items-center justify-between w-full h-[65px] px-4 font-semibold bg-blue-800 lg:h-20 lg:max-h-24">
-
-      <a href="/" class="">
-        <div class="relative flex items-center float-left gap-3 pl-1 md:pl-3 min-h-20">
-          <img src="/img/back.webp" alt="back" class="w-4 lg:w-6 aspect-square">
-          <p class="hidden font-normal text-white md:block">Back to landing page</p>
-        </div>
+  <body class="w-full overflow-hidden h-dvh">
+    <header class="flex items-center justify-between w-full px-4 py-3 shadow-md bg-gradient-to-r from-blue-800 to-blue-600">
+      <a href="/" class="flex items-center gap-2 px-3 py-2 text-white transition-colors duration-200 bg-blue-600 rounded-full shadow-md hover:text-blue-200 hover:bg-blue-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span class="text-sm font-medium">Home</span>
       </a>
 
-
       <% if (user) { %>
-      <div id="profile-container" class="relative z-10 cursor-pointer lg:mr-4">
-        <div id="profile-info" class="flex items-center gap-3">
-          <span class="text-xs text-white lg:text-base"><%= user.firstname %> <%= user.lastname %></span>
-          <img src="/img/account.webp" alt="profile" class="w-5 lg:w-8 lg:h-8">
-        </div>
+      <div id="profile-container" class="relative">
+        <button id="profile-info" class="flex items-center gap-3 text-white transition-colors duration-200 hover:text-blue-200">
+          <span class="text-sm font-medium"><%= user.firstname %> <%= user.lastname %></span>
+          <img src="/img/account.webp" alt="profile" class="w-8 h-8 border-2 border-white rounded-full">
+        </button>
 
-        <div id="account-section" class="absolute right-0 hidden w-full py-2 text-xs bg-white border-2 rounded-md shadow-lg lg:text-sm min-w-fit top-10 lg:top-14" </div>
-          <p class="mb-3 font-bold text-center">Account</p>
-          <span class="flex py-2 pl-3 text-xs lg:text-sm">
-            <p class="mr-2 font-bold text-gray-500">Id number: </p>
-            <p><%= user.id_number %></p>
-          </span>
+        <div id="account-section" class="absolute right-0 z-10 hidden mt-4 overflow-hidden bg-white border border-blue-100 rounded-lg shadow-xl w-72">
+          <div class="p-6 bg-blue-50">
+            <div class="flex items-center mb-4">
+              <img src="/img/account.webp" alt="profile" class="w-16 h-16 mr-4 border-2 border-blue-300 rounded-full">
+              <div>
+                <p class="text-lg font-bold text-blue-800"><%= user.firstname %> <%= user.lastname %></p>
+                <p class="text-sm text-blue-600"><%= user.course %>-<%= user.year_level %><%= user.section %></p>
+              </div>
+            </div>
+            <p class="inline-block px-3 py-1 text-sm text-gray-600 bg-white rounded-full">ID: <%= user.id_number %></p>
+          </div>
 
-          <span class="flex py-2 pl-3 text-xs lg:text-sm">
-            <p class="mr-2 font-bold text-gray-500">Crs/yr/sec: </p>
-            <p><%= user.course %>-<%= user.year_level %><%= user.section %></p>
-          </span>
+          <div class="p-4 border-t border-blue-100">
+            <button class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Register Face
+            </button>
 
-          <div class="py-1 mx-3 mt-4 mb-3 font-bold text-center text-white bg-blue-500 rounded-md hover:cursor-pointer">Register Face</div>
-
-          <hr class="border-t border-gray-300">
-
-          <div id="logout-button" class="flex items-center justify-center gap-1 px-3 py-1 mx-3 mt-3 bg-gray-300 rounded-md cursor-pointer ">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#292929" width="16" height="16">
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-              <g id="SVGRepo_iconCarrier">
-                <path d="M9.00195 7C9.01406 4.82497 9.11051 3.64706 9.87889 2.87868C10.7576 2 12.1718 2 15.0002 2L16.0002 2C18.8286 2 20.2429 2 21.1215 2.87868C22.0002 3.75736 22.0002 5.17157 22.0002 8L22.0002 16C22.0002 18.8284 22.0002 20.2426 21.1215 21.1213C20.2429 22 18.8286 22 16.0002 22H15.0002C12.1718 22 10.7576 22 9.87889 21.1213C9.11051 20.3529 9.01406 19.175 9.00195 17" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round"></path>
-                <path d="M15 12L2 12M2 12L5.5 9M2 12L5.5 15" stroke="#2f323c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              </g>
-            </svg>
-            <p class="text-sm text-center text-gray-700">LOGOUT</p>
+            <button id="logout-button" class="flex items-center justify-center w-full py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-gray-100 rounded-md hover:bg-gray-200">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
-        <% } %>
+      </div>
+      <% } %>
     </header>
 
-    <main class=" flex gap-7 flex-col px-4 items-center pt-12 overflow-auto lg:mb-0 h-[calc(100%-80px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
+    <main class=" flex gap-7 flex-col px-4 bg-white items-center pt-12 overflow-auto lg:mb-0 h-[calc(100%-80px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
 
       <% if (electionList.length < 1) { %>
 
-      <section class="lg:w-[700px] p-3 mx-4 w-full lg:px-10 box-border bg-white rounded-md min-h-28 grid m-auto mt-0 py-9 lg:text-base text-xs">
-        <img src="/img/empty-folder.webp" alt="empty folder" class="w-16 m-auto lg:w-28 lg:h-28">
-        <h1 class="m-auto mt-4 font-semibold text-center lg:text-xl lg:w-3/5">It seems there are no elections scheduled at the moment</h1>
-        <p class="mt-1 text-center lg:mt-3">"The next election will be announce soon. Please stay tuned!"</p>
+      <section class="max-w-2xl mx-auto mt-10 overflow-hidden bg-white border border-gray-200 rounded-lg shadow-lg">
+        <div class="p-10 text-center">
+          <div class="relative mb-6">
+            <img src="/img/empty-folder.webp" alt="Empty folder" class="w-24 h-24 mx-auto transition-transform duration-300 opacity-75 hover:scale-110">
+            <div class="absolute inset-0 bg-blue-500 rounded-full opacity-10 blur-2xl"></div>
+          </div>
+          <h2 class="mb-2 text-2xl font-bold text-gray-800">No Elections Scheduled</h2>
+          <p class="mb-8 text-lg text-gray-600">It seems there are no elections scheduled at the moment.</p>
+
+          <div class="p-4 mt-8 border border-blue-200 rounded-lg bg-blue-50">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+              </svg>
+              <p class="text-sm font-medium text-blue-800">
+                No elections are currently scheduled. Please check back later for updates.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <% } else { %>
 
       <% electionList.forEach(element => { %>
-      <section class="lg:max-w-[700px] mx-4 max-w-[500px] bg-white rounded-md min-h-fit w-full lg:min-w-[500px] py-8 px-10 shadow-md">
+      <section class="lg:max-w-[700px] mx-4 max-w-[500px] bg-white rounded-lg min-h-fit w-full lg:min-w-[500px] py-8 px-4 shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300 transform">
         <div id="election-id" class="hidden"><%= element.election_id %></div>
         <input type="hidden" value="<%= element.date_start %>" id="date-start">
         <input type="hidden" value="<%= element.time_start %>" id="time-start">
         <input type="hidden" value="<%= element.date_end %>" id="date-end">
         <input type="hidden" value="<%= element.time_end %>" id="time-end">
 
-        <h2 class="mb-3 text-lg font-semibold text-center lg:text-2xl"><%= element.election_name %></h2>
+        <h2 class="mb-6 text-2xl font-bold text-center text-blue-800 lg:text-3xl"><%= element.election_name %></h2>
 
         <% 
           const formatOptions = {
@@ -113,32 +128,71 @@
           const formattedEndDateAndTime = dateEnd.toLocaleString('en-US', formatOptions);
         %>
 
-        <div class="flex gap-3 m-auto text-xs text-gray-500 lg:text-sm w-fit">
-          <p>Start: </p>
-          <p id="start"><%= formattedStartDateAndTime %></p>
+        <div class="flex flex-col gap-4 mb-6">
+          <div class="flex items-center text-sm text-gray-600 lg:text-base">
+            <div class="flex items-center min-w-20">
+              <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <p class="font-semibold">Start:</p>
+            </div>
+            <p id="start" class="font-medium"><%= formattedStartDateAndTime %></p>
+          </div>
+          <div class="flex items-center text-sm text-gray-600 lg:text-base">
+            <div class="flex items-center min-w-20">
+              <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <p class="font-semibold">End:</p>
+            </div>
+            <p id="end" class="font-medium"><%= formattedEndDateAndTime %></p>
+          </div>
         </div>
 
-        <div class="flex gap-3 m-auto text-xs text-gray-500 lg:text-sm w-fit">
-          <p>End: </p>
-          <p id="end"><%= formattedEndDateAndTime %></p>
+        <% if (presentDate >= dateStart && presentDate <= dateEnd) { %>
+        <div id="election-status-message" class="p-4 mb-6 text-sm font-bold text-center text-blue-700 bg-blue-100 rounded-lg lg:text-base">
+          <svg class="inline w-5 h-5 mr-2 -mt-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          The election is now live! Cast your vote to make your voice heard.
         </div>
-
-        <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>
-        <!-- <a href="/ballot/element.election_id"> -->
-        <div id="election-status-message" class="w-3/4 m-auto mt-4 text-xs font-bold text-center text-blue-500 lg:text-2xl">The election is now live! Cast your vote to make your voice heard.</div>
-        <!-- </a> -->
         <% } else if (presentDate < dateStart) { %>
-        <div id="election-status-message" class="w-3/4 m-auto mt-4 text-xs font-bold text-center text-gray-500 lg:text-2xl">The election is yet to begin. Please check back later for updates.</div>
+        <div id="election-status-message" class="p-4 mb-6 text-sm font-bold text-center text-gray-700 bg-gray-100 rounded-lg lg:text-base">
+          <svg class="inline w-5 h-5 mr-2 -mt-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+          </svg>
+          The election is yet to begin. Please check back later for updates.
+        </div>
         <% } else if (presentDate > dateEnd) { %>
-        <div id="election-status-message" class="w-3/4 m-auto mt-4 text-xs font-bold text-center text-gray-500 lg:text-2xl">The election has ended. You can now view the results.</div>
+        <div id="election-status-message" class="p-4 mb-6 text-sm font-bold text-center text-green-700 bg-green-100 rounded-lg lg:text-base">
+          <svg class="inline w-5 h-5 mr-2 -mt-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          The election has ended. You can now view the results.
+        </div>
         <% } %>
 
-        <% if (presentDate >= dateStart&& presentDate <= dateEnd) { %>
-        <button id="vote-now-button" class="relative px-3 py-1 mt-6 text-sm font-semibold text-white transform -translate-x-1/2 bg-blue-500 rounded-full ring-0 hover:ring-2 left-1/2">Vote Now</button>
+        <% if (presentDate >= dateStart && presentDate <= dateEnd) { %>
+        <button id="vote-now-button" class="w-full py-3 text-sm font-semibold text-white transition-all duration-200 transform bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:scale-105">
+          <svg class="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+          </svg>
+          Vote Now
+        </button>
         <% } else if (presentDate < dateStart) { %>
-        <button id="vote-now-button" class="relative px-3 py-1 mt-6 text-sm font-semibold text-gray-100 transform -translate-x-1/2 bg-gray-400 rounded-full ring-0 ring-gray-300 hover:ring-2 left-1/2">Vote Now</button>
+        <button id="vote-now-button" class="w-full py-3 text-sm font-semibold text-gray-500 transition-colors duration-200 bg-gray-200 rounded-lg cursor-not-allowed">
+          <svg class="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+          Vote Now
+        </button>
         <% } else if (presentDate > dateEnd) { %>
-        <button id="vote-now-button" class="relative px-3 py-1 mt-6 text-sm font-semibold text-white transform -translate-x-1/2 bg-green-500 rounded-full ring-green-300 ring-0 hover:ring-2 left-1/2">View Result</button>
+        <button id="vote-now-button" class="w-full py-3 text-sm font-semibold text-white transition-all duration-200 transform bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:scale-105">
+          <svg class="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          View Result
+        </button>
         <% } %>
 
       </section>

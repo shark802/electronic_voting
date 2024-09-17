@@ -14,6 +14,7 @@ document.querySelectorAll("#delete_election_button").forEach(deleteButon => {
             if (result.isConfirmed) {
 
                 const response = await fetch(`/api/elections/${electionId}`, { method: "DELETE" });
+
                 if (response.ok) {
                     $(event.target.closest("#election-card")).hide(100);
 
@@ -24,9 +25,11 @@ document.querySelectorAll("#delete_election_button").forEach(deleteButon => {
                     });
 
                 } else {
+                    const responseObject = await response.json();
+
                     Swal.fire({
                         title: "Failed!",
-                        text: "An error occured. Please try again!",
+                        text: responseObject.message,
                         icon: "error"
                     });
                 }

@@ -1,10 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { pool } from "../../config/database";
 import { ulid } from "ulid"
-import { BadRequestError, NotFoundError } from "../../utils/customErrors";
+import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
 import { Program } from "../../utils/enums/program";
-import { selectQuery, updateQuery } from "../../data_access/query";
+import { deleteQuery, selectQuery, updateQuery } from "../../data_access/query";
+import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
+import { eventEmitter } from '../../events/globalEventEmitterInstance';
+import { DEPARTMENT } from "../../config/constants/BccDepartments";
+import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
+import { getDepartmentsTotalPopulation, getDepartmentsTotalVotes } from "../../data_access/election";
+import { ResultSetHeader } from "mysql2";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
@@ -13,23 +19,36 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 		if (!election_name || !date_start || !time_start || !date_end || !time_end) {
 			return next(new BadRequestError("Bad request, some required data is missing"));
 		}
+
+		const openElection = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME())) AND deleted_at IS NULL');
+		if (openElection.length > 0) throw new ConflictError('An active election is currrently running');
+
 		const election_id = ulid();
+		const totalQualifiedVoter = await countAllQualifiedVoterForElection();
 
 		const connection = await pool.getConnection();
 		try {
 			await connection.beginTransaction();
 
-			const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end) VALUES (?, ?, ?, ?, ?, ?)";
-			const values = [election_id, election_name, date_start, time_start, date_end, time_end];
+			const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end, total_populations) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			const values = [election_id, election_name, date_start, time_start, date_end, time_end, totalQualifiedVoter];
 
 			await connection.execute(query, values);
 
-			for (const program of Object.values(Program)) {
-				const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, election_id) VALUES(?, ?)';
-				await connection.execute(insertProgramPopulationQuery, [program, election_id]);
+			for (const [department, programs] of Object.entries(DEPARTMENT)) {
+
+				const year_active = new Date().getFullYear();
+				const [countDepartmentPopulation] = await selectQuery<{ population: number }>(pool, 'SELECT COUNT(*) as population FROM users WHERE course IN (?) AND year_active = ?', [programs, year_active])
+
+				const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, program_population, election_id) VALUES(?, ?, ?)';
+				await connection.execute(insertProgramPopulationQuery, [department, countDepartmentPopulation.population, election_id]);
 			}
 
 			await connection.commit();
+
+			// Emit an event to register voters for election that just created
+			eventEmitter.emit('addCandidateEvent', election_id);
+
 			res.status(201).json({ message: "Election created" });
 		} catch (error) {
 			await connection.rollback();
@@ -69,27 +88,44 @@ export async function findElectionByID(req: Request, res: Response, next: NextFu
 }
 
 export async function deleteElection(req: Request, res: Response, next: NextFunction) {
+	const connection = await pool.getConnection(); // Get a connection from the pool
 	try {
-		const election_id = req.params.id
+		const election_id = req.params.id;
 
 		if (!election_id) {
-			return next(new BadRequestError("Election Id is missing"))
+			return next(new BadRequestError("Election Id is missing"));
 		}
 
-		const query = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";
-		const value = [election_id]
+		const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
+		if (isElectionStarted(election)) throw new BadRequestError('Cannot delete an election that has already started.');
+		if (isElectionEnded(election)) throw new BadRequestError('Cannot delete an election that has already ended.');
 
-		const result = await updateQuery(pool, query, value)
-		if (result.affectedRows < 1) {
-			return next(new NotFoundError("No changes were made"))
+		await connection.beginTransaction(); // Start the transaction
+
+		// Update the election with a soft delete
+		const updateQuery = "UPDATE elections SET deleted_at = CURRENT_TIMESTAMP WHERE election_id = ? LIMIT 1";
+		const [updateResult] = await connection.query<ResultSetHeader>(updateQuery, [election_id]);
+
+		if (updateResult.affectedRows === 0) {
+			await connection.rollback(); // Roll back the transaction if no rows were updated
+			return next(new NotFoundError("No changes were made"));
 		}
 
-		res.sendStatus(200)
+		// Delete voters associated with this election
+		const deleteVotersQuery = 'DELETE FROM voters WHERE election_id = ?';
+		await connection.query(deleteVotersQuery, [election_id]);
 
+		await connection.commit();
+
+		res.sendStatus(200);
 	} catch (error) {
-		return next(error)
+		await connection.rollback();
+		return next(error);
+	} finally {
+		connection.release();
 	}
 }
+
 
 export async function updateElection(req: Request, res: Response, next: NextFunction) {
 	try {
@@ -121,6 +157,15 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 		const electionID = req.params.id;
 		const electionStatus = req.query.status
 		if (!electionID || !electionStatus) return next(new BadRequestError());
+
+		const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ?', [electionID]);
+		const isElectionEnd = isElectionEnded(election);
+		console.log(typeof electionStatus);
+		// if request is to activate the election, check first if there is active election running before allowing to activate the election except for active election but already ended.
+		if ((electionStatus as string) === '1' && !isElectionEnd) {
+			const activeElection = await selectQuery<Election>(pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end > CURTIME())) AND deleted_at IS NULL`);
+			if (activeElection.length > 0) throw new BadRequestError('An active election is currently running')
+		}
 
 		const query = "UPDATE elections SET is_active = ? WHERE election_id = ? AND deleted_at IS NULL";
 		const sqlParams = [electionStatus, electionID]
@@ -187,17 +232,12 @@ export async function getNumberOfVoted(req: Request, res: Response, next: NextFu
 export async function getTotalPopulationByProgram(req: Request, res: Response, next: NextFunction) {
 	try {
 		const electionIdQueryParams = req.query.election_id;
-		const programCode = req.query.program;
-
 		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
-		if (!programCode) throw new BadRequestError('No program provided');
 
 		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
+		const electionsDepartmentPopulation = await getDepartmentsTotalPopulation(electionIdArray);
 
-		const sqlQuery = `SELECT program_population, program_code, election_id FROM program_populations WHERE program_code = ? AND election_id IN (?)`
-		const programPopulation = await selectQuery(pool, sqlQuery, [programCode, electionIdArray]);
-
-		return res.status(200).json({ programPopulation });
+		return res.status(200).json({ electionPopulationSummary: electionsDepartmentPopulation });
 	} catch (error) {
 		next(error)
 	}
@@ -205,28 +245,16 @@ export async function getTotalPopulationByProgram(req: Request, res: Response, n
 
 export async function getTotalVotedInElectionByProgram(req: Request, res: Response, next: NextFunction) {
 	try {
-
-		const electionIdQueryParams = req.query.election_id;
-		const programCode = req.query.program;
+		let electionIdQueryParams = req.query.election_id;
 
 		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
-		if (!programCode) throw new BadRequestError('No program provided');
 
-		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
+		electionIdQueryParams = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams as string];
 
-		const sqlQuery = `
-			SELECT COUNT( DISTINCT v.voter_id ) as total_voted, v.election_id, u.course 
-			FROM votes v
-			LEFT JOIN users u
-			ON v.voter_id = u.id_number
-			WHERE u.course = ? AND v.election_id IN (?) 
-			GROUP BY v.election_id
-		`
+		const departmentVoteSummary = await getDepartmentsTotalVotes(electionIdQueryParams as string[]);
 
-		const programVoteCount = await selectQuery(pool, sqlQuery, [programCode, electionIdArray]);
-
-		return res.status(200).json({ programVoteCount });
+		return res.status(200).json({ electionVoteSummary: departmentVoteSummary });
 	} catch (error) {
-		next(error)
+		next(error);
 	}
 }
