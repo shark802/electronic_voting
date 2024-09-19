@@ -23,6 +23,11 @@ globalEventEmitterInstance_1.eventEmitter.on('addCandidateEvent', (electionId) =
     const worker = new worker_threads_1.Worker(path_1.default.join(__dirname, '../utils/workerFiles/registerVotersOnElectionWorker.js'));
     worker.postMessage({ users, electionId });
     worker.on('message', (result) => {
-        console.log(result);
+        if (result.success === true) {
+            console.log(`Successfully added voters for election ${electionId}`);
+        }
+        else if (result.error) {
+            console.error(`Error adding voters for election ${electionId}:`, result.error);
+        }
     });
 }));

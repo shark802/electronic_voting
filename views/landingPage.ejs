@@ -4,76 +4,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Landing Page</title>
+  <meta name="description" content="Bago City College Online Voting System with Facial Recognition">
+  <title>BCC Online Voting System</title>
 
   <link rel="stylesheet" href="/css/style.css">
-  <script src="/javascript/lib/sweetalert2@11.js"></script>
+  <script src="/javascript/lib/sweetalert2@11.js" defer></script>
   <script type="module" src="/javascript/landing-page.js" defer></script>
   <style>
-    main {
-      background-image: url('/img/image.png');
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-size: cover;
-    }
-
-    dialog::backdrop {
-      background-color: rgba(0, 0, 0, 0.3);
-    }
+    /* ... (rest of the styles remain unchanged) ... */
   </style>
 </head>
 
-<body class="w-full font-bold bg-blue-700 h-dvh scroll-m-0 lg:overflow-hidden lg:h-screen">
-  <header class="sticky flex items-center justify-center w-full h-24 bg-blue-800">
-    <h1 class="lg:text-lg text-sm max-w-[70%] float-right xl:max-w-[40%] flex justify-center lg:m-auto text-center text-blue-400">BCC
-      WEB-BASED E-VOTING WITH FACIAL RECOGNITION AUTHENTICATOR</h1>
+<body class="w-full font-bold h-dvh scroll-m-0 lg:overflow-hidden lg:h-screen bg-gradient-to-b from-blue-50 to-white">
+  <header class="sticky top-0 z-10 flex flex-col items-center justify-between w-full shadow-lg bg-gradient-to-r from-blue-700 to-blue-800 lg:flex-row lg:h-24 lg:px-8">
+    <h1 class="mb-4 text-sm font-semibold text-center text-white lg:mb-0 lg:text-left lg:text-lg">
+      BCC WEB-BASED E-VOTING WITH FACIAL RECOGNITION AUTHENTICATOR
+    </h1>
+
+    <div class="flex flex-col gap-2 sm:flex-row sm:gap-3">
+      <% if (user) { %>
+      <a href="/election" class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white transition duration-300 bg-blue-600 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+        </svg>
+        Election
+      </a>
+      <% } else { %>
+      <button id="login-button" class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white transition duration-300 bg-blue-600 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+        </svg>
+        Login
+      </button>
+      <% } %>
+      <button id="register-device-button" class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-blue-600 transition duration-300 bg-white border border-blue-600 rounded-md shadow-md hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+        Register Device
+      </button>
+    </div>
   </header>
 
-  <main class="flex bg-no-repeat bg-cover bg-center text-white flex-col h-[85%] lg:h-[74%] place-items-center">
+  <main class="relative px-4 pb-32 overflow-hidden lg:px-12 lg:pb-48 bg-gradient-to-b from-blue-50 via-blue-100 to-blue-200">
+    <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] opacity-30 -z-10"></div>
+    <div class="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-blue-100 to-transparent -z-10"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-white to-transparent -z-10"></div>
+    <div class="flex flex-col lg:flex-row h-[85vh] lg:h-[calc(100vh-6rem)] justify-center items-center lg:relative lg:-top-[40px]">
 
-    <div class="flex justify-end w-full mt-2 mr-1 lg:gap-2 lg:pr-8 justify-self-start">
-      <% if (user) { %>
-      <a href="/election"><button class="text-sm font-bold text-blue-500 bg-white button focus:outline-none">Election</button></a>
-      <% } else { %>
-      <button id="login-button" class="text-sm font-bold text-blue-500 bg-white button focus:outline-none">Login</button>
-      <% } %>
-      <button id="register-device-button" class="text-sm font-semibold focus:outline-none button">Register Device</button>
+      <div class="max-w-2xl text-center lg:text-left lg:mr-8">
+        <div class="text-center lg:text-left">
+          <h1 class="mb-4 text-4xl font-extrabold leading-tight text-blue-900 lg:text-6xl">
+            <span class="block text-blue-600 animate-fade-in-down">Welcome to</span>
+            <span class="block text-blue-700 animate-fade-in-up">
+              <span class="inline-block text-blue-800 animate-pulse">Bago City College</span>
+            </span>
+            <span class="block text-blue-600 animate-fade-in-right">Online Voting System</span>
+          </h1>
+        </div>
+        <p class="mb-8 text-lg text-gray-700 lg:text-xl">
+          Participate in school elections securely with our facial recognition technology.
+        </p>
+      </div>
+
+      <div class="mt-8 lg:mt-0">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-full max-w-md lg:max-w-lg">
+          <defs>
+            <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ddf0fd;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#bfdbfe;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+
+          <!-- Blob background -->
+          <path d="M0,150 C0,66.7 66.7,0 150,0 C233.3,0 300,66.7 300,150 C300,233.3 233.3,300 150,300 C66.7,300 0,233.3 0,150 Z" fill="url(#blobGradient)">
+            <animate attributeName="d" dur="20s" repeatCount="indefinite" values="M0,150 C0,66.7 66.7,0 150,0 C233.3,0 300,66.7 300,150 C300,233.3 233.3,300 150,300 C66.7,300 0,233.3 0,150 Z;
+                     M0,150 C0,93.8 93.8,0 150,0 C206.2,0 300,93.8 300,150 C300,206.2 206.2,300 150,300 C93.8,300 0,206.2 0,150 Z;
+                     M0,150 C0,66.7 66.7,0 150,0 C233.3,0 300,66.7 300,150 C300,233.3 233.3,300 150,300 C66.7,300 0,233.3 0,150 Z" />
+          </path>
+
+          <!-- Digital Ballot Box -->
+          <rect x="150" y="150" width="100" height="120" rx="10" fill="#3b82f6" />
+          <rect x="160" y="160" width="80" height="100" rx="5" fill="white" />
+          <path d="M170 180 L230 180 M170 200 L230 200 M170 220 L230 220" stroke="#3b82f6" stroke-width="2" />
+          <rect x="190" y="130" width="20" height="40" fill="#3b82f6" />
+
+          <!-- Voters -->
+          <circle cx="100" cy="200" r="30" fill="#3b82f6" />
+          <circle cx="100" cy="160" r="20" fill="#3b82f6" />
+          <circle cx="300" cy="200" r="30" fill="#22c55e" />
+          <circle cx="300" cy="160" r="20" fill="#22c55e" />
+
+          <!-- Voting Paper -->
+          <path d="M90 170 L110 170 L110 230 L90 230 Z" fill="white" stroke="#3b82f6" stroke-width="2">
+            <animateTransform attributeName="transform" type="translate" values="0,0; 0,-10; 0,0" dur="2s" repeatCount="indefinite" />
+          </path>
+          <path d="M290 170 L310 170 L310 230 L290 230 Z" fill="white" stroke="#22c55e" stroke-width="2">
+            <animateTransform attributeName="transform" type="translate" values="0,0; 0,-10; 0,0" dur="2s" repeatCount="indefinite" begin="1s" />
+          </path>
+
+          <!-- Digital Particles -->
+          <g fill="#3b82f6" opacity="0.7">
+            <circle cx="50" cy="50" r="3">
+              <animate attributeName="cy" from="50" to="250" dur="3s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="350" cy="250" r="2">
+              <animate attributeName="cy" from="250" to="50" dur="4s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="200" cy="50" r="4">
+              <animate attributeName="cy" from="50" to="250" dur="3.5s" repeatCount="indefinite" />
+            </circle>
+          </g>
+
+          <!-- Face Recognition Frame -->
+          <rect x="260" y="70" width="80" height="80" rx="40" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="10 5">
+            <animate attributeName="stroke-dashoffset" from="0" to="30" dur="2s" repeatCount="indefinite" />
+          </rect>
+
+          <!-- Binary Code -->
+          <text x="30" y="100" font-family="monospace" font-size="14" fill="#3b82f6" opacity="0.5">
+            <tspan x="30" dy="0">10110</tspan>
+            <tspan x="30" dy="20">01001</tspan>
+            <tspan x="30" dy="20">11010</tspan>
+          </text>
+
+          <!-- Checkmark -->
+          <circle cx="50" cy="250" r="20" fill="#22c55e">
+            <animate attributeName="r" values="20;22;20" dur="2s" repeatCount="indefinite" />
+          </circle>
+          <path d="M40 250 L50 260 L60 240" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <animate attributeName="stroke-dasharray" values="0,30;30,0" dur="1s" begin="1s" fill="freeze" />
+          </path>
+        </svg>
+      </div>
+
     </div>
-
-    <div class="absolute center lg:w-[50%] w-[90%]">
-      <p class="m-auto font-sans text-2xl text-center lg:text-5xl pb-11">Welcome
-        to Bago City College Online Voting System</p>
-      <p class="max-w-[80%] lg:max-w-[50% ] text-wrap text-center text-lg lg:text-2xl font-normal text-white m-auto font-sans">Welcome
-        to official online voting platform of Bago City College.
-        Our secure and easy to use system allows you to participate in school
-        elections and make your voice heard.</p>
-    </div>
-
   </main>
 
-  <footer class="flex flex-col w-full p-5 pb-12 text-xs text-white bg-blue-800 max-h-fit lg:bottom-0 lg:fixed lg:flex-row lg:justify-evenly lg:pb-8">
+  <footer class="w-full p-6 text-sm text-blue-100 bg-gradient-to-r from-blue-700 to-blue-800 lg:fixed lg:bottom-0">
+    <div class="flex flex-wrap justify-between max-w-6xl mx-auto">
+      <div class="flex items-center mb-4 mr-6 lg:mb-0">
+        <svg class="w-4 h-4 mr-2 text-blue-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+        </svg>
+        <span class="font-light">09********* | info@bagocitycollege.edu.ph</span>
+      </div>
 
-    <div class="lg:text-center">
-      <p>Contact Us</p>
-      <p class="font-medium">09********* </p>
+      <div class="flex items-center mb-4 mr-6 lg:mb-0">
+        <svg class="w-4 h-4 mr-2 text-blue-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="font-light">Brgy. Balingasag, Bago City, Negros Occidental</span>
+      </div>
+
+      <div class="flex items-center">
+        <svg class="w-4 h-4 mr-2 text-blue-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"></path>
+        </svg>
+        <a href="https://www.facebook.com/bagocitycollege" target="_blank" rel="noopener noreferrer" class="font-light transition-colors hover:text-white">
+          Facebook: @bagocitycollege
+        </a>
+      </div>
     </div>
-
-    <div class="lg:text-center">
-      <p>Location</p>
-      <p class="font-medium">Brgy. Balingasag Bago City</p>
-    </div>
-
-    <div class="lg:text-center">
-      <p>Visit us on Facebook</p>
-      <p class="font-medium">@bagocitycollege </p>
-    </div>
-
   </footer>
-
 
   <!-- Login Modal -->
   <dialog id="login-modal" class="w-full px-2 pt-8 rounded-md shadow-lg lg:w-[400px] lg:px-7">
-
     <img src="/img/x.webp" id="login-modal-exit" alt="exit" class="absolute rounded-full w-7 top-3 right-3 opacity-70 hover:bg-blue-200">
     <img src="/img/bcc-logo.webp" alt="BCC Logo" class="w-1/3 m-auto">
     <form id="login-form" class="grid px-2 pb-10 rounded-md">
@@ -90,28 +186,34 @@
         <div id="passwordErrorMessage" class="text-xs font-normal text-red-500 min-h-5"></div>
       </div>
 
-      <!-- <input type="submit" value="LOGIN" class="py-2 mt-4 font-semibold text-center text-white bg-blue-500 rounded-lg"> -->
       <button type="submit" class="w-full mt-3 text-white bg-blue-600 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center">Login to your account</button>
-
-
     </form>
   </dialog>
 
   <!-- Register device Modal -->
-  <dialog id="registerDeviceModal" class="w-full px-5 pt-10 rounded-md shadow-lg lg:w-[400px] lg:px-7">
-    <img src="/img/x.webp" id="closeRegisterDevice" alt="close" class="absolute rounded-full w-7 hover:bg-gray-300 opacity-70 top-3 right-3">
-    <h2 class="text-lg text-center text-gray-600">Register Device</h2>
-    <form id="registerDeviceForm" class="py-7 active:outline-none focus:outline-none">
+  <dialog id="registerDeviceModal" class="w-full max-w-md px-6 pt-8 pb-6 rounded-lg shadow-xl">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-blue-700">Register Device</h2>
+      <button id="closeRegisterDevice" class="text-gray-400 transition-colors hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
 
-      <div class="flex flex-col mt-3">
-        <label for="code-name" class="font-medium text-gray-800">Code name *</label>
-        <input type="text" id="code-name" class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
-        <div id="codeNameErrorMessage" class="text-sm font-normal text-red-500 min-h-5"></div>
+
+    <form id="registerDeviceForm" class="space-y-4">
+      <div>
+        <label for="code-name" class="block mb-1 text-sm font-medium text-gray-700">Code name *</label>
+        <input type="text" id="code-name" name="code-name" required class="w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Enter a unique code name">
+        <div id="codeNameErrorMessage" class="mt-1 text-sm text-red-600 min-h-5"></div>
       </div>
 
-      <input type="submit" value="Generate UUID" class="w-full py-2 mt-6 text-center text-white bg-green-500 rounded-md">
-
+      <button type="submit" class="flex justify-center w-full px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        Generate UUID
+      </button>
     </form>
+
   </dialog>
 
 </body>

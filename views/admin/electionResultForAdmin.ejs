@@ -173,7 +173,7 @@
               <p class="text-2xl font-bold <%= candidate.vote_count === highestVoteCount ? 'text-green-600' : 'text-gray-600' %>">
                 <%= totalVotesInPosition === 0 ? '0%' : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) + '%' %>
               </p>
-              <p class="text-sm text-gray-500"><%= candidate.vote_count %>votes</p>
+              <p class="text-sm text-gray-500"><%= candidate.vote_count %> votes</p>
             </div>
           </div>
 

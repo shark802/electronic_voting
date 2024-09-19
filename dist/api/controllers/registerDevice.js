@@ -38,7 +38,6 @@ function declineRequestFunction(req, res, next) {
             const uuid = req.params.id;
             if (!uuid)
                 throw new customErrors_1.BadRequestError("Missing UUID");
-            console.log(uuid);
             const deleteResult = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE register_devices SET deleted_at = CURDATE() WHERE uuid = ? AND deleted_at IS NULL', [uuid]);
             if (deleteResult.affectedRows < 1)
                 throw new customErrors_1.NotFoundError('No resource modified, check the uuid if correct');

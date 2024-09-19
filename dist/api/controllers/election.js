@@ -155,7 +155,6 @@ function updateElectionStatus(req, res, next) {
                 return next(new customErrors_1.BadRequestError());
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ?', [electionID]);
             const isElectionEnd = (0, checkElectionTimeStatus_1.isElectionEnded)(election);
-            console.log(typeof electionStatus);
             // if request is to activate the election, check first if there is active election running before allowing to activate the election except for active election but already ended.
             if (electionStatus === '1' && !isElectionEnd) {
                 const activeElection = yield (0, query_1.selectQuery)(database_1.pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end > CURTIME())) AND deleted_at IS NULL`);

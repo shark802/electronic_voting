@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.countAllQualifiedVoterForElection = exports.getAllUserElectionParticipatedIn = exports.findOneUserVotedInElection = exports.getAllRecentUsersVotedInElection = exports.getAllRecentUsersVoted = void 0;
+exports.getAllNotVotedInElection = exports.countAllQualifiedVoterForElection = exports.getAllUserElectionParticipatedIn = exports.findOneUserVotedInElection = exports.getAllRecentUsersVotedInElection = exports.getAllRecentUsersVoted = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
 // Select all recent log of user voted in the system
@@ -92,3 +92,19 @@ function countAllQualifiedVoterForElection() {
     });
 }
 exports.countAllQualifiedVoterForElection = countAllQualifiedVoterForElection;
+// select all voters not voted in specific election
+function getAllNotVotedInElection(electionId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const sqlQuery = `
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section 
+        FROM voters v
+        JOIN users u
+        ON v.id_number = u.id_number
+        WHERE v.election_id = ? AND v.voted = 0
+        ORDER BY u.lastname
+    `;
+        const voters = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionId]);
+        return voters;
+    });
+}
+exports.getAllNotVotedInElection = getAllNotVotedInElection;

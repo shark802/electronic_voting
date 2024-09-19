@@ -7,6 +7,7 @@ import registerDeviceRouter from "./routes/registerDevice";
 import populationRouter from "./routes/population";
 import userRouter from "./routes/user";
 import departmentRouter from "./routes/department";
+import reportRouter from "./routes/reports";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use(registerDeviceRouter);
 router.use(populationRouter);
 router.use(userRouter);
 router.use(departmentRouter);
+router.use(reportRouter);
 
 export default router;

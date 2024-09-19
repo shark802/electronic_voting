@@ -1,6 +1,7 @@
 import { RowDataPacket } from "mysql2";
 import { pool } from "../config/database";
 import { selectQuery } from "./query";
+import { User } from "../utils/types/User";
 
 // Select all recent log of user voted in the system
 export async function getAllRecentUsersVoted() {
@@ -80,4 +81,22 @@ export async function countAllQualifiedVoterForElection() {
     const [totalPopulation] = await selectQuery<TotalPopulation>(pool, 'SELECT COUNT(*) as total_population FROM users WHERE year_active = ?', [year_active]);
     return totalPopulation.total_population;
 
+}
+
+// select all voters not voted in specific election
+export async function getAllNotVotedInElection(electionId: string) {
+
+    const sqlQuery = `
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section 
+        FROM voters v
+        JOIN users u
+        ON v.id_number = u.id_number
+        WHERE v.election_id = ? AND v.voted = 0
+        ORDER BY u.lastname
+    `
+    type voterUser = Pick<User, 'firstname' | 'lastname' | 'id_number' | 'course' | 'year_level' | 'section'>
+
+    const voters = await selectQuery<voterUser>(pool, sqlQuery, [electionId]);
+
+    return voters;
 }

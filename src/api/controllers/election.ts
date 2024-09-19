@@ -3,8 +3,7 @@ import { pool } from "../../config/database";
 import { ulid } from "ulid"
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
-import { Program } from "../../utils/enums/program";
-import { deleteQuery, selectQuery, updateQuery } from "../../data_access/query";
+import { selectQuery, updateQuery } from "../../data_access/query";
 import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
 import { eventEmitter } from '../../events/globalEventEmitterInstance';
 import { DEPARTMENT } from "../../config/constants/BccDepartments";
@@ -160,7 +159,7 @@ export async function updateElectionStatus(req: Request, res: Response, next: Ne
 
 		const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ?', [electionID]);
 		const isElectionEnd = isElectionEnded(election);
-		console.log(typeof electionStatus);
+
 		// if request is to activate the election, check first if there is active election running before allowing to activate the election except for active election but already ended.
 		if ((electionStatus as string) === '1' && !isElectionEnd) {
 			const activeElection = await selectQuery<Election>(pool, `SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end > CURTIME())) AND deleted_at IS NULL`);
