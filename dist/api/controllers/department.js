@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDepartmentObject = void 0;
+exports.getDepartmentPrograms = exports.getDepartmentObject = void 0;
 const BccDepartments_1 = require("../../config/constants/BccDepartments");
 function getDepartmentObject(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -22,3 +22,16 @@ function getDepartmentObject(req, res, next) {
     });
 }
 exports.getDepartmentObject = getDepartmentObject;
+function getDepartmentPrograms(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const department = req.query.department;
+            const programs = Object.values(BccDepartments_1.DEPARTMENT[department]);
+            return res.status(200).json({ programs });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getDepartmentPrograms = getDepartmentPrograms;

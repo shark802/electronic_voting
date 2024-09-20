@@ -128,20 +128,27 @@
                   <p id="program-population" class="text-lg font-bold text-gray-800 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
                   <p class="text-sm font-medium text-gray-500">Total voters</p>
                 </div>
+
                 <div class="relative flex-1 text-center">
                   <p id="departmentTotalVotes" class="text-lg font-bold text-green-600 lg:text-3xl">0</p>
                   <p class="text-sm font-medium text-gray-500">Voted</p>
-                  <button class="absolute bottom-0 px-3 py-1 text-xs text-green-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-green-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-green-200">
-                    View Report
-                  </button>
+                  <a href="/report/voter/<%= election.election_id %>?voteStatus=voted&department=<%= course.program_code %>">
+                    <button class="absolute bottom-0 px-3 py-1 text-xs text-green-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-green-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-green-200">
+                      View Report
+                    </button>
+                  </a>
                 </div>
+
                 <div class="relative flex-1 text-center">
                   <p id="departmentNumberOfNotVoted" class="text-lg font-bold text-red-600 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
                   <p class="text-sm font-medium text-gray-500">Not voted</p>
-                  <button class="absolute bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-red-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
-                    View Report
-                  </button>
+                  <a href="/report/voter/<%= election.election_id %>?voteStatus=not-voted&department=<%= course.program_code %>">
+                    <button class="absolute bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-red-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
+                      View Report
+                    </button>
+                  </a>
                 </div>
+
               </div>
             </div>
           </div>

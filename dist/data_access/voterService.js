@@ -9,9 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllNotVotedInElection = exports.countAllQualifiedVoterForElection = exports.getAllUserElectionParticipatedIn = exports.findOneUserVotedInElection = exports.getAllRecentUsersVotedInElection = exports.getAllRecentUsersVoted = void 0;
+exports.getAllNotVotedInElection = exports.countAllQualifiedVoterForElection = exports.getAllUserElectionParticipatedIn = exports.findOneUserVotedInElection = exports.getAllRecentUsersVotedInElection = exports.getAllRecentUsersVoted = exports.getAllVoterInElection = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
+function getAllVoterInElection(electionId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const selectAllVoterQuery = `
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, v.election_id, v.voted
+        FROM users u
+        JOIN voters v
+        ON u.id_number = v.id_number
+        WHERE v.election_id = ?
+        ORDER BY u.lastname
+        `;
+        const voters = yield (0, query_1.selectQuery)(database_1.pool, selectAllVoterQuery, [electionId]);
+        return voters;
+    });
+}
+exports.getAllVoterInElection = getAllVoterInElection;
 // Select all recent log of user voted in the system
 function getAllRecentUsersVoted() {
     return __awaiter(this, void 0, void 0, function* () {

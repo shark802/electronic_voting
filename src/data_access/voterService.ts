@@ -2,6 +2,23 @@ import { RowDataPacket } from "mysql2";
 import { pool } from "../config/database";
 import { selectQuery } from "./query";
 import { User } from "../utils/types/User";
+import { Voter } from "../utils/types/Voter";
+
+export async function getAllVoterInElection(electionId: string) {
+    const selectAllVoterQuery = `
+        SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, v.election_id, v.voted
+        FROM users u
+        JOIN voters v
+        ON u.id_number = v.id_number
+        WHERE v.election_id = ?
+        ORDER BY u.lastname
+        `;
+
+    type voterUser = Partial<User> & Partial<Voter>
+    const voters = await selectQuery<voterUser>(pool, selectAllVoterQuery, [electionId]);
+
+    return voters;
+}
 
 // Select all recent log of user voted in the system
 export async function getAllRecentUsersVoted() {

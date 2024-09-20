@@ -26,7 +26,7 @@ function generateNotVotedReportInPdf(req, res, next) {
             const pdfBuffer = yield (0, generateTablePdf_1.genereateTablePdf)(voterUsers, 'List of Not Voted', election.election_name);
             // Set headers for PDF download
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename="voter_report.pdf"');
+            res.setHeader('Content-Disposition', 'attachment; filename="election_not_voted_report.pdf"');
             // Send the PDF as a response
             res.send(pdfBuffer);
         }

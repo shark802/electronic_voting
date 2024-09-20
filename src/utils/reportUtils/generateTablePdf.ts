@@ -1,5 +1,4 @@
 import jsPDF from "jspdf";
-import election from "../../api/routes/election";
 import { User } from "../types/User";
 
 

@@ -19,7 +19,7 @@ export async function generateNotVotedReportInPdf(req: Request, res: Response, n
 
         // Set headers for PDF download
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="voter_report.pdf"');
+        res.setHeader('Content-Disposition', 'attachment; filename="election_not_voted_report.pdf"');
 
         // Send the PDF as a response
         res.send(pdfBuffer);
