@@ -1,8 +1,8 @@
 import Router from 'express';
-import { generateNotVotedReportInPdf } from '../controllers/reports';
+import { generateVoterReportInPdf } from '../controllers/reports';
 
 const router = Router();
 
-router.get('/pdf-report/not-voted/:id', generateNotVotedReportInPdf);
+router.get('/pdf-report/voter/:id', generateVoterReportInPdf);
 
 export default router

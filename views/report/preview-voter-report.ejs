@@ -9,11 +9,13 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js" defer></script>
   <script src="/javascript/lib/sweetalert2@11.js" defer></script>
-  <script src="/javascript/report/preview-voter-report.js" defer></script>
+  <script type="module" src="/javascript/report/preview-voter-report.js" defer></script>
 
 </head>
 
 <body class="flex flex-col h-screen bg-gray-100">
+
+  <input type="hidden" id="election-id" value="<%= election.election_id %>">
 
   <header class="z-30 w-full bg-blue-600 shadow-md">
     <div class="flex items-center justify-between px-4 py-3 lg:px-6">
@@ -39,7 +41,7 @@
   <div class="flex flex-1 overflow-hidden">
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-20 transition-transform duration-300 ease-in-out transform -translate-x-full bg-white shadow-lg w-80 lg:translate-x-0 lg:static lg:inset-auto">
       <nav class="h-full px-4 py-6 overflow-y-auto">
-        <form action="/report/voter/<%= election.election_id %>" method="get" class="p-6 space-y-6 bg-white">
+        <form id="filter-form" action="/report/voter/<%= election.election_id %>" method="get" class="p-6 space-y-6 bg-white">
           <h2 class="mb-4 text-xl font-semibold text-gray-800">Filter Options</h2>
 
           <div class="space-y-4">
@@ -181,11 +183,6 @@
   <script>
     document.getElementById('show-sidebar').addEventListener('click', function() {
       document.getElementById('sidebar').classList.toggle('-translate-x-full');
-    });
-
-    document.getElementById('generate-pdf').addEventListener('click', function() {
-      // Add your PDF generation logic here
-      alert('PDF generation feature will be implemented soon!');
     });
   </script>
 

@@ -1,4 +1,4 @@
-
+import { confirmAlert } from "/javascript/helper/sweetAlertFunctions.js";
 
 const voteStatusSelectElement = document.body.querySelector('#voteStatus');
 const departmentSelectElement = document.body.querySelector('#department');
@@ -98,3 +98,23 @@ async function fetchProgramSection(newSelectedProgram) {
     return programSectionList; // return list of programs under of the selected department
 }
 
+document.body.querySelector('#generate-pdf').addEventListener('click', async (event) => {
+    try {
+
+        const action = await confirmAlert('Do you want to generate a PDF report?');
+        if (!action.isConfirmed) return;
+
+        const electionId = document.querySelector('#election-id').value;
+        const filterForm = document.querySelector('#filter-form');
+        const formData = new FormData(filterForm);
+
+        const urlWithParams = new URLSearchParams(formData);
+        // await fetch(`/api/pdf-report/voter/${electionId}?${urlWithParams.toString()}`);
+
+        window.location.href = `/api/pdf-report/voter/${electionId}?${urlWithParams.toString()}`
+
+    } catch (error) {
+        console.error(error);
+
+    }
+})
