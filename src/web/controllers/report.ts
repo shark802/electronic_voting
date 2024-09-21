@@ -18,27 +18,32 @@ export async function previewVoterParticipationReports(req: Request, res: Respon
         // query parameters
         const page = req.query.page || 1
         let voteStatus = req.query.voteStatus || 'voted'; // if voteStatus request query is falsy, assign default 'voted' value;
-        const { department, program, year_level } = req.query;
+        const { department, program, year_level, section } = req.query;
 
         const selectedVoteStatus = voteStatus === 'voted' ? 1 : 0;
         const selectedDepartment = department?.toString();
         const selectedProgram = program?.toString();
         const selectedYearLevel = year_level?.toString();
+        const selectedSection = section?.toString();
 
         const departments = Object.keys(DEPARTMENT);
         const programs = department ? Object.values(DEPARTMENT[department as keyof typeof DEPARTMENT]) : []
         const yearLevels = [1, 2, 3, 4];
 
+        const currentYear = new Date().getFullYear();
+        const sqlSectionResult = program ? await selectQuery<Pick<User, 'section'>[]>(pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : []
+        const sections = sqlSectionResult.map(section => Object.values(section)).flat();
+
         const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
         const voters: (Partial<User> & Partial<Voter>)[] = await getAllVoterInElection(election_id);
 
         // filter voters
-        const filteredVoters = filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel);
+        const filteredVoters = filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
         const users = getPaginatedUsers(filteredVoters, page as number);
 
         const usersSize = filteredVoters.length;
 
-        res.render('report/preview-voter-report', { election, departments, programs, yearLevels, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, users, page, usersSize })
+        res.render('report/preview-voter-report', { election, departments, programs, yearLevels, sections, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection, users, page, usersSize })
     } catch (error) {
         next(error)
     }

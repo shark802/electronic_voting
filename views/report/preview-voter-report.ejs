@@ -80,6 +80,17 @@
                 <% }) %>
               </select>
             </div>
+
+            <div>
+              <label for="section" class="block text-sm font-medium text-gray-700">Section</label>
+              <select name="section" id="section" class="block w-full py-2 pl-3 pr-10 mt-1 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="">All Sections</option>
+                <% sections.forEach(section => { %>
+                <option <%= selectedSection === section ? 'selected' : '' %> value="<%= section %>"><%= section %></option>
+                <% }) %>
+              </select>
+            </div>
+
           </div>
 
           <div class="pt-4">
@@ -111,12 +122,15 @@
       <div class="flex-1 overflow-x-hidden overflow-y-auto">
         <div class="container px-6 py-8 mx-auto">
           <% if (users.length === 0) { %>
+
           <p class="text-center text-gray-600">No users found matching the criteria.</p>
+
           <% } else { %>
+
           <div class="overflow-x-auto bg-white rounded-lg shadow">
             <table class="w-full table-auto">
               <thead>
-                <tr class="text-sm leading-normal text-gray-600 uppercase bg-gray-100">
+                <tr class="text-sm leading-normal text-white uppercase bg-blue-500">
                   <th class="px-6 py-3 text-left">#</th>
                   <th class="px-6 py-3 text-left">ID Number</th>
                   <th class="px-6 py-3 text-left">Full Name</th>

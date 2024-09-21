@@ -9,8 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDepartmentPrograms = exports.getDepartmentObject = void 0;
+exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = void 0;
 const BccDepartments_1 = require("../../config/constants/BccDepartments");
+const query_1 = require("../../data_access/query");
+const database_1 = require("../../config/database");
 function getDepartmentObject(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -35,3 +37,18 @@ function getDepartmentPrograms(req, res, next) {
     });
 }
 exports.getDepartmentPrograms = getDepartmentPrograms;
+function getProgramSection(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const program = req.query.program;
+            const currentYear = new Date().getFullYear();
+            const sqlSectionResult = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]);
+            const sections = sqlSectionResult.map(section => Object.values(section)).flat();
+            return res.status(200).json({ sections });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getProgramSection = getProgramSection;

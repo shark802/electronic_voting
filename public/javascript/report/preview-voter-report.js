@@ -4,12 +4,14 @@ const voteStatusSelectElement = document.body.querySelector('#voteStatus');
 const departmentSelectElement = document.body.querySelector('#department');
 const programSelectElement = document.body.querySelector('#program');
 const yearLevelSelectElement = document.body.querySelector('#year_level');
+const sectionSelectElement = document.body.querySelector('#section');
 
 if (!departmentSelectElement.value) {
     // disable the select element to choose program if no department is selected
     programSelectElement.disabled = true;
 }
 
+// When select element change the program option is updated
 departmentSelectElement.addEventListener('input', async (event) => {
     try {
         const newSelectedDepartment = event.target.value;
@@ -42,7 +44,43 @@ departmentSelectElement.addEventListener('input', async (event) => {
         console.log(error.message);
     }
 
+});
+
+// When selected a program add option to select section for that program
+programSelectElement.addEventListener('input', async (event) => {
+    try {
+        const newSelectedProgram = event.target.value;
+
+        if (newSelectedProgram === '') {
+            while (sectionSelectElement.options.length > 1) {
+                sectionSelectElement.remove(1);  // Remove option at index 1 repeatedly
+            }
+
+            sectionSelectElement.disabled = true;
+            return;
+        }
+        sectionSelectElement.disabled = false;
+
+        // update optons for programs select
+        const newSectionOptions = await fetchProgramSection(newSelectedProgram);
+
+        while (sectionSelectElement.options.length > 1) {
+            sectionSelectElement.remove(1);  // Remove option at index 1 repeatedly
+        }
+
+        newSectionOptions.forEach(option => {
+            const newOption = document.createElement('option');
+            newOption.value = option;
+            newOption.textContent = option;
+            sectionSelectElement.appendChild(newOption); // append the new program option of new department selected 
+        });
+
+    } catch (error) {
+        console.log(error.message);
+    }
+
 })
+
 
 async function fetchDepartmentPograms(newSelectedDepartment) {
     const response = await fetch(`/api/program?department=${newSelectedDepartment}`);
@@ -50,5 +88,13 @@ async function fetchDepartmentPograms(newSelectedDepartment) {
     const departmentProgramList = responseObject.programs;
 
     return departmentProgramList; // return list of programs under of the selected department
+}
+
+async function fetchProgramSection(newSelectedProgram) {
+    const response = await fetch(`/api/section?program=${newSelectedProgram}`);
+    const responseObject = await response.json();
+    const programSectionList = responseObject.sections;
+
+    return programSectionList; // return list of programs under of the selected department
 }
 

@@ -1,4 +1,6 @@
 import { DEPARTMENT } from "../config/constants/BccDepartments";
+import { pool } from "../config/database";
+import { selectQuery } from "../data_access/query";
 import { User } from "./types/User";
 import { Voter } from "./types/Voter";
 
@@ -7,7 +9,8 @@ export function filterVotersByFilterParameter(
     voteStatus: number,
     department?: string,
     program?: string,
-    yearLevel?: string
+    yearLevel?: string,
+    section?: string
 ): (Partial<User> & Partial<Voter>)[] {
 
     let filteredVoters = [...voters];
@@ -33,6 +36,11 @@ export function filterVotersByFilterParameter(
     if (yearLevel) {
 
         filteredVoters = filteredVoters.filter(voter => voter?.year_level === parseInt(yearLevel));
+    }
+
+    if (program && section) {
+        filteredVoters = filteredVoters.filter(voter => voter.section === section);
+
     }
 
     return filteredVoters;

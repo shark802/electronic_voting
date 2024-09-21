@@ -26,21 +26,25 @@ function previewVoterParticipationReports(req, res, next) {
             // query parameters
             const page = req.query.page || 1;
             let voteStatus = req.query.voteStatus || 'voted'; // if voteStatus request query is falsy, assign default 'voted' value;
-            const { department, program, year_level } = req.query;
+            const { department, program, year_level, section } = req.query;
             const selectedVoteStatus = voteStatus === 'voted' ? 1 : 0;
             const selectedDepartment = department === null || department === void 0 ? void 0 : department.toString();
             const selectedProgram = program === null || program === void 0 ? void 0 : program.toString();
             const selectedYearLevel = year_level === null || year_level === void 0 ? void 0 : year_level.toString();
+            const selectedSection = section === null || section === void 0 ? void 0 : section.toString();
             const departments = Object.keys(BccDepartments_1.DEPARTMENT);
             const programs = department ? Object.values(BccDepartments_1.DEPARTMENT[department]) : [];
             const yearLevels = [1, 2, 3, 4];
+            const currentYear = new Date().getFullYear();
+            const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : [];
+            const sections = sqlSectionResult.map(section => Object.values(section)).flat();
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);
             // filter voters
-            const filteredVoters = (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel);
+            const filteredVoters = (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const users = (0, getPaginatedUsers_1.getPaginatedUsers)(filteredVoters, page);
             const usersSize = filteredVoters.length;
-            res.render('report/preview-voter-report', { election, departments, programs, yearLevels, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, users, page, usersSize });
+            res.render('report/preview-voter-report', { election, departments, programs, yearLevels, sections, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection, users, page, usersSize });
         }
         catch (error) {
             next(error);
