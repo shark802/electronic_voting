@@ -11,6 +11,7 @@ import { BadRequestError } from "../../utils/customErrors";
 import { filterVotersByFilterParameter } from "../../utils/filterVotersByFilterParameter";
 import { User } from "../../utils/types/User";
 import { Voter } from "../../utils/types/Voter";
+import { createVoterReportTitle } from "../../utils/createVoterReportTitle";
 
 export async function generateVoterReportInPdf(req: Request, res: Response, next: NextFunction) {
     try {
@@ -32,13 +33,13 @@ export async function generateVoterReportInPdf(req: Request, res: Response, next
 
         // filter voters
         const filteredVoters = filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
-        console.log(filteredVoters.length);
+        const reportTitle = createVoterReportTitle(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
 
-        const pdfBuffer = await genereateTablePdf(filteredVoters, 'List of Not Voted', election.election_name)
+        const pdfBuffer = await genereateTablePdf(filteredVoters, reportTitle, election.election_name)
 
         // Set headers for PDF download
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="election_not_voted_report.pdf"');
+        res.setHeader('Content-Disposition', 'attachment; filename="election_voters_report.pdf"');
 
         // Send the PDF as a response
         res.send(pdfBuffer);

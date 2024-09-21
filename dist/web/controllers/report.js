@@ -17,6 +17,7 @@ const BccDepartments_1 = require("../../config/constants/BccDepartments");
 const voterService_1 = require("../../data_access/voterService");
 const filterVotersByFilterParameter_1 = require("../../utils/filterVotersByFilterParameter");
 const getPaginatedUsers_1 = require("../../utils/getPaginatedUsers");
+const createVoterReportTitle_1 = require("../../utils/createVoterReportTitle");
 function previewVoterParticipationReports(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -42,9 +43,10 @@ function previewVoterParticipationReports(req, res, next) {
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);
             // filter voters
             const filteredVoters = (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+            const reportTitle = (0, createVoterReportTitle_1.createVoterReportTitle)(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const users = (0, getPaginatedUsers_1.getPaginatedUsers)(filteredVoters, page);
             const usersSize = filteredVoters.length;
-            res.render('report/preview-voter-report', { election, departments, programs, yearLevels, sections, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection, users, page, usersSize });
+            res.render('report/preview-voter-report', { election, departments, programs, yearLevels, sections, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection, users, page, usersSize, reportTitle });
         }
         catch (error) {
             next(error);

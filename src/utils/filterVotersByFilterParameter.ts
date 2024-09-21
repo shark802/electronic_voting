@@ -1,6 +1,4 @@
 import { DEPARTMENT } from "../config/constants/BccDepartments";
-import { pool } from "../config/database";
-import { selectQuery } from "../data_access/query";
 import { User } from "./types/User";
 import { Voter } from "./types/Voter";
 

@@ -17,6 +17,7 @@ const database_1 = require("../../config/database");
 const generateTablePdf_1 = require("../../utils/reportUtils/generateTablePdf");
 const customErrors_1 = require("../../utils/customErrors");
 const filterVotersByFilterParameter_1 = require("../../utils/filterVotersByFilterParameter");
+const createVoterReportTitle_1 = require("../../utils/createVoterReportTitle");
 function generateVoterReportInPdf(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -34,11 +35,11 @@ function generateVoterReportInPdf(req, res, next) {
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);
             // filter voters
             const filteredVoters = (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
-            console.log(filteredVoters.length);
-            const pdfBuffer = yield (0, generateTablePdf_1.genereateTablePdf)(filteredVoters, 'List of Not Voted', election.election_name);
+            const reportTitle = (0, createVoterReportTitle_1.createVoterReportTitle)(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+            const pdfBuffer = yield (0, generateTablePdf_1.genereateTablePdf)(filteredVoters, reportTitle, election.election_name);
             // Set headers for PDF download
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename="election_not_voted_report.pdf"');
+            res.setHeader('Content-Disposition', 'attachment; filename="election_voters_report.pdf"');
             // Send the PDF as a response
             res.send(pdfBuffer);
         }

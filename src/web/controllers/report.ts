@@ -9,6 +9,7 @@ import { User } from "../../utils/types/User";
 import { Voter } from "../../utils/types/Voter";
 import { filterVotersByFilterParameter } from "../../utils/filterVotersByFilterParameter";
 import { getPaginatedUsers } from "../../utils/getPaginatedUsers";
+import { createVoterReportTitle } from "../../utils/createVoterReportTitle";
 
 export async function previewVoterParticipationReports(req: Request, res: Response, next: NextFunction) {
     try {
@@ -39,11 +40,13 @@ export async function previewVoterParticipationReports(req: Request, res: Respon
 
         // filter voters
         const filteredVoters = filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+        const reportTitle = createVoterReportTitle(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+
         const users = getPaginatedUsers(filteredVoters, page as number);
 
         const usersSize = filteredVoters.length;
 
-        res.render('report/preview-voter-report', { election, departments, programs, yearLevels, sections, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection, users, page, usersSize })
+        res.render('report/preview-voter-report', { election, departments, programs, yearLevels, sections, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection, users, page, usersSize, reportTitle })
     } catch (error) {
         next(error)
     }
