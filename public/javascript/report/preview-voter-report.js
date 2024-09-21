@@ -22,6 +22,12 @@ departmentSelectElement.addEventListener('input', async (event) => {
             }
 
             programSelectElement.disabled = true;
+
+            while (sectionSelectElement.options.length > 1) {
+                sectionSelectElement.remove(1);  // Remove option at index 1 repeatedly
+            }
+
+            sectionSelectElement.disabled = true;
             return;
         }
         programSelectElement.disabled = false;

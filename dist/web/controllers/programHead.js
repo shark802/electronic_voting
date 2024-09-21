@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.programHeadDashboardVoteTallyPage = exports.programHeadDashboardOverviewPage = void 0;
 const database_1 = require("../../config/database");
 const query_1 = require("../../data_access/query");
-const program_1 = require("../../utils/enums/program");
-const position_1 = require("../../utils/enums/position");
+const CandidatePosition_1 = require("../../config/constants/CandidatePosition");
+const BccDepartments_1 = require("../../config/constants/BccDepartments");
 function programHeadDashboardOverviewPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -43,8 +43,8 @@ function programHeadDashboardVoteTallyPage(req, res, next) {
                 return res.redirect('/?redirectMessage=You need to login first');
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ?', [userSession.user_id]);
             const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-            const candidatePosition = Object.values(position_1.Position);
-            const programs = Object.values(program_1.Program);
+            const candidatePosition = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
+            const programs = Object.keys(BccDepartments_1.DEPARTMENT);
             const electionIdList = elections.map(election => election.election_id);
             let candidates = [];
             if (electionIdList.length > 0) {

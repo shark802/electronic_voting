@@ -27,11 +27,7 @@
             </svg>
           </button>
         </a>
-        <button id="show-sidebar" class="p-2 text-white transition-colors duration-200 rounded-md lg:hidden hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Toggle sidebar">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
+
       </div>
       <h1 class="text-xl font-semibold text-white lg:text-2xl"><%= reportTitle %></h1>
       <div class="w-6 lg:w-0"></div> <!-- Placeholder for alignment -->
@@ -39,10 +35,18 @@
   </header>
 
   <div class="flex flex-1 overflow-hidden">
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-20 transition-transform duration-300 ease-in-out transform -translate-x-full bg-white shadow-lg w-80 lg:translate-x-0 lg:static lg:inset-auto">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-in-out transform -translate-x-full bg-white shadow-lg w-80 lg:translate-x-0 lg:static lg:inset-auto">
+      <div class="flex items-center justify-between p-4 border-b lg:hidden">
+        <h2 class="text-xl font-semibold text-gray-800">Filter Options</h2>
+        <button id="close-sidebar" class="p-2 text-gray-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
       <nav class="h-full px-4 py-6 overflow-y-auto">
-        <form id="filter-form" action="/report/voter/<%= election.election_id %>" method="get" class="p-6 space-y-6 bg-white">
-          <h2 class="mb-4 text-xl font-semibold text-gray-800">Filter Options</h2>
+        <form id="filter-form" action="/report/voter/<%= election.election_id %>" method="get" class="space-y-6 bg-white">
+          <h2 class="hidden mb-4 text-xl font-semibold text-gray-800 lg:block">Filter Options</h2>
 
           <div class="space-y-4">
             <div>
@@ -110,19 +114,28 @@
     <main class="flex flex-col flex-1 overflow-hidden bg-blue-50">
       <!-- Fixed header with Generate PDF button -->
       <div class="z-10 bg-white shadow-sm">
-        <div class="container flex justify-end px-6 py-4 mx-auto">
-          <button id="generate-pdf" class="flex items-center px-4 py-2 text-sm font-medium text-white transition-colors duration-300 bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        <div class="container flex items-center justify-between px-4 py-3 mx-auto sm:px-6">
+          <button id="show-sidebar" class="p-2 text-blue-600 transition-colors duration-200 rounded-md lg:hidden hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" aria-label="Toggle sidebar">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
-            Generate PDF Report
           </button>
+
+          <div class="flex justify-end flex-1">
+            <button id="generate-pdf" class="flex items-center px-3 py-2 text-sm font-medium text-white transition-colors duration-300 bg-green-500 rounded-md sm:px-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+              <svg class="w-5 h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+              <span class="hidden sm:inline">Generate PDF Report</span>
+              <span class="sm:hidden">PDF</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Scrollable content area -->
       <div class="flex-1 overflow-x-hidden overflow-y-auto">
-        <div class="container px-6 py-8 mx-auto">
+        <div class="container px-3 py-8 mx-auto lg:px-6">
           <% if (users.length === 0) { %>
 
           <p class="text-center text-gray-600">No users found matching the criteria.</p>
@@ -182,7 +195,11 @@
 
   <script>
     document.getElementById('show-sidebar').addEventListener('click', function() {
-      document.getElementById('sidebar').classList.toggle('-translate-x-full');
+      document.getElementById('sidebar').classList.remove('-translate-x-full');
+    });
+
+    document.getElementById('close-sidebar').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.add('-translate-x-full');
     });
   </script>
 

@@ -7,7 +7,8 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
     try {
         const { electionId, selectedCandidate } = req.body;
         const user_id = req.session.user!.user_id;
-        // const user_id = '2021116418';
+
+        console.log(selectedCandidate);
 
         if (!electionId) throw new BadRequestError('Election ID is missing');
         if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0) throw new BadRequestError('Selected candidate data is missing or invalid');

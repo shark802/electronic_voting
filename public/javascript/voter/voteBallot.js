@@ -7,6 +7,8 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
 
     const selectedCandidate = getSelectedCandidatePerPosition(event);
 
+    console.log(selectedCandidate);
+
     try {
         const candidateObjectArray = await fetchSelectedCandidateInfo(selectedCandidate); // fetch info of candidate selected
         displayConfirmVoteModal(candidateObjectArray); // display the candidate info to confirm
@@ -39,17 +41,71 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
 /* Helper Functions */
 
 // Retrieves voter selected candidates after submitting the ballot form.
-// Returns an object mapping position labels (as keys) to the values of the selected candidates' id numbers.
+// Returns an object mapping position labels (as keys) to the values of the selected candidates' id numbers.\
+
+// function getSelectedCandidatePerPosition(event) {
+//     let castedVote = {}
+//     event.target.querySelectorAll("section").forEach(position => {
+//         const positionCandidateRun = position.querySelector('#position-label').textContent.trim();
+//         const selectedCandidate = position.querySelector('input[type=radio]:checked');
+
+//         const key = positionCandidateRun.toUpperCase();
+//         if (selectedCandidate) {
+//             castedVote[key] = selectedCandidate.value;
+//         }
+//     });
+
+//     return castedVote;
+// }
+
+// function getSelectedCandidatePerPosition(event) {
+//     let castedVote = {}
+
+//     event.target.querySelectorAll("section").forEach(position => {
+//         const positionCandidateRun = position.querySelector('#position-label').textContent.trim();
+
+//         if (positionCandidateRun === 'SENATOR') {
+//             const senatorSelectedCandidates = position.querySelectorAll('input[type=checkbox]:checked');
+//             const senatorCandidate = Array.from(senatorSelectedCandidates).flatMap(candidate => candidate.value);
+
+//             castedVote[positionCandidateRun] = senatorCandidate;
+
+//         } else {
+
+//             const selectedCandidate = position.querySelector('input[type=radio]:checked');
+//             castedVote[positionCandidateRun] = selectedCandidate.value;
+//         }
+
+//     });
+
+//     return castedVote;
+// }
+
 function getSelectedCandidatePerPosition(event) {
-    let castedVote = {}
+    let castedVote = []
+
     event.target.querySelectorAll("section").forEach(position => {
         const positionCandidateRun = position.querySelector('#position-label').textContent.trim();
-        const selectedCandidate = position.querySelector('input[type=radio]:checked');
 
-        const key = positionCandidateRun.toUpperCase();
-        if (selectedCandidate) {
-            castedVote[key] = selectedCandidate.value;
+        if (positionCandidateRun === 'SENATOR') {
+            const senatorSelectedCandidates = position.querySelectorAll('input[type=checkbox]:checked');
+
+            Array.from(senatorSelectedCandidates).map(candidate => {
+                castedVote.push({
+                    position: positionCandidateRun,
+                    id_number: candidate.value
+                })
+            })
+
+        } else {
+
+            const selectedCandidate = position.querySelector('input[type=radio]:checked');
+            castedVote.push({
+                position: positionCandidateRun,
+                id_number: selectedCandidate.value
+            })
         }
+
     });
 
     return castedVote;
@@ -95,7 +151,7 @@ async function fetchSelectedCandidateInfo(selectedCandidateObject) {
         const electionIdInUrl = window.location.href.split("/");
         const electionId = electionIdInUrl[electionIdInUrl.length - 1]
 
-        const urlParams = Object.values(selectedCandidateObject).map(candidate => `id_number=${candidate}`).join('&');
+        const urlParams = selectedCandidateObject.map(candidate => `id_number=${candidate.id_number}`).join('&');
         const url = `/api/candidate-info?electionId=${electionId}&${urlParams}`
 
         showLoading();

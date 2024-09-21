@@ -5,6 +5,8 @@ import { Election } from "../../utils/types/Election";
 import { User } from "../../utils/types/User";
 import { Program } from "../../utils/enums/program";
 import { Position } from "../../utils/enums/position";
+import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
+import { DEPARTMENT } from "../../config/constants/BccDepartments";
 
 export async function programHeadDashboardOverviewPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -35,8 +37,8 @@ export async function programHeadDashboardVoteTallyPage(req: Request, res: Respo
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [userSession.user_id]);
 
         const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-        const candidatePosition = Object.values(Position);
-        const programs = Object.values(Program);
+        const candidatePosition = Object.values(CANDIDATE_POSITION);
+        const programs = Object.keys(DEPARTMENT);
 
         const electionIdList = elections.map(election => election.election_id);
         let candidates: unknown[] = []

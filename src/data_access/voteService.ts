@@ -2,6 +2,7 @@ import { PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { selectQuery } from './query';
 import { Vote } from '../utils/types/Votes';
 import { pool } from '../config/database';
+import { Candidate } from '../utils/types/Candidate';
 
 
 export async function checkIfUserHasVoted(userId: string, electionId: string) {
@@ -9,11 +10,11 @@ export async function checkIfUserHasVoted(userId: string, electionId: string) {
     return getUserVoteHistory.length > 0; // return true if the result is not zero, false otherwise
 }
 
-export async function saveVote(connection: PoolConnection, selectedCandidateObject: Record<string, string>, userId: string, electionId: string) {
-    const placeholders = Object.keys(selectedCandidateObject).map(() => "(?, ?, ?, ?)").join(", ");
+export async function saveVote(connection: PoolConnection, selectedCandidateObject: Pick<Candidate, 'id_number' | 'position'>[], userId: string, electionId: string) {
+    const placeholders = selectedCandidateObject.map(() => "(?, ?, ?, ?)").join(", ");
 
-    const insertParameters = Object.entries(selectedCandidateObject).reduce((params, [position, candidateId]) => {
-        params.push(userId, candidateId, position, electionId);
+    const insertParameters = selectedCandidateObject.reduce((params, candidate) => {
+        params.push(userId, candidate.id_number, candidate.position, electionId);
         return params;
     }, [] as any[]);
 
@@ -23,14 +24,14 @@ export async function saveVote(connection: PoolConnection, selectedCandidateObje
     return;
 }
 
-export async function incrementCandidateVoteCount(connection: PoolConnection, selectedCandidates: Record<string, string>, electionId: string) {
-    for (const candidateIdNumber of Object.values(selectedCandidates)) {
+export async function incrementCandidateVoteCount(connection: PoolConnection, selectedCandidates: Pick<Candidate, 'id_number' | 'position'>[], electionId: string) {
+    for (const candidate of selectedCandidates) {
 
-        const [selectResult] = await connection.execute<RowDataPacket[]>("SELECT * FROM candidates WHERE id_number = ? AND election_id = ? FOR UPDATE", [candidateIdNumber, electionId]);
-        if (selectResult.length === 0) throw new Error(`Candidate with id ${candidateIdNumber} and election id ${electionId} not found`);
+        const [selectResult] = await connection.execute<RowDataPacket[]>("SELECT * FROM candidates WHERE id_number = ? AND election_id = ? FOR UPDATE", [candidate.id_number, electionId]);
+        if (selectResult.length === 0) throw new Error(`Candidate with id ${candidate.id_number} and election id ${electionId} not found`);
 
-        const [updateResult] = await connection.execute<ResultSetHeader>("UPDATE candidates SET vote_count = vote_count + 1 WHERE id_number = ? AND election_id = ?", [candidateIdNumber, electionId]);
-        if (updateResult.affectedRows === 0) throw new Error(`Failed to update vote count for candidate id ${candidateIdNumber} and election id ${electionId}`);
+        const [updateResult] = await connection.execute<ResultSetHeader>("UPDATE candidates SET vote_count = vote_count + 1 WHERE id_number = ? AND election_id = ?", [candidate.id_number, electionId]);
+        if (updateResult.affectedRows === 0) throw new Error(`Failed to update vote count for candidate id ${candidate.id_number} and election id ${electionId}`);
 
     }
 }

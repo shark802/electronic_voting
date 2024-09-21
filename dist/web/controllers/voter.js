@@ -19,6 +19,7 @@ const election_1 = require("../../data_access/election");
 const customErrors_1 = require("../../utils/customErrors");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
 const CandidatePosition_1 = require("../../config/constants/CandidatePosition");
+const DepartmentMaxSenatorVote_1 = require("../../config/constants/DepartmentMaxSenatorVote");
 function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -65,9 +66,10 @@ function renderElectionBallot(req, res, next) {
                 (0, query_1.selectQuery)(database_1.pool, sqlQuery, [election_id])
             ]);
             const candidatePositionList = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
+            const departmentMaxSenatorVote = DepartmentMaxSenatorVote_1.DEPARTMENT_MAX_SENATOR_VOTE;
             if (!(0, isValidTimeToVote_1.isValidTimeToVote)(election))
                 return res.redirect("/election?redirectMessage=Voting is currently closed");
-            return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election });
+            return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election, departmentMaxSenatorVote });
         }
         catch (error) {
             next(error);

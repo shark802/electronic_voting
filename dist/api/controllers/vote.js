@@ -18,7 +18,7 @@ function saveVoteFunction(req, res, next) {
         try {
             const { electionId, selectedCandidate } = req.body;
             const user_id = req.session.user.user_id;
-            // const user_id = '2021116418';
+            console.log(selectedCandidate);
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election ID is missing');
             if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0)

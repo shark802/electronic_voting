@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js" defer></script>
   <script src="/javascript/lib/sweetalert2@11.js" defer></script>
-  <script type="module" src="/javascript/programHead/dashboard-overview-program-head.js" defer></script>
+  <script type="module" src="/javascript/admin/dashboard_overview.js" defer></script>
 
   <style>
     #manage-population-modal::backdrop {
@@ -80,25 +80,24 @@
     </nav>
   </div>
 
-  <!-- Main Content -->
   <main class="relative flex flex-col w-full m-auto overflow-y-auto lg:w-4/5 no-scrollbar h-dvh lg:px-2">
 
-    <div class="flex items-center w-full py-3 m-0 lg:h-20 lg:pt-7">
-      <img id="show-sidebar" src="/img/menu.webp" alt="menu" class="w-6 h-6 m-3 ml-5 lg:hidden ">
-      <h1 class="relative m-auto font-sans text-2xl font-bold text-white -translate-x-4 justify-items-center lg:text-3xl">Election Overview</h1>
-    </div>
+    <header class="sticky top-0 flex items-center justify-between w-full px-4 py-3 bg-blue-600 shadow-md lg:h-20 lg:px-6">
+      <button id="show-sidebar" class="p-2 text-white transition-colors duration-200 rounded-md lg:hidden hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Toggle sidebar">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <h1 class="font-sans text-2xl font-bold text-white lg:text-3xl">Election Overview</h1>
 
-    <div id="overview-container" class="relative h-full p-2 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:p-5 lg:mb-3 bg-blue-50 no-scrollbar">
-      <input type="hidden" id="program" value="<%= user.course %>">
-      <% 
-      
-      if (elections && elections.length > 0) {
-        elections.forEach(election => {
+    </header>
 
-      %>
+    <div id="overview-container" class="relative h-full p-2 mt-3 overflow-hidden overflow-x-hidden overflow-y-auto rounded-lg lg:p-5 lg:mb-2 bg-blue-50 no-scrollbar">
 
-      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-2 mb-8 bg-gray-100 border border-gray-300 rounded-sm shadow-md ">
+      <% if (elections && elections.length > 0) { 
+        elections.forEach(election => { %>
 
+      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-3 mb-12 border-2 rounded-md">
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
 
@@ -109,95 +108,122 @@
           </div>
           <div class="flex items-center space-x-2">
             <span id="election-status" class="px-3 py-1 text-xs font-medium bg-blue-500 rounded-full"><%= election.is_active ? 'Active' : 'Inactive' %></span>
-
+            <button id="manage" class="hidden p-2 text-blue-100 transition-colors duration-200 rounded-full hover:text-white focus:outline-none ">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 16l2 2 4-4" />
+              </svg>
+              <span class="sr-only">Close Election</span>
+            </button>
           </div>
         </div>
 
-        <div class="flex flex-grow w-full gap-1 px-1 py-2 mt-2 lg:px-3 lg:gap-3">
-          <div class="w-1/3 p-2 border border-blue-700 rounded-md bg-gradient-to-r from-blue-600 to-blue-700 lg:py-6 lg:px-4 min-h-20">
-            <div class="flex flex-wrap items-center lg:flex-nowrap">
-              <img src="/img/population.webp" class="relative w-5 mr-1 lg:mr-3 lg:w-8 lg:top-[2px]" alt="population">
-              <div class="min-h-8">
-                <p id="total-population" class="text-xl font-bold text-white lg:text-4xl">N/A</p>
+        <div class="flex flex-grow w-full gap-2 px-2 py-3 mt-3 lg:px-4 lg:gap-4 lg:py-4">
+
+          <div class="w-1/3 p-3 border-2 border-blue-700 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 lg:p-6 min-h-24">
+            <div class="flex flex-col items-center lg:flex-row lg:items-center">
+              <svg class="w-6 h-6 mb-2 text-white lg:w-10 lg:h-10 lg:mb-0 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <div class="flex flex-col items-center lg:flex-row lg:items-baseline">
+                <p id="total-population" class="text-2xl font-bold text-white lg:text-4xl"><%= election.total_populations || "N/A" %></p>
+                <p id="total-population-percentage" class="text-sm font-medium text-blue-200 lg:text-xl lg:ml-2"></p>
               </div>
             </div>
-            <p class="pt-1 text-xs font-medium text-white lg:text-sm">Total students</p>
+            <p class="mt-3 text-xs font-bold tracking-wider text-center text-blue-200 uppercase lg:text-left lg:text-sm">Total students</p>
           </div>
 
-          <div class="w-1/3 p-2 border border-green-500 rounded-md bg-gradient-to-r from-green-600 to-green-700 lg:py-6 lg:px-4 min-h-20">
-            <div class="min-h-8">
-              <div class="flex flex-wrap items-center lg:flex-nowrap">
-                <img src="/img/like.webp" class="relative lg:w-8 w-5 lg:mr-3 mr-1 top-[1px]" alt="like">
-                <p id="total-voted" class="text-lg font-bold text-white lg:text-4xl">0</p>
-                <span id="total-voted-percentage" class="mx-3 text-lg font-semibold text-white lg:text-4xl lg:mx-5"> </span>
+          <div class="w-1/3 p-3 border-2 border-green-500 rounded-lg bg-gradient-to-r from-green-600 to-green-700 lg:p-6 min-h-24">
+            <div class="flex flex-col items-center lg:flex-row lg:items-center">
+              <svg class="w-6 h-6 mb-2 text-white lg:w-10 lg:h-10 lg:mb-0 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+              <div class="flex flex-col items-center lg:flex-row lg:items-baseline">
+                <p id="total-voted" class="text-2xl font-bold text-white lg:text-4xl">0</p>
+                <p id="total-voted-percentage" class="text-sm font-medium text-green-200 lg:text-xl lg:ml-2">(0.00%)</p>
               </div>
             </div>
-            <p class="pt-1 text-xs font-medium text-white lg:text-sm">Voted</p>
+            <p class="mt-3 text-xs font-bold tracking-wider text-center text-green-200 uppercase lg:text-left lg:text-sm">Voted</p>
           </div>
 
-          <div class="w-1/3 p-2 border border-red-500 rounded-md bg-gradient-to-r from-red-600 to-red-700 lg:py-6 lg:px-4 min-h-20">
-            <div class="min-h-8">
-              <div id="not-voted-overview" class="flex flex-wrap items-center lg:flex-nowrap">
-                <img src="/img/dislike.webp" class="relative lg:w-8 w-5 lg:mr-3 mr-1 top-[3px]" alt="dislike">
-                <p id="number-of-not-voted" class="text-xl font-bold text-white lg:text-4xl">N/A</p>
-                <span id="not-voted-percentage" class="mx-3 text-xl font-semibold text-white lg:text-4xl lg:mx-5"></span>
+          <div class="w-1/3 p-3 border-2 border-red-500 rounded-lg bg-gradient-to-r from-red-600 to-red-700 lg:p-6 min-h-24">
+            <div class="flex flex-col items-center lg:flex-row lg:items-center">
+              <svg class="w-6 h-6 mb-2 text-white lg:w-10 lg:h-10 lg:mb-0 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+              <div class="flex flex-col items-center lg:flex-row lg:items-baseline">
+                <p id="number-of-not-voted" class="text-2xl font-bold text-white lg:text-4xl">N/A</p>
+                <p id="total-not-voted-percentage" class="text-sm font-medium text-red-200 lg:text-xl lg:ml-2">(N/A)</p>
               </div>
             </div>
-
-            <p class="pt-1 text-xs font-medium text-white lg:text-sm">Not voted</p>
+            <p class="mt-3 text-xs font-bold tracking-wider text-center text-red-200 uppercase lg:text-left lg:text-sm">Not voted</p>
           </div>
 
         </div>
 
         <div class="grid gap-1 px-1 py-2 lg:gap-2 lg:px-3">
-          <%
-          if (user) {
-          %>
-
-          <div id="program" class="w-full pb-2 text-center bg-white border rounded-md shadow-sm min-h-10">
-
-            <div id="program-code" class="py-1 text-sm font-bold text-center"> <%= user.course %> </div>
-
-            <div class="flex flex-grow w-full gap-1 px-1 mt-2 lg:px-3 lg:gap-3">
-
-              <div class="w-1/3 rounded-sm min-h-10">
-                <div id="program-population" class="text-lg font-bold text-gray-600 lg:text-3xl"> N/A </div>
-                <p class="font-medium text-gray-500">Total voter</p>
+          <% populationPerProgram.filter(program => program.election_id === election.election_id && program.program_code === user.course).forEach(course => { %>
+          <div id="program" class="w-full bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group">
+            <div class="flex flex-col lg:flex-row">
+              <div id="program-code" data-program-code="<%= course.program_code %>" class="flex items-center justify-center text-2xl font-bold text-white bg-blue-600 lg:py-5 lg:px-6 lg:w-1/4">
+                <div class="text-center">
+                  <p class="mb-1 text-lg font-bold lg:text-3xl"><%= course.program_code %></p>
+                  <p class="text-xs tracking-wider uppercase opacity-75">Department</p>
+                </div>
               </div>
+              <div class="flex flex-grow w-full gap-2 p-4 lg:gap-4 lg:py-5">
+                <div class="flex-1 text-center">
+                  <p id="program-population" class="text-lg font-bold text-gray-800 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
+                  <p class="text-sm font-medium text-gray-500">Total voters</p>
+                </div>
 
-              <div class="w-1/3 rounded-sm min-h-10">
-                <div id="program-vote-count" class="text-lg font-bold text-gray-600 lg:text-3xl"> 0 </div>
-                <p class="font-medium text-gray-500">Voted</p>
+                <div class="relative flex-1 text-center">
+                  <p id="departmentTotalVotes" class="text-lg font-bold text-green-600 lg:text-3xl">0</p>
+                  <p class="text-sm font-medium text-gray-500">Voted</p>
+                  <a href="/report/voter/<%= election.election_id %>?voteStatus=voted&department=<%= course.program_code %>">
+                    <button class="absolute bottom-0 px-3 py-1 text-xs text-green-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-green-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-green-200">
+                      View Report
+                    </button>
+                  </a>
+                </div>
+
+                <div class="relative flex-1 text-center">
+                  <p id="departmentNumberOfNotVoted" class="text-lg font-bold text-red-600 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
+                  <p class="text-sm font-medium text-gray-500">Not voted</p>
+                  <a href="/report/voter/<%= election.election_id %>?voteStatus=not-voted&department=<%= course.program_code %>">
+                    <button class="absolute bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-red-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
+                      View Report
+                    </button>
+                  </a>
+                </div>
+
               </div>
-
-              <div class="w-1/3 rounded-sm min-h-10">
-                <div id="program-number-of-not-voted" class="text-lg font-bold text-gray-600 lg:text-3xl"> N/A </div>
-                <p class="font-medium text-gray-500">Not voted</p>
-              </div>
-
             </div>
-
           </div>
-
+          <% }) %>
         </div>
 
       </section>
 
-      <%
-       }
-       })
-        } else { 
-      %>
+      <% }) } else { %>
 
-      <section class="lg:w-[600px] border-2 border-gray-300 lg:px-10 box-border shadow-sm bg-white rounded-md min-h-28 grid m-auto py-6 mt-7">
-        <img src="/img/empty-folder.webp" alt="empty folder" class="w-20 h-20 m-auto lg:w-24 lg:h-24">
-        <h1 class="m-auto mt-3 text-lg font-semibold text-center lg:w-3/5">It seems there are no active election at the moment</h1>
-
+      <section class="max-w-2xl mx-auto mt-5 overflow-hidden bg-white rounded-lg shadow-md">
+        <div class="p-8 text-center w-[90%] m-auto">
+          <img src="/img/empty-folder.webp" alt="Empty folder" class="w-24 h-24 mx-auto mb-6 opacity-75">
+          <h1 class="mb-4 text-2xl font-bold text-gray-800">No Elections Scheduled</h1>
+          <p class="mb-6 text-gray-600">It seems there are no elections scheduled at the moment. Would you like to create a new one?</p>
+          <a href="/admin/election/new" class="inline-block">
+            <button class="px-6 py-3 font-semibold text-white transition duration-300 ease-in-out transform bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 hover:-translate-y-1">
+              <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Create New Election
+            </button>
+          </a>
+        </div>
       </section>
 
-      <%
-      }
-      %>
+      <% } %>
 
     </div>
 

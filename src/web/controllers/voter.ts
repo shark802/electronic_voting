@@ -11,6 +11,7 @@ import { getAllCandidatesInElection, getCandidatesTotalTally, getElectionInfoByI
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
+import { DEPARTMENT_MAX_SENATOR_VOTE } from "../../config/constants/DepartmentMaxSenatorVote";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -59,10 +60,11 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
             selectQuery(pool, sqlQuery, [election_id])
         ]);
         const candidatePositionList = Object.values(CANDIDATE_POSITION);
+        const departmentMaxSenatorVote = DEPARTMENT_MAX_SENATOR_VOTE;
 
         if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=Voting is currently closed")
 
-        return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election });
+        return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election, departmentMaxSenatorVote });
     } catch (error) {
         next(error);
     }

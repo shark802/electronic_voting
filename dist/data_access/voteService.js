@@ -21,9 +21,9 @@ function checkIfUserHasVoted(userId, electionId) {
 exports.checkIfUserHasVoted = checkIfUserHasVoted;
 function saveVote(connection, selectedCandidateObject, userId, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const placeholders = Object.keys(selectedCandidateObject).map(() => "(?, ?, ?, ?)").join(", ");
-        const insertParameters = Object.entries(selectedCandidateObject).reduce((params, [position, candidateId]) => {
-            params.push(userId, candidateId, position, electionId);
+        const placeholders = selectedCandidateObject.map(() => "(?, ?, ?, ?)").join(", ");
+        const insertParameters = selectedCandidateObject.reduce((params, candidate) => {
+            params.push(userId, candidate.id_number, candidate.position, electionId);
             return params;
         }, []);
         const prepareStatement = `INSERT INTO votes (voter_id, candidate_id, position, election_id) VALUES ${placeholders}`;
@@ -34,13 +34,13 @@ function saveVote(connection, selectedCandidateObject, userId, electionId) {
 exports.saveVote = saveVote;
 function incrementCandidateVoteCount(connection, selectedCandidates, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
-        for (const candidateIdNumber of Object.values(selectedCandidates)) {
-            const [selectResult] = yield connection.execute("SELECT * FROM candidates WHERE id_number = ? AND election_id = ? FOR UPDATE", [candidateIdNumber, electionId]);
+        for (const candidate of selectedCandidates) {
+            const [selectResult] = yield connection.execute("SELECT * FROM candidates WHERE id_number = ? AND election_id = ? FOR UPDATE", [candidate.id_number, electionId]);
             if (selectResult.length === 0)
-                throw new Error(`Candidate with id ${candidateIdNumber} and election id ${electionId} not found`);
-            const [updateResult] = yield connection.execute("UPDATE candidates SET vote_count = vote_count + 1 WHERE id_number = ? AND election_id = ?", [candidateIdNumber, electionId]);
+                throw new Error(`Candidate with id ${candidate.id_number} and election id ${electionId} not found`);
+            const [updateResult] = yield connection.execute("UPDATE candidates SET vote_count = vote_count + 1 WHERE id_number = ? AND election_id = ?", [candidate.id_number, electionId]);
             if (updateResult.affectedRows === 0)
-                throw new Error(`Failed to update vote count for candidate id ${candidateIdNumber} and election id ${electionId}`);
+                throw new Error(`Failed to update vote count for candidate id ${candidate.id_number} and election id ${electionId}`);
         }
     });
 }

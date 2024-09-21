@@ -14,6 +14,35 @@
     dialog::backdrop {
       background-color: rgba(0, 0, 0, 0.4);
     }
+
+    .custom-checkbox {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      display: inline-block;
+      position: relative;
+      background-color: #f1f1f1;
+      border: 2px solid #cacece;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .custom-checkbox:checked {
+      background-color: #f1f1f1;
+      border-color: #3b82f6;
+    }
+
+    .custom-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #2c74e8;
+    }
   </style>
 </head>
 
@@ -61,7 +90,7 @@
     %>
 
       <% if (candidatePerPosition.length > 0) { %>
-      <section class="my-3 transition-shadow duration-300 border-2 rounded-md shadow-md lg:mb-7 hover:shadow-lg">
+      <section class="my-3 transition-shadow duration-300 border-2 rounded-md shadow-md lg:mb-7 hover:shadow-lg" <%= position === 'SENATOR' ? `data-max-vote="${departmentMaxSenatorVote[user.course]}"` : '' %>>
 
         <div id="position-label" class="w-full py-2 mb-3 text-lg font-bold text-center text-white bg-blue-600 rounded-tl-md rounded-tr-md"> <%= position %> </div>
         <div class="p-4">
@@ -74,7 +103,13 @@
             <% } %>
             <div class="flex-grow">
               <label for="<%= candidateOfPosition.id_number %>" class="flex items-center cursor-pointer">
+
+                <% if (position === 'SENATOR') { %>
+                <input name="<%= position %>" type="checkbox" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 mr-3 custom-checkbox">
+                <% } else { %>
                 <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 mr-3 text-blue-600 bg-gray-100 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600">
+                <% } %>
+
                 <div>
                   <span class="text-base font-bold text-gray-700 lg:text-lg"><%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %></span>
                   <span class="block text-sm font-normal text-gray-500"><%= candidateOfPosition.party %></span>
