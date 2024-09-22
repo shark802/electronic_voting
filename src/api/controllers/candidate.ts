@@ -7,7 +7,6 @@ import { ulid } from "ulid";
 import { User } from "../../utils/types/User";
 import { getUserCandidate } from "../../data_access/candidateService";
 import fs from 'fs';
-import { DEPARTMENT } from '../../config/constants/BccDepartments';
 import path from "path";
 
 export async function addCandidateFunction(req: Request, res: Response, next: NextFunction) {

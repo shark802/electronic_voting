@@ -3,6 +3,8 @@ import { selectQuery } from './query';
 import { Vote } from '../utils/types/Votes';
 import { pool } from '../config/database';
 import { Candidate } from '../utils/types/Candidate';
+import { connect } from 'http2';
+import { NotFoundError } from '../utils/customErrors';
 
 
 export async function checkIfUserHasVoted(userId: string, electionId: string) {
@@ -34,4 +36,12 @@ export async function incrementCandidateVoteCount(connection: PoolConnection, se
         if (updateResult.affectedRows === 0) throw new Error(`Failed to update vote count for candidate id ${candidate.id_number} and election id ${electionId}`);
 
     }
+}
+
+export async function updateVoterVoteStatus(connection: PoolConnection, userId: string, electionId: string) {
+
+    const [updateVoteStatusResult] = await connection.execute<ResultSetHeader>('UPDATE voters SET voted = 1 WHERE id_number = ? AND election_id = ?', [userId, electionId]);
+    if (updateVoteStatusResult.affectedRows === 0) throw new NotFoundError('Voter not Exist on this Election');
+
+    return;
 }

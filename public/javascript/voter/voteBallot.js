@@ -7,8 +7,6 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
 
     const selectedCandidate = getSelectedCandidatePerPosition(event);
 
-    console.log(selectedCandidate);
-
     try {
         const candidateObjectArray = await fetchSelectedCandidateInfo(selectedCandidate); // fetch info of candidate selected
         displayConfirmVoteModal(candidateObjectArray); // display the candidate info to confirm
@@ -42,44 +40,6 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
 
 // Retrieves voter selected candidates after submitting the ballot form.
 // Returns an object mapping position labels (as keys) to the values of the selected candidates' id numbers.\
-
-// function getSelectedCandidatePerPosition(event) {
-//     let castedVote = {}
-//     event.target.querySelectorAll("section").forEach(position => {
-//         const positionCandidateRun = position.querySelector('#position-label').textContent.trim();
-//         const selectedCandidate = position.querySelector('input[type=radio]:checked');
-
-//         const key = positionCandidateRun.toUpperCase();
-//         if (selectedCandidate) {
-//             castedVote[key] = selectedCandidate.value;
-//         }
-//     });
-
-//     return castedVote;
-// }
-
-// function getSelectedCandidatePerPosition(event) {
-//     let castedVote = {}
-
-//     event.target.querySelectorAll("section").forEach(position => {
-//         const positionCandidateRun = position.querySelector('#position-label').textContent.trim();
-
-//         if (positionCandidateRun === 'SENATOR') {
-//             const senatorSelectedCandidates = position.querySelectorAll('input[type=checkbox]:checked');
-//             const senatorCandidate = Array.from(senatorSelectedCandidates).flatMap(candidate => candidate.value);
-
-//             castedVote[positionCandidateRun] = senatorCandidate;
-
-//         } else {
-
-//             const selectedCandidate = position.querySelector('input[type=radio]:checked');
-//             castedVote[positionCandidateRun] = selectedCandidate.value;
-//         }
-
-//     });
-
-//     return castedVote;
-// }
 
 function getSelectedCandidatePerPosition(event) {
     let castedVote = []
@@ -183,5 +143,27 @@ async function submitVote(selectedCandidate) {
         return response;
     } catch (error) {
         console.error(error);
+    }
+}
+
+
+//
+document.querySelector('section[data-max-vote]').addEventListener('click', (event) => {
+    if (event.target.matches('input[type="checkbox"]')) {
+        limitCheckboxSelection(event.target);
+    }
+});
+
+function limitCheckboxSelection(checkboxElement) {
+    const section = checkboxElement.closest('section');
+    const maxVotes = parseInt(section.dataset.maxVote);
+    const selectedCheckboxes = section.querySelectorAll('input[type="checkbox"]:checked');
+
+    if (checkboxElement.checked && selectedCheckboxes.length > maxVotes) {
+        // Find the first checked checkbox that isn't the current one
+        const firstChecked = Array.from(selectedCheckboxes).find(cb => cb !== checkboxElement);
+        if (firstChecked) {
+            firstChecked.checked = false;
+        }
     }
 }

@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.incrementCandidateVoteCount = exports.saveVote = exports.checkIfUserHasVoted = void 0;
+exports.updateVoterVoteStatus = exports.incrementCandidateVoteCount = exports.saveVote = exports.checkIfUserHasVoted = void 0;
 const query_1 = require("./query");
 const database_1 = require("../config/database");
+const customErrors_1 = require("../utils/customErrors");
 function checkIfUserHasVoted(userId, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const getUserVoteHistory = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM votes WHERE voter_id = ? AND election_id = ?", [userId, electionId]);
@@ -45,3 +46,12 @@ function incrementCandidateVoteCount(connection, selectedCandidates, electionId)
     });
 }
 exports.incrementCandidateVoteCount = incrementCandidateVoteCount;
+function updateVoterVoteStatus(connection, userId, electionId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const [updateVoteStatusResult] = yield connection.execute('UPDATE voters SET voted = 1 WHERE id_number = ? AND election_id = ?', [userId, electionId]);
+        if (updateVoteStatusResult.affectedRows === 0)
+            throw new customErrors_1.NotFoundError('Voter not Exist on this Election');
+        return;
+    });
+}
+exports.updateVoterVoteStatus = updateVoterVoteStatus;

@@ -18,7 +18,6 @@ function saveVoteFunction(req, res, next) {
         try {
             const { electionId, selectedCandidate } = req.body;
             const user_id = req.session.user.user_id;
-            console.log(selectedCandidate);
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election ID is missing');
             if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0)
@@ -32,6 +31,7 @@ function saveVoteFunction(req, res, next) {
                 yield connection.beginTransaction();
                 yield (0, voteService_1.saveVote)(connection, selectedCandidate, user_id, electionId);
                 yield (0, voteService_1.incrementCandidateVoteCount)(connection, selectedCandidate, electionId);
+                yield (0, voteService_1.updateVoterVoteStatus)(connection, user_id, electionId);
                 yield connection.commit();
                 res.status(200).json({ message: "Vote saved!" });
             }
