@@ -77,30 +77,27 @@ function displayConfirmVoteModal(candidateObjectArray) {
     if (!candidateObjectArray || candidateObjectArray.length < 1) return;
     const confirmModal = document.createElement('dialog');
     confirmModal.id = "confirm-modal";
-    confirmModal.classList.add('confirm-modal');
+    confirmModal.classList.add('confirm-modal', 'bg-white', 'rounded-lg', 'shadow-xl', 'p-6', 'max-w-md', 'w-full', 'mx-auto');
     document.body.append(confirmModal);
 
-    document.querySelector('#confirm-modal').innerHTML += `
-        <div class="font-semibold py-4">
-            <h2>Please confirm before you cast</h2>
+    confirmModal.innerHTML = `
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Please Confirm Your Vote</h2>
+            <p class="text-gray-600 mt-2">Review your selections before casting your vote</p>
         </div>
-     `
-
-    candidateObjectArray.map(candidateObject => {
-        document.querySelector('#confirm-modal').innerHTML += `
-            <div class="flex flex-1 w-full flex-col pb-3 justify-center">
-                <p class="text-gray-500 text-sm">${candidateObject.position}: </p>
-                <p class="lg:text-lg">${candidateObject.firstname} ${candidateObject.lastname}</p>
-            </div>
-        `
-    });
-
-    document.querySelector('#confirm-modal').innerHTML += `
-        <div class="absolute w-fit bottom-0 mb-4 float-right left-1/2 transform -translate-x-1/2 flex gap-4">
-            <button id="cancel-vote" class="text-gray-500 text-sm hover:text-white py-1 px-2 rounded-md hover:bg-gray-300">Cancel</button>
-            <button id="submit-vote" class="bg-blue-500 text-white py-1 px-3 font-semibold rounded-md">Cast vote</button>
+        <div class="space-y-4 mb-6">
+            ${candidateObjectArray.map(candidateObject => `
+                <div class="bg-gray-100 p-3 rounded-md">
+                    <p class="text-gray-500 text-sm font-medium">${candidateObject.position}</p>
+                    <p class="text-gray-800 font-semibold">${candidateObject.firstname} ${candidateObject.lastname}</p>
+                </div>
+            `).join('')}
         </div>
-     `
+        <div class="flex justify-end space-x-4">
+            <button id="cancel-vote" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">Cancel</button>
+            <button id="submit-vote" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Cast Vote</button>
+        </div>
+    `;
 
     confirmModal.showModal();
 }

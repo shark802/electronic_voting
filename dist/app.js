@@ -86,7 +86,6 @@ app.use(session.default({
         httpOnly: true,
     },
 }));
-app.set("socket", io);
 /* Custom Middlewares */
 app.use((0, socketIO_1.socketIO)(io));
 /* Routers/Endpoints */

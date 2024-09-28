@@ -42,7 +42,6 @@ function dashboardVoteTally(req, res, next) {
             const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
             const candidatePosition = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
             const programs = Object.keys(BccDepartments_1.DEPARTMENT);
-            console.log(elections);
             const electionIdList = elections.map(election => election.election_id);
             let candidates = [];
             if (electionIdList.length > 0) {

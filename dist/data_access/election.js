@@ -25,7 +25,7 @@ function getCandidatesTotalTally(electionId) {
         const sqlQuery = `
         SELECT c.position, c.party, c.department, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, v.election_id, COUNT(v.candidate_id) AS vote_count
         FROM candidates c
-        LEFT JOIN votes v ON c.id_number = v.candidate_id  
+        LEFT JOIN votes v ON c.id_number = v.candidate_id AND v.election_id = c.election_id
         LEFT JOIN users u ON u.id_number = c.id_number     
         WHERE c.election_id = ? 
         GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, v.election_id, c.party, c.department

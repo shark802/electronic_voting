@@ -13,11 +13,16 @@ exports.saveVoteFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const voteService_1 = require("../../data_access/voteService");
 const database_1 = require("../../config/database");
+const query_1 = require("../../data_access/query");
+// type Course = (typeof DEPARTMENT[keyof typeof DEPARTMENT])[number]
 function saveVoteFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { electionId, selectedCandidate } = req.body;
+            const { electionId } = req.body;
+            const selectedCandidate = req.body.selectedCandidate;
             const user_id = req.session.user.user_id;
+            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
+            const socket = res.locals.socket;
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election ID is missing');
             if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0)
@@ -33,6 +38,17 @@ function saveVoteFunction(req, res, next) {
                 yield (0, voteService_1.incrementCandidateVoteCount)(connection, selectedCandidate, electionId);
                 yield (0, voteService_1.updateVoterVoteStatus)(connection, user_id, electionId);
                 yield connection.commit();
+                //emit an event when new vote saved
+                socket.emit('new-vote', {
+                    election_id: electionId,
+                    voter_id: user_id,
+                    voted_candidate_list: selectedCandidate.map(candidate => {
+                        return {
+                            candidate_id: candidate.id_number,
+                            candidate_position: candidate.position
+                        };
+                    })
+                });
                 res.status(200).json({ message: "Vote saved!" });
             }
             catch (error) {

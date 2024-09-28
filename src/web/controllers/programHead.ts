@@ -52,11 +52,4 @@ export async function programHeadDashboardVoteTallyPage(req: Request, res: Respo
         next(error)
     }
 
-    // try {
-
-    //     res.render('program/dashboard-vote-tally-program-head')
-
-    // } catch (error) {
-    //     next(error);
-    // }
 }

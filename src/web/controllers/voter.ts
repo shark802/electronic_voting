@@ -75,8 +75,6 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
         const userId = req.session.user!.user_id;
         const electionId = req.params.id;
 
-        console.log(electionId);
-
         if (!electionId) throw new BadRequestError('Election id is missing');
 
         // retrieve election here

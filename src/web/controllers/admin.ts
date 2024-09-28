@@ -36,8 +36,6 @@ export async function dashboardVoteTally(req: Request, res: Response, next: Next
         const candidatePosition = Object.values(CANDIDATE_POSITION);
         const programs = Object.keys(DEPARTMENT);
 
-        console.log(elections);
-
         const electionIdList = elections.map(election => election.election_id);
         let candidates: unknown[] = []
 

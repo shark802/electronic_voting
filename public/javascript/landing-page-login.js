@@ -49,6 +49,17 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
     } catch (error) {
         console.error(error.message);
     }
+});
 
+document.addEventListener('DOMContentLoaded', function () {
 
-})
+    const passwordInput = document.getElementById('password');
+    const togglePasswordButton = document.getElementById('toggle-password');
+
+    togglePasswordButton.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.querySelector('svg').classList.toggle('text-gray-500');
+        this.querySelector('svg').classList.toggle('text-blue-500');
+    });
+});

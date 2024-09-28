@@ -66,9 +66,6 @@ app.use(
     })
 );
 
-
-app.set("socket", io);
-
 /* Custom Middlewares */
 app.use(socketIO(io));
 

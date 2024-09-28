@@ -10,39 +10,47 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/sweetalert2@11.js" defer></script>
   <script type="module" src="/javascript/landing-page.js" defer></script>
-  <style>
-    /* ... (rest of the styles remain unchanged) ... */
-  </style>
+
 </head>
 
 <body class="w-full font-bold h-dvh scroll-m-0 lg:overflow-hidden lg:h-screen bg-gradient-to-b from-blue-50 to-white">
-  <header class="sticky top-0 z-10 flex flex-col items-center justify-between w-full shadow-lg bg-gradient-to-r from-blue-700 to-blue-800 lg:flex-row lg:h-24 lg:px-8">
-    <h1 class="mb-4 text-sm font-semibold text-center text-white lg:mb-0 lg:text-left lg:text-lg">
-      BCC WEB-BASED E-VOTING WITH FACIAL RECOGNITION AUTHENTICATOR
-    </h1>
+  <header class="sticky top-0 z-10 w-full p-4 shadow-lg bg-gradient-to-r from-blue-700 to-blue-800 lg:px-8">
+    <div class="flex items-center justify-between">
+      <h1 class="text-sm font-semibold text-white lg:text-lg">
+        BCC WEB-BASED E-VOTING WITH FACIAL RECOGNITION AUTHENTICATOR
+      </h1>
 
-    <div class="flex flex-col gap-2 sm:flex-row sm:gap-3">
-      <% if (user) { %>
-      <a href="/election" class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white transition duration-300 bg-blue-600 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+      <button id="menu-toggle" class="text-white lg:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
         </svg>
-        Election
-      </a>
-      <% } else { %>
-      <button id="login-button" class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white transition duration-300 bg-blue-600 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-        </svg>
-        Login
       </button>
-      <% } %>
-      <button id="register-device-button" class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-blue-600 transition duration-300 bg-white border border-blue-600 rounded-md shadow-md hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-        </svg>
-        Register Device
-      </button>
+
+      <div id="menu-content" class="absolute right-0 hidden w-full mt-4 lg:static lg:flex lg:w-auto lg:mt-0">
+        <div class="flex flex-col w-full gap-2 p-4 bg-white rounded-b-lg shadow-lg lg:flex-row lg:gap-3 lg:w-auto lg:p-0 lg:bg-transparent lg:shadow-none">
+          <% if (user) { %>
+          <a href="/election" class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-semibold text-white transition duration-300 bg-blue-600 rounded-md shadow-md lg:w-auto hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+            </svg>
+            Election
+          </a>
+          <% } else { %>
+          <button id="login-button" class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-semibold text-white transition duration-300 bg-blue-600 rounded-md shadow-md lg:w-auto hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+            </svg>
+            Login
+          </button>
+          <% } %>
+          <button id="register-device-button" class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-semibold text-blue-600 transition duration-300 bg-white border border-blue-600 rounded-md shadow-md lg:w-auto hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            Register Device
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -52,7 +60,7 @@
     <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-white to-transparent -z-10"></div>
     <div class="flex flex-col lg:flex-row h-[85vh] lg:h-[calc(100vh-6rem)] justify-center items-center lg:relative lg:-top-[40px]">
 
-      <div class="max-w-2xl text-center lg:text-left lg:mr-8">
+      <div class="max-w-2xl pt-8 text-center lg:text-left lg:mr-8 lg:pt-0">
         <div class="text-center lg:text-left">
           <h1 class="mb-4 text-4xl font-extrabold leading-tight text-blue-900 lg:text-6xl">
             <span class="block text-blue-600 animate-fade-in-down">Welcome to</span>
@@ -67,8 +75,8 @@
         </p>
       </div>
 
-      <div class="mt-8 lg:mt-0">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-full max-w-md lg:max-w-lg">
+      <div class="mt-3 lg:mt-0">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-3/4 max-w-md m-auto lg:w-full lg:max-w-lg">
           <defs>
             <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" style="stop-color:#ddf0fd;stop-opacity:1" />
@@ -180,9 +188,19 @@
         <div id="schoolIdErrorMessage" class="text-xs font-normal text-red-500 min-h-5"></div>
       </div>
 
-      <div class="grid">
+      <div class="relative grid">
         <label for="password" class="block mb-1 text-sm font-medium text-gray-900">Password</label class="font-semibold ">
-        <input type="password" id="password" placeholder="••••••••" class="py-1 pl-3 font-normal border border-gray-400 rounded-md focus:outline-blue-500">
+        <input type="password" id="password" placeholder="••••••••" class="py-1 pl-3 pr-10 font-normal border border-gray-400 rounded-md focus:outline-blue-500" autocomplete="off">
+        <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 flex items-center pr-3">
+          <svg id="show-icon" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.274 1.057-.742 2.057-1.375 2.957M15 12a3 3 0 01-6 0m6 0a3 3 0 01-6 0m6 0a3 3 0 01-6 0"></path>
+          </svg>
+          <svg id="hide-icon" class="hidden w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10S6.477 0 12 0c1.657 0 3.22.402 4.625 1.125M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-.274 1.057-.742 2.057-1.375 2.957M15 12a3 3 0 01-6 0m6 0a3 3 0 01-6 0m6 0a3 3 0 01-6 0"></path>
+          </svg>
+        </button>
         <div id="passwordErrorMessage" class="text-xs font-normal text-red-500 min-h-5"></div>
       </div>
 
@@ -217,5 +235,36 @@
   </dialog>
 
 </body>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuContent = document.getElementById('menu-content');
+
+    menuToggle.addEventListener('click', function() {
+      menuContent.classList.toggle('hidden');
+      if (!menuContent.classList.contains('hidden')) {
+        menuContent.style.top = `${menuToggle.offsetTop + menuToggle.offsetHeight}px`;
+      }
+    });
+
+    // Hide menu when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!menuToggle.contains(event.target) && !menuContent.contains(event.target)) {
+        menuContent.classList.add('hidden');
+      }
+    });
+
+    // Ensure menu is visible and properly positioned on larger screens
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 1024) { // lg breakpoint
+        menuContent.classList.remove('hidden');
+        menuContent.style.top = '';
+      } else {
+        menuContent.classList.add('hidden');
+      }
+    });
+  });
+</script>
 
 </html>

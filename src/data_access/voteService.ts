@@ -3,7 +3,6 @@ import { selectQuery } from './query';
 import { Vote } from '../utils/types/Votes';
 import { pool } from '../config/database';
 import { Candidate } from '../utils/types/Candidate';
-import { connect } from 'http2';
 import { NotFoundError } from '../utils/customErrors';
 
 

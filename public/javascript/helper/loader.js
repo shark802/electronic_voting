@@ -34,15 +34,18 @@ export function showLoading() {
             .loader {
                 width: 100vw;
                 height: 100vh;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
+                position: fixed; /* Changed to fixed to ensure it covers the entire viewport */
+                top: 0;
+                left: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
                 z-index: 9999; /* Ensure it's on top of other elements */
             }
 
             .container {
-                --uib-size: 45px;
+                --uib-size: 80px; /* Increased size for better visibility */
                 --uib-color: white;
                 --uib-speed: .8s;
                 --uib-bg-opacity: 0.3;
@@ -84,5 +87,8 @@ export function showLoading() {
 };
 
 export function hideLoader() {
-    document.querySelector("#loader").remove()
+    const loader = document.querySelector("#loader");
+    if (loader) {
+        loader.remove();
+    }
 }

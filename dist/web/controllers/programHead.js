@@ -55,11 +55,6 @@ function programHeadDashboardVoteTallyPage(req, res, next) {
         catch (error) {
             next(error);
         }
-        // try {
-        //     res.render('program/dashboard-vote-tally-program-head')
-        // } catch (error) {
-        //     next(error);
-        // }
     });
 }
 exports.programHeadDashboardVoteTallyPage = programHeadDashboardVoteTallyPage;
