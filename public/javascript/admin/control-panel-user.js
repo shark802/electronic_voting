@@ -87,8 +87,10 @@ document.querySelector('#search-user').addEventListener('submit', async event =>
         submitButtonText: 'Update user',
         user: responseObject.user
     }
+
     changeUserForm(formContentObject);
-    displayUserInfo(responseObject.user)
+    displayUserInfo(responseObject.user);
+    await displayVoterElectionHistory(searchIdNumberValue);
 
 });
 
@@ -176,6 +178,8 @@ function changeUserForm(formContentObject) {
     const form = document.querySelector('#user-form');
     form.reset();
 
+    console.log(formContentObject);
+
     form.dataset.method = formContentObject.formMethod;
     form.querySelector('h3').textContent = formContentObject.title;
     form.querySelector('#user-form-submit-button').value = formContentObject.submitButtonText;
@@ -220,11 +224,6 @@ function displayUserInfo(userObject) {
     const email = userObject.email ? `<div class="flex">Email:<p class="pl-2 text-gray-700 font-medium"> ${userObject.email}</p> </div>` : `<div class="flex">Email:<p class="pl-2 text-gray-700 font-medium"> N/A </p> </div>`
     const cpNumber = userObject.cp_number ? `<div class="flex">Cp number:<p class="pl-2 text-gray-700 font-medium"> ${userObject.cp_number}</p> </div>` : `<div class="flex">Cp number:<p class="pl-2 text-gray-700 font-medium"> N/A </p> </div>`
 
-    // let roles = ''
-    // if (userObject.voter || userObject.program_head || userObject.admin) {
-
-    // }
-
     const userInfoContent = `
         <div class="flex">Id number:<p class="pl-2 text-gray-700 font-medium"> ${userObject.id_number}</p> </div>
         <div class="flex">Fullname: <p class="pl-2 text-gray-700 font-medium">${userObject.firstname} ${userObject.lastname} </p></div>
@@ -237,6 +236,54 @@ function displayUserInfo(userObject) {
         `
     userInfoDiv.innerHTML = userInfoContent;
 
+}
+
+async function displayVoterElectionHistory(idNumber) {
+    try {
+
+        const response = await fetch(`/api/voter/voter-history/${idNumber}`);
+        const responseObject = await response.json();
+
+        if (response.ok) {
+            const voterElectionHistory = responseObject.voterElectionHistory;
+
+            const displayUserInfo = document.querySelector('#user-info');
+            const divContainer = document.createElement('div');
+            divContainer.id = 'voter-history-container';
+            divContainer.classList.add('animate-slide-in', 'rounded-md', 'py-12', 'shadow-sm');
+
+            divContainer.innerHTML = voterElectionHistory.map(historyInfo => {
+                console.log(historyInfo);
+
+                const electionDate = new Date(historyInfo.date_start);
+                const [hour, minute] = historyInfo.time_start.split(':');
+                electionDate.setHours(hour, minute);
+
+                return `
+                <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+                    <h3 class="text-xl font-semibold">${historyInfo.election_name}</h3>
+                    <p class="text-gray-500 text-sm">${historyInfo.election_id}</p>
+
+
+                    
+                    <div class="min-h-8 flex items-center justify-between mt-4">
+                        <span class="px-3 inline-block py-1 mb-2 text-sm font-medium min-w-12 mt-3 rounded-full ${historyInfo.voted ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                            ${historyInfo.voted ? 'Voted' : 'Not-Voted'}
+                        </span>
+
+                        <p class=" text-gray-700 float-right">${electionDate.toLocaleString()}</p>
+                    </div>
+                </div>
+                `
+            }).join(' ');
+
+            displayUserInfo.appendChild(divContainer);
+        }
+
+    } catch (error) {
+        console.error(error);
+
+    }
 }
 
 document.body.querySelector('#add-user-button').addEventListener('click', () => {

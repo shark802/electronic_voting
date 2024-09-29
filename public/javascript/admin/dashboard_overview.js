@@ -298,3 +298,39 @@ async function putRequestToCloseElection(electionId) {
     })
     return result;
 }
+
+// Add this listener to update total voters and not voted counts
+const socket = io(); // Ensure you have the socket.io client initialized
+
+socket.on('new-vote', (data) => {
+    const electionSection = document.querySelector(`section[data-election-id="${data.election_id}"]`);
+
+    // Update total voted count
+    const totalVotedElement = electionSection.querySelector('#total-voted');
+    const totalVotedPercentageElement = electionSection.querySelector('#total-voted-percentage');
+
+    let totalVoted = parseInt(totalVotedElement.textContent) || 0;
+    totalVoted += 1; // Increment total voted
+    totalVotedElement.textContent = totalVoted;
+
+    // Update percentage
+    const totalPopulation = parseInt(electionSection.querySelector('#total-population').textContent) || 0;
+    if (totalPopulation > 0) {
+        const votedPercentage = ((totalVoted / totalPopulation) * 100).toFixed(2);
+        totalVotedPercentageElement.textContent = `(${votedPercentage}%)`;
+    }
+
+    // Update total not voted count
+    const numberOfNotVotedElement = electionSection.querySelector('#number-of-not-voted');
+    const totalNotVotedElement = electionSection.querySelector('#total-not-voted-percentage');
+
+    let totalNotVoted = parseInt(numberOfNotVotedElement.textContent) || totalPopulation;
+    totalNotVoted -= 1; // Decrement total not voted
+    numberOfNotVotedElement.textContent = totalNotVoted;
+
+    // Update not voted percentage
+    if (totalPopulation > 0) {
+        const notVotedPercentage = ((totalNotVoted / totalPopulation) * 100).toFixed(2);
+        totalNotVotedElement.textContent = `(${notVotedPercentage}%)`;
+    }
+});

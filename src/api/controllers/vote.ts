@@ -16,6 +16,9 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
         const selectedCandidate: Pick<Candidate, 'id_number' | 'position'>[] = req.body.selectedCandidate
         const user_id = req.session.user!.user_id;
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
+        // const voterDepartment = Object.entries(DEPARTMENT).find(([key, value]) =>
+        //     value.includes(user.course as Course)
+        // )?.[0]; // Get the key directly if found
 
         const socket: Socket = res.locals.socket;
 

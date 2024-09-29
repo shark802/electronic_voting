@@ -40,7 +40,7 @@ export async function dashboardVoteTally(req: Request, res: Response, next: Next
         let candidates: unknown[] = []
 
         if (electionIdList.length > 0) {
-            candidates = await selectQuery(pool, 'SELECT * FROM candidates WHERE election_id IN ( ? )', [electionIdList])
+            candidates = await selectQuery(pool, 'SELECT * FROM candidates WHERE election_id IN ( ? ) AND deleted IS NULL', [electionIdList])
         }
 
         res.render("admin/dashboard_vote_tally", { elections, candidatePosition, programs, candidates })

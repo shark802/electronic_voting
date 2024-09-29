@@ -8,6 +8,7 @@ import populationRouter from "./routes/population";
 import userRouter from "./routes/user";
 import departmentRouter from "./routes/department";
 import reportRouter from "./routes/reports";
+import voterRouter from "./routes/voter";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use(populationRouter);
 router.use(userRouter);
 router.use(departmentRouter);
 router.use(reportRouter);
+router.use(voterRouter);
 
 export default router;

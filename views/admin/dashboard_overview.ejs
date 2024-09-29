@@ -79,7 +79,7 @@
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               <div class="flex flex-col items-center lg:flex-row lg:items-baseline">
-                <p id="total-population" class="text-2xl font-bold text-white lg:text-4xl"><%= election.total_populations || "N/A" %></p>
+                <p id="total-population" class="text-4xl font-bold text-white "><%= election.total_populations || "N/A" %></p>
                 <p id="total-population-percentage" class="text-sm font-medium text-blue-200 lg:text-xl lg:ml-2"></p>
               </div>
             </div>
@@ -92,7 +92,7 @@
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
               </svg>
               <div class="flex flex-col items-center lg:flex-row lg:items-baseline">
-                <p id="total-voted" class="text-2xl font-bold text-white lg:text-4xl">0</p>
+                <p id="total-voted" class="text-4xl font-bold text-white ">0</p>
                 <p id="total-voted-percentage" class="text-sm font-medium text-green-200 lg:text-xl lg:ml-2">(0.00%)</p>
               </div>
             </div>
@@ -105,7 +105,7 @@
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
               </svg>
               <div class="flex flex-col items-center lg:flex-row lg:items-baseline">
-                <p id="number-of-not-voted" class="text-2xl font-bold text-white lg:text-4xl">N/A</p>
+                <p id="number-of-not-voted" class="text-4xl font-bold text-white ">N/A</p>
                 <p id="total-not-voted-percentage" class="text-sm font-medium text-red-200 lg:text-xl lg:ml-2">(N/A)</p>
               </div>
             </div>
@@ -125,8 +125,8 @@
                 </div>
               </div>
               <div class="flex flex-grow w-full gap-2 p-4 lg:gap-4 lg:py-5">
-                <div class="flex-1 text-center">
-                  <p id="program-population" class="text-lg font-bold text-gray-800 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
+                <div class="relative flex-1 text-center top-2 lg:top-0">
+                  <p id="program-population" class="text-4xl font-bold text-gray-800 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
                   <p class="text-sm font-medium text-gray-500">Total voters</p>
                 </div>
 
@@ -134,7 +134,7 @@
                   <p id="departmentTotalVotes" class="text-lg font-bold text-green-600 lg:text-3xl">0</p>
                   <p class="text-sm font-medium text-gray-500">Voted</p>
                   <a href="/report/voter/<%= election.election_id %>?voteStatus=voted&department=<%= course.program_code %>">
-                    <button class="absolute bottom-0 px-3 py-1 text-xs text-green-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-green-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-green-200">
+                    <button class="bottom-0 px-3 py-1 text-xs text-green-700 transition-opacity duration-300 ease-in-out transform bg-green-100 rounded-md lg:-translate-x-1/2 lg:opacity-0 lg:absolute left-1/2 group-hover:opacity-100 hover:bg-green-200">
                       View Report
                     </button>
                   </a>
@@ -144,7 +144,7 @@
                   <p id="departmentNumberOfNotVoted" class="text-lg font-bold text-red-600 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
                   <p class="text-sm font-medium text-gray-500">Not voted</p>
                   <a href="/report/voter/<%= election.election_id %>?voteStatus=not-voted&department=<%= course.program_code %>">
-                    <button class="absolute bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-red-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
+                    <button class="bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform bg-red-100 rounded-md lg:-translate-x-1/2 lg:absolute lg:opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
                       View Report
                     </button>
                   </a>

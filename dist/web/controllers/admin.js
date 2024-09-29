@@ -45,7 +45,7 @@ function dashboardVoteTally(req, res, next) {
             const electionIdList = elections.map(election => election.election_id);
             let candidates = [];
             if (electionIdList.length > 0) {
-                candidates = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE election_id IN ( ? )', [electionIdList]);
+                candidates = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE election_id IN ( ? ) AND deleted IS NULL', [electionIdList]);
             }
             res.render("admin/dashboard_vote_tally", { elections, candidatePosition, programs, candidates });
         }

@@ -1,0 +1,30 @@
+import { NextFunction, Request, Response } from "express";
+import { selectQuery } from "../../data_access/query";
+import { pool } from "../../config/database";
+import { BadRequestError } from "../../utils/customErrors";
+
+export async function getAllVoterElectionHistory(req: Request, res: Response, next: NextFunction) {
+    try {
+        const userId = req.params.id;
+        if (!userId) throw new BadRequestError('User id is missing');
+
+        console.log(userId);
+
+        const sqlQuery = `
+            SELECT e.election_name, e.election_id, e.date_start, e.time_start, v.voted
+            FROM voters v
+            JOIN elections e
+            ON v.election_id = e.election_id
+            WHERE e.deleted_at IS NULL
+            GROUP BY v.election_id, e.election_id, e.date_start, e.time_start, v.voted
+            ORDER BY e.date_start DESC, e.time_start DESC;
+        `
+
+        const voterElectionHistory = await selectQuery(pool, sqlQuery);
+
+        res.status(200).json({ voterElectionHistory });
+
+    } catch (error) {
+        next(error)
+    }
+}
