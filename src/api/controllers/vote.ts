@@ -1,3 +1,4 @@
+import { eventEmitter } from './../../events/globalEventEmitterInstance';
 import { NextFunction, Request, Response } from "express";
 import { BadRequestError, ConflictError } from "../../utils/customErrors";
 import { checkIfUserHasVoted, incrementCandidateVoteCount, saveVote, updateVoterVoteStatus } from "../../data_access/voteService";
@@ -15,7 +16,7 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
         const { electionId } = req.body;
         const selectedCandidate: Pick<Candidate, 'id_number' | 'position'>[] = req.body.selectedCandidate
         const user_id = req.session.user!.user_id;
-        const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
+        // const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
         // const voterDepartment = Object.entries(DEPARTMENT).find(([key, value]) =>
         //     value.includes(user.course as Course)
         // )?.[0]; // Get the key directly if found
@@ -37,7 +38,10 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
             await updateVoterVoteStatus(connection, user_id, electionId);
             await connection.commit();
 
-            //emit an event when new vote saved
+            // this event emitter emit a new-vote event that will trigger to send email with the user_id pass
+            eventEmitter.emit('new-vote', user_id, electionId);
+
+            //broadcast an event when new vote saved for to update the dashboard realtime
             socket.emit('new-vote', {
                 election_id: electionId,
                 voter_id: user_id,

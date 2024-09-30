@@ -8,19 +8,17 @@ export async function getAllVoterElectionHistory(req: Request, res: Response, ne
         const userId = req.params.id;
         if (!userId) throw new BadRequestError('User id is missing');
 
-        console.log(userId);
-
         const sqlQuery = `
-            SELECT e.election_name, e.election_id, e.date_start, e.time_start, v.voted
+            SELECT DISTINCT e.election_name, e.election_id, e.date_start, e.time_start, v.voted, e.date_end, e.time_end
             FROM voters v
             JOIN elections e
             ON v.election_id = e.election_id
-            WHERE e.deleted_at IS NULL
-            GROUP BY v.election_id, e.election_id, e.date_start, e.time_start, v.voted
+            WHERE id_number = ? AND e.deleted_at IS NULL
+            GROUP BY e.election_id, e.election_name, e.date_start, e.time_start, v.voted, e.date_end, e.time_end
             ORDER BY e.date_start DESC, e.time_start DESC;
         `
 
-        const voterElectionHistory = await selectQuery(pool, sqlQuery);
+        const voterElectionHistory = await selectQuery(pool, sqlQuery, [userId]);
 
         res.status(200).json({ voterElectionHistory });
 

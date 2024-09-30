@@ -25,6 +25,7 @@ module.exports = {
     'loader',
     'z-30',
     'pb-3',
+    'mb-10',
     'w-1/3',
     'w-36',
     'py-12',

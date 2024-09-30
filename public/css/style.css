@@ -1142,6 +1142,10 @@ video {
   min-height: 24rem;
 }
 
+.min-h-\[300px\] {
+  min-height: 300px;
+}
+
 .min-h-fit {
   min-height: -moz-fit-content;
   min-height: fit-content;
@@ -3450,8 +3454,8 @@ video {
     padding-top: 0.25rem;
   }
 
-  .lg\:pt-12 {
-    padding-top: 3rem;
+  .lg\:pt-5 {
+    padding-top: 1.25rem;
   }
 
   .lg\:text-left {

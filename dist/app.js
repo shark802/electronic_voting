@@ -38,7 +38,8 @@ const api_1 = __importDefault(require("./api"));
 const web_1 = __importDefault(require("./web"));
 const express_mysql_session_1 = __importDefault(require("express-mysql-session"));
 const multerConfig_1 = __importDefault(require("./config/multerConfig"));
-require("./events/addVotersOnElectionEvent");
+// register all files that listening on event emitter
+require("./events");
 multerConfig_1.default.none();
 dotenv_1.default.config();
 const app = (0, express_1.default)();

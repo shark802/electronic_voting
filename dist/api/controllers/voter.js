@@ -19,17 +19,16 @@ function getAllVoterElectionHistory(req, res, next) {
             const userId = req.params.id;
             if (!userId)
                 throw new customErrors_1.BadRequestError('User id is missing');
-            console.log(userId);
             const sqlQuery = `
-            SELECT e.election_name, e.election_id, e.date_start, e.time_start, v.voted
+            SELECT DISTINCT e.election_name, e.election_id, e.date_start, e.time_start, v.voted, e.date_end, e.time_end
             FROM voters v
             JOIN elections e
             ON v.election_id = e.election_id
-            WHERE e.deleted_at IS NULL
-            GROUP BY v.election_id, e.election_id, e.date_start, e.time_start, v.voted
+            WHERE id_number = ? AND e.deleted_at IS NULL
+            GROUP BY e.election_id, e.election_name, e.date_start, e.time_start, v.voted, e.date_end, e.time_end
             ORDER BY e.date_start DESC, e.time_start DESC;
         `;
-            const voterElectionHistory = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery);
+            const voterElectionHistory = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [userId]);
             res.status(200).json({ voterElectionHistory });
         }
         catch (error) {

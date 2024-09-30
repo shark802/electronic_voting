@@ -94,6 +94,12 @@ document.querySelector('#search-user').addEventListener('submit', async event =>
 
 });
 
+document.querySelector('#search-user').addEventListener('change', async event => {
+    if (event.target.value.trim() === '') {
+        document.querySelector('#user-info').textContent = "";
+    }
+});
+
 function getUserRoles() {
     const rolesCheckBox = document.querySelector('#user-roles').querySelectorAll('input[type=checkbox]');
 
@@ -178,8 +184,6 @@ function changeUserForm(formContentObject) {
     const form = document.querySelector('#user-form');
     form.reset();
 
-    console.log(formContentObject);
-
     form.dataset.method = formContentObject.formMethod;
     form.querySelector('h3').textContent = formContentObject.title;
     form.querySelector('#user-form-submit-button').value = formContentObject.submitButtonText;
@@ -212,7 +216,7 @@ function displayUserInfo(userObject) {
 
     const userInfoDiv = document.createElement('div');
     userInfoDiv.id = 'user-info-container';
-    userInfoDiv.classList.add('animate-slide-in', 'bg-blue-100', 'rounded-md', 'lg:pl-12', 'py-5', 'shadow-sm');
+    userInfoDiv.classList.add('animate-slide-in', 'bg-blue-50', 'rounded-md', 'lg:pl-12', 'py-5', 'shadow-sm', 'border-2', 'border-blue-400');
 
     displayUserInfo.append(userInfoDiv);
 
@@ -250,33 +254,49 @@ async function displayVoterElectionHistory(idNumber) {
             const displayUserInfo = document.querySelector('#user-info');
             const divContainer = document.createElement('div');
             divContainer.id = 'voter-history-container';
-            divContainer.classList.add('animate-slide-in', 'rounded-md', 'py-12', 'shadow-sm');
+            divContainer.classList.add('animate-slide-in', 'rounded-md', 'py-4', 'shadow-sm', 'mb-10');
 
-            divContainer.innerHTML = voterElectionHistory.map(historyInfo => {
-                console.log(historyInfo);
+            const voterHistoryContent = voterElectionHistory.map(historyInfo => {
 
                 const electionDate = new Date(historyInfo.date_start);
                 const [hour, minute] = historyInfo.time_start.split(':');
                 electionDate.setHours(hour, minute);
 
+                const endDate = new Date(historyInfo.date_end);
+                const [endHour, endMinute] = historyInfo.time_end.split(':');
+                endDate.setHours(endHour, endMinute);
+
+                // Determine the election status
+                let status;
+                const now = new Date();
+                if (now < electionDate) {
+                    status = 'Not Started';
+                } else if (now >= electionDate && now <= endDate) {
+                    status = 'Ongoing';
+                } else {
+                    status = 'Finished';
+                }
+
                 return `
-                <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+                <div class="bg-white shadow-md rounded-lg p-4 mb-4 border-2">
+                    <p class="text-gray-500 text-sm text-right">${status}</p>
+
                     <h3 class="text-xl font-semibold">${historyInfo.election_name}</h3>
-                    <p class="text-gray-500 text-sm">${historyInfo.election_id}</p>
-
-
+                    <p class="text-gray-500 text-sm">Election ID: <span class="font-medium">${historyInfo.election_id}</span></p>
                     
                     <div class="min-h-8 flex items-center justify-between mt-4">
                         <span class="px-3 inline-block py-1 mb-2 text-sm font-medium min-w-12 mt-3 rounded-full ${historyInfo.voted ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
-                            ${historyInfo.voted ? 'Voted' : 'Not-Voted'}
+                            ${historyInfo.voted ? 'Voted' : 'Not Voted'}
                         </span>
 
-                        <p class=" text-gray-700 float-right">${electionDate.toLocaleString()}</p>
+                        <p class="text-gray-700 float-right font-medium">${electionDate.toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
                     </div>
                 </div>
                 `
             }).join(' ');
 
+            const divContainerContent = '<h2 class="font-semibold text-lg mb-3">Voter Participation History</h2>' + voterHistoryContent;
+            divContainer.innerHTML = divContainerContent;
             displayUserInfo.appendChild(divContainer);
         }
 

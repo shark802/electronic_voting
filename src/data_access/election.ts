@@ -17,7 +17,7 @@ export async function getCandidatesTotalTally(electionId: string) {
         FROM candidates c
         LEFT JOIN votes v ON c.id_number = v.candidate_id AND v.election_id = c.election_id
         LEFT JOIN users u ON u.id_number = c.id_number     
-        WHERE c.election_id = ? 
+        WHERE c.election_id = ? AND c.deleted IS NULL 
         GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, v.election_id, c.party, c.department
         ORDER BY vote_count DESC;
     `

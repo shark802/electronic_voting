@@ -10,7 +10,9 @@ import apiRoutes from "./api";
 import webRoutes from "./web";
 import expressMysqlSession from "express-mysql-session";
 import upload from './config/multerConfig';
-import './events/addVotersOnElectionEvent';
+
+// register all files that listening on event emitter
+import './events';
 
 upload.none();
 

@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveVoteFunction = void 0;
+const globalEventEmitterInstance_1 = require("./../../events/globalEventEmitterInstance");
 const customErrors_1 = require("../../utils/customErrors");
 const voteService_1 = require("../../data_access/voteService");
 const database_1 = require("../../config/database");
-const query_1 = require("../../data_access/query");
 // type Course = (typeof DEPARTMENT[keyof typeof DEPARTMENT])[number]
 function saveVoteFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -21,7 +21,7 @@ function saveVoteFunction(req, res, next) {
             const { electionId } = req.body;
             const selectedCandidate = req.body.selectedCandidate;
             const user_id = req.session.user.user_id;
-            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
+            // const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
             // const voterDepartment = Object.entries(DEPARTMENT).find(([key, value]) =>
             //     value.includes(user.course as Course)
             // )?.[0]; // Get the key directly if found
@@ -41,7 +41,9 @@ function saveVoteFunction(req, res, next) {
                 yield (0, voteService_1.incrementCandidateVoteCount)(connection, selectedCandidate, electionId);
                 yield (0, voteService_1.updateVoterVoteStatus)(connection, user_id, electionId);
                 yield connection.commit();
-                //emit an event when new vote saved
+                // this event emitter emit a new-vote event that will trigger to send email with the user_id pass
+                globalEventEmitterInstance_1.eventEmitter.emit('new-vote', user_id, electionId);
+                //broadcast an event when new vote saved for to update the dashboard realtime
                 socket.emit('new-vote', {
                     election_id: electionId,
                     voter_id: user_id,
