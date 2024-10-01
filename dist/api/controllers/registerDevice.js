@@ -24,6 +24,8 @@ function requestUuidFunction(req, res, next) {
             const result = yield (0, query_1.insertQuery)(database_1.pool, "INSERT INTO register_devices (uuid, codename) VALUES(?, ?)", [uuid, codeName]);
             if (result.affectedRows < 1)
                 throw new customErrors_1.NotFoundError('No record added');
+            const socket = res.locals.socket;
+            socket.emit('new-register-device-request', codeName, uuid);
             res.status(201).json({ codeName, uuid, status: 'pending' });
         }
         catch (error) {
@@ -61,6 +63,9 @@ function updateRegisterStatusFunction(req, res, next) {
             const registerQuery = yield (0, query_1.updateQuery)(database_1.pool, "UPDATE register_devices SET is_registered = ?, updated_at = NOW() WHERE uuid = ? AND deleted_at IS NULL", [isToRegister, uuid]);
             if (registerQuery.affectedRows < 1)
                 throw new customErrors_1.NotFoundError('No resource modified, check UUID if correct');
+            // const socket = res.locals.socket;
+            // const status = Number(isToRegister) === 1 ? 'REGISTERED' : 'PENDING';
+            // socket.emit(uuid, status); // emit the event to client with uuid
             const responseMessage = isToRegister === true ? 'Device successfully registered' : 'Device unregistered';
             return res.status(200).json({ message: responseMessage });
         }

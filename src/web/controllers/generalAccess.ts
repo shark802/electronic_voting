@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 export function landingPage(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = req.session.user
+        const user = req.session.user;
 
         res.render("landingPage", { user })
     } catch (error) {

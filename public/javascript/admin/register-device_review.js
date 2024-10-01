@@ -115,3 +115,43 @@ async function submitAcceptToServer(uuid) {
 
     return response;
 }
+
+const socket = io();
+
+socket.on('new-register-device-request', (codeName, uuid) => {
+
+
+    const requestDate = new Date().toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+
+    const newRow = `
+        <tr data-uuid="${uuid}" class="transition-all tablerow">
+            <td id="codename" class="py-1 text-sm font-medium text-center text-gray-700">${codeName}</td>
+            <td id="uuid" class="py-1 text-sm font-medium text-center text-gray-700">${uuid}</td>
+            <td id="request-date" class="hidden py-1 text-sm font-medium text-center text-gray-700 sm:table-cell">${requestDate}</td>
+            <td class="py-2 text-sm font-medium text-center text-gray-700">
+                <div class="flex flex-col items-center justify-center gap-2 sm:flex-row">
+                <button popovertarget="decline-request-modal" id="decline-request" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  Decline
+                </button>
+                <button popovertarget="accept-request-modal" id="accept-request" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  Accept
+                </button>
+              </div>
+            </td>
+        </tr>
+    `;
+
+    document.querySelector('#register-device-table tbody').insertAdjacentHTML('afterbegin', newRow);
+});

@@ -4,6 +4,7 @@ import { v4 as uuidV4 } from "uuid";
 import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { pool } from "../../config/database";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
+import { Server } from "socket.io";
 
 export async function requestUuidFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -14,6 +15,9 @@ export async function requestUuidFunction(req: Request, res: Response, next: Nex
         const result = await insertQuery(pool, "INSERT INTO register_devices (uuid, codename) VALUES(?, ?)", [uuid, codeName]);
         if (result.affectedRows < 1) throw new NotFoundError('No record added');
 
+        const socket: Server = res.locals.socket;
+
+        socket.emit('new-register-device-request', codeName, uuid);
         res.status(201).json({ codeName, uuid, status: 'pending' });
     } catch (error) {
         next(error);
@@ -45,6 +49,10 @@ export async function updateRegisterStatusFunction(req: Request, res: Response, 
 
         const registerQuery = await updateQuery(pool, "UPDATE register_devices SET is_registered = ?, updated_at = NOW() WHERE uuid = ? AND deleted_at IS NULL", [isToRegister, uuid]);
         if (registerQuery.affectedRows < 1) throw new NotFoundError('No resource modified, check UUID if correct');
+
+        // const socket = res.locals.socket;
+        // const status = Number(isToRegister) === 1 ? 'REGISTERED' : 'PENDING';
+        // socket.emit(uuid, status); // emit the event to client with uuid
 
         const responseMessage = isToRegister === true ? 'Device successfully registered' : 'Device unregistered'
         return res.status(200).json({ message: responseMessage });

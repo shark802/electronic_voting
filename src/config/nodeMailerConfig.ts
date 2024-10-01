@@ -12,13 +12,12 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-export function mailOptions(from: string, to: string, subject: string, content: string, html: string) {
+export function mailOptions(from: string, to: string, subject: string, content: string) {
     return {
         from: from,
         to: to,
         subject: subject,
         text: content,
-        html
     }
 }
 
