@@ -220,7 +220,11 @@ document.querySelectorAll('section').forEach(electionSection => {
     endDate.setHours(hourEnd, minuteEnd);
 
     if (PRESENT_DATE > endDate) {
-        electionSection.querySelector('#manage').style.display = 'block';
+        const manageElection = electionSection.querySelector('#manage');
+        if (manageElection) {
+
+            manageElection.style.display = 'block';
+        }
     }
 });
 
@@ -261,9 +265,12 @@ document.querySelector('#overview-container').addEventListener('click', (event) 
     }
 })
 
-document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
+const closeElectionModal = document.querySelector('#close-election');
+if (closeElectionModal) {
+    document.querySelector('#exit-close-election-modal').addEventListener('click', (event) => event.target.closest('dialog').close());
+    confirmCloseElection();
+}
 
-confirmCloseElection();
 
 function confirmCloseElection() {
     document.querySelector('#close-election-button').addEventListener('click', async () => {

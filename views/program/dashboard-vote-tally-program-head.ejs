@@ -9,6 +9,7 @@
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
   <script src="/javascript/lib/chart.umd.min.js"></script>
+  <script src="/javascript/lib/socket.io.min.js"></script>
   <script type="module" src="/javascript/admin/dashboard_vote_tally.js" defer></script>
 </head>
 
@@ -107,14 +108,7 @@
           <img src="/img/empty-folder.webp" alt="Empty folder" class="w-24 h-24 mx-auto mb-6 opacity-75">
           <h1 class="mb-4 text-2xl font-bold text-gray-800">No Elections Scheduled</h1>
           <p class="mb-6 text-gray-600">It seems there are no elections scheduled at the moment. Would you like to create a new one?</p>
-          <a href="/admin/election/new" class="inline-block">
-            <button class="px-6 py-3 font-semibold text-white transition duration-300 ease-in-out transform bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 hover:-translate-y-1">
-              <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              Create New Election
-            </button>
-          </a>
+
         </div>
       </section>
 

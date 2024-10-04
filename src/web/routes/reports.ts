@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { previewVoterParticipationReports } from '../controllers/report';
+import { previewVoterParticipationReports, programHeadVoterParticipationReport } from '../controllers/report';
 
 const router = Router();
 
 router.get('/voter/:id', previewVoterParticipationReports);
-// router.get('/voted/:id', previewVotedReports);
+router.get('/program/voter/:id', programHeadVoterParticipationReport);
 
 export default router;

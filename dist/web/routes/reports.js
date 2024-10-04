@@ -4,5 +4,5 @@ const express_1 = require("express");
 const report_1 = require("../controllers/report");
 const router = (0, express_1.Router)();
 router.get('/voter/:id', report_1.previewVoterParticipationReports);
-// router.get('/voted/:id', previewVotedReports);
+router.get('/program/voter/:id', report_1.programHeadVoterParticipationReport);
 exports.default = router;

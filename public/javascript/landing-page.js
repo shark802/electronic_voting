@@ -169,3 +169,10 @@ function displayUUID(status) {
     `;
     registerDeviceForm.innerHTML = uuidInnerHtmlToDisplay;
 }
+
+fetch('https://api.ipify.org?format=json')
+    .then(response => response.json())
+    .then(data => {
+        console.log('External/Public IP address:', data.ip);
+        // alert(data.ip)
+    });

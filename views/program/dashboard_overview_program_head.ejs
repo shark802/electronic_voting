@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js" defer></script>
   <script src="/javascript/lib/sweetalert2@11.js" defer></script>
+  <script src="/javascript/lib/socket.io.min.js"></script>
   <script type="module" src="/javascript/admin/dashboard_overview.js" defer></script>
 
   <style>
@@ -108,13 +109,7 @@
           </div>
           <div class="flex items-center space-x-2">
             <span id="election-status" class="px-3 py-1 text-xs font-medium bg-blue-500 rounded-full"><%= election.is_active ? 'Active' : 'Inactive' %></span>
-            <button id="manage" class="hidden p-2 text-blue-100 transition-colors duration-200 rounded-full hover:text-white focus:outline-none ">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 16l2 2 4-4" />
-              </svg>
-              <span class="sr-only">Close Election</span>
-            </button>
+
           </div>
         </div>
 
@@ -180,7 +175,7 @@
                 <div class="relative flex-1 text-center">
                   <p id="departmentTotalVotes" class="text-lg font-bold text-green-600 lg:text-3xl">0</p>
                   <p class="text-sm font-medium text-gray-500">Voted</p>
-                  <a href="/report/voter/<%= election.election_id %>?voteStatus=voted&department=<%= course.program_code %>">
+                  <a href="/report/program/voter/<%= election.election_id %>?voteStatus=voted&department=<%= course.program_code %>">
                     <button class="absolute bottom-0 px-3 py-1 text-xs text-green-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-green-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-green-200">
                       View Report
                     </button>
@@ -190,7 +185,7 @@
                 <div class="relative flex-1 text-center">
                   <p id="departmentNumberOfNotVoted" class="text-lg font-bold text-red-600 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
                   <p class="text-sm font-medium text-gray-500">Not voted</p>
-                  <a href="/report/voter/<%= election.election_id %>?voteStatus=not-voted&department=<%= course.program_code %>">
+                  <a href="/report/program/voter/<%= election.election_id %>?voteStatus=not-voted&department=<%= course.program_code %>">
                     <button class="absolute bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform -translate-x-1/2 bg-red-100 rounded-md opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
                       View Report
                     </button>
@@ -212,14 +207,7 @@
           <img src="/img/empty-folder.webp" alt="Empty folder" class="w-24 h-24 mx-auto mb-6 opacity-75">
           <h1 class="mb-4 text-2xl font-bold text-gray-800">No Elections Scheduled</h1>
           <p class="mb-6 text-gray-600">It seems there are no elections scheduled at the moment. Would you like to create a new one?</p>
-          <a href="/admin/election/new" class="inline-block">
-            <button class="px-6 py-3 font-semibold text-white transition duration-300 ease-in-out transform bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 hover:-translate-y-1">
-              <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              Create New Election
-            </button>
-          </a>
+
         </div>
       </section>
 

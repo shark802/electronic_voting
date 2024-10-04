@@ -99,12 +99,12 @@
 
       <% const highestVoteCountSenatorPerDepartment = senatorCandidatePerDepartment.reduce((highest, currentSenatorCandidate) => currentSenatorCandidate.vote_count > highest ? currentSenatorCandidate.vote_count : highest, 0); %>
 
-      <% senatorCandidatePerDepartment.sort((a, b) => b.vote_count - a.vote_count ).forEach((candidate, index) => { %>
 
       <section class="mb-8 overflow-hidden border border-gray-200 rounded-lg">
         <h3 class="w-full py-2 text-lg font-bold text-center text-white bg-blue-600"><%= department %> <%= position %></h3>
 
         <div class="divide-y divide-gray-200"></div>
+        <% senatorCandidatePerDepartment.sort((a, b) => b.vote_count - a.vote_count ).forEach((candidate, index) => { %>
 
         <div class="flex items-center justify-between p-4 <%= candidate.vote_count === highestVoteCountSenatorPerDepartment ? 'bg-green-50' : 'hover:bg-gray-50' %> transition duration-150 ease-in-out">
           <div class="flex items-center space-x-4">
@@ -131,10 +131,10 @@
           </div>
 
         </div>
-      </section>
 
-      <% }); %>
-      <% } %>
+        <% }); %>
+        <% } %>
+      </section>
 
       <% }); %>
 

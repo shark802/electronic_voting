@@ -14,7 +14,7 @@ eventEmitter.on('new-vote', async (userId: string, electionId: string) => {
         const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [electionId]);
         const userEmailAddress = user.email;
 
-        if (!process.env.NODEMAILER_USER) return;
+        if (!process.env.NODEMAILER_USER || !userEmailAddress) return;
 
         let electionDateStart = new Date(election.date_start);
         const [hour, minute] = election.time_start.split(':');

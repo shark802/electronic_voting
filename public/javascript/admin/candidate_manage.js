@@ -243,8 +243,7 @@ function displayFetchCandidate(candidates) {
                                 </svg>
                             </button>
 
-                                <div id="more-option" class="absolute right-0 z-10 hidden w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-
+                            <div id="more-option" class="absolute right-0 z-10 hidden w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
 
                                ${statusOptionDisplay}
 

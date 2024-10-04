@@ -20,7 +20,7 @@
   <header class="z-30 w-full bg-blue-600 shadow-md">
     <div class="flex items-center justify-between px-4 py-3 lg:px-6">
       <div class="flex items-center">
-        <a href="/admin/dashboard/overview">
+        <a href="/program-head/dashboard/overview">
           <button class="p-2 mr-4 text-white transition-colors duration-200 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Go back">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -30,7 +30,7 @@
 
       </div>
       <h1 class="text-xl font-semibold text-white lg:text-2xl"><%= reportTitle %></h1>
-      <div class="w-6 lg:w-0"></div> <!-- Placeholder for alignment -->
+      <div class="w-6 lg:w-0"></div>
     </div>
   </header>
 
@@ -45,7 +45,7 @@
         </button>
       </div>
       <nav class="h-full px-4 py-6 overflow-y-auto">
-        <form id="filter-form" action="/report/voter/<%= election.election_id %>" method="get" class="space-y-6 bg-white">
+        <form id="filter-form" action="/report/program/voter/<%= election.election_id %>" method="get" class="space-y-6 bg-white">
           <h2 class="hidden mb-4 text-xl font-semibold text-gray-800 lg:block">Filter Options</h2>
 
           <div class="space-y-4">
@@ -57,7 +57,7 @@
               </select>
             </div>
 
-            <div>
+            <div class="hidden">
               <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
               <select name="department" id="department" class="block w-full py-2 pl-3 pr-10 mt-1 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="">All Departments</option>
@@ -70,7 +70,7 @@
             <div>
               <div class="flex items-center">
                 <label for="program" class="block text-sm font-medium text-gray-700">Program</label>
-                <span class="relative inline-block -top-[2px]">
+                <span class="relative inline-block -top-[2px] hidden">
                   <svg class="inline w-4 h-4 ml-1 text-gray-500 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="info-icon-program">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9z"></path>
                   </svg>
@@ -79,9 +79,11 @@
                   </div>
                 </span>
               </div>
+
               <select name="program" id="program" class="block w-full py-2 pl-3 pr-10 mt-1 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="">All Programs</option>
-                <% programs.forEach(program => { %>
+                <% programs.forEach((program, index) => { %>
+
                 <option <%= selectedProgram === program ? 'selected' : '' %> value="<%= program %>"><%= program %></option>
                 <% }) %>
               </select>
@@ -109,6 +111,7 @@
                   </div>
                 </span>
               </div>
+
               <select name="section" id="section" class="block w-full py-2 pl-3 pr-10 mt-1 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="">All Sections</option>
                 <% sections.forEach(section => { %>
@@ -213,7 +216,26 @@
     </main>
   </div>
 
+  <!-- <script>
+    document.getElementById('show-sidebar').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.remove('-translate-x-full');
+    });
 
+    document.getElementById('close-sidebar').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.add('-translate-x-full');
+    });
+
+    const infoIcon = document.getElementById('info-icon');
+    const tooltip = document.getElementById('tooltip');
+
+    infoIcon.addEventListener('mouseenter', function() {
+      tooltip.classList.remove('hidden');
+    });
+
+    infoIcon.addEventListener('mouseleave', function() {
+      tooltip.classList.add('hidden');
+    });
+  </script> -->
 
 </body>
 

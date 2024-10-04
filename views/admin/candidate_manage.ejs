@@ -125,6 +125,7 @@
             </svg>
           </label>
           <input id="imageUpload" name="candidate_profile" type="file" accept="image/*" class="hidden">
+          <img id="previewImage" src="" alt="Image Preview" class="mt-2" style="display: none; max-width: 200px;">
         </div>
         <div>
           <div id="fullname" class="text-lg font-semibold text-gray-800">Name: </div>
@@ -160,6 +161,21 @@
       </div>
     </form>
   </dialog>
+
+  <script>
+    document.getElementById('imageUpload').addEventListener('change', function(event) {
+      const file = event.target.files[0]; // Get the selected file
+      if (file) {
+        const reader = new FileReader(); // Create a FileReader to read the file
+        reader.onload = function(e) {
+          const previewImage = document.getElementById('previewImage');
+          previewImage.src = e.target.result; // Set the image source to the file data
+          previewImage.style.display = 'block'; // Show the image
+        };
+        reader.readAsDataURL(file); // Read the file as a data URL
+      }
+    });
+  </script>
 
 </body>
 

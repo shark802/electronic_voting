@@ -1,5 +1,35 @@
 import { confirmAlert } from "/javascript/helper/sweetAlertFunctions.js";
 
+document.getElementById('show-sidebar').addEventListener('click', function () {
+    document.getElementById('sidebar').classList.remove('-translate-x-full');
+});
+
+document.getElementById('close-sidebar').addEventListener('click', function () {
+    document.getElementById('sidebar').classList.add('-translate-x-full');
+});
+
+const infoIcon = document.getElementById('info-icon');
+const tooltip = document.getElementById('tooltip');
+
+infoIcon.addEventListener('mouseenter', function () {
+    tooltip.classList.remove('hidden');
+});
+
+infoIcon.addEventListener('mouseleave', function () {
+    tooltip.classList.add('hidden');
+});
+
+const infoIconProgram = document.getElementById('info-icon-program'); // Updated to match new ID
+const tooltipProgram = document.getElementById('tooltip-program');
+
+infoIconProgram.addEventListener('mouseenter', function () {
+    tooltipProgram.classList.remove('hidden');
+});
+
+infoIconProgram.addEventListener('mouseleave', function () {
+    tooltipProgram.classList.add('hidden');
+});
+
 const voteStatusSelectElement = document.body.querySelector('#voteStatus');
 const departmentSelectElement = document.body.querySelector('#department');
 const programSelectElement = document.body.querySelector('#program');

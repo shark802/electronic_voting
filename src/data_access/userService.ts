@@ -1,8 +1,6 @@
-import { resolve } from "path";
 import { pool } from "../config/database";
 import { CsvUserObject } from "../utils/types/CsvUserObject";
 import bcrypt from 'bcrypt'
-import { Role } from "../utils/types/Role";
 import { QueryResult } from "mysql2";
 
 export async function insertUsersInDatabase(csvUserObject: CsvUserObject[]) {
