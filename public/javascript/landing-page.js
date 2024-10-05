@@ -190,8 +190,11 @@ async function toggleRegisterDeviceButton() {
         const response = await fetch(`/api/ip-address?ipAddress=${devicePublicIpAddress}`);
         const responseObject = await response.json();
 
-        if (responseObject.ipAddress && responseObject.ipAddress === devicePublicIpAddress) {
+        console.log(responseObject.ip_address, devicePublicIpAddress);
+
+        if (responseObject.ip_address && responseObject.ip_address === devicePublicIpAddress) {
             registerDeviceButton.classList.remove('hidden');
+            registerDeviceButton.classList.add('flex');
         }
     }
 }
