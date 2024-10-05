@@ -24,7 +24,7 @@ function requestUuidFunction(req, res, next) {
             const result = yield (0, query_1.insertQuery)(database_1.pool, "INSERT INTO register_devices (uuid, codename) VALUES(?, ?)", [uuid, codeName]);
             if (result.affectedRows < 1)
                 throw new customErrors_1.NotFoundError('No record added');
-            const socket = res.locals.socket;
+            const socket = res.locals.io;
             socket.emit('new-register-device-request', codeName, uuid);
             res.status(201).json({ codeName, uuid, status: 'pending' });
         }

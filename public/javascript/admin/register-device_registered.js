@@ -1,5 +1,6 @@
 import { confirmAlert, confirmErrorAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js"
 import "/javascript/logout.js"
+import socket from "/javascript/socket_io.js"
 
 const register_device_nav = document.querySelector("#register_device_nav");
 const registered_device = document.querySelector("#registered_device");
@@ -73,3 +74,25 @@ async function sendRequestToRemoveDevice(uuid) {
 
     return response;
 }
+
+socket.on('client-connected', (onlineClientsUuid) => {
+
+    Object.values(onlineClientsUuid).forEach(uuid => {
+
+        const deviceStatus = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-indicator`);
+        deviceStatus.classList.remove('bg-red-500');
+        deviceStatus.classList.add('bg-green-500');
+
+        const deviceStatusText = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-text`);
+        deviceStatusText.textContent = 'Online';
+    })
+})
+
+socket.on('client-disconnected', (uuid) => {
+    const deviceStatus = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-indicator`);
+    deviceStatus.classList.remove('bg-green-500');
+    deviceStatus.classList.add('bg-red-500');
+
+    const deviceStatusText = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-text`);
+    deviceStatusText.textContent = 'Offline';
+})

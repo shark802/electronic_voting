@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `register_devices` (
    `date_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
    `is_registered` TINYINT(1) DEFAULT 0,
    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   `deleted_at` TIMESTAMP NULL DEFAULT NULL
+   `deleted_at` TIMESTAMP NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `otp_codes` (
@@ -130,3 +130,10 @@ CREATE TABLE IF NOT EXISTS `program_populations` (
    `election_id` VARCHAR(50),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
 ) ENGINE=InnoDB;
+
+CREATE TABLE ip_address (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ip_address VARCHAR(45) NOT NULL,    
+    deleted_at TIMESTAMP NULL, 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);

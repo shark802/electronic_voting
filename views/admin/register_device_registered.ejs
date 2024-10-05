@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
+  <script src="/javascript/lib/socket.io.min.js"></script>
   <script type="module" src="/javascript/admin/register-device_registered.js" defer></script>
 
   <style>
@@ -52,6 +53,7 @@
             <th class="sticky top-0 px-3 py-3 text-center bg-gray-100">Codename</th>
             <th class="sticky top-0 px-3 py-3 text-center bg-gray-100">UUID</th>
             <th class="sticky top-0 hidden px-3 py-3 text-center bg-gray-100 sm:table-cell">Date Requested</th>
+            <th class="sticky top-0 hidden px-3 py-3 text-center bg-gray-100 sm:table-cell">Status</th>
             <th class="sticky top-0 px-3 py-3 text-center bg-gray-100">Actions</th>
           </tr>
         </thead>
@@ -75,6 +77,12 @@
             <td id="codename" class="py-1 text-sm font-medium text-center text-gray-700"><%= device.codename %></td>
             <td id="uuid" class="py-1 text-sm font-medium text-center text-gray-700"><%= device.uuid %></td>
             <td id="request-date" class="hidden py-1 text-sm font-medium text-center text-gray-700 sm:table-cell"><%= dateCreated%></td>
+            <td id="request-date" class="hidden py-1 text-sm font-medium text-center text-gray-700 sm:table-cell">
+              <div id="device-status" class="flex items-center justify-center space-x-2">
+                <div id="device-status-indicator" class="relative w-2 h-2 bg-red-500 rounded-full"></div>
+                <p id="device-status-text" class="text-xs text-gray-400">Offline</p>
+              </div>
+            </td>
             <td class="py-2 text-sm font-medium text-center text-gray-700">
               <button popovertarget="remove-device-modal" id="remove-device" class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-yellow-500 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors duration-200">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

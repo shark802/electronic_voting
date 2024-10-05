@@ -15,7 +15,7 @@ export async function requestUuidFunction(req: Request, res: Response, next: Nex
         const result = await insertQuery(pool, "INSERT INTO register_devices (uuid, codename) VALUES(?, ?)", [uuid, codeName]);
         if (result.affectedRows < 1) throw new NotFoundError('No record added');
 
-        const socket: Server = res.locals.socket;
+        const socket: Server = res.locals.io;
 
         socket.emit('new-register-device-request', codeName, uuid);
         res.status(201).json({ codeName, uuid, status: 'pending' });

@@ -21,7 +21,7 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
         //     value.includes(user.course as Course)
         // )?.[0]; // Get the key directly if found
 
-        const socket: Socket = res.locals.socket;
+        const socket: Socket = res.locals.io;
 
         if (!electionId) throw new BadRequestError('Election ID is missing');
         if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0) throw new BadRequestError('Selected candidate data is missing or invalid');

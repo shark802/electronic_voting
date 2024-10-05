@@ -9,6 +9,7 @@ import userRouter from "./routes/user";
 import departmentRouter from "./routes/department";
 import reportRouter from "./routes/reports";
 import voterRouter from "./routes/voter";
+import ipAddressRouter from "./routes/ipAddress";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use(userRouter);
 router.use(departmentRouter);
 router.use(reportRouter);
 router.use(voterRouter);
+router.use(ipAddressRouter);
 
 export default router;

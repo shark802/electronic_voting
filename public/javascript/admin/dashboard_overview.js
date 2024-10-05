@@ -1,4 +1,5 @@
 import { confirmErrorAlert, confirmAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js"
+import socket from "/javascript/socket_io.js"
 import "/javascript/logout.js"
 
 const dashboard_nav = document.querySelector("#dashboard_nav")
@@ -305,9 +306,6 @@ async function putRequestToCloseElection(electionId) {
     })
     return result;
 }
-
-// Add this listener to update total voters and not voted counts
-const socket = io(); // Ensure you have the socket.io client initialized
 
 socket.on('new-vote', (data) => {
     const electionSection = document.querySelector(`section[data-election-id="${data.election_id}"]`);

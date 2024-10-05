@@ -1,6 +1,7 @@
 import { displayRedirectMessage } from "/javascript/helper/showRedirectMessage.js";
 import { isValidText } from "/javascript/formInputValidator/isValidText.js"
 import "/javascript/landing-page-login.js";
+import socket from "/javascript/socket_io.js";
 import { showSwalSuccessToast, showSwalErrorToast, confirmErrorAlert, confirmAlert } from '/javascript/helper/sweetAlertFunctions.js';
 import { showLoading, hideLoader } from "/javascript/helper/loader.js"
 
@@ -170,9 +171,29 @@ function displayUUID(status) {
     registerDeviceForm.innerHTML = uuidInnerHtmlToDisplay;
 }
 
-fetch('https://api.ipify.org?format=json')
-    .then(response => response.json())
-    .then(data => {
-        console.log('External/Public IP address:', data.ip);
-        // alert(data.ip)
-    });
+async function fetchPublicIP() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+
+        return data.ip;
+    } catch (error) {
+        console.error('Error fetching IP address:', error);
+    }
+}
+
+async function toggleRegisterDeviceButton() {
+    const registerDeviceButton = document.querySelector('#register-device-button');
+    if (registerDeviceButton) {
+
+        const devicePublicIpAddress = await fetchPublicIP();
+        const response = await fetch(`/api/ip-address?ipAddress=${devicePublicIpAddress}`);
+        const responseObject = await response.json();
+
+        if (responseObject.ipAddress && responseObject.ipAddress === devicePublicIpAddress) {
+            registerDeviceButton.classList.remove('hidden');
+        }
+    }
+}
+
+toggleRegisterDeviceButton();

@@ -25,7 +25,7 @@ function saveVoteFunction(req, res, next) {
             // const voterDepartment = Object.entries(DEPARTMENT).find(([key, value]) =>
             //     value.includes(user.course as Course)
             // )?.[0]; // Get the key directly if found
-            const socket = res.locals.socket;
+            const socket = res.locals.io;
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election ID is missing');
             if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0)

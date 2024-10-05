@@ -10,12 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginPage = exports.landingPage = void 0;
-// import { publicIp, publicIpv4, publicIpv6 } from 'public-ip';
 function landingPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const user = req.session.user;
-            console.log('req.ip: ', req.ip);
             res.render("landingPage", { user });
         }
         catch (error) {
