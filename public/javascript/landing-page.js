@@ -183,19 +183,23 @@ async function fetchPublicIP() {
 }
 
 async function toggleRegisterDeviceButton() {
-    const registerDeviceButton = document.querySelector('#register-device-button');
-    if (registerDeviceButton) {
+    try {
+        const registerDeviceButton = document.querySelector('#register-device-button');
+        if (!registerDeviceButton) return;
 
         const devicePublicIpAddress = await fetchPublicIP();
         const response = await fetch(`/api/ip-address?ipAddress=${devicePublicIpAddress}`);
         const responseObject = await response.json();
 
-        console.log(responseObject.ip_address, devicePublicIpAddress);
+        if (!response.ok) throw new Error(responseObject?.message);
 
-        if (responseObject.ip_address && responseObject.ip_address === devicePublicIpAddress) {
+        if (responseObject?.ip_address && responseObject.ip_address === devicePublicIpAddress) {
             registerDeviceButton.classList.remove('hidden');
             registerDeviceButton.classList.add('flex');
         }
+
+    } catch (error) {
+        console.log(error.message);
     }
 }
 

@@ -10,12 +10,3 @@ export async function landingPage(req: Request, res: Response, next: NextFunctio
     }
 
 }
-
-export async function loginPage(req: Request, res: Response, next: NextFunction) {
-    try {
-
-        res.render('loginPage')
-    } catch (error) {
-        next(error)
-    }
-}

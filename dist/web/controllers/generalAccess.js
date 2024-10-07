@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginPage = exports.landingPage = void 0;
+exports.landingPage = void 0;
 function landingPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -22,14 +22,3 @@ function landingPage(req, res, next) {
     });
 }
 exports.landingPage = landingPage;
-function loginPage(req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            res.render('loginPage');
-        }
-        catch (error) {
-            next(error);
-        }
-    });
-}
-exports.loginPage = loginPage;

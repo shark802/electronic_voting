@@ -1,7 +1,6 @@
 import "/javascript/logout.js"
+import socket from "/javascript/socket_io.js"
 // import Chart from '/javascript/lib/chart.js';
-
-const socket = io();
 
 let electionsCandidateData; // Declare the variable in a higher scope
 

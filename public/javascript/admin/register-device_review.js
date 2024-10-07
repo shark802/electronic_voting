@@ -1,5 +1,6 @@
 import { confirmAlert, confirmErrorAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js"
 import "/javascript/logout.js"
+import socket from "/javascript/socket_io.js"
 
 const register_device_nav = document.querySelector("#register_device_nav")
 const review_request = document.querySelector("#review_request")
@@ -116,7 +117,6 @@ async function submitAcceptToServer(uuid) {
     return response;
 }
 
-const socket = io();
 
 socket.on('new-register-device-request', (codeName, uuid) => {
 

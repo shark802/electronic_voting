@@ -14,8 +14,6 @@ export function socketIO(io: Server) {
 			io.emit('client-connected', clientUUID);
 		}
 
-		console.log(clientUUID);
-
 		socket.on('disconnect', () => {
 			io.emit('client-disconnected', clientUUID[socket.id]);
 			delete clientUUID[socket.id];
