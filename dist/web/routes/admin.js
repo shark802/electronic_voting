@@ -22,4 +22,5 @@ router.get("/register-device/request", admin_1.reviewRegisterDevice);
 router.get("/register-device/registered", admin_1.viewRegisterDevice);
 // Control Panel
 router.get("/control-panel/user", admin_1.fetchUser);
+router.get("/control-panel/general-settings", admin_1.generalSettings);
 exports.default = router;

@@ -36,6 +36,7 @@ module.exports = {
     'float-right',
     'inline-block',
     'animate-slide-in',
+    'animate-slide-out',
     'lg:pl-12',
     'inline'
   ],
@@ -43,11 +44,16 @@ module.exports = {
     extend: {
       animation: {
         'slide-in': 'slideIn .5s ease-in-out',
+        'slide-out': 'slideOut .5s ease-in-out', // Add slide-out animation
       },
       keyframes: {
         slideIn: {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0)' },
+        },
+        slideOut: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(100%)' }, // Move off-screen
         },
       },
     },

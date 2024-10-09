@@ -133,7 +133,8 @@ CREATE TABLE IF NOT EXISTS `program_populations` (
 
 CREATE TABLE ip_address (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ip_address VARCHAR(45) NOT NULL,    
+    ip_address VARCHAR(45) NOT NULL,
+    network_name VARCHAR(99) NOT NULL,   
     deleted_at TIMESTAMP NULL, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
 );

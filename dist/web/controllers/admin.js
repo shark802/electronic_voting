@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
+exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const program_1 = require("../../utils/enums/program");
@@ -225,3 +225,12 @@ function fetchUser(req, res, next) {
     }
 }
 exports.fetchUser = fetchUser;
+function generalSettings(req, res, next) {
+    try {
+        res.render("admin/control-panel-general-settings");
+    }
+    catch (error) {
+        next(error);
+    }
+}
+exports.generalSettings = generalSettings;

@@ -1,10 +1,10 @@
-<div id="sidebar" class="absolute z-10 w-full bg-black rounded-tr-md rounded-br-md bg-opacity-40 lg:block h-dvh lg:relative lg:w-1/5">
+<div id="sidebar" class="absolute z-40 w-full bg-black rounded-tr-md rounded-br-md bg-opacity-40 lg:block h-dvh lg:relative lg:w-1/5">
 
   <!-- <svg id="hide-sidebar" xmlns="http://www.w3.org/2000/svg" class="absolute w-10 h-10 m-2 bg-opacity-50 rounded-md right-4 top-4 bg-slate-500 lg:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
   </svg> -->
 
-  <nav class="relative z-10 flex flex-col w-4/5 px-2 pt-2 font-sans bg-white rounded-tr-lg rounded-br-lg h-dvh lg:w-full">
+  <nav class="relative z-50 flex flex-col w-4/5 px-2 pt-2 font-sans bg-white rounded-tr-lg rounded-br-lg h-dvh lg:w-full">
 
     <div class="text-white rounded-md bg-gradient-to-r from-blue-600 to-blue-800">
       <div class="flex items-center justify-between p-4">
@@ -92,6 +92,22 @@
 
       <li class="w-full">
         <div class="relative block w-full">
+          <a href="/admin/department/manage" class="flex items-center px-4 py-2 text-gray-700 transition-colors duration-150 ease-in-out rounded-md hover:bg-gray-100 hover:text-gray-900">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3V3z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9h6v6H9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v6h6V3H9z" />
+            </svg>
+            <span id="department_nav" class="text-sm font-medium">Department</span>
+          </a>
+          <div id="department_subpage" class="hidden pl-4 mt-1 space-y-1 border-l-2 border-gray-400 ml-7">
+            <a id="manage_department_nav" href="/admin/department/manage" class="block py-1 pl-2 text-sm text-gray-600 hover:text-gray-900">Manage Departments</a>
+          </div>
+        </div>
+      </li>
+
+      <li class="w-full">
+        <div class="relative block w-full">
           <a href="/admin/register-device/request" class="flex items-center px-4 py-2 text-gray-700 transition-colors duration-150 ease-in-out rounded-md hover:bg-gray-100 hover:text-gray-900">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
@@ -116,6 +132,7 @@
           </a>
           <div id="control_panel_subpage" class="hidden pl-4 mt-1 space-y-1 border-l-2 border-gray-400 ml-7">
             <a id="fetch_user" href="/admin/control-panel/user" class="block py-1 pl-2 text-sm text-gray-600 hover:text-gray-900">Manage User</a>
+            <a id="general_settings" href="/admin/control-panel/general-settings" class="block py-1 pl-2 text-sm text-gray-600 hover:text-gray-900">General Settings</a>
           </div>
         </div>
       </li>

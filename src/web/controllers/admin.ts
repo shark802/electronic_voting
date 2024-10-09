@@ -202,3 +202,11 @@ export function fetchUser(req: Request, res: Response, next: NextFunction) {
         next(error)
     }
 }
+
+export function generalSettings(req: Request, res: Response, next: NextFunction) {
+    try {
+        res.render("admin/control-panel-general-settings")
+    } catch (error) {
+        next(error)
+    }
+}

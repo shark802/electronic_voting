@@ -12,7 +12,8 @@ import {
     fetchUser,
     editElection,
     viewElectionHistory,
-    renderAdminElectionResult
+    renderAdminElectionResult,
+    generalSettings
 } from '../controllers/admin';
 
 const router = Router();
@@ -41,5 +42,5 @@ router.get("/register-device/registered", viewRegisterDevice);
 
 // Control Panel
 router.get("/control-panel/user", fetchUser);
-
+router.get("/control-panel/general-settings", generalSettings);
 export default router
