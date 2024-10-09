@@ -1,4 +1,4 @@
-import { showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
+import { showSwalSuccessToast, showSwalErrorToast, confirmAlert } from "/javascript/helper/sweetAlertFunctions.js";
 
 export function initializeTrustedIpAddressForm() {
     const ipAddressInput = document.getElementById('trusted-ip-address');
@@ -40,6 +40,20 @@ export function initializeTrustedIpAddressForm() {
 
             showSwalSuccessToast(responseObject.message);
 
+            // add the new ip address to the table
+            const table = document.getElementById("trusted-ip-address-table");
+            if (table) {
+                const tbody = table.querySelector('tbody');
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="text-gray-500 font-medium py-2 border-b text-sm border-gray-300 px-4">${networkName}</td>
+                    <td class="text-gray-500 font-medium text-sm py-2 border-b border-gray-300 px-4">${trustedIpAddress}</td>
+                    <td class="py-2 border-b text-sm border-gray-300 px-4">
+                        <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-ip" data-ip="${trustedIpAddress}">Remove</button>
+                    </td>
+                `;
+            }
+
         } catch (error) {
             console.error(error);
         }
@@ -73,35 +87,32 @@ export function showTrustedIpAddress() {
         const ipAddress = await getAllIpAddress();
 
         // display ip address in table
-        const table = document.createElement('table');
-        table.classList.add('table');
-        table.classList.add('w-full', 'border-collapse', 'rounded-lg', 'overflow-hidden');
-        table.innerHTML = `
-            <thead class="bg-blue-50">
-                <tr>
-                    <th class="text-left py-2">Network Name</th>
-                    <th class="text-left py-2">IP Address</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                ${ipAddress.map(ip => `
-                    <tr>
-                            <td class="text-gray-500 font-medium py-2 border-b text-sm border-gray-300">${ip.network_name}</td>
-                            <td class="text-gray-500 font-medium text-sm py-2 border-b border-gray-300">${ip.ip_address}</td>
-                            <td class="text-gray-500 py-2 border-b text-sm border-gray-300">
-                                <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md">Remove</button>
-                            </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        `;
+        const table = createIpAddressTable(ipAddress);
+
         displayTableData.innerHTML = `
             <div class="w-full mb-5 text-center">
-                <p class="text-lg font-medium">List of Trusted IP Address</p>
+                <p class="text-lg font-medium">List of Trusted IP Addresses</p>
             </div>
         `;
+
         displayTableData.appendChild(table);
+
+        const displayedTable = document.getElementById("trusted-ip-address-table");
+        if (displayedTable) {
+            displayedTable.addEventListener('click', async (event) => {
+                if (event.target.classList.contains('remove-ip')) {
+                    const ipToRemove = event.target.getAttribute('data-ip');
+                    const action = await confirmAlert(`Are you sure you want to remove ${ipToRemove}?`);
+
+                    if (action.isConfirmed) {
+                        console.log('deleting...');
+                        const isDeleted = await removeIpAddress(ipToRemove);
+                        if (isDeleted) event.target.closest('tr').remove();
+                    }
+                }
+            });
+        }
+
     });
 }
 
@@ -110,5 +121,63 @@ async function getAllIpAddress() {
     const responseObject = await response.json();
 
     return responseObject.ipAddress;
+}
+
+// Function to create the table
+function createIpAddressTable(ipAddresses) {
+    const table = document.createElement('table');
+    table.classList.add('table-auto', 'w-full', 'border-collapse', 'rounded-lg', 'overflow-hidden', 'shadow-md');
+    table.id = "trusted-ip-address-table";
+
+    // Create table header
+    table.innerHTML = `
+        <thead class="bg-blue-100">
+            <tr>
+                <th class="text-left py-2 px-4">Network Name</th>
+                <th class="text-left py-2 px-4">IP Address</th>
+                <th class="text-left py-2 px-4">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${ipAddresses.map(ip => `
+                <tr>
+                    <td class="text-gray-500 font-medium py-2 border-b text-sm border-gray-300 px-4">${ip.network_name}</td>
+                    <td class="text-gray-500 font-medium text-sm py-2 border-b border-gray-300 px-4">${ip.ip_address}</td>
+                    <td class="py-2 border-b text-sm border-gray-300 px-4">
+                        <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-ip" data-ip="${ip.ip_address}">Remove</button>
+                    </td>
+                </tr>
+            `).join('')}
+        </tbody>
+    `;
+
+    return table;
+}
+
+
+// Function to handle the removal of an IP address
+async function removeIpAddress(ipAddress) {
+    try {
+        const response = await fetch("/api/ip-address", {
+            method: "PUT",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ipAddress: ipAddress
+            }),
+        });
+
+        const responseObject = await response.json();
+
+        if (!response.ok) {
+            showSwalErrorToast(responseObject.message);
+            return false;
+        }
+
+        showSwalSuccessToast(responseObject.message);
+        return true;
+    } catch (error) {
+        console.error(error);
+        showSwalErrorToast(error.message);
+    }
 }
 

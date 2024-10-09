@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { addIpAddress, getIpAddress, getAllIpAddress } from "../controllers/ipAddress";
+import { addIpAddress, getIpAddress, getAllIpAddress, removeIpAddress } from "../controllers/ipAddress";
 
 const router = Router();
 
 router.route('/ip-address')
     .post(addIpAddress)
-    .get(getIpAddress);
+    .get(getIpAddress)
+    .put(removeIpAddress);
 
 router.route('/ip-address/all')
     .get(getAllIpAddress);
