@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
+exports.setDepartmentMaxSenatorVote = exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
 const BccDepartments_1 = require("../../config/constants/BccDepartments");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
@@ -20,7 +20,7 @@ function addDepartment(req, res, next) {
             const { departmentCode } = req.body;
             if (!departmentCode || departmentCode === "")
                 throw new customErrors_1.BadRequestError("Department code is required");
-            const department = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE department_code = ?', [departmentCode]);
+            const department = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE department_code = ? AND deleted_at IS NULL', [departmentCode]);
             if (department.length > 0)
                 throw new customErrors_1.ConflictError(`${departmentCode} already exists`);
             yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO departments (department_code) VALUES (?)', [departmentCode]);
@@ -86,12 +86,12 @@ exports.getProgramSection = getProgramSection;
 function removeDepartment(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const department = req.params.departmentCode;
-            if (!department || department === "")
+            const departmentId = req.params.id;
+            if (!departmentId || departmentId === "")
                 throw new customErrors_1.BadRequestError("Department code is required");
-            const sqlRemoveDepartment = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE departments SET deleted_at = ? WHERE department_code = ?', [new Date(), department]);
+            const sqlRemoveDepartment = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE departments SET deleted_at = ? WHERE id = ?', [new Date(), departmentId]);
             if (sqlRemoveDepartment.affectedRows === 0)
-                throw new customErrors_1.NotFoundError(`Department ${department} not found`);
+                throw new customErrors_1.NotFoundError(`Department ${departmentId} not found`);
             return res.status(200).json({ message: "Department removed successfully" });
         }
         catch (error) {
@@ -100,3 +100,23 @@ function removeDepartment(req, res, next) {
     });
 }
 exports.removeDepartment = removeDepartment;
+function setDepartmentMaxSenatorVote(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { departmentId, maxVote } = req.body;
+            if (!departmentId)
+                throw new customErrors_1.BadRequestError("Department is required");
+            if (!maxVote)
+                throw new customErrors_1.BadRequestError("Max vote is required");
+            const sqlSetDepartmentMaxSenatorVote = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE departments SET max_select_senator = ? WHERE id = ?', [maxVote, departmentId]);
+            if (sqlSetDepartmentMaxSenatorVote.affectedRows === 0)
+                throw new customErrors_1.NotFoundError(`Department ${departmentId} not found`);
+            return res.status(200).json({ message: "Department max senator vote set successfully" });
+        }
+        catch (error) {
+            console.log(error);
+            next(error);
+        }
+    });
+}
+exports.setDepartmentMaxSenatorVote = setDepartmentMaxSenatorVote;

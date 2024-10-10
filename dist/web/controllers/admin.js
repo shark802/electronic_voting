@@ -252,11 +252,14 @@ function fetchUser(req, res, next) {
 }
 exports.fetchUser = fetchUser;
 function generalSettings(req, res, next) {
-    try {
-        res.render("admin/control-panel-general-settings");
-    }
-    catch (error) {
-        next(error);
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            res.render("admin/control-panel-general-settings", { departments });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
 }
 exports.generalSettings = generalSettings;

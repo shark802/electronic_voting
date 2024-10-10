@@ -226,9 +226,11 @@ export function fetchUser(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-export function generalSettings(req: Request, res: Response, next: NextFunction) {
+export async function generalSettings(req: Request, res: Response, next: NextFunction) {
     try {
-        res.render("admin/control-panel-general-settings")
+
+        const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        res.render("admin/control-panel-general-settings", { departments })
     } catch (error) {
         next(error)
     }

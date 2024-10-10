@@ -80,7 +80,10 @@
           </div>
           <form id="program-form" class="flex flex-col gap-1 py-3 lg:flex-row">
             <select id="department" class="w-full px-2 py-1 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500">
-              <option value="">Department</option>
+              <option value=""> Select Department</option>
+              <% departments.forEach(department => { %>
+              <option value="<%= department.id %>"><%= department.department_code %></option>
+              <% }) %>
             </select>
             <input type="text" id="program" class="w-full px-2 py-1 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Enter Program Code">
 
@@ -96,11 +99,14 @@
             <p class="text-sm text-gray-400">Set the maximum number of senator a voter can select based on their department.</p>
           </div>
 
-          <form id="program-form" class="flex flex-col gap-1 py-3 lg:flex-row">
-            <select id="department" class="w-full px-2 py-1 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500">
-              <option value="">Department</option>
+          <form id="set-vote-limit-form" class="flex flex-col gap-1 py-3 lg:flex-row">
+            <select id="department-to-set-vote-limit" class="w-full px-2 py-1 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option value="">Select Department</option>
+              <% departments.forEach(department => { %>
+              <option value="<%= department.id %>"><%= department.department_code %></option>
+              <% }) %>
             </select>
-            <input type="number" id="program" class="w-full px-2 py-1 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Enter Max Vote Limit" required min="1">
+            <input type="number" id="senator-max-vote" class="w-full px-2 py-1 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Enter Max Vote Limit" required min="1">
 
             <button type="submit" class="px-3 py-1 text-xs text-white bg-blue-500 rounded lg:ml-2 lg:text-sm text-nowrap">Save Vote Limit</button>
           </form>

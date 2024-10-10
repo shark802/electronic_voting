@@ -127,7 +127,7 @@ async function getAllIpAddress() {
 // Function to create the table
 function createIpAddressTable(ipAddresses) {
     const table = document.createElement('table');
-    table.classList.add('table-auto', 'w-full', 'border-collapse', 'rounded-md', 'overflow-hidden', 'shadow-md', 'bg-white');
+    table.classList.add('table-auto', 'w-full', 'border-collapse', 'overflow-hidden', 'shadow-md', 'bg-white');
     table.id = "trusted-ip-address-table";
 
     // Create table header

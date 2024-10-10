@@ -1,7 +1,7 @@
 import { showSwalSuccessToast, showSwalErrorToast, confirmAlert } from "/javascript/helper/sweetAlertFunctions.js";
 
+const departmentCodeInput = document.getElementById('department');
 export function initializeDepartmentForm() {
-    const departmentCodeInput = document.getElementById('department');
 
     document.querySelector("#department-form").addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -34,11 +34,14 @@ export function initializeDepartmentForm() {
             // add the new department to the table
             const table = document.getElementById("department-table");
             if (table) {
-                const row = table.insertRow();
-                const cell1 = row.insertCell(0);
-                const cell2 = row.insertCell(1);
-                cell1.textContent = departmentName;
-                cell2.textContent = departmentDescription;
+                const tbody = table.querySelector('tbody');
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td class="text-gray-500 font-medium py-2 border-b text-sm border-gray-300 px-4">${departmentCode}</td>
+                    <td class="py-2 border-b text-sm border-gray-300 px-4">
+                        <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-department" data-department="${departmentCode}">Remove</button>
+                    </td>
+                `;
             }
         } catch (error) {
             console.error("Error adding department:", error);
@@ -46,6 +49,12 @@ export function initializeDepartmentForm() {
         }
     });
 }
+
+// remove error border red
+departmentCodeInput.addEventListener('click', function () {
+    departmentCodeInput.classList.remove('border-red-500');
+    departmentCodeInput.classList.add('border-gray-300');
+});
 
 async function getAllDepartments() {
     const response = await fetch("/api/departments");
@@ -81,8 +90,8 @@ export async function showDepartmentTable() {
         if (displayedTable) {
             displayedTable.addEventListener('click', async (event) => {
                 if (event.target.classList.contains('remove-department')) {
-                    const departmentToRemove = event.target.getAttribute('data-department');
-                    const action = await confirmAlert(`Are you sure you want to remove ${departmentToRemove} Department?`);
+                    const departmentToRemove = event.target.getAttribute('data-department-id');
+                    const action = await confirmAlert(`Are you sure you want to remove ${event.target.closest('tr').querySelector('td:first-child').textContent} Department?`);
 
                     if (action.isConfirmed) {
                         const isDeleted = await removeDepartment(departmentToRemove);
@@ -111,7 +120,7 @@ function createDepartmentTable(departments) {
                 <tr>
                     <td class="text-gray-500 text-center font-medium py-2 border-b text-sm border-gray-300 px-4">${department.department_code}</td>
                     <td class="py-2 border-b text-sm border-gray-300 px-4 text-center">
-                        <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-department" data-department="${department.department_code}">Remove</button>
+                        <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-department" data-department-id="${department.id}">Remove</button>
                     </td>
                 </tr>
             `).join('')}
