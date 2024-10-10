@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addProgram = exports.setDepartmentMaxSenatorVote = exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
+exports.removeProgram = exports.getAllPrograms = exports.addProgram = exports.setDepartmentMaxSenatorVote = exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
 const BccDepartments_1 = require("../../config/constants/BccDepartments");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
@@ -89,7 +89,7 @@ function removeDepartment(req, res, next) {
             const departmentId = req.params.id;
             if (!departmentId || departmentId === "")
                 throw new customErrors_1.BadRequestError("Department code is required");
-            const sqlRemoveDepartment = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE departments SET deleted_at = ? WHERE id = ?', [new Date(), departmentId]);
+            const sqlRemoveDepartment = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE departments SET deleted_at = ? WHERE department_id = ?', [new Date(), departmentId]);
             if (sqlRemoveDepartment.affectedRows === 0)
                 throw new customErrors_1.NotFoundError(`Department ${departmentId} not found`);
             return res.status(200).json({ message: "Department removed successfully" });
@@ -108,7 +108,7 @@ function setDepartmentMaxSenatorVote(req, res, next) {
                 throw new customErrors_1.BadRequestError("Department is required");
             if (!maxVote)
                 throw new customErrors_1.BadRequestError("Max vote is required");
-            const sqlSetDepartmentMaxSenatorVote = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE departments SET max_select_senator = ? WHERE id = ?', [maxVote, departmentId]);
+            const sqlSetDepartmentMaxSenatorVote = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE departments SET max_select_senator = ? WHERE department_id = ?', [maxVote, departmentId]);
             if (sqlSetDepartmentMaxSenatorVote.affectedRows === 0)
                 throw new customErrors_1.NotFoundError(`Department ${departmentId} not found`);
             return res.status(200).json({ message: "Department max senator vote set successfully" });
@@ -140,3 +140,32 @@ function addProgram(req, res, next) {
     });
 }
 exports.addProgram = addProgram;
+function getAllPrograms(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const programs = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs p JOIN departments d ON p.department = d.department_id WHERE p.deleted_at IS NULL ORDER BY d.department_code, p.program_code');
+            return res.status(200).json({ programs });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getAllPrograms = getAllPrograms;
+function removeProgram(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const programId = req.params.id;
+            console.log(programId);
+            const sqlRemoveProgram = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE programs SET deleted_at = ? WHERE program_id = ?', [new Date(), programId]);
+            console.log(sqlRemoveProgram);
+            if (sqlRemoveProgram.affectedRows === 0)
+                throw new customErrors_1.NotFoundError(`Program ${programId} not found`);
+            return res.status(200).json({ message: "Program removed successfully" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.removeProgram = removeProgram;

@@ -77,7 +77,7 @@ export async function removeDepartment(req: Request, res: Response, next: NextFu
 
         if (!departmentId || departmentId === "") throw new BadRequestError("Department code is required");
 
-        const sqlRemoveDepartment = await updateQuery(pool, 'UPDATE departments SET deleted_at = ? WHERE id = ?', [new Date(), departmentId]);
+        const sqlRemoveDepartment = await updateQuery(pool, 'UPDATE departments SET deleted_at = ? WHERE department_id = ?', [new Date(), departmentId]);
         if (sqlRemoveDepartment.affectedRows === 0) throw new NotFoundError(`Department ${departmentId} not found`);
         return res.status(200).json({ message: "Department removed successfully" })
     } catch (error) {
@@ -92,7 +92,7 @@ export async function setDepartmentMaxSenatorVote(req: Request, res: Response, n
         if (!departmentId) throw new BadRequestError("Department is required");
         if (!maxVote) throw new BadRequestError("Max vote is required");
 
-        const sqlSetDepartmentMaxSenatorVote = await updateQuery(pool, 'UPDATE departments SET max_select_senator = ? WHERE id = ?', [maxVote, departmentId]);
+        const sqlSetDepartmentMaxSenatorVote = await updateQuery(pool, 'UPDATE departments SET max_select_senator = ? WHERE department_id = ?', [maxVote, departmentId]);
         if (sqlSetDepartmentMaxSenatorVote.affectedRows === 0) throw new NotFoundError(`Department ${departmentId} not found`);
 
         return res.status(200).json({ message: "Department max senator vote set successfully" })
@@ -115,6 +115,32 @@ export async function addProgram(req: Request, res: Response, next: NextFunction
         await insertQuery(pool, 'INSERT INTO programs (department, program_code) VALUES (?, ?)', [departmentId, programCode]);
         return res.status(200).json({ message: "Program added successfully" })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function getAllPrograms(req: Request, res: Response, next: NextFunction) {
+    try {
+        const programs = await selectQuery<Program>(pool, 'SELECT * FROM programs p JOIN departments d ON p.department = d.department_id WHERE p.deleted_at IS NULL ORDER BY d.department_code, p.program_code');
+        return res.status(200).json({ programs })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function removeProgram(req: Request, res: Response, next: NextFunction) {
+    try {
+        const programId = req.params.id;
+
+        console.log(programId);
+
+        const sqlRemoveProgram = await updateQuery(pool, 'UPDATE programs SET deleted_at = ? WHERE program_id = ?', [new Date(), programId]);
+
+        console.log(sqlRemoveProgram);
+        if (sqlRemoveProgram.affectedRows === 0) throw new NotFoundError(`Program ${programId} not found`);
+
+        return res.status(200).json({ message: "Program removed successfully" })
     } catch (error) {
         next(error)
     }

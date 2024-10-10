@@ -119,7 +119,7 @@
             <select id="program-department" class="custom-select">
               <option value=""> Select Department</option>
               <% departments.forEach(department => { %>
-              <option value="<%= department.id %>"><%= department.department_code %></option>
+              <option value="<%= department.department_id %>"><%= department.department_code %></option>
               <% }) %>
             </select>
             <input type="text" id="program" class="custom-input" placeholder="Enter Program Code">
@@ -140,7 +140,7 @@
             <select id="department-to-set-vote-limit" class="custom-select">
               <option value="">Select Department</option>
               <% departments.forEach(department => { %>
-              <option value="<%= department.id %>"><%= department.department_code %></option>
+              <option value="<%= department.department_id %>"><%= department.department_code %></option>
               <% }) %>
             </select>
             <input type="number" id="senator-max-vote" class="custom-input" placeholder="Enter Max Vote Limit" required min="1">

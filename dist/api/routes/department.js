@@ -8,8 +8,10 @@ router.route('/department')
     .get(department_1.getDepartmentObject);
 router.put('/department/senator-max-vote', department_1.setDepartmentMaxSenatorVote);
 router.put('/department/:id', department_1.removeDepartment);
+router.post('/program', department_1.addProgram);
+router.get('/programs', department_1.getAllPrograms);
+router.delete('/program/:id', department_1.removeProgram);
 router.get('/departments', department_1.getAllDepartments);
 router.get('/program', department_1.getDepartmentPrograms);
 router.get('/section', department_1.getProgramSection);
-router.post('/program', department_1.addProgram);
 exports.default = router;
