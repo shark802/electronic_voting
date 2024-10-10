@@ -134,16 +134,16 @@ function createIpAddressTable(ipAddresses) {
     table.innerHTML = `
         <thead class="bg-blue-500 text-white">
             <tr>
-                <th class="text-left py-2 px-4 font-medium">Network Name</th>
-                <th class="text-left py-2 px-4 font-medium">IP Address</th>
-                <th class="text-left py-2 px-4 font-medium">Actions</th>
+                <th class="text-left py-3 px-4 font-medium">Network Name</th>
+                <th class="text-left py-3 px-4 font-medium">IP Address</th>
+                <th class="text-left py-3 px-4 font-medium">Actions</th>
             </tr>
         </thead>
         <tbody>
             ${ipAddresses.map(ip => `
                 <tr>
-                    <td class="text-gray-500 font-medium py-2 border-b text-sm border-gray-300 px-4">${ip.network_name}</td>
-                    <td class="text-gray-500 font-medium text-sm py-2 border-b border-gray-300 px-4">${ip.ip_address}</td>
+                    <td class="text-gray-500 font-medium py-3 border-b text-sm border-gray-300 px-4">${ip.network_name}</td>
+                    <td class="text-gray-500 font-medium text-sm py-3 border-b border-gray-300 px-4">${ip.ip_address}</td>
                     <td class="py-2 border-b text-sm border-gray-300 px-4">
                         <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-ip" data-ip="${ip.ip_address}">Remove</button>
                     </td>

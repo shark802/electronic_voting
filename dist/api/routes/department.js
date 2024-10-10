@@ -11,4 +11,5 @@ router.put('/department/:id', department_1.removeDepartment);
 router.get('/departments', department_1.getAllDepartments);
 router.get('/program', department_1.getDepartmentPrograms);
 router.get('/section', department_1.getProgramSection);
+router.post('/program', department_1.addProgram);
 exports.default = router;

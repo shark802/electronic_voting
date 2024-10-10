@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setDepartmentMaxSenatorVote = exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
+exports.addProgram = exports.setDepartmentMaxSenatorVote = exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
 const BccDepartments_1 = require("../../config/constants/BccDepartments");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
@@ -120,3 +120,23 @@ function setDepartmentMaxSenatorVote(req, res, next) {
     });
 }
 exports.setDepartmentMaxSenatorVote = setDepartmentMaxSenatorVote;
+function addProgram(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { departmentId, programCode } = req.body;
+            if (!departmentId)
+                throw new customErrors_1.BadRequestError("Department is required");
+            if (!programCode)
+                throw new customErrors_1.BadRequestError("Program code is required");
+            const existingProgram = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE program_code = ? AND deleted_at IS NULL', [programCode]);
+            if (existingProgram.length > 0)
+                throw new customErrors_1.ConflictError(`${programCode} already exists`);
+            yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO programs (department, program_code) VALUES (?, ?)', [departmentId, programCode]);
+            return res.status(200).json({ message: "Program added successfully" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.addProgram = addProgram;

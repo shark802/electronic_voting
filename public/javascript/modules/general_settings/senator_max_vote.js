@@ -91,7 +91,7 @@ export async function showAllDepartmentsMaxVote() {
 
         displayTableData.innerHTML = `
             <div class="w-full mb-5 text-center">
-                <p class="text-xl text-gray-600 font-bold">Departments</p>
+                <p class="text-xl text-gray-600 font-bold">Max Vote for Senators</p>
             </div>
         `;
         displayTableData.appendChild(table);
@@ -106,15 +106,15 @@ function createDepartmentTable(departments) {
     table.innerHTML = `
         <thead class="bg-blue-500 text-white">
             <tr>
-                <th class="text-center py-2 px-4 font-medium">Department Code</th>
-                <th class="text-center py-2 px-4 font-medium">Max Vote</th>
+                <th class="text-center py-3 px-4 font-medium">Department</th>
+                <th class="text-center py-3 px-4 font-medium">Max Vote</th>
             </tr>
         </thead>
         <tbody>
             ${departments.map(department => `
                 <tr>
-                    <td class="text-gray-500 text-center font-medium py-2 border-b text-sm border-gray-300 px-4">${department.department_code}</td>
-                    <td id="${department.id}" class="py-2 border-b text-sm border-gray-300 px-4 text-center">${department.max_select_senator}</td>
+                    <td class="text-gray-500 text-center font-medium py-3 border-b text-sm border-gray-300 px-4">${department.department_code}</td>
+                    <td id="${department.id}" class="py-3 border-b font-medium border-gray-300 px-4 text-center">${department.max_select_senator}</td>
                 </tr>
             `).join('')}
         </tbody>

@@ -4,6 +4,7 @@ import "/javascript/logout.js"
 import { initializeTrustedIpAddressForm, showTrustedIpAddress } from "/javascript/modules/general_settings/trusted_ip_address.js"; // Import the module
 import { initializeDepartmentForm, showDepartmentTable } from "/javascript/modules/general_settings/department_settings.js";
 import { initializeSenatorMaxVoteForm, showAllDepartmentsMaxVote } from "/javascript/modules/general_settings/senator_max_vote.js";
+import { initializeProgramForm, showAllPrograms } from "/javascript/modules/general_settings/program_settings.js";
 
 const control_panel_nav = document.querySelector("#control_panel_nav");
 const general_settings = document.querySelector("#general_settings")
@@ -11,7 +12,7 @@ const general_settings = document.querySelector("#general_settings")
 control_panel_nav.classList.remove("font-normal")
 control_panel_nav.classList.add("active-page")
 
-$("#control_panel_subpage").slideDown(500);
+$("#control_panel_subpage").show();
 
 general_settings.classList.add("active-nav");
 
@@ -31,6 +32,10 @@ showTrustedIpAddress();
 // Initialize the department form logic
 initializeDepartmentForm();
 showDepartmentTable();
+
+// Initialize the program form logic
+initializeProgramForm();
+showAllPrograms();
 
 // Initialize the senator max vote form logic
 initializeSenatorMaxVoteForm();

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addDepartment, getAllDepartments, getDepartmentObject, getDepartmentPrograms, getProgramSection, removeDepartment, setDepartmentMaxSenatorVote } from "../controllers/department";
+import { addDepartment, addProgram, getAllDepartments, getDepartmentObject, getDepartmentPrograms, getProgramSection, removeDepartment, setDepartmentMaxSenatorVote } from "../controllers/department";
 
 const router = Router();
 
@@ -14,5 +14,7 @@ router.put('/department/:id', removeDepartment);
 router.get('/departments', getAllDepartments)
 router.get('/program', getDepartmentPrograms)
 router.get('/section', getProgramSection)
+
+router.post('/program', addProgram);
 
 export default router;

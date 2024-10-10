@@ -5,6 +5,7 @@ import { pool } from "../../config/database";
 import { User } from "../../utils/types/User";
 import { Department } from "../../utils/types/Department";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
+import { Program } from "../../utils/types/Program";
 
 export async function addDepartment(req: Request, res: Response, next: NextFunction) {
     try {
@@ -97,6 +98,24 @@ export async function setDepartmentMaxSenatorVote(req: Request, res: Response, n
         return res.status(200).json({ message: "Department max senator vote set successfully" })
     } catch (error) {
         console.log(error);
+        next(error)
+    }
+}
+
+export async function addProgram(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { departmentId, programCode } = req.body;
+
+        if (!departmentId) throw new BadRequestError("Department is required");
+        if (!programCode) throw new BadRequestError("Program code is required");
+
+        const existingProgram = await selectQuery<Program>(pool, 'SELECT * FROM programs WHERE program_code = ? AND deleted_at IS NULL', [programCode]);
+        if (existingProgram.length > 0) throw new ConflictError(`${programCode} already exists`);
+
+        await insertQuery(pool, 'INSERT INTO programs (department, program_code) VALUES (?, ?)', [departmentId, programCode]);
+        return res.status(200).json({ message: "Program added successfully" })
+
+    } catch (error) {
         next(error)
     }
 }
