@@ -132,9 +132,33 @@ CREATE TABLE IF NOT EXISTS `program_populations` (
 ) ENGINE=InnoDB;
 
 CREATE TABLE ip_address (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ip_address VARCHAR(45) NOT NULL,
-    network_name VARCHAR(99) NOT NULL,   
-    deleted_at TIMESTAMP NULL, 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
-);
+   `program_name` VARCHAR(99) NOT NULL,
+   `ip_address` VARCHAR(45) NOT NULL,
+   `network_name` VARCHAR(99) NOT NULL,   
+   `deleted_at` TIMESTAMP NULL, 
+   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+) ENGINE=InnoDB;
+
+CREATE TABLE departments (
+   `id` INT AUTO_INCREMENT PRIMARY KEY,
+   `department_code` VARCHAR(99) NOT NULL,
+   `max_select_senator` INT DEFAULT 1,
+   `deleted_at` TIMESTAMP NULL, 
+   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+) ENGINE=InnoDB;
+
+CREATE TABLE programs (
+   `id` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+   `program_code` VARCHAR(99) NOT NULL,
+   `department` INT NOT NULL,
+   `deleted_at` TIMESTAMP NULL,
+   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (`department`) REFERENCES `departments`(`id`)
+) ENGINE=InnoDB;
+
+CREATE TABLE positions (
+   `id` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+   `position` VARCHAR(99) NOT NULL,
+   `deleted_at` TIMESTAMP NULL,
+   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

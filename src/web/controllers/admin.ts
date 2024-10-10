@@ -11,6 +11,7 @@ import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
 import { DEPARTMENT } from "../../config/constants/BccDepartments";
+import { Department } from "../../utils/types/Department";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -166,6 +167,28 @@ export async function manageVoter(req: Request, res: Response, next: NextFunctio
         const availableElections = await selectQuery(pool, availableElectionQuery);
 
         res.render("admin/voter_manage", { votedUsers, availableElections })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// Department
+export async function manageDepartment(req: Request, res: Response, next: NextFunction) {
+    try {
+        const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        res.render("admin/department_manage", { departments })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function departmentPrograms(req: Request, res: Response, next: NextFunction) {
+    try {
+
+        const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const programs = await selectQuery<Program>(pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
+
+        res.render("admin/department_programs", { departments, programs })
     } catch (error) {
         next(error)
     }

@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { addIpAddress, getIpAddress, getAllIpAddress, removeIpAddress } from "../controllers/ipAddress";
+import { toUpperCase } from "../../middlewares/toUpperCase";
 
 const router = Router();
+router.use(toUpperCase)
 
 router.route('/ip-address')
     .post(addIpAddress)

@@ -1,8 +1,36 @@
 import { NextFunction, Request, Response } from "express";
 import { DEPARTMENT } from "../../config/constants/BccDepartments";
-import { selectQuery } from "../../data_access/query";
+import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { pool } from "../../config/database";
 import { User } from "../../utils/types/User";
+import { Department } from "../../utils/types/Department";
+import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
+
+export async function addDepartment(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { departmentCode } = req.body;
+
+        if (!departmentCode || departmentCode === "") throw new BadRequestError("Department code is required");
+
+        const department = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE department_code = ?', [departmentCode]);
+        if (department.length > 0) throw new ConflictError(`${departmentCode} already exists`);
+
+        await insertQuery(pool, 'INSERT INTO departments (department_code) VALUES (?)', [departmentCode]);
+        return res.status(200).json({ message: "Department added successfully" })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function getAllDepartments(req: Request, res: Response, next: NextFunction) {
+    try {
+        const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        return res.status(200).json({ departments })
+    } catch (error) {
+        next(error)
+    }
+}
 
 export async function getDepartmentObject(req: Request, res: Response, next: NextFunction) {
     try {
@@ -37,6 +65,20 @@ export async function getProgramSection(req: Request, res: Response, next: NextF
 
         return res.status(200).json({ sections })
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function removeDepartment(req: Request, res: Response, next: NextFunction) {
+    try {
+        const department = req.params.departmentCode;
+
+        if (!department || department === "") throw new BadRequestError("Department code is required");
+
+        const sqlRemoveDepartment = await updateQuery(pool, 'UPDATE departments SET deleted_at = ? WHERE department_code = ?', [new Date(), department]);
+        if (sqlRemoveDepartment.affectedRows === 0) throw new NotFoundError(`Department ${department} not found`);
+        return res.status(200).json({ message: "Department removed successfully" })
     } catch (error) {
         next(error)
     }

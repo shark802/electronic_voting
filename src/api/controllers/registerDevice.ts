@@ -17,8 +17,6 @@ export async function requestUuidFunction(req: Request, res: Response, next: Nex
 
         const socket: Server = res.locals.io;
 
-        console.log(object);
-
         socket.emit('new-register-device-request', codeName, uuid);
         res.status(201).json({ codeName, uuid, status: 'pending' });
     } catch (error) {

@@ -25,7 +25,6 @@ function requestUuidFunction(req, res, next) {
             if (result.affectedRows < 1)
                 throw new customErrors_1.NotFoundError('No record added');
             const socket = res.locals.io;
-            console.log(object);
             socket.emit('new-register-device-request', codeName, uuid);
             res.status(201).json({ codeName, uuid, status: 'pending' });
         }

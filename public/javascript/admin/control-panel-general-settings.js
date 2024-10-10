@@ -1,8 +1,8 @@
 // import { hideLoader, showLoading } from "/javascript/helper/loader.js";
 import "/javascript/logout.js"
-import { confirmAlert, confirmErrorAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
+// import { confirmAlert, confirmErrorAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
 import { initializeTrustedIpAddressForm, showTrustedIpAddress } from "/javascript/modules/general_settings/trusted_ip_address.js"; // Import the module
-
+import { initializeDepartmentForm, showDepartmentTable } from "/javascript/modules/general_settings/department_settings.js";
 const control_panel_nav = document.querySelector("#control_panel_nav");
 const general_settings = document.querySelector("#general_settings")
 
@@ -25,6 +25,10 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 // Initialize the trusted IP address form logic
 initializeTrustedIpAddressForm();
 showTrustedIpAddress();
+
+// Initialize the department form logic
+initializeDepartmentForm();
+showDepartmentTable();
 
 // Close data table container
 document.querySelector("#close-data-table-container").addEventListener("click", () => {

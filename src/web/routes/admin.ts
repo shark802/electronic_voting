@@ -13,7 +13,9 @@ import {
     editElection,
     viewElectionHistory,
     renderAdminElectionResult,
-    generalSettings
+    generalSettings,
+    departmentPrograms,
+    manageDepartment
 } from '../controllers/admin';
 
 const router = Router();
@@ -35,6 +37,10 @@ router.get("/candidate/new", addCandidate);
 
 // Voter
 router.get("/voter/manage", manageVoter);
+
+// Department
+router.get("/department/manage", manageDepartment);
+router.get("/department/programs", departmentPrograms);
 
 //Register Device
 router.get("/register-device/request", reviewRegisterDevice);

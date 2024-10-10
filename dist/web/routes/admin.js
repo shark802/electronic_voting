@@ -17,6 +17,9 @@ router.get("/candidate/manage", admin_1.manageCandidate);
 router.get("/candidate/new", admin_1.addCandidate);
 // Voter
 router.get("/voter/manage", admin_1.manageVoter);
+// Department
+router.get("/department/manage", admin_1.manageDepartment);
+router.get("/department/programs", admin_1.departmentPrograms);
 //Register Device
 router.get("/register-device/request", admin_1.reviewRegisterDevice);
 router.get("/register-device/registered", admin_1.viewRegisterDevice);

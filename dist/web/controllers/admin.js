@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
+exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.departmentPrograms = exports.manageDepartment = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const program_1 = require("../../utils/enums/program");
@@ -189,6 +189,32 @@ function manageVoter(req, res, next) {
     });
 }
 exports.manageVoter = manageVoter;
+// Department
+function manageDepartment(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            res.render("admin/department_manage", { departments });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.manageDepartment = manageDepartment;
+function departmentPrograms(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            const programs = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
+            res.render("admin/department_programs", { departments, programs });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.departmentPrograms = departmentPrograms;
 // Register device
 function reviewRegisterDevice(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {

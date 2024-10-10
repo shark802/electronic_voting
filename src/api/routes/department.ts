@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { getDepartmentObject, getDepartmentPrograms, getProgramSection } from "../controllers/department";
+import { addDepartment, getAllDepartments, getDepartmentObject, getDepartmentPrograms, getProgramSection } from "../controllers/department";
 
 const router = Router();
 
-router.get('/department', getDepartmentObject)
+router.route('/department')
+    .post(addDepartment)
+    .get(getDepartmentObject)
+
+router.get('/departments', getAllDepartments)
 router.get('/program', getDepartmentPrograms)
 router.get('/section', getProgramSection)
 

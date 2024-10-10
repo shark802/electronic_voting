@@ -77,7 +77,6 @@ function submitRegisterDeviceForm() {
         const codeName = document.querySelector('#code-name');
         const codeNameErrorMessage = document.querySelector('#codeNameErrorMessage');
 
-        console.log(codeName);
 
         if (!isValidText([codeName], codeNameErrorMessage)) return;
 
@@ -85,10 +84,6 @@ function submitRegisterDeviceForm() {
 
             const response = await fetchUuid(codeName.value) // send codename to server to get uuid as response
             const responseObject = await response.json();
-
-            console.log(responseObject);
-
-            hideLoader();
 
             if (!response.ok) {
                 const action = await confirmErrorAlert(responseObject.message);
@@ -119,6 +114,8 @@ async function fetchUuid(codeName) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ codeName })
     });
+
+    hideLoader();
 
     return response;
 }

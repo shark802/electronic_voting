@@ -38,6 +38,7 @@ export function initializeTrustedIpAddressForm() {
                 return;
             }
 
+            event.target.reset();
             showSwalSuccessToast(responseObject.message);
 
             // add the new ip address to the table
@@ -46,7 +47,7 @@ export function initializeTrustedIpAddressForm() {
                 const tbody = table.querySelector('tbody');
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td class="text-gray-500 font-medium py-2 border-b text-sm border-gray-300 px-4">${networkName}</td>
+                    <td class="text-gray-500 font-medium py-2 border-b text-sm border-gray-300 px-4">${networkName.toUpperCase()}</td>
                     <td class="text-gray-500 font-medium text-sm py-2 border-b border-gray-300 px-4">${trustedIpAddress}</td>
                     <td class="py-2 border-b text-sm border-gray-300 px-4">
                         <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-ip" data-ip="${trustedIpAddress}">Remove</button>
@@ -91,7 +92,7 @@ export function showTrustedIpAddress() {
 
         displayTableData.innerHTML = `
             <div class="w-full mb-5 text-center">
-                <p class="text-lg font-medium">List of Trusted IP Addresses</p>
+                <p class="text-xl text-gray-600 font-bold">Trusted IP Addresses</p>
             </div>
         `;
 
@@ -126,16 +127,16 @@ async function getAllIpAddress() {
 // Function to create the table
 function createIpAddressTable(ipAddresses) {
     const table = document.createElement('table');
-    table.classList.add('table-auto', 'w-full', 'border-collapse', 'rounded-lg', 'overflow-hidden', 'shadow-md');
+    table.classList.add('table-auto', 'w-full', 'border-collapse', 'rounded-md', 'overflow-hidden', 'shadow-md', 'bg-white');
     table.id = "trusted-ip-address-table";
 
     // Create table header
     table.innerHTML = `
-        <thead class="bg-blue-100">
+        <thead class="bg-blue-500 text-white">
             <tr>
-                <th class="text-left py-2 px-4">Network Name</th>
-                <th class="text-left py-2 px-4">IP Address</th>
-                <th class="text-left py-2 px-4">Actions</th>
+                <th class="text-left py-2 px-4 font-medium">Network Name</th>
+                <th class="text-left py-2 px-4 font-medium">IP Address</th>
+                <th class="text-left py-2 px-4 font-medium">Actions</th>
             </tr>
         </thead>
         <tbody>
