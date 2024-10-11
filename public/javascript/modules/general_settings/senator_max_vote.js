@@ -112,9 +112,9 @@ function createDepartmentTable(departments) {
         </thead>
         <tbody>
             ${departments.map(department => `
-                <tr>
+                <tr class="hover:bg-gray-100">
                     <td class="text-gray-500 text-center font-medium py-3 border-b text-sm border-gray-300 px-4">${department.department_code}</td>
-                    <td id="${department.id}" class="py-3 border-b font-medium border-gray-300 px-4 text-center">${department.max_select_senator}</td>
+                    <td id="${department.department_id}" class="py-3 border-b font-medium border-gray-300 px-4 text-center">${department.max_select_senator}</td>
                 </tr>
             `).join('')}
         </tbody>

@@ -141,11 +141,11 @@ function createIpAddressTable(ipAddresses) {
         </thead>
         <tbody>
             ${ipAddresses.map(ip => `
-                <tr>
+                <tr class="hover:bg-gray-100">
                     <td class="text-gray-500 font-medium py-3 border-b text-sm border-gray-300 px-4">${ip.network_name}</td>
                     <td class="text-gray-500 font-medium text-sm py-3 border-b border-gray-300 px-4">${ip.ip_address}</td>
                     <td class="py-2 border-b text-sm border-gray-300 px-4">
-                        <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-ip" data-ip="${ip.ip_address}">Remove</button>
+                        <button class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md remove-ip" data-ip="${ip.ip_address}">Remove</button>
                     </td>
                 </tr>
             `).join('')}

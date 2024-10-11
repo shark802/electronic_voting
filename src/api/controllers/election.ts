@@ -10,6 +10,8 @@ import { DEPARTMENT } from "../../config/constants/BccDepartments";
 import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
 import { getDepartmentsTotalPopulation, getDepartmentsTotalVotes } from "../../data_access/election";
 import { ResultSetHeader } from "mysql2";
+import { Department } from "../../utils/types/Department";
+import { Program } from "../../utils/types/Program";
 
 
 export async function createElection(req: Request, res: Response, next: NextFunction) {
@@ -34,13 +36,20 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 
 			await connection.execute(query, values);
 
-			for (const [department, programs] of Object.entries(DEPARTMENT)) {
+			const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+			const prgrams = await selectQuery<Program>(pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
 
+			console.log("Departments: ", departments);
+			console.log("Programs: ", prgrams);
+
+			for (const department of departments) {
+				const programs = prgrams.filter(program => program.department === department.department_id).map(program => program.program_code);
 				const year_active = new Date().getFullYear();
+
 				const [countDepartmentPopulation] = await selectQuery<{ population: number }>(pool, 'SELECT COUNT(*) as population FROM users WHERE course IN (?) AND year_active = ?', [programs, year_active])
 
 				const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, program_population, election_id) VALUES(?, ?, ?)';
-				await connection.execute(insertProgramPopulationQuery, [department, countDepartmentPopulation.population, election_id]);
+				await connection.execute(insertProgramPopulationQuery, [department.department_code, countDepartmentPopulation.population, election_id]);
 			}
 
 			await connection.commit();

@@ -12,7 +12,7 @@ const general_settings = document.querySelector("#general_settings")
 control_panel_nav.classList.remove("font-normal")
 control_panel_nav.classList.add("active-page")
 
-$("#control_panel_subpage").show();
+$("#control_panel_subpage").slideDown(500);
 
 general_settings.classList.add("active-nav");
 

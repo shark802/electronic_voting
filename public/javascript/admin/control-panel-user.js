@@ -9,7 +9,7 @@ const fetch_user = document.querySelector("#fetch_user")
 control_panel_nav.classList.remove("font-normal")
 control_panel_nav.classList.add("active-page")
 
-$("#control_panel_subpage").slideDown(500);
+$("#control_panel_subpage").show();
 
 fetch_user.classList.add("active-nav");
 

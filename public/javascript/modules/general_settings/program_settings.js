@@ -104,7 +104,7 @@ export async function showAllProgramsTable() {
             const table = createProgramTable(departmentPrograms);
             displayTableData.innerHTML += `
             <div class="w-full mb-2 mt-10 text-left">
-                <p class="text-lg text-gray-600 font-semibold">${department.department_code} Department Programs</p>
+                <p class="text-lg text-gray-700 font-semibold">${department.department_code} Department Programs</p>
             </div>
         `;
             displayTableData.appendChild(table);
@@ -140,10 +140,10 @@ function createProgramTable(programs) {
         </thead>
         <tbody>
             ${programs.map(program => `
-                <tr>
+                <tr class="hover:bg-gray-100">
                     <td class="p-2 border-b border-gray-300 text-sm">${program.program_code}</td>
                     <td class="p-2 border-b border-gray-300 text-sm">
-                        <button data-program-id="${program.program_id}" class="bg-red-500 text-white px-2 py-1 rounded-md remove-program text-xs">Delete</button>
+                        <button data-program-id="${program.program_id}" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md remove-program text-xs">Delete</button>
                     </td>
                 </tr>
             `).join('')}

@@ -117,10 +117,10 @@ function createDepartmentTable(departments) {
         </thead>
         <tbody>
             ${departments.map(department => `
-                <tr>
-                    <td class="text-gray-500 text-center font-medium py-3 border-b text-sm border-gray-300 px-4">${department.department_code}</td>
-                    <td class="py-3 border-b text-sm border-gray-300 px-4 text-center">
-                        <button class="bg-red-500 text-white text-xs px-2 py-1 rounded-md remove-department" data-department-id="${department.id}">Remove</button>
+                <tr class="hover:bg-gray-100">
+                    <td class="text-gray-500 text-center font-medium py-2 border-b text-sm border-gray-300 px-4">${department.department_code}</td>
+                    <td class="py-2 border-b text-sm border-gray-300 px-4 text-center">
+                        <button class="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md remove-department" data-department-id="${department.department_id}">Remove</button>
                     </td>
                 </tr>
             `).join('')}

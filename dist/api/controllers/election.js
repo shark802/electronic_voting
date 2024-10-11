@@ -16,7 +16,6 @@ const customErrors_1 = require("../../utils/customErrors");
 const query_1 = require("../../data_access/query");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
 const globalEventEmitterInstance_1 = require("../../events/globalEventEmitterInstance");
-const BccDepartments_1 = require("../../config/constants/BccDepartments");
 const voterService_1 = require("../../data_access/voterService");
 const election_1 = require("../../data_access/election");
 function createElection(req, res, next) {
@@ -37,11 +36,16 @@ function createElection(req, res, next) {
                 const query = "INSERT INTO elections (election_id, election_name, date_start, time_start, date_end, time_end, total_populations) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 const values = [election_id, election_name, date_start, time_start, date_end, time_end, totalQualifiedVoter];
                 yield connection.execute(query, values);
-                for (const [department, programs] of Object.entries(BccDepartments_1.DEPARTMENT)) {
+                const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+                const prgrams = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
+                console.log("Departments: ", departments);
+                console.log("Programs: ", prgrams);
+                for (const department of departments) {
+                    const programs = prgrams.filter(program => program.department === department.department_id).map(program => program.program_code);
                     const year_active = new Date().getFullYear();
                     const [countDepartmentPopulation] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT COUNT(*) as population FROM users WHERE course IN (?) AND year_active = ?', [programs, year_active]);
                     const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, program_population, election_id) VALUES(?, ?, ?)';
-                    yield connection.execute(insertProgramPopulationQuery, [department, countDepartmentPopulation.population, election_id]);
+                    yield connection.execute(insertProgramPopulationQuery, [department.department_code, countDepartmentPopulation.population, election_id]);
                 }
                 yield connection.commit();
                 // Emit an event to register voters for election that just created
