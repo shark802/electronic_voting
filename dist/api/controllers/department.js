@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeProgram = exports.getAllPrograms = exports.addProgram = exports.setDepartmentMaxSenatorVote = exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
-const BccDepartments_1 = require("../../config/constants/BccDepartments");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const customErrors_1 = require("../../utils/customErrors");
@@ -47,7 +46,13 @@ exports.getAllDepartments = getAllDepartments;
 function getDepartmentObject(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            return res.status(200).json({ DEPARTMENT: BccDepartments_1.DEPARTMENT });
+            const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            const programs = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
+            const DEPARTMENT = {};
+            for (const department of departments) {
+                DEPARTMENT[department.department_code] = programs.filter(program => program.department === department.department_id).map(program => program.program_code);
+            }
+            return res.status(200).json({ DEPARTMENT });
         }
         catch (error) {
             next(error);
@@ -58,9 +63,13 @@ exports.getDepartmentObject = getDepartmentObject;
 function getDepartmentPrograms(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const department = req.query.department;
-            const programs = Object.values(BccDepartments_1.DEPARTMENT[department]);
-            return res.status(200).json({ programs });
+            const departmentCode = req.query.department;
+            const [department] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT department_id FROM departments WHERE department_code = ? AND deleted_at IS NULL', [departmentCode]);
+            if (!department)
+                throw new customErrors_1.NotFoundError(`Department ${departmentCode} not found`);
+            const programs = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT program_code FROM programs WHERE department = ? AND deleted_at IS NULL', [department.department_id]);
+            const programCodes = programs.map(program => program.program_code);
+            return res.status(200).json({ programs: programCodes });
         }
         catch (error) {
             next(error);
@@ -74,7 +83,7 @@ function getProgramSection(req, res, next) {
             const program = req.query.program;
             const currentYear = new Date().getFullYear();
             const sqlSectionResult = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]);
-            const sections = sqlSectionResult.map(section => Object.values(section)).flat();
+            const sections = sqlSectionResult.map(section => section.section);
             return res.status(200).json({ sections });
         }
         catch (error) {

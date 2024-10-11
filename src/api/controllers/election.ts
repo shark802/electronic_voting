@@ -6,7 +6,6 @@ import { Election } from "../../utils/types/Election";
 import { selectQuery, updateQuery } from "../../data_access/query";
 import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
 import { eventEmitter } from '../../events/globalEventEmitterInstance';
-import { DEPARTMENT } from "../../config/constants/BccDepartments";
 import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
 import { getDepartmentsTotalPopulation, getDepartmentsTotalVotes } from "../../data_access/election";
 import { ResultSetHeader } from "mysql2";
@@ -38,9 +37,6 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 
 			const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
 			const prgrams = await selectQuery<Program>(pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
-
-			console.log("Departments: ", departments);
-			console.log("Programs: ", prgrams);
 
 			for (const department of departments) {
 				const programs = prgrams.filter(program => program.department === department.department_id).map(program => program.program_code);

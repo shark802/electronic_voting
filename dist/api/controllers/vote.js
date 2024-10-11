@@ -14,17 +14,12 @@ const globalEventEmitterInstance_1 = require("./../../events/globalEventEmitterI
 const customErrors_1 = require("../../utils/customErrors");
 const voteService_1 = require("../../data_access/voteService");
 const database_1 = require("../../config/database");
-// type Course = (typeof DEPARTMENT[keyof typeof DEPARTMENT])[number]
 function saveVoteFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { electionId } = req.body;
             const selectedCandidate = req.body.selectedCandidate;
             const user_id = req.session.user.user_id;
-            // const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
-            // const voterDepartment = Object.entries(DEPARTMENT).find(([key, value]) =>
-            //     value.includes(user.course as Course)
-            // )?.[0]; // Get the key directly if found
             const socket = res.locals.io;
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election ID is missing');

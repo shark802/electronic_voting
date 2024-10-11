@@ -10,7 +10,7 @@ import departmentRouter from "./routes/department";
 import reportRouter from "./routes/reports";
 import voterRouter from "./routes/voter";
 import ipAddressRouter from "./routes/ipAddress";
-
+import positionRouter from "./routes/position";
 const router = Router();
 
 router.use(electionRouter);
@@ -24,5 +24,6 @@ router.use(departmentRouter);
 router.use(reportRouter);
 router.use(voterRouter);
 router.use(ipAddressRouter);
+router.use(positionRouter);
 
 export default router;

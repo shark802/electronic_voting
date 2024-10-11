@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Users</title>
+  <title>General Settings</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
@@ -95,6 +95,8 @@
           <span id="show-trusted-ips" class="text-sm text-blue-500 underline cursor-pointer underline-offset-2">Show Trusted IPs</span>
         </div>
 
+        <br>
+
         <div class="p-3 py-4 hover:bg-blue-50 lg:px-10 max-w-[800px]">
           <div>
             <p class="font-medium ">Add Department</p>
@@ -151,6 +153,26 @@
           <span id="show-all-max-votes" class="text-sm text-blue-500 underline cursor-pointer underline-offset-2">Show All Department Max Votes</span>
         </div>
 
+        <br>
+
+        <!-- Add Position Settings -->
+        <div class="p-3 py-4 hover:bg-blue-50 lg:px-10 max-w-[800px]">
+          <div>
+            <p class="font-medium ">Candidate Position</p>
+            <p class="text-sm text-gray-400">Add a new candidate position to the system.</p>
+          </div>
+          <form id="position-form" class="flex flex-col gap-1 py-3 lg:flex-row">
+            <input type="text" id="position" class="custom-input" placeholder="Enter Position">
+
+            <button type="submit" class="px-5 py-1 text-xs text-white bg-blue-500 rounded lg:ml-2 lg:text-sm text-nowrap">Add Position</button>
+          </form>
+
+          <span id="show-all-positions" class="text-sm text-blue-500 underline cursor-pointer underline-offset-2">Show All Positions</span>
+        </div>
+
+        <br>
+
+        <!-- Register Face Option Toggle -->
         <div id="register-face-option-toggle" class="p-3 py-5 hover:bg-blue-50 lg:px-10 max-w-[800px]">
           <div>
             <p class="font-medium">Toggle Register Face Option</p>

@@ -5,7 +5,7 @@ import { initializeTrustedIpAddressForm, showTrustedIpAddress } from "/javascrip
 import { initializeDepartmentForm, showDepartmentTable } from "/javascript/modules/general_settings/department_settings.js";
 import { initializeSenatorMaxVoteForm, showAllDepartmentsMaxVote } from "/javascript/modules/general_settings/senator_max_vote.js";
 import { initializeProgramForm, showAllProgramsTable } from "/javascript/modules/general_settings/program_settings.js";
-
+import { initializePositionForm, showAllPositions } from "/javascript/modules/general_settings/position_settings.js";
 const control_panel_nav = document.querySelector("#control_panel_nav");
 const general_settings = document.querySelector("#general_settings")
 
@@ -40,6 +40,10 @@ showAllProgramsTable();
 // Initialize the senator max vote form logic
 initializeSenatorMaxVoteForm();
 showAllDepartmentsMaxVote();
+
+// Initialize the position form logic
+initializePositionForm();
+showAllPositions();
 
 // Close data table container
 document.querySelector("#close-data-table-container").addEventListener("click", () => {

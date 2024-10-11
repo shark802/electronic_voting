@@ -38,8 +38,6 @@ function createElection(req, res, next) {
                 yield connection.execute(query, values);
                 const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
                 const prgrams = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
-                console.log("Departments: ", departments);
-                console.log("Programs: ", prgrams);
                 for (const department of departments) {
                     const programs = prgrams.filter(program => program.department === department.department_id).map(program => program.program_code);
                     const year_active = new Date().getFullYear();

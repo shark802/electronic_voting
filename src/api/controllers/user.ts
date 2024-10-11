@@ -1,14 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
-import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
+import { selectQuery } from "../../data_access/query";
 import { User } from "../../utils/types/User";
 import { pool } from "../../config/database";
 import { ResultSetHeader } from "mysql2";
 import csv from 'csvtojson';
 import fs from "fs";
 import { CsvUserObject } from "../../utils/types/CsvUserObject";
-import { Worker } from "worker_threads";
-import path from "path";
 import { importUsersToDatabase } from "../../utils/importUserToDatabase";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {

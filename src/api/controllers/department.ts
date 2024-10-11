@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { DEPARTMENT } from "../../config/constants/BccDepartments";
 import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { pool } from "../../config/database";
 import { User } from "../../utils/types/User";
@@ -36,6 +35,15 @@ export async function getAllDepartments(req: Request, res: Response, next: NextF
 export async function getDepartmentObject(req: Request, res: Response, next: NextFunction) {
     try {
 
+        const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const programs = await selectQuery<Program>(pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
+
+        const DEPARTMENT: Record<string, string[]> = {};
+
+        for (const department of departments) {
+            DEPARTMENT[department.department_code] = programs.filter(program => program.department === department.department_id).map(program => program.program_code);
+        }
+
         return res.status(200).json({ DEPARTMENT })
     } catch (error) {
         next(error)
@@ -44,11 +52,14 @@ export async function getDepartmentObject(req: Request, res: Response, next: Nex
 
 export async function getDepartmentPrograms(req: Request, res: Response, next: NextFunction) {
     try {
-        const department = req.query.department;
+        const departmentCode = req.query.department;
 
-        const programs = Object.values(DEPARTMENT[(department as keyof typeof DEPARTMENT)]);
+        const [department] = await selectQuery<Department>(pool, 'SELECT department_id FROM departments WHERE department_code = ? AND deleted_at IS NULL', [departmentCode]);
+        if (!department) throw new NotFoundError(`Department ${departmentCode} not found`);
+        const programs = await selectQuery<Program>(pool, 'SELECT program_code FROM programs WHERE department = ? AND deleted_at IS NULL', [department.department_id]);
+        const programCodes = programs.map(program => program.program_code);
 
-        return res.status(200).json({ programs })
+        return res.status(200).json({ programs: programCodes })
 
     } catch (error) {
         next(error)
@@ -61,8 +72,8 @@ export async function getProgramSection(req: Request, res: Response, next: NextF
         const program = req.query.program;
         const currentYear = new Date().getFullYear();
 
-        const sqlSectionResult = await selectQuery<Pick<User, 'section'>[]>(pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]);
-        const sections = sqlSectionResult.map(section => Object.values(section)).flat();
+        const sqlSectionResult = await selectQuery<Pick<User, 'section'>>(pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]);
+        const sections = sqlSectionResult.map(section => section.section);
 
         return res.status(200).json({ sections })
 

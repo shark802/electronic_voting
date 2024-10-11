@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
-import { Position } from "../../utils/enums/position";
 import { Program } from "../../utils/enums/program";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
 import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVotedInElection, getAllUserElectionParticipatedIn } from "../../data_access/voterService";
@@ -12,6 +11,7 @@ import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
 import { DEPARTMENT } from "../../config/constants/BccDepartments";
 import { Department } from "../../utils/types/Department";
+import { Position } from "../../utils/types/Positions";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -34,8 +34,15 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
 export async function dashboardVoteTally(req: Request, res: Response, next: NextFunction) {
     try {
         const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-        const candidatePosition = Object.values(CANDIDATE_POSITION);
-        const programs = Object.keys(DEPARTMENT);
+
+        // get all positions
+        const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+        const candidatePosition = positions.map(position => position.position);
+        console.log(candidatePosition);
+
+        // get all departments
+        const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const programs = departments.map(department => department.department_code);
 
         const electionIdList = elections.map(election => election.election_id);
         let candidates: unknown[] = []

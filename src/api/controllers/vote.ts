@@ -5,21 +5,12 @@ import { checkIfUserHasVoted, incrementCandidateVoteCount, saveVote, updateVoter
 import { pool } from "../../config/database";
 import { Socket } from "socket.io";
 import { Candidate } from "../../utils/types/Candidate";
-import { selectQuery } from "../../data_access/query";
-import { User } from "../../utils/types/User";
-import { DEPARTMENT } from "../../config/constants/BccDepartments";
-
-// type Course = (typeof DEPARTMENT[keyof typeof DEPARTMENT])[number]
 
 export async function saveVoteFunction(req: Request, res: Response, next: NextFunction) {
     try {
         const { electionId } = req.body;
         const selectedCandidate: Pick<Candidate, 'id_number' | 'position'>[] = req.body.selectedCandidate
         const user_id = req.session.user!.user_id;
-        // const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
-        // const voterDepartment = Object.entries(DEPARTMENT).find(([key, value]) =>
-        //     value.includes(user.course as Course)
-        // )?.[0]; // Get the key directly if found
 
         const socket: Socket = res.locals.io;
 

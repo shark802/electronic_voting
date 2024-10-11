@@ -1,12 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { getAllNotVotedInElection, getAllVoterInElection } from "../../data_access/voterService";
-import jsPDF from "jspdf";
+import { getAllVoterInElection } from "../../data_access/voterService";
 import 'jspdf-autotable';
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
 import { genereateTablePdf } from "../../utils/reportUtils/generateTablePdf";
-import { DEPARTMENT } from "../../config/constants/BccDepartments";
 import { BadRequestError } from "../../utils/customErrors";
 import { filterVotersByFilterParameter } from "../../utils/filterVotersByFilterParameter";
 import { User } from "../../utils/types/User";
