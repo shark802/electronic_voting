@@ -1,6 +1,7 @@
 import "/javascript/logout.js"
 import '/javascript/admin/election_showHide.js';
 import '/javascript/admin/election_delete.js';
+import socket from "/javascript/socket_io.js"
 
 const election_nav = document.querySelector("#election_nav");
 const election_history_page = document.querySelector("#election_history_page");
@@ -53,6 +54,6 @@ document.querySelector("body").addEventListener('click', (event) => {
 
 
 // Request election result page
-document.body.querySelector('#display-election-history').addEventListener('click', async(event) => {
-    
+document.body.querySelector('#display-election-history').addEventListener('click', async (event) => {
+
 })

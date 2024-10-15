@@ -2,6 +2,7 @@
 import "/javascript/logout.js";
 import { isInputNotEmpty } from '/javascript/formInputValidator/isInputNotEmpty.js'
 import { confirmAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
+import socket from "/javascript/socket_io.js"
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const manage_candidate = document.querySelector("#manage_candidate");

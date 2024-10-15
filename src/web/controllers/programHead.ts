@@ -3,10 +3,12 @@ import { pool } from "../../config/database";
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { User } from "../../utils/types/User";
-import { Program } from "../../utils/enums/program";
-import { Position } from "../../utils/enums/position";
-import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
-import { DEPARTMENT } from "../../config/constants/BccDepartments";
+import { Position } from "../../utils/types/Positions";
+import { Department } from "../../utils/types/Department";
+// import { Program } from "../../utils/enums/program";
+// import { Position } from "../../utils/enums/position";
+// import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
+// import { DEPARTMENT } from "../../config/constants/BccDepartments";
 
 export async function programHeadDashboardOverviewPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -37,14 +39,14 @@ export async function programHeadDashboardVoteTallyPage(req: Request, res: Respo
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [userSession.user_id]);
 
         const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-        const candidatePosition = Object.values(CANDIDATE_POSITION);
-        const programs = Object.keys(DEPARTMENT);
+        const candidatePosition = (await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
+        const programs = (await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL')).map(department => department.department_code);
 
         const electionIdList = elections.map(election => election.election_id);
         let candidates: unknown[] = []
 
         if (electionIdList.length > 0) {
-            candidates = await selectQuery(pool, 'SELECT * FROM candidates WHERE election_id IN ( ? )', [electionIdList])
+            candidates = await selectQuery(pool, 'SELECT * FROM candidates WHERE election_id IN ( ? ) AND deleted IS NULL', [electionIdList])
         }
 
         res.render('program/dashboard-vote-tally-program-head', { elections, candidatePosition, programs, candidates, user })

@@ -1,9 +1,7 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEPARTMENT = void 0;
-exports.DEPARTMENT = {
-    AB: ['ABE', 'ABH', 'BSOA'],
-    CRIM: ['CRIM'],
-    EDUC: ['BPED', 'BSEDMATH', 'BSEDFIL', 'BEED', 'BSEDSS'],
-    IS: ['IS'],
-};
+// export const DEPARTMENT = {
+//     AB: ['ABE', 'ABH', 'BSOA'] as const,
+//     CRIM: ['CRIM'] as const,
+//     EDUC: ['BPED', 'BSEDMATH', 'BSEDFIL', 'BEED', 'BSEDSS'] as const,
+//     IS: ['IS'] as const,
+// };

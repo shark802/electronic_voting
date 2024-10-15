@@ -2,7 +2,7 @@ import { hideLoader, showLoading } from "/javascript/helper/loader.js";
 import { isInputNotEmpty } from "/javascript/formInputValidator/isInputNotEmpty.js";
 import "/javascript/logout.js"
 import { confirmAlert, confirmErrorAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js";
-
+import socket from "/javascript/socket_io.js"
 const control_panel_nav = document.querySelector("#control_panel_nav");
 const fetch_user = document.querySelector("#fetch_user")
 

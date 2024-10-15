@@ -1,15 +1,20 @@
-import { DEPARTMENT } from "../config/constants/BccDepartments";
+import { pool } from "../config/database";
+import { selectQuery } from "../data_access/query";
+import { Department } from "./types/Department";
+import { Program } from "./types/Program";
 import { User } from "./types/User";
 import { Voter } from "./types/Voter";
 
-export function filterVotersByFilterParameter(
+export async function filterVotersByFilterParameter(
     voters: (Partial<User> & Partial<Voter>)[],
     voteStatus: number,
     department?: string,
     program?: string,
     yearLevel?: string,
     section?: string
-): (Partial<User> & Partial<Voter>)[] {
+): Promise<(Partial<User> & Partial<Voter>)[]> {
+
+    const departmentId = department ? (await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE department_code = ?', [department])).map(department => department.department_id) : [];
 
     let filteredVoters = [...voters];
 
@@ -19,7 +24,7 @@ export function filterVotersByFilterParameter(
 
     if (department) {
 
-        const departmentPrograms = Object.values(DEPARTMENT[department as keyof typeof DEPARTMENT]);
+        const departmentPrograms = await (await selectQuery<Program>(pool, 'SELECT * FROM programs WHERE department IN ( ? ) AND deleted_at IS NULL', [departmentId])).map(program => program.program_code);
 
         // filter each voter if their course property is part of department selected
         filteredVoters = filteredVoters.filter(voter =>

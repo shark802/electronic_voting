@@ -43,6 +43,15 @@ export function initializeDepartmentForm() {
                     </td>
                 `;
             }
+
+            // // add the added department to the program form select option
+            // const programDepartment = document.getElementById("program-department");
+            // programDepartment.innerHTML += `<option value="${responseObject.department_id}">${departmentCode}</option>`;
+
+            // // add the added department to the senator vote limit form select option
+            // const departmentToSetVoteLimit = document.getElementById("department-to-set-vote-limit");
+            // departmentToSetVoteLimit.innerHTML += `<option value="${responseObject.department_id}">${departmentCode}</option>`;
+
         } catch (error) {
             console.error("Error adding department:", error);
             showSwalErrorToast("Failed to add department. Please try again.");
@@ -95,7 +104,17 @@ export async function showDepartmentTable() {
 
                     if (action.isConfirmed) {
                         const isDeleted = await removeDepartment(departmentToRemove);
-                        if (isDeleted) event.target.closest('tr').remove();
+                        if (isDeleted) {
+                            event.target.closest('tr').remove();
+
+                            // remove the added department from the program form select option
+                            const programDepartment = document.getElementById("program-department");
+                            programDepartment.innerHTML = programDepartment.innerHTML.replace(`<option value="${departmentToRemove}">${event.target.closest('tr').querySelector('td:first-child').textContent}</option>`, '');
+
+                            // remove the added department from the senator vote limit form select option
+                            const departmentToSetVoteLimit = document.getElementById("department-to-set-vote-limit");
+                            departmentToSetVoteLimit.innerHTML = departmentToSetVoteLimit.innerHTML.replace(`<option value="${departmentToRemove}">${event.target.closest('tr').querySelector('td:first-child').textContent}</option>`, '');
+                        }
                     }
                 }
             });

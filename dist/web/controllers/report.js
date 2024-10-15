@@ -13,13 +13,13 @@ exports.programHeadVoterParticipationReport = exports.previewVoterParticipationR
 const customErrors_1 = require("../../utils/customErrors");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
-const BccDepartments_1 = require("../../config/constants/BccDepartments");
 const voterService_1 = require("../../data_access/voterService");
 const filterVotersByFilterParameter_1 = require("../../utils/filterVotersByFilterParameter");
 const getPaginatedUsers_1 = require("../../utils/getPaginatedUsers");
 const createVoterReportTitle_1 = require("../../utils/createVoterReportTitle");
 function previewVoterParticipationReports(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             const election_id = req.params.id;
             if (!election_id)
@@ -33,8 +33,13 @@ function previewVoterParticipationReports(req, res, next) {
             const selectedProgram = program === null || program === void 0 ? void 0 : program.toString();
             const selectedYearLevel = year_level === null || year_level === void 0 ? void 0 : year_level.toString();
             const selectedSection = section === null || section === void 0 ? void 0 : section.toString();
-            const departments = Object.keys(BccDepartments_1.DEPARTMENT);
-            const programs = department ? Object.values(BccDepartments_1.DEPARTMENT[department]) : [];
+            // get available departments and map to array of department codes
+            const availableDepartments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            const departments = availableDepartments.map(department => department.department_code);
+            // get programs based on selected department
+            const departmentId = (_a = availableDepartments.find(department => department.department_code === selectedDepartment)) === null || _a === void 0 ? void 0 : _a.department_id;
+            const programs = departmentId ? (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE department = ? AND deleted_at IS NULL', [departmentId])).map(program => program.program_code) : [];
+            // get year levels
             const yearLevels = [1, 2, 3, 4];
             const currentYear = new Date().getFullYear();
             const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : [];
@@ -42,7 +47,7 @@ function previewVoterParticipationReports(req, res, next) {
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);
             // filter voters
-            const filteredVoters = (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+            const filteredVoters = yield (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const reportTitle = (0, createVoterReportTitle_1.createVoterReportTitle)(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const users = (0, getPaginatedUsers_1.getPaginatedUsers)(filteredVoters, page);
             const usersSize = filteredVoters.length;
@@ -56,6 +61,7 @@ function previewVoterParticipationReports(req, res, next) {
 exports.previewVoterParticipationReports = previewVoterParticipationReports;
 function programHeadVoterParticipationReport(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             const election_id = req.params.id;
             if (!election_id)
@@ -69,8 +75,13 @@ function programHeadVoterParticipationReport(req, res, next) {
             const selectedProgram = program === null || program === void 0 ? void 0 : program.toString();
             const selectedYearLevel = year_level === null || year_level === void 0 ? void 0 : year_level.toString();
             const selectedSection = section === null || section === void 0 ? void 0 : section.toString();
-            const departments = Object.keys(BccDepartments_1.DEPARTMENT);
-            const programs = department ? Object.values(BccDepartments_1.DEPARTMENT[department]) : [];
+            // get available departments and map to array of department codes
+            const availableDepartments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            const departments = availableDepartments.map(department => department.department_code);
+            // get programs based on selected department
+            const departmentId = (_a = availableDepartments.find(department => department.department_code === selectedDepartment)) === null || _a === void 0 ? void 0 : _a.department_id;
+            const programs = departmentId ? (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE department = ? AND deleted_at IS NULL', [departmentId])).map(program => program.program_code) : [];
+            // get year levels
             const yearLevels = [1, 2, 3, 4];
             const currentYear = new Date().getFullYear();
             const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : [];
@@ -78,7 +89,7 @@ function programHeadVoterParticipationReport(req, res, next) {
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);
             // filter voters
-            const filteredVoters = (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+            const filteredVoters = yield (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const reportTitle = (0, createVoterReportTitle_1.createVoterReportTitle)(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const users = (0, getPaginatedUsers_1.getPaginatedUsers)(filteredVoters, page);
             const usersSize = filteredVoters.length;

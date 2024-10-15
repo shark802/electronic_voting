@@ -30,7 +30,7 @@ export async function generateVoterReportInPdf(req: Request, res: Response, next
         const voters: (Partial<User> & Partial<Voter>)[] = await getAllVoterInElection(election_id);
 
         // filter voters
-        const filteredVoters = filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+        const filteredVoters = await filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
         const reportTitle = createVoterReportTitle(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
 
         const pdfBuffer = await genereateTablePdf(filteredVoters, reportTitle, election.election_name)

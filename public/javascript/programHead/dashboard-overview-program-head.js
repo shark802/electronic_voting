@@ -1,5 +1,5 @@
 import { showSwalErrorToast, confirmErrorAlert, confirmAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js"
-
+import socket from "/javascript/socket_io.js"
 const overview_page = document.querySelector("#overview_page");
 overview_page.classList.add("active-nav");
 

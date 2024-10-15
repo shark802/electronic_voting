@@ -12,13 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.departmentPrograms = exports.manageDepartment = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
-const program_1 = require("../../utils/enums/program");
 const voterService_1 = require("../../data_access/voterService");
 const election_1 = require("../../data_access/election");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
 const customErrors_1 = require("../../utils/customErrors");
-const CandidatePosition_1 = require("../../config/constants/CandidatePosition");
-const BccDepartments_1 = require("../../config/constants/BccDepartments");
 function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -43,7 +40,6 @@ function dashboardVoteTally(req, res, next) {
             // get all positions
             const positions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
             const candidatePosition = positions.map(position => position.position);
-            console.log(candidatePosition);
             // get all departments
             const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
             const programs = departments.map(department => department.department_code);
@@ -124,8 +120,10 @@ function renderAdminElectionResult(req, res, next) {
             // check if the election has ended
             if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
-            const positionList = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
-            const departments = Object.keys(BccDepartments_1.DEPARTMENT);
+            const positions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+            const positionList = positions.map(position => position.position);
+            const departmentData = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            const departments = departmentData.map(department => department.department_code);
             const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
             return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
         }
@@ -139,7 +137,8 @@ exports.renderAdminElectionResult = renderAdminElectionResult;
 function manageCandidate(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const positions = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
+            const candidatePositions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+            const positions = candidatePositions.map(position => position.position);
             const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
             const elections = yield (0, query_1.selectQuery)(database_1.pool, selectElectioQuery);
             // const elections: Election[] = []
@@ -156,8 +155,10 @@ function addCandidate(req, res, next) {
         try {
             const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND time_start > CURTIME())) ORDER BY created_at DESC";
             const electionList = yield (0, query_1.selectQuery)(database_1.pool, query);
-            const positions = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
-            const programs = Object.keys(BccDepartments_1.DEPARTMENT);
+            const candidatePositions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+            const positions = candidatePositions.map(position => position.position);
+            const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            const programs = departments.map(department => department.department_code);
             res.render("admin/candidate_add", { electionList, positions, programs });
         }
         catch (error) {
@@ -247,13 +248,16 @@ function viewRegisterDevice(req, res, next) {
 exports.viewRegisterDevice = viewRegisterDevice;
 // Control Panel
 function fetchUser(req, res, next) {
-    try {
-        const programs = Object.values(program_1.Program);
-        res.render("admin/control-panel-user", { programs });
-    }
-    catch (error) {
-        next(error);
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const departmentData = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            const programs = departmentData.map(department => department.department_code);
+            res.render("admin/control-panel-user", { programs });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
 }
 exports.fetchUser = fetchUser;
 function generalSettings(req, res, next) {

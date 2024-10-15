@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDepartmentsTotalVotes = exports.getDepartmentsTotalPopulation = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
-const BccDepartments_1 = require("../config/constants/BccDepartments");
 function getElectionInfoById(electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL', [electionId]);
@@ -63,30 +62,18 @@ function totalUserVotedPerElection() {
     });
 }
 exports.totalUserVotedPerElection = totalUserVotedPerElection;
-// export async function totalUserVotedPerProgram() {
-//     const sqlQuery = `
-//         SELECT e.election_id, u.course, COUNT(DISTINCT v.voter_id) AS total_voted
-//         FROM elections e
-//         JOIN votes v ON e.election_id = v.election_id
-//         JOIN users u ON v.voter_id = u.id_number
-//         WHERE e.is_close = 0
-//         GROUP BY e.election_id, u.course;
-//     `
-//     const totalVoted = await selectQuery<RowDataPacket[]>(pool, sqlQuery);
-//     return totalVoted
-// }
 function getDepartmentsTotalPopulation(electionIdArray) {
     return __awaiter(this, void 0, void 0, function* () {
-        const sqlQuery = `SELECT * FROM program_populations WHERE election_id = ? AND program_code = ?`;
+        const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
         const electionDepartmentTotalPopulation = []; // will accumulate all elections vote summary per department
         for (const electionId of electionIdArray) {
             const departmentTotalPopulation = {
                 election_id: electionId,
                 department_total_population: {}
             };
-            for (const departmentCode of Object.keys(BccDepartments_1.DEPARTMENT)) {
-                const [result] = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionId, departmentCode]);
-                departmentTotalPopulation.department_total_population[departmentCode] = (result ? result.program_population : 0);
+            for (const department of departments) {
+                const [result] = yield (0, query_1.selectQuery)(database_1.pool, `SELECT * FROM program_populations WHERE election_id = ? AND program_code = ?`, [electionId, department.department_code]);
+                departmentTotalPopulation.department_total_population[department.department_code] = (result ? result.program_population : 0);
             }
             electionDepartmentTotalPopulation.push(departmentTotalPopulation);
         }
@@ -96,6 +83,8 @@ function getDepartmentsTotalPopulation(electionIdArray) {
 exports.getDepartmentsTotalPopulation = getDepartmentsTotalPopulation;
 function getDepartmentsTotalVotes(electionIdArray) {
     return __awaiter(this, void 0, void 0, function* () {
+        const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const programs = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE deleted_at IS NULL');
         const sqlQuery = `
         SELECT COUNT(DISTINCT v.voter_id) as total_voted, v.election_id
         FROM votes v
@@ -110,10 +99,11 @@ function getDepartmentsTotalVotes(electionIdArray) {
                 election_id: electionId,
                 department_votes: {} // Initialized as an empty object with correct type
             };
-            for (const [departmentCode, programList] of Object.entries(BccDepartments_1.DEPARTMENT)) {
+            for (const department of departments) {
+                const programList = programs.filter(program => program.department === department.department_id).map(program => program.program_code);
                 const [result] = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [programList, electionId]);
                 // Cast departmentCode to DepartmentCode type
-                electionDepartmentVoteSummary.department_votes[departmentCode] = result ? result.total_voted : 0;
+                electionDepartmentVoteSummary.department_votes[department.department_code] = result ? result.total_voted : 0;
             }
             departmentVotesSummary.push(electionDepartmentVoteSummary);
         }

@@ -1,6 +1,7 @@
 import { showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
 import { showLoading, hideLoader } from "/javascript/helper/loader.js";
 import { confirmAlert } from "/javascript/helper/sweetAlertFunctions.js";
+import socket from "/javascript/socket_io.js"
 
 document.querySelector("#ballot-form").addEventListener('submit', async (event) => {
     event.preventDefault();

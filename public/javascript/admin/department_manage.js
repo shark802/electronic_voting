@@ -1,5 +1,5 @@
 import "/javascript/logout.js"
-
+import socket from "/javascript/socket_io.js"
 const department_nav = document.querySelector("#department_nav")
 const manage_department_nav = document.querySelector("#manage_department_nav")
 

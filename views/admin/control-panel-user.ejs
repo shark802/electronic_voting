@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/sweetalert2@11.js"></script>
+  <script src="/javascript/lib/socket.io.min.js" defer></script>
   <script type="module" src="/javascript/admin/control-panel-user.js" defer></script>
 </head>
 
@@ -102,7 +103,7 @@
           </div>
 
           <div class="grid pb-1 lg:w-[49%]">
-            <label for="course" class="text-sm font-semibold text-gray-500">Course <span class="text-red-500">*</span></label>
+            <label for="course" class="text-sm font-semibold text-gray-500">Department <span class="text-red-500">*</span></label>
             <select id="course" class="py-2 pl-2 text-sm font-semibold text-gray-500 border border-gray-300 rounded-sm lg:pl-3 focus:bg-blue-50 focus:outline-blue-500">
               <option value="">--</option>
               <% programs.sort().forEach(program => { %>

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="/javascript\lib\sweetalert2@11.js" defer></script>
     <script src="/javascript\lib\jquery-3.7.1.min.js"></script>
+    <script src="/javascript/lib/socket.io.min.js" defer></script>
     <script type="module" src="/javascript/voter/election_page.js" defer></script>
 
     <style>
@@ -50,11 +51,11 @@
           </div>
 
           <div class="p-4 border-t border-blue-100">
-            <button class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700">
+            <button id="register-face-button" class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700">
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
-              Register Face
+              <p>Register Face</p>
             </button>
 
             <button id="logout-button" class="flex items-center justify-center w-full py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-gray-100 rounded-md hover:bg-gray-200">
@@ -63,6 +64,7 @@
               </svg>
               Logout
             </button>
+
           </div>
         </div>
       </div>
@@ -182,7 +184,7 @@
         <% } else if (presentDate < dateStart) { %>
         <button id="vote-now-button" class="w-full py-3 text-sm font-semibold text-gray-500 transition-colors duration-200 bg-gray-200 rounded-lg cursor-not-allowed">
           <svg class="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
           </svg>
           Vote Now
         </button>
@@ -201,6 +203,29 @@
       <% } %>
 
     </main>
+
+    <dialog id="register-face-modal-option" class="w-full max-w-md px-6 py-6 pt-8 pb-6 rounded-lg shadow-xl">
+      <div>
+        <button id="close-face-register-modal" class="absolute text-gray-500 top-2 right-2 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <h2 class="mb-4 text-lg font-bold text-blue-800">Register Face</h2>
+        <p class="mb-6 text-gray-600">Choose how you want to register your face:</p>
+
+        <a href="/register-face">
+          <button id="realtime-registration" class="w-full py-4 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Real-time Registration</button>
+        </a>
+
+        <div class="py-3 text-center text-gray-500">or</div>
+
+        <div class="font-[sans-serif] max-w-md">
+          <input type="file" name="voter-face-image" accept="image/png, image/jpeg" class="w-full text-sm font-semibold text-gray-400 bg-white border border-gray-300 rounded cursor-pointer file:cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-gray-500" />
+          <p class="mt-2 text-xs text-gray-400">PNG or JPG are Allowed.</p>
+        </div>
+      </div>
+    </dialog>
   </body>
 
   </html>

@@ -4,6 +4,7 @@ import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 import { isInputNotEmpty } from "/javascript/formInputValidator/isInputNotEmpty.js";
 import { showSwalErrorToast, confirmErrorAlert } from "/javascript/helper/sweetAlertFunctions.js";
 import { showLoading, hideLoader } from "/javascript/helper/loader.js";
+import socket from "/javascript/socket_io.js"
 
 const candidate_nav = document.querySelector("#candidate_nav");
 const add_candidate = document.querySelector("#add_candidate");

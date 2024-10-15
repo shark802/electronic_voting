@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Face</title>
+  <script src="/javascript/face-recognition/face-register.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .registration-form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    video {
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+
+    #message {
+      margin-top: 15px;
+      margin: auto;
+      font-size: 1.2em;
+      color: #333;
+      padding: 10px;
+      /* Add padding for better spacing */
+      border-radius: 5px;
+      /* Rounded corners */
+      background-color: #e7f3fe;
+      /* Light blue background */
+      border: 1px solid #b3d4fc;
+      /* Light blue border */
+      display: inline-block;
+      /* Make it fit the content */
+      max-width: 90%;
+      /* Limit the width */
+      text-align: center;
+      /* Center the text */
+    }
+
+    #connection-status {
+      margin-top: 15px;
+      font-size: 1em;
+      width: fit-content;
+      color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #fff3cd;
+      /* Light yellow background for status */
+      border: 1px solid #ffeeba;
+      /* Light yellow border */
+      display: inline-block;
+      max-width: 90%;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="registration-form">
+    <h2>Register Face</h2>
+    <video id="video" autoplay></video>
+    <div id="message"></div> <!-- Message display area -->
+    <br>
+    <div id="connection-status">WebSocket Status: Connecting...</div> <!-- WebSocket connection status -->
+  </div>
+
+</body>
+
+</html>

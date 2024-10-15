@@ -18,8 +18,6 @@ const hasUserRegisterFaceImage_1 = require("../../utils/hasUserRegisterFaceImage
 const election_1 = require("../../data_access/election");
 const customErrors_1 = require("../../utils/customErrors");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
-const CandidatePosition_1 = require("../../config/constants/CandidatePosition");
-const DepartmentMaxSenatorVote_1 = require("../../config/constants/DepartmentMaxSenatorVote");
 function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -65,8 +63,13 @@ function renderElectionBallot(req, res, next) {
                 (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL", [election_id]),
                 (0, query_1.selectQuery)(database_1.pool, sqlQuery, [election_id])
             ]);
-            const candidatePositionList = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
-            const departmentMaxSenatorVote = DepartmentMaxSenatorVote_1.DEPARTMENT_MAX_SENATOR_VOTE;
+            const candidatePositionList = (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
+            const departmentsMaximumSenatorVote = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+            const departmentMaxSenatorVote = departmentsMaximumSenatorVote.reduce((acc, department) => {
+                acc[department.department_code] = department.max_select_senator;
+                return acc;
+            }, {});
+            console.log(departmentMaxSenatorVote);
             if (!(0, isValidTimeToVote_1.isValidTimeToVote)(election))
                 return res.redirect("/election?redirectMessage=Voting is currently closed");
             return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election, departmentMaxSenatorVote });
@@ -91,7 +94,7 @@ function renderElectionResult(req, res, next) {
             // check if the election has ended
             if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
-            const positionList = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
+            const positionList = (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
             const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
             return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, electionInfo });

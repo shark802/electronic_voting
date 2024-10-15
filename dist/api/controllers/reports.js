@@ -34,7 +34,7 @@ function generateVoterReportInPdf(req, res, next) {
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);
             // filter voters
-            const filteredVoters = (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+            const filteredVoters = yield (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const reportTitle = (0, createVoterReportTitle_1.createVoterReportTitle)(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const pdfBuffer = yield (0, generateTablePdf_1.genereateTablePdf)(filteredVoters, reportTitle, election.election_name);
             // Set headers for PDF download

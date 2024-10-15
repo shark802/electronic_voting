@@ -2,16 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
-import { Position } from "../../utils/enums/position";
 import { User } from "../../utils/types/User";
 import { isValidTimeToVote } from "../../utils/isValidTimeToVote";
 import { checkIfUserHasVoted } from "../../data_access/voteService";
 import { hasUserRegisterFaceImage } from "../../utils/hasUserRegisterFaceImage";
-import { getAllCandidatesInElection, getCandidatesTotalTally, getElectionInfoById } from "../../data_access/election";
+import { getCandidatesTotalTally, getElectionInfoById } from "../../data_access/election";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
-import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
-import { DEPARTMENT_MAX_SENATOR_VOTE } from "../../config/constants/DepartmentMaxSenatorVote";
+import { Position } from "../../utils/types/Positions";
+import { Department } from "../../utils/types/Department";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -59,8 +58,15 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
             selectQuery<Election>(pool, "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL", [election_id]),
             selectQuery(pool, sqlQuery, [election_id])
         ]);
-        const candidatePositionList = Object.values(CANDIDATE_POSITION);
-        const departmentMaxSenatorVote = DEPARTMENT_MAX_SENATOR_VOTE;
+        const candidatePositionList = (await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
+        const departmentsMaximumSenatorVote = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+
+        const departmentMaxSenatorVote = departmentsMaximumSenatorVote.reduce((acc: Record<string, number>, department) => {
+            acc[department.department_code] = department.max_select_senator;
+            return acc;
+        }, {});
+
+        console.log(departmentMaxSenatorVote);
 
         if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=Voting is currently closed")
 
@@ -84,7 +90,7 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
         // check if the election has ended
         if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
 
-        const positionList = Object.values(CANDIDATE_POSITION);
+        const positionList = (await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
         const candidatesVoteTally = await getCandidatesTotalTally(electionId);
 

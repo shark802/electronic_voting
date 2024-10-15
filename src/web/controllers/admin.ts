@@ -2,16 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
-import { Program } from "../../utils/enums/program";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
 import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVotedInElection, getAllUserElectionParticipatedIn } from "../../data_access/voterService";
 import { getElectionInfoById, getCandidatesTotalTally } from "../../data_access/election";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
-import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
-import { DEPARTMENT } from "../../config/constants/BccDepartments";
 import { Department } from "../../utils/types/Department";
 import { Position } from "../../utils/types/Positions";
+import { Program } from "../../utils/types/Program";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -38,7 +36,6 @@ export async function dashboardVoteTally(req: Request, res: Response, next: Next
         // get all positions
         const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
         const candidatePosition = positions.map(position => position.position);
-        console.log(candidatePosition);
 
         // get all departments
         const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
@@ -110,9 +107,11 @@ export async function renderAdminElectionResult(req: Request, res: Response, nex
 
         // check if the election has ended
         if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
+        const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+        const positionList = positions.map(position => position.position);
 
-        const positionList = Object.values(CANDIDATE_POSITION);
-        const departments = Object.keys(DEPARTMENT);
+        const departmentData = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const departments = departmentData.map(department => department.department_code);
         const candidatesVoteTally = await getCandidatesTotalTally(electionId);
 
         return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
@@ -124,7 +123,8 @@ export async function renderAdminElectionResult(req: Request, res: Response, nex
 // Candidate
 export async function manageCandidate(req: Request, res: Response, next: NextFunction) {
     try {
-        const positions = Object.values(CANDIDATE_POSITION);
+        const candidatePositions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+        const positions = candidatePositions.map(position => position.position);
 
         const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
@@ -140,8 +140,11 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
     try {
         const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_start > CURDATE() OR (date_start = CURDATE() AND time_start > CURTIME())) ORDER BY created_at DESC";
         const electionList = await selectQuery<Election>(pool, query);
-        const positions = Object.values(CANDIDATE_POSITION);
-        const programs = Object.keys(DEPARTMENT);
+        const candidatePositions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+
+        const positions = candidatePositions.map(position => position.position);
+        const departments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const programs = departments.map(department => department.department_code);
 
         res.render("admin/candidate_add", { electionList, positions, programs })
     } catch (error) {
@@ -222,10 +225,11 @@ export async function viewRegisterDevice(req: Request, res: Response, next: Next
 }
 
 // Control Panel
-export function fetchUser(req: Request, res: Response, next: NextFunction) {
+export async function fetchUser(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const programs = Object.values(Program)
+        const departmentData = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const programs = departmentData.map(department => department.department_code);
 
         res.render("admin/control-panel-user", { programs })
     } catch (error) {

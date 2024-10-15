@@ -1,4 +1,5 @@
 import "/javascript/logout.js"
+import socket from "/javascript/socket_io.js"
 
 import { isValidStartDate, isValidEndDate } from "/javascript/formInputValidator/dateValidator.js"
 import { isValidText } from "/javascript/formInputValidator/isValidText.js";
@@ -47,10 +48,10 @@ changeEventListener(isValidEndDate, [date_end, date_start], endDateErrorMessage)
 changeEventListener(isValidEndTime, [time_end, time_start, date_start, date_end], endTimeErrorMessage)
 
 // validate every input before sending to server
-document.querySelector("#create_election_form").addEventListener("submit", async(event) => {
+document.querySelector("#create_election_form").addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if( 
+    if (
         !isValidText([election_name], election_name_error_message) ||
         !isValidStartDate([date_start], startDateErrorMessage) ||
         !isValidEndDate([date_end, date_start], endDateErrorMessage) ||
@@ -66,21 +67,21 @@ document.querySelector("#create_election_form").addEventListener("submit", async
             timer: 3000,
         });
         return;
-    }else {
+    } else {
         try {
-            
+
             const response = await fetch('/api/elections', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ 
-                    election_name: election_name.value, 
-                    date_start: date_start.value, 
-                    time_start: time_start.value, 
-                    date_end: date_end.value, 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    election_name: election_name.value,
+                    date_start: date_start.value,
+                    time_start: time_start.value,
+                    date_end: date_end.value,
                     time_end: time_end.value
-                 })
+                })
             })
-            
+
             if (response.ok) {
                 const message = await response.json();
                 Swal.fire({
@@ -91,9 +92,9 @@ document.querySelector("#create_election_form").addEventListener("submit", async
                     if (result.isConfirmed) window.location = "/admin/election/view";
                 });
                 document.querySelector("#create_election_form").reset();
-                
-                
-            }else {
+
+
+            } else {
                 const message = await response.json();
                 Swal.fire({
                     icon: "error",
@@ -105,5 +106,5 @@ document.querySelector("#create_election_form").addEventListener("submit", async
             console.error(error);
         }
     }
-    
+
 })

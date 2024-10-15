@@ -1,5 +1,5 @@
 import { confirmAlert } from "/javascript/helper/sweetAlertFunctions.js";
-
+import socket from "/javascript/socket_io.js"
 document.getElementById('show-sidebar').addEventListener('click', function () {
     document.getElementById('sidebar').classList.remove('-translate-x-full');
 });

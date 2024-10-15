@@ -1,4 +1,5 @@
 import "/javascript/logout.js"
+import socket from "/javascript/socket_io.js"
 
 const voter_nav = document.querySelector("#voter_nav")
 const manage_voter_nav = document.querySelector("#manage_voter_nav")

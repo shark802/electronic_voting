@@ -1,5 +1,6 @@
 // import { hideLoader, showLoading } from "/javascript/helper/loader.js";
 import "/javascript/logout.js"
+import socket from "/javascript/socket_io.js"
 // import { confirmAlert, confirmErrorAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
 import { initializeTrustedIpAddressForm, showTrustedIpAddress } from "/javascript/modules/general_settings/trusted_ip_address.js"; // Import the module
 import { initializeDepartmentForm, showDepartmentTable } from "/javascript/modules/general_settings/department_settings.js";

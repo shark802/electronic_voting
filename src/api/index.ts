@@ -11,6 +11,8 @@ import reportRouter from "./routes/reports";
 import voterRouter from "./routes/voter";
 import ipAddressRouter from "./routes/ipAddress";
 import positionRouter from "./routes/position";
+import faceRecognitionRouter from './routes/faceRecognition';
+
 const router = Router();
 
 router.use(electionRouter);
@@ -25,5 +27,6 @@ router.use(reportRouter);
 router.use(voterRouter);
 router.use(ipAddressRouter);
 router.use(positionRouter);
+router.use(faceRecognitionRouter);
 
 export default router;

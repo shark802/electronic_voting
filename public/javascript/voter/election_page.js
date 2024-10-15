@@ -2,6 +2,7 @@ import "/javascript/voter/election_page_click_vote.js";
 import { displayRedirectMessage } from "/javascript/helper/showRedirectMessage.js";
 import { showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js";
 import "/javascript/logout.js"
+import socket from "/javascript/socket_io.js"
 
 document.querySelectorAll("#vote-now-button").forEach(button => {
    const parentSection = button.closest('section');
@@ -75,3 +76,16 @@ document.addEventListener('click', (event) => {
 })
 
 toggleProfile();
+
+
+// Register face modal
+document.querySelector("#register-face-button").addEventListener("click", () => {
+   $(document.querySelector('#account-section')).slideUp(300);
+   document.querySelector("#register-face-modal-option").showModal();
+
+})
+
+document.querySelector("#close-face-register-modal").addEventListener("click", () => {
+   document.querySelector("#register-face-modal-option").close();
+})
+

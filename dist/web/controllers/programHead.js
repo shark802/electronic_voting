@@ -12,8 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.programHeadDashboardVoteTallyPage = exports.programHeadDashboardOverviewPage = void 0;
 const database_1 = require("../../config/database");
 const query_1 = require("../../data_access/query");
-const CandidatePosition_1 = require("../../config/constants/CandidatePosition");
-const BccDepartments_1 = require("../../config/constants/BccDepartments");
+// import { Program } from "../../utils/enums/program";
+// import { Position } from "../../utils/enums/position";
+// import { CANDIDATE_POSITION } from "../../config/constants/CandidatePosition";
+// import { DEPARTMENT } from "../../config/constants/BccDepartments";
 function programHeadDashboardOverviewPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -43,12 +45,12 @@ function programHeadDashboardVoteTallyPage(req, res, next) {
                 return res.redirect('/?redirectMessage=You need to login first');
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ?', [userSession.user_id]);
             const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
-            const candidatePosition = Object.values(CandidatePosition_1.CANDIDATE_POSITION);
-            const programs = Object.keys(BccDepartments_1.DEPARTMENT);
+            const candidatePosition = (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
+            const programs = (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL')).map(department => department.department_code);
             const electionIdList = elections.map(election => election.election_id);
             let candidates = [];
             if (electionIdList.length > 0) {
-                candidates = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE election_id IN ( ? )', [electionIdList]);
+                candidates = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE election_id IN ( ? ) AND deleted IS NULL', [electionIdList]);
             }
             res.render('program/dashboard-vote-tally-program-head', { elections, candidatePosition, programs, candidates, user });
         }

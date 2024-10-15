@@ -3,13 +3,14 @@ import { BadRequestError } from "../../utils/customErrors";
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
-import { DEPARTMENT } from '../../config/constants/BccDepartments';
 import { getAllVoterInElection } from "../../data_access/voterService";
 import { User } from "../../utils/types/User";
 import { Voter } from "../../utils/types/Voter";
 import { filterVotersByFilterParameter } from "../../utils/filterVotersByFilterParameter";
 import { getPaginatedUsers } from "../../utils/getPaginatedUsers";
 import { createVoterReportTitle } from "../../utils/createVoterReportTitle";
+import { Department } from "../../utils/types/Department";
+import { Program } from "../../utils/types/Program";
 
 export async function previewVoterParticipationReports(req: Request, res: Response, next: NextFunction) {
     try {
@@ -27,8 +28,15 @@ export async function previewVoterParticipationReports(req: Request, res: Respon
         const selectedYearLevel = year_level?.toString();
         const selectedSection = section?.toString();
 
-        const departments = Object.keys(DEPARTMENT);
-        const programs = department ? Object.values(DEPARTMENT[department as keyof typeof DEPARTMENT]) : []
+        // get available departments and map to array of department codes
+        const availableDepartments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const departments = availableDepartments.map(department => department.department_code);
+
+        // get programs based on selected department
+        const departmentId = availableDepartments.find(department => department.department_code === selectedDepartment)?.department_id;
+        const programs = departmentId ? (await selectQuery<Program>(pool, 'SELECT * FROM programs WHERE department = ? AND deleted_at IS NULL', [departmentId])).map(program => program.program_code) : []
+
+        // get year levels
         const yearLevels = [1, 2, 3, 4];
 
         const currentYear = new Date().getFullYear();
@@ -39,9 +47,8 @@ export async function previewVoterParticipationReports(req: Request, res: Respon
         const voters: (Partial<User> & Partial<Voter>)[] = await getAllVoterInElection(election_id);
 
         // filter voters
-        const filteredVoters = filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+        const filteredVoters = await filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
         const reportTitle = createVoterReportTitle(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
-
         const users = getPaginatedUsers(filteredVoters, page as number);
 
         const usersSize = filteredVoters.length;
@@ -60,15 +67,21 @@ export async function programHeadVoterParticipationReport(req: Request, res: Res
         const page = req.query.page || 1
         let voteStatus = req.query.voteStatus || 'voted'; // if voteStatus request query is falsy, assign default 'voted' value;
         const { department, program, year_level, section } = req.query;
-
         const selectedVoteStatus = voteStatus === 'voted' ? 1 : 0;
         const selectedDepartment = department?.toString();
         const selectedProgram = program?.toString();
         const selectedYearLevel = year_level?.toString();
         const selectedSection = section?.toString();
 
-        const departments = Object.keys(DEPARTMENT);
-        const programs = department ? Object.values(DEPARTMENT[department as keyof typeof DEPARTMENT]) : []
+        // get available departments and map to array of department codes
+        const availableDepartments = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
+        const departments = availableDepartments.map(department => department.department_code);
+
+        // get programs based on selected department
+        const departmentId = availableDepartments.find(department => department.department_code === selectedDepartment)?.department_id;
+        const programs = departmentId ? (await selectQuery<Program>(pool, 'SELECT * FROM programs WHERE department = ? AND deleted_at IS NULL', [departmentId])).map(program => program.program_code) : []
+
+        // get year levels
         const yearLevels = [1, 2, 3, 4];
 
         const currentYear = new Date().getFullYear();
@@ -79,7 +92,7 @@ export async function programHeadVoterParticipationReport(req: Request, res: Res
         const voters: (Partial<User> & Partial<Voter>)[] = await getAllVoterInElection(election_id);
 
         // filter voters
-        const filteredVoters = filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
+        const filteredVoters = await filterVotersByFilterParameter(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
         const reportTitle = createVoterReportTitle(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
 
         const users = getPaginatedUsers(filteredVoters, page as number);

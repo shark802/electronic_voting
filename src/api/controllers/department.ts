@@ -44,6 +44,8 @@ export async function getDepartmentObject(req: Request, res: Response, next: Nex
             DEPARTMENT[department.department_code] = programs.filter(program => program.department === department.department_id).map(program => program.program_code);
         }
 
+        console.log(DEPARTMENT);
+
         return res.status(200).json({ DEPARTMENT })
     } catch (error) {
         next(error)
@@ -85,11 +87,15 @@ export async function getProgramSection(req: Request, res: Response, next: NextF
 export async function removeDepartment(req: Request, res: Response, next: NextFunction) {
     try {
         const departmentId = req.params.id;
+        console.log(departmentId);
 
         if (!departmentId || departmentId === "") throw new BadRequestError("Department code is required");
 
         const sqlRemoveDepartment = await updateQuery(pool, 'UPDATE departments SET deleted_at = ? WHERE department_id = ?', [new Date(), departmentId]);
         if (sqlRemoveDepartment.affectedRows === 0) throw new NotFoundError(`Department ${departmentId} not found`);
+
+        await updateQuery(pool, 'UPDATE programs SET deleted_at = ? WHERE department = ?', [new Date(), departmentId]);
+
         return res.status(200).json({ message: "Department removed successfully" })
     } catch (error) {
         next(error)
