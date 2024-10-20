@@ -9,15 +9,24 @@ export function socketIO(io: Server) {
 
 		const uuid = socket.handshake.query.uuid;
 		if (uuid) {
-			clientUUID[socket.id] = uuid as string;
 
-			io.emit('client-connected', clientUUID);
-		}
+			const uuidExist = Object.values(clientUUID).find((value) => {
+				return value === uuid
+			});
 
-		socket.on('disconnect', () => {
-			io.emit('client-disconnected', clientUUID[socket.id]);
-			delete clientUUID[socket.id];
-		});
+			if (!uuidExist) {
+				clientUUID[socket.id] = uuid as string;
+
+				io.emit('client-connected', clientUUID);
+			}
+
+			socket.on('disconnect', () => {
+				if (clientUUID[socket.id]) {
+					io.emit('client-disconnected', clientUUID[socket.id]);
+					delete clientUUID[socket.id];
+				}
+			});
+		};
 	});
 
 	return (req: Request, res: Response, next: NextFunction) => {

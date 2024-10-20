@@ -15,6 +15,7 @@ import faceRecognitionRouter from './routes/faceRecognition';
 
 const router = Router();
 
+router.use(faceRecognitionRouter);
 router.use(electionRouter);
 router.use(authRouter);
 router.use(candidateRouter);
@@ -27,6 +28,5 @@ router.use(reportRouter);
 router.use(voterRouter);
 router.use(ipAddressRouter);
 router.use(positionRouter);
-router.use(faceRecognitionRouter);
 
 export default router;

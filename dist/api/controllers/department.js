@@ -97,7 +97,6 @@ function removeDepartment(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const departmentId = req.params.id;
-            console.log(departmentId);
             if (!departmentId || departmentId === "")
                 throw new customErrors_1.BadRequestError("Department code is required");
             const sqlRemoveDepartment = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE departments SET deleted_at = ? WHERE department_id = ?', [new Date(), departmentId]);

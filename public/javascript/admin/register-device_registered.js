@@ -76,7 +76,6 @@ async function sendRequestToRemoveDevice(uuid) {
 }
 
 socket.on('client-connected', (onlineClientsUuid) => {
-
     Object.values(onlineClientsUuid).forEach(uuid => {
 
         const deviceStatus = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-indicator`);

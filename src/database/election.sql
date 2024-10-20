@@ -115,11 +115,11 @@ CREATE TABLE IF NOT EXISTS `otp_codes` (
    `is_used` TINYINT(1) DEFAULT 0
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `face_image` (
+CREATE TABLE IF NOT EXISTS `register_faces` (
    `id` VARCHAR(50) NOT NULL PRIMARY KEY,
    `id_number` INT(10) NOT NULL,
-   `face_image` BLOB, 
-   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   `saved_face_filename` VARCHAR(255), 
+   `registered_at` TIMESTAMP,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`)
 ) ENGINE=InnoDB;
 

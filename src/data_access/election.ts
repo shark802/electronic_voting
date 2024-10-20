@@ -118,11 +118,18 @@ export async function getDepartmentsTotalVotes(electionIdArray: string[]) {
         for (const department of departments) {
 
             const programList = programs.filter(program => program.department === department.department_id).map(program => program.program_code);
+            if (programList.length === 0) {
 
-            const [result] = await selectQuery<queryResultType>(pool, sqlQuery, [programList, electionId]);
+                electionDepartmentVoteSummary.department_votes[department.department_code] = 0;
+            } else {
 
-            // Cast departmentCode to DepartmentCode type
-            electionDepartmentVoteSummary.department_votes[department.department_code] = result ? result.total_voted : 0;
+                const [result] = await selectQuery<queryResultType>(pool, sqlQuery, [programList, electionId]);
+
+                // Cast departmentCode to DepartmentCode type
+                electionDepartmentVoteSummary.department_votes[department.department_code] = result ? result.total_voted : 0;
+            }
+
+
         }
 
         departmentVotesSummary.push(electionDepartmentVoteSummary);

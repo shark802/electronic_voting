@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv'
-import { NotFoundError } from '../../utils/customErrors';
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../../utils/customErrors';
+import { insertQuery } from '../../data_access/query';
+import { pool } from '../../config/database';
 dotenv.config()
 
 export async function getFaceRecognitionServiceDomain(req: Request, res: Response, next: NextFunction) {
@@ -10,6 +12,24 @@ export async function getFaceRecognitionServiceDomain(req: Request, res: Respons
         if (!faceServiceDomain) throw new NotFoundError('Face recognition service domain not found!');
 
         res.status(200).json({ faceServiceDomain });
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function insertUserRegisterFaceInfo(req: Request, res: Response, next: NextFunction) {
+    try {
+
+        if (!req.session) throw new UnauthorizedError('You need to login first!')
+        const userId = req.session?.user?.user_id;
+        const savedFaceFilename = req.body.filename;
+
+        if (!savedFaceFilename) throw new BadRequestError('Filename of saved face image is not provided');
+
+        const insertResult = await insertQuery(pool, 'INSERT INTO register_faces (id_number, saved_face_filename, registered_at) VALUES (?, ?, CURRENT_TIMESTAMP)', [userId, savedFaceFilename]);
+        if (insertResult.affectedRows === 0) throw new Error('Registration failed!')
+
+        res.status(201).json({ message: 'Face registered' });
     } catch (error) {
         next(error)
     }

@@ -22,7 +22,7 @@
     </style>
   </head>
 
-  <body class="w-full overflow-hidden h-dvh bg-gradient-to-b from from-blue-50 to-blue-100">
+  <body class="relative w-full h-screen overflow-hidden bg-gradient-to-b from from-blue-50 to-blue-100">
     <header class="flex items-center justify-between w-full px-4 py-3 shadow-md bg-gradient-to-r from-blue-800 to-blue-600">
       <a href="/" class="flex items-center gap-2 px-3 py-2 text-white transition-colors duration-200 bg-blue-600 rounded-full shadow-md hover:text-blue-200 hover:bg-blue-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -214,16 +214,17 @@
         <h2 class="mb-4 text-lg font-bold text-blue-800">Register Face</h2>
         <p class="mb-6 text-gray-600">Choose how you want to register your face:</p>
 
-        <a href="/register-face">
-          <button id="realtime-registration" class="w-full py-4 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Real-time Registration</button>
-        </a>
-
-        <div class="py-3 text-center text-gray-500">or</div>
-
         <div class="font-[sans-serif] max-w-md">
           <input type="file" name="voter-face-image" accept="image/png, image/jpeg" class="w-full text-sm font-semibold text-gray-400 bg-white border border-gray-300 rounded cursor-pointer file:cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-gray-500" />
           <p class="mt-2 text-xs text-gray-400">PNG or JPG are Allowed.</p>
         </div>
+
+        <div class="text-center text-gray-500 ">or</div>
+
+        <a href="/register-face" class="block mt-2">
+          <button id="realtime-registration" class="w-full py-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Real-time Registration</button>
+        </a>
+
       </div>
     </dialog>
   </body>

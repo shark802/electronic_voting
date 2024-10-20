@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     console.log(faceRecognitionSeviceDomain);
-    console.log(faceRecognitionSeviceDomain);
 
     const video = document.getElementById('video');
     const messageDiv = document.getElementById('message'); // Get the message display area
@@ -29,8 +28,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             messageDiv.textContent = "Error accessing camera: " + err.message; // Display error message
         });
 
-    // const socket = new WebSocket(`ws://localhost:8000/ws/register-face`);
-    const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/register-face`);
+    const socket = new WebSocket(`ws://localhost:8000/ws/register-face`);
+    // const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/register-face`);
 
     // Update connection status
     socket.onopen = function () {
@@ -45,8 +44,16 @@ document.addEventListener("DOMContentLoaded", async function () {
     };
 
     video.addEventListener('play', function () {
+        let frameCount = 0; // Counter for frames
         const sendFrame = () => {
             if (video.paused || video.ended) return;
+
+            frameCount++; // Increment frame counter
+
+            if (frameCount < 10) { // Only send every 10th frame
+                requestAnimationFrame(sendFrame); // Continue sending frames
+                return;
+            }
 
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
@@ -62,52 +69,95 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.warn("WebSocket is not open. Current state: " + socket.readyState);
             }
 
+            frameCount = 0; // Reset frame counter after sending
             requestAnimationFrame(sendFrame); // Continue sending frames
         };
         sendFrame();
     });
 
-    socket.onmessage = function (event) {
-        const response = JSON.parse(event.data);
-        if (response.success) {
-            console.log(response.message);
-            // Display success message and the ID of the saved face
-            messageDiv.textContent = `Face saved successfully! ID: ${response.face_id}`; // Display success message with ID
+    socket.onmessage = async function (event) {
+        try {
 
-            // Close the WebSocket after saving the face
-            if (response.message === "Face detected and saved") {
-                socket.close(); // Close the WebSocket connection
-                messageDiv.textContent += " WebSocket connection closed."; // Optional: Notify user
 
-                // Alert the user after successfully saving the image
-                alert(`Face saved successfully! ID: ${response.face_id}`);
+            const response = JSON.parse(event.data);
+            if (response.success) {
+                console.log(response?.message);
+                console.log(response?.filename);
 
+                const postResponse = await fetch('/api/register-face', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename: response.filename })
+                });
+
+                const responseObject = await postResponse.json();
+
+                if (!postResponse.ok) throw new Error(responseObject?.message);
+
+                // Display success message and the ID of the saved face
+                messageDiv.textContent = `Face saved successfully! ID: ${response.face_id}`; // Display success message with ID
+
+                // if (response.message === "Face detected and saved") {
+                //     // socket.close();
+                messageDiv.textContent += " WebSocket connection closed.";
+
+                Swal.fire({
+                    title: 'Success!',
+                    text: `Face saved successfully! ID: ${response.face_id}`,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+
+                    window.location.href = '/election';
+                });
+
+                // }
+            } else {
+                console.warn(response.message);
+                messageDiv.textContent = response.message;
             }
-        } else {
-            console.warn(response.message);
-            messageDiv.textContent = response.message; // Display warning message
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Failed!',
+                text: `Error on registration`,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            }).then(() => {
+
+                window.location.href = '/election';
+            });
         }
     };
 
-    socket.onclose = function (event) {
+    socket.onclose = async function (event) {
         console.log("WebSocket connection closed.");
         // Stop the video stream
         const stream = video.srcObject;
         if (stream) {
             const tracks = stream.getTracks();
-            tracks.forEach(track => track.stop()); // Stop each track
-            video.srcObject = null; // Clear the video source
+            tracks.forEach(track => track.stop());
+            video.srcObject = null;
         }
 
         // Display the reason for closure
         let reasonMessage = "WebSocket connection closed.";
         if (event.code) {
-            reasonMessage += ` Reason: ${event.code}`; // Display the close code
+            reasonMessage += ` Reason: ${event.code}`;
         }
         if (event.reason) {
-            reasonMessage += ` Reason message: ${event.reason}`; // Display the reason message if available
+            reasonMessage += ` Reason message: ${event.reason}`;
         }
-        alert(reasonMessage); // Alert the user with the reason
+
+        Swal.fire({
+            title: 'Connection Closed',
+            text: reasonMessage,
+            icon: 'info',
+            confirmButtonText: 'OK'
+        }).then(() => {
+
+            window.location.href = '/election';
+        });
 
         // Update connection status
         connectionStatusDiv.textContent = "WebSocket Status: Disconnected"; // Update status on close

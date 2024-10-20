@@ -256,7 +256,6 @@ export async function getTotalVotedInElectionByProgram(req: Request, res: Respon
 		electionIdQueryParams = Array.isArray(electionIdQueryParams) ? electionIdQueryParams : [electionIdQueryParams as string];
 
 		const departmentVoteSummary = await getDepartmentsTotalVotes(electionIdQueryParams as string[]);
-
 		return res.status(200).json({ electionVoteSummary: departmentVoteSummary });
 	} catch (error) {
 		next(error);

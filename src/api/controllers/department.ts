@@ -87,8 +87,6 @@ export async function getProgramSection(req: Request, res: Response, next: NextF
 export async function removeDepartment(req: Request, res: Response, next: NextFunction) {
     try {
         const departmentId = req.params.id;
-        console.log(departmentId);
-
         if (!departmentId || departmentId === "") throw new BadRequestError("Department code is required");
 
         const sqlRemoveDepartment = await updateQuery(pool, 'UPDATE departments SET deleted_at = ? WHERE department_id = ?', [new Date(), departmentId]);

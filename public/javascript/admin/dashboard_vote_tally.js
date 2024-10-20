@@ -25,7 +25,6 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
     electionsCandidateData = await fetchAllCandidatesDataForActiveElection(); // Assign data to the variable
-    console.log(electionsCandidateData);
 
     const activeElections = document.querySelectorAll('section'); // select all section element that represent each active election
     activeElections.forEach(election => {
@@ -150,7 +149,6 @@ function calculateStepSize(dataset) {
 }
 
 socket.on('new-vote', (data) => {
-    console.log(data);
 
     if (!electionsCandidateData) {
         console.error("electionsCandidateData is not defined.");
