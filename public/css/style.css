@@ -1430,6 +1430,10 @@ video {
   animation: slideOut .5s ease-in-out;
 }
 
+.cursor-default {
+  cursor: default;
+}
+
 .cursor-not-allowed {
   cursor: not-allowed;
 }

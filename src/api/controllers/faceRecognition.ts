@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv'
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../../utils/customErrors';
-import { insertQuery } from '../../data_access/query';
+import { insertQuery, selectQuery } from '../../data_access/query';
 import { pool } from '../../config/database';
+import { RegisterFaces } from '../../utils/types/RegisterFaces';
 dotenv.config()
 
 export async function getFaceRecognitionServiceDomain(req: Request, res: Response, next: NextFunction) {
@@ -30,6 +31,37 @@ export async function insertUserRegisterFaceInfo(req: Request, res: Response, ne
         if (insertResult.affectedRows === 0) throw new Error('Registration failed!')
 
         res.status(201).json({ message: 'Face registered' });
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function isClientRegisteredFace(req: Request, res: Response, next: NextFunction) {
+    try {
+        if (!req.session) throw new UnauthorizedError(`Request failed, You have'nt login yet! `);
+        const userId = req.session.user?.user_id;
+
+        const [RegisterFaceInfo] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [userId]);
+
+        const isRegistered = RegisterFaceInfo ? true : false;
+        return res.status(200).json({ isRegistered });
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+export async function getClientRegisteredFaceFilename(req: Request, res: Response, next: NextFunction) {
+    try {
+        if (!req.session) throw new UnauthorizedError(`Request failed, You have'nt login yet! `);
+        const userId = req.session.user?.user_id;
+
+        const [RegisterFaceInfo] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [userId]);
+
+        if (!RegisterFaceInfo || !RegisterFaceInfo.saved_face_filename) throw new NotFoundError('Face Registration data not found!');
+        return res.status(200).json({ filename: RegisterFaceInfo.saved_face_filename })
+
     } catch (error) {
         next(error)
     }

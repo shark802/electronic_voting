@@ -29,6 +29,8 @@ document.querySelectorAll("#vote-now-button").forEach(button => {
 async function handleVoteRequest(electionId) {
     let registerDeviceData = localStorage.getItem('register-device-data');
     if (registerDeviceData) {
+        // send uuid in server to validate if the device is registered
+        // if uuid is registered device, the server will parse REGISTERED to user session to allow in ballot page
         registerDeviceData = JSON.parse(registerDeviceData);
         await fetch('/api/uuid-validation', {
             method: 'POST',

@@ -14,7 +14,7 @@ const database_1 = require("../config/database");
 const query_1 = require("../data_access/query");
 function hasUserRegisterFaceImage(idNumber) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [faceImageRow] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM face_image WHERE id_number = ? LIMIT 1', [idNumber]);
+        const [faceImageRow] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [idNumber]);
         const hasRegistered = faceImageRow !== undefined ? true : false;
         return hasRegistered;
     });

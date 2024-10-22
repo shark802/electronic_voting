@@ -9,7 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.faceRegisterPage = void 0;
+exports.faceAuthenticatePage = exports.faceRegisterPage = void 0;
+const query_1 = require("../../data_access/query");
+const database_1 = require("../../config/database");
 function faceRegisterPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -21,3 +23,14 @@ function faceRegisterPage(req, res, next) {
     });
 }
 exports.faceRegisterPage = faceRegisterPage;
+function faceAuthenticatePage(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        const id_number = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.user_id;
+        const [registerFace] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [id_number]);
+        if (!registerFace)
+            return res.redirect('/election?redirectMessage=No face registered found for this user!');
+        res.render('face-recognition/face-authenticate');
+    });
+}
+exports.faceAuthenticatePage = faceAuthenticatePage;

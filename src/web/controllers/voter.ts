@@ -11,16 +11,20 @@ import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { Position } from "../../utils/types/Positions";
 import { Department } from "../../utils/types/Department";
+import { RegisterFaces } from "../../utils/types/RegisterFaces";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
         const user_id = req.session.user!.user_id;
+        const [register_face] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [user_id]);
+
+        const face_registered = register_face ? true : false;
 
         const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start";
         const electionList = await selectQuery<Election>(pool, query);
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id])
 
-        res.render("voter/electionPage", { electionList, user });
+        res.render("voter/electionPage", { electionList, user, face_registered });
     } catch (error) {
         next(error)
     }
@@ -30,19 +34,20 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
     try {
         const id_number = req.session.user!.user_id;
         const election_id = req.params.electionId;
-        const deviceRegistrationStatus = req.session.deviceRegistrationStatus;
+        const deviceRegistrationStatus = req.session?.deviceRegistrationStatus;
+        const faceVeified = req.session?.faceVerified;
 
         // Check if the user has already voted
         const hasVoted = await checkIfUserHasVoted(id_number, election_id);
         if (hasVoted) return res.redirect('/election?redirectMessage=You have already voted');
 
         // If the device is not registered, check if user is available for face authentication.
-        if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED") {
+        if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED" || !faceVeified) {
             const isUserRegisteredFaceImage = await hasUserRegisterFaceImage(id_number);
             if (!isUserRegisteredFaceImage) return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
 
             // redirect user to face authentication
-
+            return res.redirect('/authenticate-face')
         }
 
         const sqlQuery = `

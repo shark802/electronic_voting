@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertUserRegisterFaceInfo = exports.getFaceRecognitionServiceDomain = void 0;
+exports.getClientRegisteredFaceFilename = exports.isClientRegisteredFace = exports.insertUserRegisterFaceInfo = exports.getFaceRecognitionServiceDomain = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const customErrors_1 = require("../../utils/customErrors");
 const query_1 = require("../../data_access/query");
@@ -53,3 +53,38 @@ function insertUserRegisterFaceInfo(req, res, next) {
     });
 }
 exports.insertUserRegisterFaceInfo = insertUserRegisterFaceInfo;
+function isClientRegisteredFace(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        try {
+            if (!req.session)
+                throw new customErrors_1.UnauthorizedError(`Request failed, You have'nt login yet! `);
+            const userId = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.user_id;
+            const [RegisterFaceInfo] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [userId]);
+            const isRegistered = RegisterFaceInfo ? true : false;
+            return res.status(200).json({ isRegistered });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.isClientRegisteredFace = isClientRegisteredFace;
+function getClientRegisteredFaceFilename(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a;
+        try {
+            if (!req.session)
+                throw new customErrors_1.UnauthorizedError(`Request failed, You have'nt login yet! `);
+            const userId = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.user_id;
+            const [RegisterFaceInfo] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [userId]);
+            if (!RegisterFaceInfo || !RegisterFaceInfo.saved_face_filename)
+                throw new customErrors_1.NotFoundError('Face Registration data not found!');
+            return res.status(200).json({ filename: RegisterFaceInfo.saved_face_filename });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.getClientRegisteredFaceFilename = getClientRegisteredFaceFilename;

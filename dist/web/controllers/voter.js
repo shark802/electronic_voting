@@ -22,10 +22,12 @@ function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const user_id = req.session.user.user_id;
+            const [register_face] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [user_id]);
+            const face_registered = register_face ? true : false;
             const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start";
             const electionList = yield (0, query_1.selectQuery)(database_1.pool, query);
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
-            res.render("voter/electionPage", { electionList, user });
+            res.render("voter/electionPage", { electionList, user, face_registered });
         }
         catch (error) {
             next(error);
@@ -35,20 +37,23 @@ function electionPage(req, res, next) {
 exports.electionPage = electionPage;
 function renderElectionBallot(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b;
         try {
             const id_number = req.session.user.user_id;
             const election_id = req.params.electionId;
-            const deviceRegistrationStatus = req.session.deviceRegistrationStatus;
+            const deviceRegistrationStatus = (_a = req.session) === null || _a === void 0 ? void 0 : _a.deviceRegistrationStatus;
+            const faceVeified = (_b = req.session) === null || _b === void 0 ? void 0 : _b.faceVerified;
             // Check if the user has already voted
             const hasVoted = yield (0, voteService_1.checkIfUserHasVoted)(id_number, election_id);
             if (hasVoted)
                 return res.redirect('/election?redirectMessage=You have already voted');
             // If the device is not registered, check if user is available for face authentication.
-            if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED") {
+            if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED" || !faceVeified) {
                 const isUserRegisteredFaceImage = yield (0, hasUserRegisterFaceImage_1.hasUserRegisterFaceImage)(id_number);
                 if (!isUserRegisteredFaceImage)
                     return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
                 // redirect user to face authentication
+                return res.redirect('/authenticate-face');
             }
             const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.position, c.candidate_profile, c.party
