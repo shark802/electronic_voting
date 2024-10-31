@@ -222,10 +222,9 @@ export async function getNumberOfVoted(req: Request, res: Response, next: NextFu
 		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
 
 		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
-
+		
 		const sqlQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as voted FROM votes WHERE election_id IN (?) GROUP BY election_id`
 		const elections = await selectQuery(pool, sqlQuery, [electionIdArray]);
-
 		return res.status(200).json({ elections })
 
 	} catch (error) {
