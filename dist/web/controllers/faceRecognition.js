@@ -27,10 +27,11 @@ function faceAuthenticatePage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a;
         const id_number = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.user_id;
+        const electionId = req.query.election;
         const [registerFace] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [id_number]);
         if (!registerFace)
             return res.redirect('/election?redirectMessage=No face registered found for this user!');
-        res.render('face-recognition/face-authenticate');
+        res.render('face-recognition/face-authenticate', { electionId });
     });
 }
 exports.faceAuthenticatePage = faceAuthenticatePage;

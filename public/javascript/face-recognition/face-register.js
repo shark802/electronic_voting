@@ -65,8 +65,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             // Check if the WebSocket is open before sending
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ image: frameData })); // Send as JSON
-            } else {
-                console.warn("WebSocket is not open. Current state: " + socket.readyState);
             }
 
             frameCount = 0; // Reset frame counter after sending
@@ -131,14 +129,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     };
 
     socket.onclose = async function (event) {
+
         console.log("WebSocket connection closed.");
         // Stop the video stream
-        const stream = video.srcObject;
-        if (stream) {
-            const tracks = stream.getTracks();
-            tracks.forEach(track => track.stop());
-            video.srcObject = null;
-        }
+        // const stream = video.srcObject;
+        // if (stream) {
+        //     const tracks = stream.getTracks();
+        //     tracks.forEach(track => track.stop());
+        //     video.srcObject = null;
+        // }
 
         // Display the reason for closure
         let reasonMessage = "WebSocket connection closed.";
@@ -149,15 +148,18 @@ document.addEventListener("DOMContentLoaded", async function () {
             reasonMessage += ` Reason message: ${event.reason}`;
         }
 
-        Swal.fire({
-            title: 'Connection Closed',
-            text: reasonMessage,
-            icon: 'info',
-            confirmButtonText: 'OK'
-        }).then(() => {
+        if (event.code !== 1000) {
 
-            window.location.href = '/election';
-        });
+            Swal.fire({
+                title: 'Connection Closed',
+                text: reasonMessage,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then(() => {
+
+                window.location.href = '/election';
+            });
+        }
 
         // Update connection status
         connectionStatusDiv.textContent = "WebSocket Status: Disconnected"; // Update status on close

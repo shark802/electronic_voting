@@ -8,4 +8,5 @@ const auth_1 = require("../controllers/auth");
 const router = (0, express_1.default)();
 router.post("/login", auth_1.loginFunction);
 router.post("/logout", auth_1.logoutFunction);
+router.post("/verified-face/status", auth_1.isFaceVerified);
 exports.default = router;

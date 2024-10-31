@@ -71,7 +71,7 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
 
 };
 
-export async function logoutFunction(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function logoutFunction(req: Request, res: Response, next: NextFunction) {
     try {
         if (!req.session) return next(new Error('No session found'));
 
@@ -86,5 +86,20 @@ export async function logoutFunction(req: Request, res: Response, next: NextFunc
     } catch (error) {
         console.error('Unexpected error during logout:', error);
         next(error);
+    }
+}
+
+export async function isFaceVerified(req: Request, res: Response, next: NextFunction) {
+    try {
+        if (!req.session || !req.session?.user) throw new UnauthorizedError('Login Required');
+
+        const faceVerified: boolean = req.body?.faceVerified;
+        if (faceVerified === undefined || faceVerified === null) throw new BadRequestError('Face verified status is missing');
+
+        req.session.faceVerified = faceVerified;
+        return res.status(200).end();
+
+    } catch (error) {
+        next(error)
     }
 }

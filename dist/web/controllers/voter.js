@@ -21,6 +21,7 @@ const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus")
 function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            req.session.faceVerified = false;
             const user_id = req.session.user.user_id;
             const [register_face] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [user_id]);
             const face_registered = register_face ? true : false;
@@ -42,18 +43,18 @@ function renderElectionBallot(req, res, next) {
             const id_number = req.session.user.user_id;
             const election_id = req.params.electionId;
             const deviceRegistrationStatus = (_a = req.session) === null || _a === void 0 ? void 0 : _a.deviceRegistrationStatus;
-            const faceVeified = (_b = req.session) === null || _b === void 0 ? void 0 : _b.faceVerified;
+            const faceVerified = (_b = req.session) === null || _b === void 0 ? void 0 : _b.faceVerified;
             // Check if the user has already voted
             const hasVoted = yield (0, voteService_1.checkIfUserHasVoted)(id_number, election_id);
             if (hasVoted)
                 return res.redirect('/election?redirectMessage=You have already voted');
             // If the device is not registered, check if user is available for face authentication.
-            if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED" || !faceVeified) {
+            if ((!deviceRegistrationStatus || deviceRegistrationStatus !== "REGISTERED") && !faceVerified) {
                 const isUserRegisteredFaceImage = yield (0, hasUserRegisterFaceImage_1.hasUserRegisterFaceImage)(id_number);
                 if (!isUserRegisteredFaceImage)
                     return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
                 // redirect user to face authentication
-                return res.redirect('/authenticate-face');
+                return res.redirect(`/authenticate-face?election=${election_id}`);
             }
             const sqlQuery = `
         SELECT u.id_number, u.firstname, u.lastname , u.course, c.position, c.candidate_profile, c.party
@@ -74,7 +75,6 @@ function renderElectionBallot(req, res, next) {
                 acc[department.department_code] = department.max_select_senator;
                 return acc;
             }, {});
-            console.log(departmentMaxSenatorVote);
             if (!(0, isValidTimeToVote_1.isValidTimeToVote)(election))
                 return res.redirect("/election?redirectMessage=Voting is currently closed");
             return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election, departmentMaxSenatorVote });

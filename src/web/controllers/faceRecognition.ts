@@ -15,9 +15,11 @@ export async function faceRegisterPage(req: Request, res: Response, next: NextFu
 
 export async function faceAuthenticatePage(req: Request, res: Response, next: NextFunction) {
     const id_number = req.session.user?.user_id;
+    const electionId = req.query.election;
+
     const [registerFace] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [id_number]);
 
     if (!registerFace) return res.redirect('/election?redirectMessage=No face registered found for this user!');
 
-    res.render('face-recognition/face-authenticate')
+    res.render('face-recognition/face-authenticate', { electionId })
 }

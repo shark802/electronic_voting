@@ -15,6 +15,8 @@ import { RegisterFaces } from "../../utils/types/RegisterFaces";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
+        req.session.faceVerified = false;
+
         const user_id = req.session.user!.user_id;
         const [register_face] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [user_id]);
 
@@ -35,19 +37,19 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         const id_number = req.session.user!.user_id;
         const election_id = req.params.electionId;
         const deviceRegistrationStatus = req.session?.deviceRegistrationStatus;
-        const faceVeified = req.session?.faceVerified;
+        const faceVerified = req.session?.faceVerified;
 
         // Check if the user has already voted
         const hasVoted = await checkIfUserHasVoted(id_number, election_id);
         if (hasVoted) return res.redirect('/election?redirectMessage=You have already voted');
 
         // If the device is not registered, check if user is available for face authentication.
-        if (deviceRegistrationStatus === undefined || deviceRegistrationStatus !== "REGISTERED" || !faceVeified) {
+        if ((!deviceRegistrationStatus || deviceRegistrationStatus !== "REGISTERED") && !faceVerified) {
             const isUserRegisteredFaceImage = await hasUserRegisterFaceImage(id_number);
             if (!isUserRegisteredFaceImage) return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
 
             // redirect user to face authentication
-            return res.redirect('/authenticate-face')
+            return res.redirect(`/authenticate-face?election=${election_id}`)
         }
 
         const sqlQuery = `
@@ -70,8 +72,6 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
             acc[department.department_code] = department.max_select_senator;
             return acc;
         }, {});
-
-        console.log(departmentMaxSenatorVote);
 
         if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=Voting is currently closed")
 

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logoutFunction = exports.loginFunction = void 0;
+exports.isFaceVerified = exports.logoutFunction = exports.loginFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const convertApiObjectToUser_1 = require("../../utils/convertApiObjectToUser");
 const database_1 = require("../../config/database");
@@ -96,3 +96,21 @@ function logoutFunction(req, res, next) {
     });
 }
 exports.logoutFunction = logoutFunction;
+function isFaceVerified(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b;
+        try {
+            if (!req.session || !((_a = req.session) === null || _a === void 0 ? void 0 : _a.user))
+                throw new customErrors_1.UnauthorizedError('Login Required');
+            const faceVerified = (_b = req.body) === null || _b === void 0 ? void 0 : _b.faceVerified;
+            if (faceVerified === undefined || faceVerified === null)
+                throw new customErrors_1.BadRequestError('Face verified status is missing');
+            req.session.faceVerified = faceVerified;
+            return res.status(200).end();
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.isFaceVerified = isFaceVerified;

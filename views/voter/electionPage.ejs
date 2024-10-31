@@ -22,7 +22,7 @@
     </style>
   </head>
 
-  <body class="relative w-full h-screen overflow-hidden bg-gradient-to-b from from-blue-50 to-blue-100">
+  <body class="relative w-full h-screen min-h-screen overflow-hidden bg-gradient-to-b from from-blue-50 to-blue-100">
     <header class="flex items-center justify-between w-full px-4 py-3 shadow-md bg-gradient-to-r from-blue-800 to-blue-600">
       <a href="/" class="flex items-center gap-2 px-3 py-2 text-white transition-colors duration-200 bg-blue-600 rounded-full shadow-md hover:text-blue-200 hover:bg-blue-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,30 +52,32 @@
 
           <div class="p-4 border-t border-blue-100">
 
-            <!-- <% if (face_registered) { %>
+            <div id="register-face-button-container" class="hidden">
+              <% if (face_registered) { %>
 
-            <button class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-green-600 rounded-md cursor-default hover:bg-green-700">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              <p>Face Registered</p>
-            </button>
+              <button class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-green-600 rounded-md cursor-default hover:bg-green-700">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <p>Face Registered</p>
+              </button>
 
-            <% } else { %>
-            <button id="register-face-button" class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700">
+              <% } else { %>
+              <button id="register-face-button" class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p>Register Face</p>
+              </button>
+              <% } %>
+            </div>
+
+            <!-- <button id="register-face-button" class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700">
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
               <p>Register Face</p>
-            </button>
-            <% } %> -->
-
-            <button id="register-face-button" class="flex items-center justify-center w-full py-2 mb-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <p>Register Face</p>
-            </button>
+            </button> -->
 
             <button id="logout-button" class="flex items-center justify-center w-full py-2 text-sm font-medium text-gray-700 transition-colors duration-200 bg-gray-100 rounded-md hover:bg-gray-200">
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -90,7 +92,7 @@
       <% } %>
     </header>
 
-    <main class=" flex gap-7 flex-col px-4 items-center pt-12 overflow-auto lg:mb-0 h-[calc(100%-80px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
+    <main class="flex gap-7 flex-col px-4 items-center pt-12 overflow-y-auto lg:mb-0 h-[calc(100%-60px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
 
       <% if (electionList.length < 1) { %>
 

@@ -4,6 +4,76 @@ import { showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js"
 import "/javascript/logout.js"
 import socket from "/javascript/socket_io.js"
 
+document.addEventListener('DOMContentLoaded', async () => {
+   try {
+
+      const uuid = getRegisterDeviceUuidIfExist();
+      if (!uuid) return;
+
+      const devicePublicIpAddress = await fetchPublicIP();
+
+      const isDeviceRegistered = await checkUuidIfRegistered(uuid);
+      if (!isDeviceRegistered) return;
+
+      const isIpAddressExist = await checkIpAddressIfExist(devicePublicIpAddress);
+      if (!isIpAddressExist) return;
+
+      document.querySelector('#register-face-button-container').classList.remove('hidden');
+
+   } catch (error) {
+      console.error(error);
+
+   }
+})
+
+function getRegisterDeviceUuidIfExist() {
+   const registerDeviceData = localStorage.getItem('register-device-data');
+   if (!registerDeviceData) return;
+
+   const data = JSON.parse(registerDeviceData);
+   return data.uuid;
+}
+
+async function fetchPublicIP() {
+   try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+
+      return data.ip;
+   } catch (error) {
+      console.error('Error fetching IP address:', error);
+   }
+}
+
+async function checkUuidIfRegistered(uuid) {
+   try {
+
+      const response = await fetch(`/api/uuid/${uuid}`);
+      if (!response.ok) return;
+
+      const responseObject = await response.json();
+
+      return responseObject.status === 'REGISTERED' ? true : false;
+
+   } catch (error) {
+      console.error(error);
+
+   }
+}
+
+async function checkIpAddressIfExist(ipAddress) {
+   try {
+
+      const response = await fetch(`/api/ip-address?ipAddress=${ipAddress}`);
+      const responseObject = await response.json();
+
+      return responseObject?.ip_address && responseObject.ip_address === ipAddress ? true : false;
+
+   } catch (error) {
+      console.error(error);
+   }
+}
+
 document.querySelectorAll("#vote-now-button").forEach(button => {
    const parentSection = button.closest('section');
 
@@ -79,13 +149,19 @@ toggleProfile();
 
 
 // Register face modal
-document.querySelector("#register-face-button").addEventListener("click", () => {
-   $(document.querySelector('#account-section')).slideUp(300);
-   document.querySelector("#register-face-modal-option").showModal();
+const registerFaceButton = document.querySelector("#register-face-button");
+const registerFaceModalCloseButton = document.querySelector("#close-face-register-modal");
 
-})
+if (registerFaceButton) {
+   registerFaceButton.addEventListener("click", () => {
+      $(document.querySelector('#account-section')).slideUp(300);
+      document.querySelector("#register-face-modal-option").showModal();
+   })
+}
 
-document.querySelector("#close-face-register-modal").addEventListener("click", () => {
-   document.querySelector("#register-face-modal-option").close();
-})
+if (registerFaceModalCloseButton) {
+   registerFaceModalCloseButton.addEventListener("click", () => {
+      document.querySelector("#register-face-modal-option").close();
+   })
+}
 
