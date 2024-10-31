@@ -85,6 +85,19 @@ export async function editElection(req: Request, res: Response, next: NextFuncti
     }
 };
 
+export async function commpleteElectionResult(req: Request, res: Response, next: NextFunction) {
+    try {
+        const electionId = req.params.id;
+
+        const election = await getElectionInfoById(electionId);
+        const departments = await selectQuery<Program>(pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId]);
+
+        res.render('admin/complete_election_report', { election, departments });
+    } catch (error) {
+        next(error)
+    }
+}
+
 export async function viewElectionHistory(req: Request, res: Response, next: NextFunction) {
     try {
         const query = "SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";

@@ -15,7 +15,8 @@ import {
     renderAdminElectionResult,
     generalSettings,
     departmentPrograms,
-    manageDepartment
+    manageDepartment,
+    commpleteElectionResult
 } from '../controllers/admin';
 
 const router = Router();
@@ -30,6 +31,7 @@ router.get("/election/new", newElection);
 router.get("/election/:id/edit", editElection);
 router.get("/election/history", viewElectionHistory);
 router.get("/election/result/:id", renderAdminElectionResult);
+router.get("/election/complete/:id", commpleteElectionResult)
 
 // Candidate
 router.get("/candidate/manage", manageCandidate);

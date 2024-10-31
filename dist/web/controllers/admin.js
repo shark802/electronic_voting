@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.departmentPrograms = exports.manageDepartment = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
+exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.departmentPrograms = exports.manageDepartment = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.commpleteElectionResult = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const voterService_1 = require("../../data_access/voterService");
@@ -94,6 +94,20 @@ function editElection(req, res, next) {
 }
 exports.editElection = editElection;
 ;
+function commpleteElectionResult(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const electionId = req.params.id;
+            const election = yield (0, election_1.getElectionInfoById)(electionId);
+            const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId]);
+            res.render('admin/complete_election_report', { election, departments });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.commpleteElectionResult = commpleteElectionResult;
 function viewElectionHistory(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

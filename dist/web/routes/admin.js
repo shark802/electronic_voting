@@ -12,6 +12,7 @@ router.get("/election/new", admin_1.newElection);
 router.get("/election/:id/edit", admin_1.editElection);
 router.get("/election/history", admin_1.viewElectionHistory);
 router.get("/election/result/:id", admin_1.renderAdminElectionResult);
+router.get("/election/complete/:id", admin_1.commpleteElectionResult);
 // Candidate
 router.get("/candidate/manage", admin_1.manageCandidate);
 router.get("/candidate/new", admin_1.addCandidate);
