@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDepartmentsTotalVotes = exports.getDepartmentsTotalPopulation = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
+exports.getAllCompleteElection = exports.getDepartmentsTotalVotes = exports.getDepartmentsTotalPopulation = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
 function getElectionInfoById(electionId) {
@@ -116,3 +116,11 @@ function getDepartmentsTotalVotes(electionIdArray) {
     });
 }
 exports.getDepartmentsTotalVotes = getDepartmentsTotalVotes;
+function getAllCompleteElection() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const selectSqlQuery = 'SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC';
+        const elections = yield (0, query_1.selectQuery)(database_1.pool, selectSqlQuery);
+        return elections;
+    });
+}
+exports.getAllCompleteElection = getAllCompleteElection;

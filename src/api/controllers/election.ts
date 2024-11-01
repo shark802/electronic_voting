@@ -7,7 +7,7 @@ import { selectQuery, updateQuery } from "../../data_access/query";
 import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
 import { eventEmitter } from '../../events/globalEventEmitterInstance';
 import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
-import { getDepartmentsTotalPopulation, getDepartmentsTotalVotes } from "../../data_access/election";
+import { getAllCompleteElection, getDepartmentsTotalPopulation, getDepartmentsTotalVotes } from "../../data_access/election";
 import { ResultSetHeader } from "mysql2";
 import { Department } from "../../utils/types/Department";
 import { Program } from "../../utils/types/Program";
@@ -258,5 +258,44 @@ export async function getTotalVotedInElectionByProgram(req: Request, res: Respon
 		return res.status(200).json({ electionVoteSummary: departmentVoteSummary });
 	} catch (error) {
 		next(error);
+	}
+}
+
+export async function completedElectionsTotalVoted(req: Request, res: Response, next: NextFunction) {
+	try {
+		type voted = {
+			election_id: string;
+			total_voted: number;
+		}
+
+		const completedElections = await getAllCompleteElection()
+		let electionsTotalVoted = completedElections.map(election => {			
+			if (election.total_voted !== null) {				
+				return {
+					election_id: election.election_id,
+					total_voted: election?.total_voted
+				}
+			}
+		})
+
+		// Filter out all elections that total_voted column is null or have not been total all voted after election completes
+		const noTotalVotedElection = completedElections.filter(election => {
+			console.log(election.election_id);
+			return election.total_voted === null || !election.total_voted
+		});		
+
+		// Count all voted for every election that's not totaled
+		const countTotalVotedQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as total_voted FROM votes WHERE election_id = ? GROUP BY election_id`
+		for (const election of noTotalVotedElection) {
+			const [totalVotedInElection] = await selectQuery<voted>(pool, countTotalVotedQuery, [election.election_id]);
+			console.log(totalVotedInElection, election.election_id);
+			
+			// const totalVoted = totalVotedInElection?.total_voted ?? 0;
+			// electionsTotalVoted.push({election_id: totalVotedInElection.election_id, total_voted: totalVoted})
+		}
+		
+		res.send(electionsTotalVoted);
+	} catch (error) {
+		next(error)
 	}
 }

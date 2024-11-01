@@ -134,7 +134,11 @@ export async function getDepartmentsTotalVotes(electionIdArray: string[]) {
 
         departmentVotesSummary.push(electionDepartmentVoteSummary);
     }
-
     return departmentVotesSummary;
+}
 
+export async function getAllCompleteElection() {
+	const selectSqlQuery = 'SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC';
+    const elections = await selectQuery<Election>(pool, selectSqlQuery);
+    return elections;
 }

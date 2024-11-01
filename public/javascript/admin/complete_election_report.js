@@ -58,6 +58,9 @@ document.querySelectorAll('#program').forEach(department => {
     const totalVoted = programTotalVoteCount[departmentCode] || 0; // in case the total number of votes is not found, use default value 0
     const totalNotVoted = totalVoter - totalVoted;
 
-    department.querySelector(`#departmentTotalVotes`).textContent = totalVoted; // display the total number of votes for each department
-    department.querySelector(`#departmentNumberOfNotVoted`).textContent = totalNotVoted; // display the total number of not voted
+    console.log(programTotalVoteCount);
+    console.log(totalVoted, departmentCode, programTotalVoteCount[departmentCode]);
+        
+    document.querySelector(`#departmentTotalVotes`).textContent =  totalVoted; // display the total number of votes for each department
+    document.querySelector(`#departmentNumberOfNotVoted`).textContent = totalNotVoted; // display the total number of not voted
 });

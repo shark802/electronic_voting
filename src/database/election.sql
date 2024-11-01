@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `elections` (
    `is_active` TINYINT(1) DEFAULT 1,
    `is_close` TINYINT(1) DEFAULT 0,
    `total_populations` INT DEFAULT 0,
+   `total_voted` INT(7),
    `deleted_at` TIMESTAMP NULL,
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

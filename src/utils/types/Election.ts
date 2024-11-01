@@ -6,6 +6,9 @@ type Election = {
 	date_end: string;
 	time_end: string;
 	is_active: number;
+	is_close: number;
+	total_populations: number;
+	total_voted: number;
 	is_deleted: number;
 	created_at: string;
 };

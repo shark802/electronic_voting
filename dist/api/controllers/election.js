@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
+exports.completedElectionsTotalVoted = exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
@@ -259,3 +259,36 @@ function getTotalVotedInElectionByProgram(req, res, next) {
     });
 }
 exports.getTotalVotedInElectionByProgram = getTotalVotedInElectionByProgram;
+function completedElectionsTotalVoted(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const completedElections = yield (0, election_1.getAllCompleteElection)();
+            let electionsTotalVoted = completedElections.map(election => {
+                if (election.total_voted !== null) {
+                    return {
+                        election_id: election.election_id,
+                        total_voted: election === null || election === void 0 ? void 0 : election.total_voted
+                    };
+                }
+            });
+            // Filter out all elections that total_voted column is null or have not been total all voted after election completes
+            const noTotalVotedElection = completedElections.filter(election => {
+                console.log(election.election_id);
+                return election.total_voted === null || !election.total_voted;
+            });
+            // Count all voted for every election that's not totaled
+            const countTotalVotedQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as total_voted FROM votes WHERE election_id = ? GROUP BY election_id`;
+            for (const election of noTotalVotedElection) {
+                const [totalVotedInElection] = yield (0, query_1.selectQuery)(database_1.pool, countTotalVotedQuery, [election.election_id]);
+                console.log(totalVotedInElection, election.election_id);
+                // const totalVoted = totalVotedInElection?.total_voted ?? 0;
+                // electionsTotalVoted.push({election_id: totalVotedInElection.election_id, total_voted: totalVoted})
+            }
+            res.send(electionsTotalVoted);
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.completedElectionsTotalVoted = completedElectionsTotalVoted;

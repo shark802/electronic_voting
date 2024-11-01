@@ -1353,10 +1353,6 @@ video {
   max-width: 28rem;
 }
 
-.max-w-\[1300px\] {
-  max-width: 1300px;
-}
-
 .max-w-\[1500px\] {
   max-width: 1500px;
 }
@@ -1911,11 +1907,6 @@ video {
 .bg-yellow-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(234 179 8 / var(--tw-bg-opacity));
-}
-
-.bg-green-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(134 239 172 / var(--tw-bg-opacity));
 }
 
 .bg-opacity-40 {
