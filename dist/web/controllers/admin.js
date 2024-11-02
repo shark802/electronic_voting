@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.departmentPrograms = exports.manageDepartment = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.commpleteElectionResult = exports.editElection = exports.newElection = exports.viewElection = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
+exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.departmentPrograms = exports.manageDepartment = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.commpleteElectionResult = exports.editElection = exports.newElection = exports.viewElection = exports.electionAnalytics = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const voterService_1 = require("../../data_access/voterService");
@@ -56,6 +56,17 @@ function dashboardVoteTally(req, res, next) {
     });
 }
 exports.dashboardVoteTally = dashboardVoteTally;
+function electionAnalytics(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            res.render("admin/dashboard_analytics");
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.electionAnalytics = electionAnalytics;
 // Election
 function viewElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {

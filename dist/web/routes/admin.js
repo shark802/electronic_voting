@@ -6,6 +6,7 @@ const router = (0, express_1.Router)();
 // Dashboard
 router.get("/dashboard/overview", admin_1.dashboardOverview);
 router.get("/dashboard/vote-tally", admin_1.dashboardVoteTally);
+router.get("/dashboard/analytics", admin_1.electionAnalytics);
 // Elections
 router.get("/election/view", admin_1.viewElection);
 router.get("/election/new", admin_1.newElection);

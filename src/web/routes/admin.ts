@@ -16,7 +16,8 @@ import {
     generalSettings,
     departmentPrograms,
     manageDepartment,
-    commpleteElectionResult
+    commpleteElectionResult,
+    electionAnalytics
 } from '../controllers/admin';
 
 const router = Router();
@@ -24,6 +25,7 @@ const router = Router();
 // Dashboard
 router.get("/dashboard/overview", dashboardOverview);
 router.get("/dashboard/vote-tally", dashboardVoteTally);
+router.get("/dashboard/analytics", electionAnalytics);
 
 // Elections
 router.get("/election/view", viewElection);

@@ -3226,6 +3226,22 @@ video {
     height: 100vh;
   }
 
+  .lg\:max-h-\[600px\] {
+    max-height: 600px;
+  }
+
+  .lg\:max-h-\[400px\] {
+    max-height: 400px;
+  }
+
+  .lg\:max-h-\[500px\] {
+    max-height: 500px;
+  }
+
+  .lg\:max-h-\[450px\] {
+    max-height: 450px;
+  }
+
   .lg\:min-h-16 {
     min-height: 4rem;
   }

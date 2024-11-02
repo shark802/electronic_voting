@@ -54,6 +54,16 @@ export async function dashboardVoteTally(req: Request, res: Response, next: Next
     }
 }
 
+export async function electionAnalytics(req: Request, res: Response, next: NextFunction) {
+    try {
+
+        res.render("admin/dashboard_analytics")
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 // Election
 export async function viewElection(req: Request, res: Response, next: NextFunction) {
     try {

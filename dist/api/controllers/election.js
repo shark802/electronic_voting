@@ -278,7 +278,7 @@ function completedElectionsTotalVoted(req, res, next) {
                     });
                 }
             }
-            res.send(completedElections);
+            res.json({ completedElections });
         }
         catch (error) {
             next(error);

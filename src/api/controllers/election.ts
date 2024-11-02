@@ -291,7 +291,7 @@ export async function completedElectionsTotalVoted(req: Request, res: Response, 
 			}
 		}
 
-		res.send(completedElections);
+		res.json({ completedElections });
 	} catch (error) {
 		next(error)
 	}
