@@ -263,28 +263,22 @@ function completedElectionsTotalVoted(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const completedElections = yield (0, election_1.getAllCompleteElection)();
-            let electionsTotalVoted = completedElections.map(election => {
-                if (election.total_voted !== null) {
-                    return {
-                        election_id: election.election_id,
-                        total_voted: election === null || election === void 0 ? void 0 : election.total_voted
-                    };
+            const noTotalVotedElection = completedElections.filter(election => election.total_voted === null);
+            if (noTotalVotedElection.length > 0) {
+                const countTotalVotedQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as total_voted FROM votes WHERE election_id = ?`;
+                for (const election of noTotalVotedElection) {
+                    const [totalVoted] = yield (0, query_1.selectQuery)(database_1.pool, countTotalVotedQuery, [election.election_id]);
+                    // Set total voted in election
+                    yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE elections SET total_voted = ? WHERE election_id = ?', [totalVoted.total_voted, election.election_id]);
+                    // Update total voted property of previous null value, in elections with no total
+                    completedElections.forEach(completeElection => {
+                        if (completeElection.election_id === election.election_id) {
+                            completeElection.total_voted = totalVoted.total_voted;
+                        }
+                    });
                 }
-            });
-            // Filter out all elections that total_voted column is null or have not been total all voted after election completes
-            const noTotalVotedElection = completedElections.filter(election => {
-                console.log(election.election_id);
-                return election.total_voted === null || !election.total_voted;
-            });
-            // Count all voted for every election that's not totaled
-            const countTotalVotedQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as total_voted FROM votes WHERE election_id = ? GROUP BY election_id`;
-            for (const election of noTotalVotedElection) {
-                const [totalVotedInElection] = yield (0, query_1.selectQuery)(database_1.pool, countTotalVotedQuery, [election.election_id]);
-                console.log(totalVotedInElection, election.election_id);
-                // const totalVoted = totalVotedInElection?.total_voted ?? 0;
-                // electionsTotalVoted.push({election_id: totalVotedInElection.election_id, total_voted: totalVoted})
             }
-            res.send(electionsTotalVoted);
+            res.send(completedElections);
         }
         catch (error) {
             next(error);

@@ -3,7 +3,7 @@ import { pool } from "../../config/database";
 import { ulid } from "ulid"
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
-import { selectQuery, updateQuery } from "../../data_access/query";
+import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
 import { eventEmitter } from '../../events/globalEventEmitterInstance';
 import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
@@ -222,7 +222,7 @@ export async function getNumberOfVoted(req: Request, res: Response, next: NextFu
 		if (!electionIdQueryParams) throw new BadRequestError('No election id provided');
 
 		const electionIdArray = Array.isArray(electionIdQueryParams) ? electionIdQueryParams as string[] : [electionIdQueryParams as string];
-		
+
 		const sqlQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as voted FROM votes WHERE election_id IN (?) GROUP BY election_id`
 		const elections = await selectQuery(pool, sqlQuery, [electionIdArray]);
 		return res.status(200).json({ elections })
@@ -263,38 +263,35 @@ export async function getTotalVotedInElectionByProgram(req: Request, res: Respon
 
 export async function completedElectionsTotalVoted(req: Request, res: Response, next: NextFunction) {
 	try {
-		type voted = {
-			election_id: string;
-			total_voted: number;
-		}
 
 		const completedElections = await getAllCompleteElection()
-		let electionsTotalVoted = completedElections.map(election => {			
-			if (election.total_voted !== null) {				
-				return {
-					election_id: election.election_id,
-					total_voted: election?.total_voted
-				}
+
+		const noTotalVotedElection = completedElections.filter(election => election.total_voted === null);
+		if (noTotalVotedElection.length > 0) {
+			type voted = {
+				election_id: string;
+				total_voted: number;
 			}
-		})
 
-		// Filter out all elections that total_voted column is null or have not been total all voted after election completes
-		const noTotalVotedElection = completedElections.filter(election => {
-			console.log(election.election_id);
-			return election.total_voted === null || !election.total_voted
-		});		
+			const countTotalVotedQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as total_voted FROM votes WHERE election_id = ?`
 
-		// Count all voted for every election that's not totaled
-		const countTotalVotedQuery = `SELECT election_id, COUNT(DISTINCT voter_id) as total_voted FROM votes WHERE election_id = ? GROUP BY election_id`
-		for (const election of noTotalVotedElection) {
-			const [totalVotedInElection] = await selectQuery<voted>(pool, countTotalVotedQuery, [election.election_id]);
-			console.log(totalVotedInElection, election.election_id);
-			
-			// const totalVoted = totalVotedInElection?.total_voted ?? 0;
-			// electionsTotalVoted.push({election_id: totalVotedInElection.election_id, total_voted: totalVoted})
+			for (const election of noTotalVotedElection) {
+
+				const [totalVoted] = await selectQuery<voted>(pool, countTotalVotedQuery, [election.election_id]);
+
+				// Set total voted in election
+				await updateQuery(pool, 'UPDATE elections SET total_voted = ? WHERE election_id = ?', [totalVoted.total_voted, election.election_id]);
+
+				// Update total voted property of previous null value, in elections with no total
+				completedElections.forEach(completeElection => {
+					if (completeElection.election_id === election.election_id) {
+						completeElection.total_voted = totalVoted.total_voted
+					}
+				})
+			}
 		}
-		
-		res.send(electionsTotalVoted);
+
+		res.send(completedElections);
 	} catch (error) {
 		next(error)
 	}
