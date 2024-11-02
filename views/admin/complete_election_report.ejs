@@ -24,11 +24,15 @@
 
     <header class="sticky top-0 flex items-center w-full px-4 py-3 bg-blue-600 shadow-md lg:h-20 lg:px-6">
       <div class="flex items-center lg:w-4/5">
-        <button onclick="history.back()" class="p-2 mr-4 text-white transition-colors duration-200 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Go back">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-          </svg>
-        </button>
+
+        <a href="/admin/election/history">
+          <button class="p-2 mr-4 text-white transition-colors duration-200 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Go back">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+          </button>
+        </a>
+
       </div>
     </header>
 
@@ -110,7 +114,7 @@
                 <div class="relative flex-1 text-center">
                   <p id="departmentTotalVotes" class="text-lg font-bold text-green-600 lg:text-3xl">0</p>
                   <p class="text-sm font-medium text-gray-500">Voted</p>
-                  <a href="/report/voter/<%= election.election_id %>?voteStatus=voted&department=<%= course.program_code %>">
+                  <a href="/report/complete/voter/<%= election.election_id %>?voteStatus=voted&department=<%= course.program_code %>">
                     <button class="bottom-0 px-3 py-1 text-xs text-green-700 transition-opacity duration-300 ease-in-out transform bg-green-100 rounded-md lg:-translate-x-1/2 lg:opacity-0 lg:absolute left-1/2 group-hover:opacity-100 hover:bg-green-200">
                       View Report
                     </button>
@@ -120,7 +124,7 @@
                 <div class="relative flex-1 text-center">
                   <p id="departmentNumberOfNotVoted" class="text-lg font-bold text-red-600 lg:text-3xl"><%= course.program_population === 0 ? 'N/A' : course.program_population %></p>
                   <p class="text-sm font-medium text-gray-500">Not voted</p>
-                  <a href="/report/voter/<%= election.election_id %>?voteStatus=not-voted&department=<%= course.program_code %>">
+                  <a href="/report/complete/voter/<%= election.election_id %>?voteStatus=not-voted&department=<%= course.program_code %>">
                     <button class="bottom-0 px-3 py-1 text-xs text-red-700 transition-opacity duration-300 ease-in-out transform bg-red-100 rounded-md lg:-translate-x-1/2 lg:absolute lg:opacity-0 left-1/2 group-hover:opacity-100 hover:bg-red-200">
                       View Report
                     </button>

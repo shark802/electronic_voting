@@ -22,7 +22,7 @@
     <div class="flex items-center justify-between px-4 py-3 lg:px-6">
       <div class="flex items-center">
 
-        <a href="/admin/dashboard/overview">
+        <a href="/admin/election/complete/<%= election.election_id %>">
           <button class="p-2 mr-4 text-white transition-colors duration-200 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Go back">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -33,7 +33,8 @@
 
       </div>
       <h1 class="text-xl font-semibold text-white lg:text-2xl"><%= reportTitle %></h1>
-      <div class="w-6 lg:w-0"></div> <!-- Placeholder for alignment -->
+      <div class="w-6  lg:w-0">
+      </div> <!-- Placeholder for alignment -->
     </div>
   </header>
 
@@ -215,7 +216,6 @@
       </div>
     </main>
   </div>
-
 
 
 </body>
