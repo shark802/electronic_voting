@@ -1,5 +1,3 @@
-// import { Chart } from "chart.js"; // Ensure Chart.js is imported
-
 async function getAllCompleteElections() {
     try {
         const response = await fetch('/api/election/complete/total-voted');
@@ -24,8 +22,7 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
             throw new Error('Canvas element not found');
         }
 
-        // Prepare labels and datasets for the chart
-        const labels = completedElectionsArray.map(election => election?.election_name ?? "Election");
+        // Turnout percentage per election 
         const datasets = completedElectionsArray.map(election => {
             const electionTotalPopulation = election?.total_populations;
             const electionTotalVoted = election?.total_voted;
@@ -38,7 +35,6 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
             canvas.chartInstance.destroy();
         }
 
-        // Initialize the line chart with the calculated data
         canvas.chartInstance = new Chart(canvas, {
             type: 'line',
             data: {
@@ -69,16 +65,19 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
                     tooltip: {
                         callbacks: {
                             label: function (context) {
+
                                 const electionName = completedElectionsArray[context.dataIndex].election_name;
                                 const electionPopulation = completedElectionsArray[context.dataIndex].total_populations;
                                 const electionNumberVoted = completedElectionsArray[context.dataIndex].total_voted;
+                                const date = new Date(completedElectionsArray[context.dataIndex].date_end).toLocaleDateString();
                                 const percentage = context.raw.toFixed(2) + '%';
 
                                 return [
                                     `Percentage:  ${percentage}`,
                                     `Election Name:  ${electionName}`,
                                     `Total Population:  ${electionPopulation}`,
-                                    `Total Voted:  ${electionNumberVoted}`
+                                    `Total Voted:  ${electionNumberVoted}`,
+                                    `Date:  ${date}`
                                 ];
                             }
                         },

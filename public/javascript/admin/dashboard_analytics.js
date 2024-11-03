@@ -27,4 +27,4 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 const voterEngagementCanvasId = 'voter-engagement-trends';
 const completedElections = await getAllCompleteElections();
 
-renderVoterEngagementTrends(completedElections, voterEngagementCanvasId);
+renderVoterEngagementTrends(completedElections.reverse(), voterEngagementCanvasId);
