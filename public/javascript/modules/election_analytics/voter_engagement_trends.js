@@ -93,4 +93,87 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
     }
 }
 
-export { getAllCompleteElections, renderVoterEngagementTrends };
+function calculateTurnoutStats(completedElectionsArray) {
+    // Add validation to ensure array is not empty
+    if (!completedElectionsArray || completedElectionsArray.length === 0) {
+        return {
+            highest: 0,
+            lowest: 0,
+            average: 0
+        };
+    }
+
+    const turnouts = completedElectionsArray.map(election => {
+        // Add validation and default values
+        const totalVoted = Number(election?.total_voted) || 0;
+        const totalPopulation = Number(election?.total_populations) || 1; // Prevent division by zero
+        return (totalVoted / totalPopulation) * 100;
+    }).filter(turnout => !isNaN(turnout)); // Filter out any NaN values
+
+    // If no valid turnouts, return zeros
+    if (turnouts.length === 0) {
+        return {
+            highest: 0,
+            lowest: 0,
+            average: 0
+        };
+    }
+
+    return {
+        highest: Math.max(...turnouts).toFixed(2),
+        lowest: Math.min(...turnouts).toFixed(2),
+        average: (turnouts.reduce((a, b) => a + b, 0) / turnouts.length).toFixed(2)
+    };
+}
+
+function renderTurnoutDonut(value, elementId, color) {
+    const canvas = document.querySelector(`#${elementId}`);
+    if (!canvas) return;
+
+    // Ensure value is a valid number
+    const numericValue = parseFloat(value) || 0;
+
+    // destroy existing if present
+    if (canvas.chartInstance) {
+        canvas.chartInstance.destroy();
+    }
+
+    canvas.chartInstance = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [numericValue, 100 - numericValue],
+                backgroundColor: [color, '#f1f5f9'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            cutout: '75%',
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: false
+                }
+            }
+        }
+    });
+}
+
+function renderAllTurnoutStats(completedElectionsArray) {
+    const stats = calculateTurnoutStats(completedElectionsArray);
+    
+    renderTurnoutDonut(stats.highest, 'highest-turnout-chart', '#22c55e');
+    renderTurnoutDonut(stats.lowest, 'lowest-turnout-chart', '#ef4444');
+    renderTurnoutDonut(stats.average, 'average-turnout-chart', '#2563eb');
+    
+    // Update the percentage text elements
+    document.querySelector('#highest-turnout-text').textContent = `${stats.highest}%`;
+    document.querySelector('#lowest-turnout-text').textContent = `${stats.lowest}%`;
+    document.querySelector('#average-turnout-text').textContent = `${stats.average}%`;
+}
+
+export { getAllCompleteElections, renderVoterEngagementTrends, renderAllTurnoutStats };

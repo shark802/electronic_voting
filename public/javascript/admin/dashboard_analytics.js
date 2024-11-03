@@ -2,7 +2,7 @@ import { confirmErrorAlert, confirmAlert, showSwalSuccessToast, showSwalErrorToa
 import "/javascript/socket_io.js"
 import "/javascript/logout.js"
 
-import { getAllCompleteElections, renderVoterEngagementTrends } from "/javascript/modules/election_analytics/voter_engagement_trends.js"
+import { getAllCompleteElections, renderVoterEngagementTrends, renderAllTurnoutStats } from "/javascript/modules/election_analytics/voter_engagement_trends.js"
 
 const dashboard_nav = document.querySelector("#dashboard_nav")
 const analytics_page = document.querySelector("#analytics_page")
@@ -28,3 +28,4 @@ const voterEngagementCanvasId = 'voter-engagement-trends';
 const completedElections = await getAllCompleteElections();
 
 renderVoterEngagementTrends(completedElections.reverse(), voterEngagementCanvasId);
+renderAllTurnoutStats(completedElections);
