@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.completedElectionsTotalVoted = exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
+exports.yearLevelTurnoutPercentage = exports.completedElectionsTotalVoted = exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
@@ -286,3 +286,41 @@ function completedElectionsTotalVoted(req, res, next) {
     });
 }
 exports.completedElectionsTotalVoted = completedElectionsTotalVoted;
+function yearLevelTurnoutPercentage(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sqlQuery = `
+			SELECT
+				users.year_level,
+				elections.election_id,
+				COUNT(DISTINCT voters.id_number) AS total_voters,
+				COUNT(DISTINCT CASE WHEN votes.voter_id IS NOT NULL THEN votes.voter_id END) AS total_voted
+			FROM voters
+			LEFT JOIN users ON voters.id_number = users.id_number
+			LEFT JOIN votes ON voters.id_number = votes.voter_id AND voters.election_id = votes.election_id
+			LEFT JOIN elections ON voters.election_id = elections.election_id
+			WHERE (elections.date_end < CURDATE()
+			OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
+			AND elections.deleted_at IS NULL
+			GROUP BY users.year_level, elections.election_id
+			ORDER BY elections.date_end ASC, elections.time_end ASC
+		`;
+            const result = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery);
+            const turnoutPerYearLevel = result.map(election => {
+                const turnOutPercentage = ((election.total_voted / election.total_voters) * 100).toFixed(2);
+                return {
+                    electionId: election.election_id,
+                    turnOutPercentage: turnOutPercentage,
+                    yearLevel: election.year_level,
+                    totalVoter: election.total_voters,
+                    totalVoted: election.total_voted,
+                };
+            });
+            return res.status(200).json({ turnoutPerYearLevel });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.yearLevelTurnoutPercentage = yearLevelTurnoutPercentage;

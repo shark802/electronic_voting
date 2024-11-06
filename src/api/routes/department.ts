@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addDepartment, addProgram, getAllDepartments, getAllPrograms, getDepartmentObject, getDepartmentPrograms, getProgramSection, removeDepartment, removeProgram, setDepartmentMaxSenatorVote } from "../controllers/department";
+import { addDepartment, addProgram, getAllDepartments, getAllPrograms, getAllYearLevel, getDepartmentObject, getDepartmentPrograms, getProgramSection, removeDepartment, removeProgram, setDepartmentMaxSenatorVote } from "../controllers/department";
 
 const router = Router();
 
@@ -18,6 +18,6 @@ router.delete('/program/:id', removeProgram)
 router.get('/departments', getAllDepartments)
 router.get('/program', getDepartmentPrograms)
 router.get('/section', getProgramSection)
-
+router.get('/year-level', getAllYearLevel)
 
 export default router;

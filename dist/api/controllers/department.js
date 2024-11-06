@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeProgram = exports.getAllPrograms = exports.addProgram = exports.setDepartmentMaxSenatorVote = exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
+exports.getAllYearLevel = exports.removeProgram = exports.getAllPrograms = exports.addProgram = exports.setDepartmentMaxSenatorVote = exports.removeDepartment = exports.getProgramSection = exports.getDepartmentPrograms = exports.getDepartmentObject = exports.getAllDepartments = exports.addDepartment = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const customErrors_1 = require("../../utils/customErrors");
@@ -180,3 +180,15 @@ function removeProgram(req, res, next) {
     });
 }
 exports.removeProgram = removeProgram;
+function getAllYearLevel(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let yearLevelsResult = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT year_level FROM users');
+            const yearLevels = yearLevelsResult.map(level => level.year_level).sort();
+            return res.status(200).json({ yearLevels });
+        }
+        catch (error) {
+        }
+    });
+}
+exports.getAllYearLevel = getAllYearLevel;

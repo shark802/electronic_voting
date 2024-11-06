@@ -160,3 +160,14 @@ export async function removeProgram(req: Request, res: Response, next: NextFunct
         next(error)
     }
 }
+
+export async function getAllYearLevel(req: Request, res: Response, next: NextFunction) {
+    try {
+        let yearLevelsResult = await selectQuery<{ year_level: number }>(pool, 'SELECT DISTINCT year_level FROM users');
+        const yearLevels = yearLevelsResult.map(level => level.year_level).sort();
+
+        return res.status(200).json({ yearLevels });
+    } catch (error) {
+
+    }
+}

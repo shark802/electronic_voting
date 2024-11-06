@@ -38,11 +38,11 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
         canvas.chartInstance = new Chart(canvas, {
             type: 'line',
             data: {
-                labels: Array(datasets.length).fill(''),
+                labels: completedElectionsArray.map(election => election.election_name),
                 datasets: [{
                     label: 'Past Elections Voter Engagement Trends',
                     data: datasets,
-                    borderColor: '#2563eb',
+                    borderColor: '#3b82f6',
                     backgroundColor: '#60a5fa',
                     fill: true,
                     tension: 0.4,
@@ -51,9 +51,14 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
             options: {
                 responsive: true,
                 scales: {
+                    x: {
+                        ticks: {
+                            display: false
+                        }
+                    },
                     y: {
                         beginAtZero: true,
-                        max: 100,
+                        // max: 100,
                         ticks: {
                             callback: function (value) {
                                 return value + '%';
@@ -66,7 +71,6 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
                         callbacks: {
                             label: function (context) {
 
-                                const electionName = completedElectionsArray[context.dataIndex].election_name;
                                 const electionPopulation = completedElectionsArray[context.dataIndex].total_populations;
                                 const electionNumberVoted = completedElectionsArray[context.dataIndex].total_voted;
                                 const date = new Date(completedElectionsArray[context.dataIndex].date_end).toLocaleDateString();
@@ -74,7 +78,6 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
 
                                 return [
                                     `Percentage:  ${percentage}`,
-                                    `Election Name:  ${electionName}`,
                                     `Total Population:  ${electionPopulation}`,
                                     `Total Voted:  ${electionNumberVoted}`,
                                     `Date:  ${date}`
@@ -94,7 +97,6 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
 }
 
 function calculateTurnoutStats(completedElectionsArray) {
-    // Add validation to ensure array is not empty
     if (!completedElectionsArray || completedElectionsArray.length === 0) {
         return {
             highest: 0,
@@ -108,7 +110,7 @@ function calculateTurnoutStats(completedElectionsArray) {
         const totalVoted = Number(election?.total_voted) || 0;
         const totalPopulation = Number(election?.total_populations) || 1; // Prevent division by zero
         return (totalVoted / totalPopulation) * 100;
-    }).filter(turnout => !isNaN(turnout)); // Filter out any NaN values
+    }).filter(turnout => !isNaN(turnout));
 
     // If no valid turnouts, return zeros
     if (turnouts.length === 0) {
@@ -165,11 +167,11 @@ function renderTurnoutDonut(value, elementId, color) {
 
 function renderAllTurnoutStats(completedElectionsArray) {
     const stats = calculateTurnoutStats(completedElectionsArray);
-    
+
     renderTurnoutDonut(stats.highest, 'highest-turnout-chart', '#22c55e');
     renderTurnoutDonut(stats.lowest, 'lowest-turnout-chart', '#ef4444');
     renderTurnoutDonut(stats.average, 'average-turnout-chart', '#2563eb');
-    
+
     // Update the percentage text elements
     document.querySelector('#highest-turnout-text').textContent = `${stats.highest}%`;
     document.querySelector('#lowest-turnout-text').textContent = `${stats.lowest}%`;

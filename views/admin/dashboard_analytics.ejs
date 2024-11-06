@@ -40,57 +40,56 @@
       </div> -->
     </header>
 
-    <div class="relative h-screen p-2 mt-3 overflow-x-hidden overflow-y-auto bg-blue-100 rounded-lg lg:gap-3 lg:px-5 lg:p-5 lg:mb-2">
+    <div class="relative h-screen p-2 mt-3 overflow-x-hidden overflow-y-auto bg-blue-100 rounded-lg lg:px-5 lg:p-5 lg:mb-2">
 
-      <div class="rounded-md shadow-sm">
-        <h2 class="p-3 text-xl font-semibold lg:text-2xl">Voter Engagement Trends</h2>
 
-        <div class="bg-white p-4">
+      <div class="flex">
+        <div class="w-full lg:w-[85%] lg:float-left bg-white rounded-md px-4 lg:mr-4">
+          <h2 class="p-3 text-xl font-semibold lg:text-2xl">Voter Engagement Trends</h2>
           <!-- Chart Container -->
-          <div class="w-full lg:w-[80%] lg:float-left">
-            <canvas id="voter-engagement-trends" class="min-w-full lg:min-h-[400px]"></canvas>
-          </div>
-          
-          <!-- Stats Container -->
-          <div class="flex flex-row mt-4 lg:mt-0 lg:float-right lg:w-[20%] lg:flex-col lg:space-y-4">
-            <div class="flex-1 p-3 mx-2 border rounded-lg">
-              <p class="text-sm text-gray-600 mb-2">Highest Turnout</p>
-              <div class="relative w-20 h-20 mx-auto">
-                <canvas id="highest-turnout-chart"></canvas>
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span id="highest-turnout-text" class="text-lg font-semibold text-green-500"></span>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex-1 p-3 mx-2 border rounded-lg">
-              <p class="text-sm text-gray-600 mb-2">Lowest Turnout</p>
-              <div class="relative w-20 h-20 mx-auto">
-                <canvas id="lowest-turnout-chart"></canvas>
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span id="lowest-turnout-text" class="text-lg font-semibold text-red-500"></span>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex-1 p-3 mx-2 border rounded-lg">
-              <p class="text-sm text-gray-600 mb-2">Average Turnout</p>
-              <div class="relative w-20 h-20 mx-auto">
-                <canvas id="average-turnout-chart"></canvas>
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <span id="average-turnout-text" class="text-lg font-semibold text-blue-600"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Clear float -->
-          <div class="clear-both"></div>
+          <canvas id="voter-engagement-trends" class="min-w-full lg:max-h-[370px]"></canvas>
         </div>
+
+        <!-- Stats Container -->
+        <div class="flex flex-row mt-4 lg:mt-0 p-2 rounded-md lg:float-right gap-2 lg:w-[15%] lg:flex-col bg-white ">
+          <div class="flex-1 p-2 mx-2 border rounded-lg">
+            <p class="mb-2 text-sm font-medium text-center text-gray-600">Highest Turnout</p>
+            <div class="relative w-20 h-20 mx-auto">
+              <canvas id="highest-turnout-chart"></canvas>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span id="highest-turnout-text" class="font-semibold text-green-500 "></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1 p-2 mx-2 border rounded-lg">
+            <p class="mb-2 text-sm font-medium text-center text-gray-600">Lowest Turnout</p>
+            <div class="relative w-20 h-20 mx-auto">
+              <canvas id="lowest-turnout-chart"></canvas>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span id="lowest-turnout-text" class="font-semibold text-red-500 "></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1 p-2 mx-2 border rounded-lg">
+            <p class="mb-2 text-sm font-medium text-center text-gray-600">Average Turnout</p>
+            <div class="relative w-20 h-20 mx-auto">
+              <canvas id="average-turnout-chart"></canvas>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span id="average-turnout-text" class="font-semibold text-blue-600 "></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Clear float -->
+        <div class="clear-both"></div>
       </div>
 
-      <div class="flex flex-col gap-5 mt-5 lg:flex-row">
-        <div class="h-64 bg-white rounded-md shadow-sm lg:w-1/2">
+      <div class="flex flex-col gap-4 mt-4 lg:flex-row">
+        <div class="pb-0 bg-white rounded-md shadow-sm min-h-fit lg:w-1/2 lg:p-2 lg:pt-0">
           <h2 class="p-3 text-xl font-semibold lg:text-2xl">Year Level Engagement</h2>
+          <canvas id="engagement-per-year-level" class="w-full h-full lg:max-h-[230px]"></canvas>
         </div>
 
         <div class="h-64 bg-white rounded-md shadow-sm lg:w-1/2">

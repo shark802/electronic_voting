@@ -296,3 +296,51 @@ export async function completedElectionsTotalVoted(req: Request, res: Response, 
 		next(error)
 	}
 }
+
+export async function yearLevelTurnoutPercentage(req: Request, res: Response, next: NextFunction) {
+	try {
+
+		type TurnoutPerYear = {
+			election_id: string;
+			total_voted: number;
+			total_voters: number;
+			year_level: number;
+		}
+
+		const sqlQuery = `
+			SELECT
+				users.year_level,
+				elections.election_id,
+				COUNT(DISTINCT voters.id_number) AS total_voters,
+				COUNT(DISTINCT CASE WHEN votes.voter_id IS NOT NULL THEN votes.voter_id END) AS total_voted
+			FROM voters
+			LEFT JOIN users ON voters.id_number = users.id_number
+			LEFT JOIN votes ON voters.id_number = votes.voter_id AND voters.election_id = votes.election_id
+			LEFT JOIN elections ON voters.election_id = elections.election_id
+			WHERE (elections.date_end < CURDATE()
+			OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
+			AND elections.deleted_at IS NULL
+			GROUP BY users.year_level, elections.election_id
+			ORDER BY elections.date_end ASC, elections.time_end ASC
+		`
+
+
+		const result = await selectQuery<TurnoutPerYear>(pool, sqlQuery);
+		const turnoutPerYearLevel = result.map(election => {
+			const turnOutPercentage = ((election.total_voted / election.total_voters) * 100).toFixed(2);
+
+			return {
+				electionId: election.election_id,
+				turnOutPercentage: turnOutPercentage,
+				yearLevel: election.year_level,
+				totalVoter: election.total_voters,
+				totalVoted: election.total_voted,
+			}
+		});
+
+		return res.status(200).json({ turnoutPerYearLevel })
+
+	} catch (error) {
+		next(error);
+	}
+}
