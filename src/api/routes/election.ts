@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { closeElectionDashboard, completedElectionsTotalVoted, createElection, deleteElection, findElectionByID, getElectionPopulation, getNumberOfVoted, getTotalPopulationByProgram, getTotalVotedInElectionByProgram, updateElection, updateElectionStatus, yearLevelTurnoutPercentage } from "../controllers/election";
+import { closeElectionDashboard, completedElectionsTotalVoted, createElection, deleteElection, departmentTurnoutPercentage, findElectionByID, getElectionPopulation, getNumberOfVoted, getTotalPopulationByProgram, getTotalVotedInElectionByProgram, updateElection, updateElectionStatus, yearLevelTurnoutPercentage } from "../controllers/election";
 
 const router = Router();
 
@@ -21,5 +21,6 @@ router.get('/program-population', getTotalPopulationByProgram);
 router.get('/program-voted', getTotalVotedInElectionByProgram);
 router.get('/election/complete/total-voted', completedElectionsTotalVoted);
 router.get('/election/turn-out/year-level', yearLevelTurnoutPercentage);
+router.get('/election/turn-out/department', departmentTurnoutPercentage);
 
 export default router;

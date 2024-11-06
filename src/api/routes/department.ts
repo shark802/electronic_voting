@@ -19,5 +19,6 @@ router.get('/departments', getAllDepartments)
 router.get('/program', getDepartmentPrograms)
 router.get('/section', getProgramSection)
 router.get('/year-level', getAllYearLevel)
+router.get('/department/turnout', getAllYearLevel)
 
 export default router;

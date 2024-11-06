@@ -317,14 +317,12 @@ export async function yearLevelTurnoutPercentage(req: Request, res: Response, ne
 			LEFT JOIN users ON voters.id_number = users.id_number
 			LEFT JOIN votes ON voters.id_number = votes.voter_id AND voters.election_id = votes.election_id
 			LEFT JOIN elections ON voters.election_id = elections.election_id
-			WHERE (elections.date_end < CURDATE()
+			WHERE (elections.date_end < CURDATE() 
 			OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
 			AND elections.deleted_at IS NULL
 			GROUP BY users.year_level, elections.election_id
 			ORDER BY elections.date_end ASC, elections.time_end ASC
 		`
-
-
 		const result = await selectQuery<TurnoutPerYear>(pool, sqlQuery);
 		const turnoutPerYearLevel = result.map(election => {
 			const turnOutPercentage = ((election.total_voted / election.total_voters) * 100).toFixed(2);
@@ -342,5 +340,54 @@ export async function yearLevelTurnoutPercentage(req: Request, res: Response, ne
 
 	} catch (error) {
 		next(error);
+	}
+}
+
+export async function departmentTurnoutPercentage(req: Request, res: Response, next: NextFunction) {
+	try {
+
+		type TurnoutPerYear = {
+			election_id: string;
+			total_voted: number;
+			total_voters: number;
+			department_code: string;
+		}
+
+		const sqlQuery = `
+			SELECT
+				departments.department_code,
+				elections.election_id,
+				COUNT(DISTINCT voters.id_number) AS total_voters,
+				COUNT(DISTINCT CASE WHEN votes.voter_id IS NOT NULL AND votes.election_id = elections.election_id THEN votes.voter_id END) AS total_voted
+			FROM voters
+			LEFT JOIN users ON voters.id_number = users.id_number
+			LEFT JOIN votes ON votes.voter_id = users.id_number AND votes.election_id = voters.election_id
+			LEFT JOIN programs ON programs.program_code = users.course
+			LEFT JOIN departments ON programs.department = departments.department_id
+			LEFT JOIN elections ON elections.election_id = voters.election_id
+			WHERE (elections.date_end < CURDATE()
+				OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
+				AND elections.deleted_at IS NULL
+				AND programs.deleted_at IS NULL
+			GROUP BY elections.election_id, departments.department_code
+			ORDER BY elections.date_end ASC, elections.time_end ASC;
+			`
+		const result = await selectQuery<TurnoutPerYear>(pool, sqlQuery);
+		const turnoutPerDepartment = result.map(election => {
+			const turnOutPercentage = ((election.total_voted / election.total_voters) * 100).toFixed(2);
+
+			return {
+				electionId: election.election_id,
+				turnOutPercentage: turnOutPercentage,
+				department: election.department_code,
+				totalVoter: election.total_voters,
+				totalVoted: election.total_voted,
+			}
+		});
+
+		return res.status(200).json({ turnoutPerDepartment })
+
+	} catch (error) {
+		next(error)
 	}
 }

@@ -1,60 +1,60 @@
 import { getAllCompleteElections } from "/javascript/modules/election_analytics/voter_engagement_trends.js"
 
-async function fetchElectionTurnoutPerYearLevel() {
+async function fetchElectionTurnoutPerDepartment() {
     try {
-        const response = await fetch('/api/election/turn-out/year-level');
+        const response = await fetch('/api/election/turn-out/department');
         const responseObject = await response.json();
 
         if (!response.ok) throw new Error(responseObject?.message || 'Unexpected server error!');
-        return responseObject?.turnoutPerYearLevel
+        return responseObject?.turnoutPerDepartment
     } catch (error) {
         console.error(error);
     }
 }
 
-async function fetchAllYearLevel() {
+async function fetchAllDepartment() {
     try {
-        const response = await fetch('/api/year-level');
+        const response = await fetch('/api/departments');
         const responseObject = await response.json();
 
         if (!response.ok) throw new Error(responseObject?.message || 'Unexpected server error!');
-        return responseObject?.yearLevels
+        return responseObject?.departments
     } catch (error) {
         console.error(error);
     }
 }
 
-const turnoutPerYearLevel = await fetchElectionTurnoutPerYearLevel();
-const yearLevel = await fetchAllYearLevel();
+const turnoutPerDepartment = await fetchElectionTurnoutPerDepartment();
+const departments = await fetchAllDepartment();
 let completeElections = await getAllCompleteElections();
+
 completeElections.reverse()
 const electionIds = completeElections.map(election => election.election_id);
 
-function getTuroutPerentagePerYearLevel(electionIdArray, turnoutPerYearLevel, yearLevel) {
-    return yearLevel.map(year => {
+function getTuroutPerentagePerDepartment(electionIdArray, turnoutPerDepartment, departments) {
+    return departments.map(department => {
+        const departmentCode = department.department_code
 
-        // const yearLevelTurnouts = turnoutPerYearLevel
-        //     .filter(data => electionIdArray.includes(data.electionId) && data.yearLevel === year)
+        // const departmentsTurnouts = turnoutPerDepartment
+        //     .filter(data => electionIdArray.includes(data.electionId) && data.department === department.department_code)
         //     .map(data => data.turnOutPercentage)
 
-
-        const yearLevelTurnouts = electionIdArray.map(electionId => {
-            const data = turnoutPerYearLevel.find(data => data.electionId === electionId && data.yearLevel === year);
+        const departmentsTurnouts = electionIdArray.map(electionId => {
+            const data = turnoutPerDepartment.find(data => data.electionId === electionId && data.department === departmentCode);
             return data && data.turnOutPercentage !== undefined ? data.turnOutPercentage : null;
         });
-
-        return { year, yearLevelTurnouts }
+        return { departmentCode, departmentsTurnouts }
     })
 }
 
-const chartLineColor = ['#22c55e', '#eab308', '#ef4444', '#3b82f6', '#8b5cf6', '#0891b2']
+const chartLineColor = ['#eab308', '#ef4444', '#3b82f6', '#22c55e', '#8b5cf6', '#0891b2']
 
-function prepareChartData(yearLevel, preparedData) {
-    return yearLevel.map((year, index) => {
-        const turnoutData = preparedData.find(data => data.year === year)?.yearLevelTurnouts;
+function prepareChartData(departments, preparedData) {
+    return departments.map((department, index) => {
+        const turnoutData = preparedData.find(data => data.departmentCode === department.department_code)?.departmentsTurnouts;
 
         return {
-            label: year,
+            label: department.department_code,
             data: turnoutData,
             borderColor: chartLineColor[index],
             borderWidth: 2,
@@ -65,10 +65,10 @@ function prepareChartData(yearLevel, preparedData) {
         }
     })
 }
-const preparedData = getTuroutPerentagePerYearLevel(electionIds, turnoutPerYearLevel, yearLevel);
-const chartData = prepareChartData(yearLevel, preparedData);
+const preparedData = getTuroutPerentagePerDepartment(electionIds, turnoutPerDepartment, departments);
+const chartData = prepareChartData(departments, preparedData);
 
-export function renderYearLevelVoteTrends(chartId, completedElections, chartData) {
+export function renderDepartmentsVoteTrends(chartId, completedElections, chartData) {
     const canvas = document.querySelector(`#${chartId}`);
 
     if (!canvas) return;
@@ -106,15 +106,15 @@ export function renderYearLevelVoteTrends(chartId, completedElections, chartData
                 tooltip: {
                     callbacks: {
                         label: function (context) {
-                            const yearLevel = context.dataset.label;
+                            const department = context.dataset.label;
                             const electionId = completedElections[context.dataIndex].election_id;
-                            const yearLevelElectionTurnout = turnoutPerYearLevel.find(data => data.electionId === electionId && data.yearLevel === yearLevel)
+                            const departmentElectionTurnout = turnoutPerDepartment.find(data => data.electionId === electionId && data.department === department)
                             const turnoutPercentage = context.raw;
 
                             return [
-                                `Year Level: ${yearLevel}`,
+                                `Department: ${department}`,
                                 `Turnout Percentage: ${turnoutPercentage}%`,
-                                `Voted: ${yearLevelElectionTurnout.totalVoted}/${yearLevelElectionTurnout.totalVoter}`,
+                                `Voted: ${departmentElectionTurnout.totalVoted}/${departmentElectionTurnout.totalVoter}`,
                             ]
 
                         }
@@ -127,5 +127,6 @@ export function renderYearLevelVoteTrends(chartId, completedElections, chartData
         }
     })
 }
-const canvasId = 'engagement-per-year-level';
-renderYearLevelVoteTrends(canvasId, completeElections, chartData)
+
+const canvasId = 'engagement-per-department';
+renderDepartmentsVoteTrends(canvasId, completeElections, chartData)

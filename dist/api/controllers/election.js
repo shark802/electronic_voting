@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.yearLevelTurnoutPercentage = exports.completedElectionsTotalVoted = exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
+exports.departmentTurnoutPercentage = exports.yearLevelTurnoutPercentage = exports.completedElectionsTotalVoted = exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
@@ -299,7 +299,7 @@ function yearLevelTurnoutPercentage(req, res, next) {
 			LEFT JOIN users ON voters.id_number = users.id_number
 			LEFT JOIN votes ON voters.id_number = votes.voter_id AND voters.election_id = votes.election_id
 			LEFT JOIN elections ON voters.election_id = elections.election_id
-			WHERE (elections.date_end < CURDATE()
+			WHERE (elections.date_end < CURDATE() 
 			OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
 			AND elections.deleted_at IS NULL
 			GROUP BY users.year_level, elections.election_id
@@ -324,3 +324,44 @@ function yearLevelTurnoutPercentage(req, res, next) {
     });
 }
 exports.yearLevelTurnoutPercentage = yearLevelTurnoutPercentage;
+function departmentTurnoutPercentage(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sqlQuery = `
+			SELECT
+				departments.department_code,
+				elections.election_id,
+				COUNT(DISTINCT voters.id_number) AS total_voters,
+				COUNT(DISTINCT CASE WHEN votes.voter_id IS NOT NULL AND votes.election_id = elections.election_id THEN votes.voter_id END) AS total_voted
+			FROM voters
+			LEFT JOIN users ON voters.id_number = users.id_number
+			LEFT JOIN votes ON votes.voter_id = users.id_number AND votes.election_id = voters.election_id
+			LEFT JOIN programs ON programs.program_code = users.course
+			LEFT JOIN departments ON programs.department = departments.department_id
+			LEFT JOIN elections ON elections.election_id = voters.election_id
+			WHERE (elections.date_end < CURDATE()
+				OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
+				AND elections.deleted_at IS NULL
+				AND programs.deleted_at IS NULL
+			GROUP BY elections.election_id, departments.department_code
+			ORDER BY elections.date_end ASC, elections.time_end ASC;
+			`;
+            const result = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery);
+            const turnoutPerDepartment = result.map(election => {
+                const turnOutPercentage = ((election.total_voted / election.total_voters) * 100).toFixed(2);
+                return {
+                    electionId: election.election_id,
+                    turnOutPercentage: turnOutPercentage,
+                    department: election.department_code,
+                    totalVoter: election.total_voters,
+                    totalVoted: election.total_voted,
+                };
+            });
+            return res.status(200).json({ turnoutPerDepartment });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.departmentTurnoutPercentage = departmentTurnoutPercentage;
