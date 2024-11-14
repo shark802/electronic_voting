@@ -90,6 +90,7 @@ export function renderDepartmentsVoteTrends(chartId, completedElections, chartDa
                     beginAtZero: true,
                     // max: 100,
                     ticks: {
+                        // stepSize: 20,
                         callback: function (value) {
                             return value + '%';
                         }
@@ -122,6 +123,7 @@ export function renderDepartmentsVoteTrends(chartId, completedElections, chartDa
                     bodyFont: {
                         size: 16,
                     },
+                    padding: 10,
                 },
             }
         }

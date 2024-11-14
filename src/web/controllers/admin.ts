@@ -178,30 +178,37 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
 // Voter
 export async function manageVoter(req: Request, res: Response, next: NextFunction) {
     try {
-        const { election, user_id } = req.query;
+        const { election, user_id, page } = req.query;
 
-        let votedUsers: unknown[];
+        let votedUsers: unknown[] = [];
 
+        // Fetch all voted users based on filters
         if (election && user_id) {
-
             votedUsers = await findOneUserVotedInElection(election as string, user_id as string);
         } else if (election && !user_id) {
-
             votedUsers = await getAllRecentUsersVotedInElection(election as string);
         } else if (user_id && !election) {
-
             votedUsers = await getAllUserElectionParticipatedIn(user_id as string);
         } else {
-
-            votedUsers = await getAllRecentUsersVoted();
+            votedUsers = await getAllRecentUsersVoted(); // Fetch all recent voted users
         }
 
-        const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC   LIMIT 10";
+        // Pagination logic
+        const limit = 30; // Number of records per page
+        const currentPage = parseInt(page as string) || 1; // Get current page from query, default to 1
+        const totalUsers = votedUsers.length; // Total number of users fetched
+        const totalPages = Math.ceil(totalUsers / limit); // Calculate total pages
+
+        // Slice the votedUsers array to get the users for the current page
+        const startIndex = (currentPage - 1) * limit;
+        const paginatedUsers = votedUsers.slice(startIndex, startIndex + limit);
+
+        const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC LIMIT 10";
         const availableElections = await selectQuery(pool, availableElectionQuery);
 
-        res.render("admin/voter_manage", { votedUsers, availableElections })
+        res.render("admin/voter_manage", { votedUsers: paginatedUsers, totalUsers, election, user_id, availableElections, currentPage, totalPages, limit });
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 

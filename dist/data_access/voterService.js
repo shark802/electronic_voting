@@ -38,8 +38,7 @@ function getAllRecentUsersVoted() {
                     JOIN elections e ON v.election_id = e.election_id
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
-                ORDER BY time_casted DESC
-                LIMIT 50;`;
+                ORDER BY time_casted DESC;`;
         return yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedQuery);
     });
 }
@@ -56,8 +55,7 @@ function getAllRecentUsersVotedInElection(electionId) {
                     WHERE v.election_id = ?
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
-                ORDER BY time_casted DESC
-                LIMIT 50;`;
+                ORDER BY time_casted DESC;`;
         return yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedByElectionQuery, [electionId]);
     });
 }
@@ -74,8 +72,7 @@ function findOneUserVotedInElection(electionId, userId) {
                     WHERE v.election_id = ? AND u.id_number = ?
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
-                ORDER BY time_casted DESC
-                LIMIT 50;`;
+                ORDER BY time_casted DESC;`;
         return yield (0, query_1.selectQuery)(database_1.pool, findOneUserVotedInElectionQuery, [electionId, userId]);
     });
 }
@@ -92,8 +89,7 @@ function getAllUserElectionParticipatedIn(userId) {
                     WHERE u.id_number = ?
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
-                ORDER BY time_casted DESC
-                LIMIT 50;`;
+                ORDER BY time_casted DESC;`;
         return yield (0, query_1.selectQuery)(database_1.pool, getAllUserElectionParticipatedQuery, [userId]);
     });
 }
@@ -123,4 +119,3 @@ function getAllNotVotedInElection(electionId) {
     });
 }
 exports.getAllNotVotedInElection = getAllNotVotedInElection;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidm90ZXJTZXJ2aWNlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL2RhdGFfYWNjZXNzL3ZvdGVyU2VydmljZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7QUFDQSxpREFBMEM7QUFDMUMsbUNBQXNDO0FBSXRDLFNBQXNCLHFCQUFxQixDQUFDLFVBQWtCOztRQUMxRCxNQUFNLG1CQUFtQixHQUFHOzs7Ozs7O1NBT3ZCLENBQUM7UUFHTixNQUFNLE1BQU0sR0FBRyxNQUFNLElBQUEsbUJBQVcsRUFBWSxlQUFJLEVBQUUsbUJBQW1CLEVBQUUsQ0FBQyxVQUFVLENBQUMsQ0FBQyxDQUFDO1FBRXJGLE9BQU8sTUFBTSxDQUFDO0lBQ2xCLENBQUM7Q0FBQTtBQWRELHNEQWNDO0FBRUQsb0RBQW9EO0FBQ3BELFNBQXNCLHNCQUFzQjs7UUFDeEMsTUFBTSxtQkFBbUIsR0FBRzs7Ozs7Ozs7OzBCQVNOLENBQUE7UUFFdEIsT0FBTyxNQUFNLElBQUEsbUJBQVcsRUFBQyxlQUFJLEVBQUUsbUJBQW1CLENBQUMsQ0FBQztJQUN4RCxDQUFDO0NBQUE7QUFiRCx3REFhQztBQUVELHdEQUF3RDtBQUN4RCxTQUFzQixnQ0FBZ0MsQ0FBQyxVQUFrQjs7UUFDckUsTUFBTSw2QkFBNkIsR0FBRzs7Ozs7Ozs7OzswQkFVaEIsQ0FBQTtRQUV0QixPQUFPLE1BQU0sSUFBQSxtQkFBVyxFQUFDLGVBQUksRUFBRSw2QkFBNkIsRUFBRSxDQUFDLFVBQVUsQ0FBQyxDQUFDLENBQUM7SUFDaEYsQ0FBQztDQUFBO0FBZEQsNEVBY0M7QUFFRCx3RUFBd0U7QUFDeEUsU0FBc0IsMEJBQTBCLENBQUMsVUFBa0IsRUFBRSxNQUFjOztRQUMvRSxNQUFNLCtCQUErQixHQUFHOzs7Ozs7Ozs7OzBCQVVsQixDQUFBO1FBRXRCLE9BQU8sTUFBTSxJQUFBLG1CQUFXLEVBQUMsZUFBSSxFQUFFLCtCQUErQixFQUFFLENBQUMsVUFBVSxFQUFFLE1BQU0sQ0FBQyxDQUFDLENBQUE7SUFDekYsQ0FBQztDQUFBO0FBZEQsZ0VBY0M7QUFFRCx5REFBeUQ7QUFDekQsU0FBc0IsZ0NBQWdDLENBQUMsTUFBYzs7UUFDakUsTUFBTSxtQ0FBbUMsR0FBRzs7Ozs7Ozs7OzswQkFVdEIsQ0FBQTtRQUV0QixPQUFPLE1BQU0sSUFBQSxtQkFBVyxFQUFDLGVBQUksRUFBRSxtQ0FBbUMsRUFBRSxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUE7SUFDakYsQ0FBQztDQUFBO0FBZEQsNEVBY0M7QUFFRCxxQ0FBcUM7QUFDckMsU0FBc0IsaUNBQWlDOztRQUNuRCxNQUFNLFdBQVcsR0FBRyxJQUFJLElBQUksRUFBRSxDQUFDLFdBQVcsRUFBRSxDQUFDO1FBTTdDLE1BQU0sQ0FBQyxlQUFlLENBQUMsR0FBRyxNQUFNLElBQUEsbUJBQVcsRUFBa0IsZUFBSSxFQUFFLHNFQUFzRSxFQUFFLENBQUMsV0FBVyxDQUFDLENBQUMsQ0FBQztRQUMxSixPQUFPLGVBQWUsQ0FBQyxnQkFBZ0IsQ0FBQztJQUU1QyxDQUFDO0NBQUE7QUFWRCw4RUFVQztBQUVELG1EQUFtRDtBQUNuRCxTQUFzQix3QkFBd0IsQ0FBQyxVQUFrQjs7UUFFN0QsTUFBTSxRQUFRLEdBQUc7Ozs7Ozs7S0FPaEIsQ0FBQTtRQUdELE1BQU0sTUFBTSxHQUFHLE1BQU0sSUFBQSxtQkFBVyxFQUFZLGVBQUksRUFBRSxRQUFRLEVBQUUsQ0FBQyxVQUFVLENBQUMsQ0FBQyxDQUFDO1FBRTFFLE9BQU8sTUFBTSxDQUFDO0lBQ2xCLENBQUM7Q0FBQTtBQWZELDREQWVDIn0=

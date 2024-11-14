@@ -32,8 +32,6 @@ numberOfNotVoted.textContent = electionTotalNotVoted;
 totalNotVotedPercentage.textContent = `(${electionTotalNotVotedPercentage}%)`;
 
 
-
-
 async function fetchProgramTotalVoteCount(urlParams) {
     try {
         const response = await fetch(`/api/program-voted?${urlParams}`);
@@ -57,9 +55,6 @@ document.querySelectorAll('#program').forEach(department => {
     const totalVoter = Number(departmentsTotalPopulation) || 0; // in case the population is not covertable to number like value is 'N/A', use default value 0
     const totalVoted = programTotalVoteCount[departmentCode] || 0; // in case the total number of votes is not found, use default value 0
     const totalNotVoted = totalVoter - totalVoted;
-
-    console.log(programTotalVoteCount);
-    console.log(totalVoted, departmentCode, programTotalVoteCount[departmentCode]);
 
     department.querySelector(`#departmentTotalVotes`).textContent = totalVoted; // display the total number of votes for each department
     department.querySelector(`#departmentNumberOfNotVoted`).textContent = totalNotVoted; // display the total number of not voted

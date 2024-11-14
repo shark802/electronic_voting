@@ -90,6 +90,7 @@ export function renderYearLevelVoteTrends(chartId, completedElections, chartData
                     beginAtZero: true,
                     // max: 100,
                     ticks: {
+                        // stepSize: 20,
                         callback: function (value) {
                             return value + '%';
                         }
@@ -122,6 +123,7 @@ export function renderYearLevelVoteTrends(chartId, completedElections, chartData
                     bodyFont: {
                         size: 16,
                     },
+                    padding: 10,
                 },
             }
         }

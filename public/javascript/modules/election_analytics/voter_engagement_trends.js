@@ -42,8 +42,9 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
                 datasets: [{
                     label: 'Past Elections Voter Engagement Trends',
                     data: datasets,
+                    borderWidth: 2,
                     borderColor: '#3b82f6',
-                    backgroundColor: '#60a5fa',
+                    backgroundColor: '#93c5fd',
                     fill: true,
                     tension: 0.4,
                 }]
@@ -87,6 +88,7 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
                         bodyFont: {
                             size: 16,
                         },
+                        padding: 10,
                     }
                 }
             }

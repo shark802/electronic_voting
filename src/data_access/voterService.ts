@@ -30,8 +30,7 @@ export async function getAllRecentUsersVoted() {
                     JOIN elections e ON v.election_id = e.election_id
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
-                ORDER BY time_casted DESC
-                LIMIT 50;`
+                ORDER BY time_casted DESC;`
 
     return await selectQuery(pool, selectAllVotedQuery);
 }
@@ -47,8 +46,7 @@ export async function getAllRecentUsersVotedInElection(electionId: string) {
                     WHERE v.election_id = ?
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
-                ORDER BY time_casted DESC
-                LIMIT 50;`
+                ORDER BY time_casted DESC;`
 
     return await selectQuery(pool, selectAllVotedByElectionQuery, [electionId]);
 }
@@ -64,8 +62,7 @@ export async function findOneUserVotedInElection(electionId: string, userId: str
                     WHERE v.election_id = ? AND u.id_number = ?
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
-                ORDER BY time_casted DESC
-                LIMIT 50;`
+                ORDER BY time_casted DESC;`
 
     return await selectQuery(pool, findOneUserVotedInElectionQuery, [electionId, userId])
 }
@@ -81,8 +78,7 @@ export async function getAllUserElectionParticipatedIn(userId: string) {
                     WHERE u.id_number = ?
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
-                ORDER BY time_casted DESC
-                LIMIT 50;`
+                ORDER BY time_casted DESC;`
 
     return await selectQuery(pool, getAllUserElectionParticipatedQuery, [userId])
 }
