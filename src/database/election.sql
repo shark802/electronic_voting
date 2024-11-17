@@ -164,3 +164,11 @@ CREATE TABLE positions (
    `deleted_at` TIMESTAMP NULL,
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
+CREATE TABLE users_import_records (
+   `id` VARCHAR(100) NOT NULL PRIMARY KEY,
+   `import_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   `time_taken` VARCHAR(50),
+   `import_size` INT,
+   `status` VARCHAR(50),
+) ENGINE=InnoDB;

@@ -166,7 +166,6 @@ function manageCandidate(req, res, next) {
             const positions = candidatePositions.map(position => position.position);
             const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
             const elections = yield (0, query_1.selectQuery)(database_1.pool, selectElectioQuery);
-            // const elections: Election[] = []
             res.render("admin/candidate_manage", { elections, positions });
         }
         catch (error) {
@@ -209,17 +208,16 @@ function manageVoter(req, res, next) {
                 votedUsers = yield (0, voterService_1.getAllUserElectionParticipatedIn)(user_id);
             }
             else {
-                votedUsers = yield (0, voterService_1.getAllRecentUsersVoted)(); // Fetch all recent voted users
+                votedUsers = yield (0, voterService_1.getAllRecentUsersVoted)();
             }
             // Pagination logic
-            const limit = 30; // Number of records per page
-            const currentPage = parseInt(page) || 1; // Get current page from query, default to 1
-            const totalUsers = votedUsers.length; // Total number of users fetched
-            const totalPages = Math.ceil(totalUsers / limit); // Calculate total pages
-            // Slice the votedUsers array to get the users for the current page
+            const limit = 30;
+            const currentPage = parseInt(page) || 1;
+            const totalUsers = votedUsers.length;
+            const totalPages = Math.ceil(totalUsers / limit);
             const startIndex = (currentPage - 1) * limit;
             const paginatedUsers = votedUsers.slice(startIndex, startIndex + limit);
-            const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC LIMIT 10";
+            const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
             const availableElections = yield (0, query_1.selectQuery)(database_1.pool, availableElectionQuery);
             res.render("admin/voter_manage", { votedUsers: paginatedUsers, totalUsers, election, user_id, availableElections, currentPage, totalPages, limit });
         }

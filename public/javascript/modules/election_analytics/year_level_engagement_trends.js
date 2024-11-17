@@ -53,8 +53,25 @@ function prepareChartData(yearLevel, preparedData) {
     return yearLevel.map((year, index) => {
         const turnoutData = preparedData.find(data => data.year === year)?.yearLevelTurnouts;
 
+        let yearLvl = ''
+        switch (year) {
+            case 1:
+                yearLvl = '1st Year'
+                break;
+            case 2:
+                yearLvl = '2nd Year'
+                break;
+            case 3:
+                yearLvl = '3rd Year'
+                break;
+
+            default:
+                yearLvl = String(year) + 'th Year'
+                break;
+        }
+
         return {
-            label: year,
+            label: yearLvl,
             data: turnoutData,
             borderColor: chartLineColor[index],
             borderWidth: 2,
@@ -107,7 +124,9 @@ export function renderYearLevelVoteTrends(chartId, completedElections, chartData
                 tooltip: {
                     callbacks: {
                         label: function (context) {
-                            const yearLevel = context.dataset.label;
+                            let yearLevel = context.dataset.label;
+                            yearLevel = Number(yearLevel[0])
+
                             const electionId = completedElections[context.dataIndex].election_id;
                             const yearLevelElectionTurnout = turnoutPerYearLevel.find(data => data.electionId === electionId && data.yearLevel === yearLevel)
                             const turnoutPercentage = context.raw;
@@ -117,7 +136,6 @@ export function renderYearLevelVoteTrends(chartId, completedElections, chartData
                                 `Turnout Percentage: ${turnoutPercentage}%`,
                                 `Voted: ${yearLevelElectionTurnout.totalVoted}/${yearLevelElectionTurnout.totalVoter}`,
                             ]
-
                         }
                     },
                     bodyFont: {

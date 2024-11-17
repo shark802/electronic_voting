@@ -52,7 +52,6 @@ function getDepartmentObject(req, res, next) {
             for (const department of departments) {
                 DEPARTMENT[department.department_code] = programs.filter(program => program.department === department.department_id).map(program => program.program_code);
             }
-            console.log(DEPARTMENT);
             return res.status(200).json({ DEPARTMENT });
         }
         catch (error) {
@@ -167,9 +166,7 @@ function removeProgram(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const programId = req.params.id;
-            console.log(programId);
             const sqlRemoveProgram = yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE programs SET deleted_at = ? WHERE program_id = ?', [new Date(), programId]);
-            console.log(sqlRemoveProgram);
             if (sqlRemoveProgram.affectedRows === 0)
                 throw new customErrors_1.NotFoundError(`Program ${programId} not found`);
             return res.status(200).json({ message: "Program removed successfully" });

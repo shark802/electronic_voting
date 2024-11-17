@@ -25,7 +25,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
-      <h1 class="font-sans text-2xl font-bold text-white lg:text-3xl">Election Analytics</h1>
+      <h1 class="font-sans text-2xl font-bold text-white lg:text-3xl">Past Election Analytics</h1>
       <!-- <div class="flex items-center space-x-2">
         <button id="refresh-data" class="p-2 text-white transition-colors duration-200 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50" aria-label="Refresh data">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -44,7 +44,7 @@
 
       <div class="flex flex-col lg:flex-row">
         <div class="w-full lg:w-[85%] lg:float-left bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 px-2 lg:mr-2">
-          <h2 class="p-3 text-xl font-bold text-gray-800 border-b border-gray-100 lg:text-2xl">Voter Engagement Trends</h2>
+          <h2 class="p-3 text-xl font-semibold text-gray-800 border-b border-gray-100 lg:text-2xl">Voter Engagement Trends</h2>
           <!-- Chart Container -->
           <canvas id="voter-engagement-trends" class="min-w-full lg:max-h-[360px] mb-1"></canvas>
         </div>
@@ -86,12 +86,12 @@
 
       <div class="flex flex-col gap-4 mt-4 lg:flex-row">
         <div class="pb-0 transition-shadow duration-300 bg-white shadow-sm rounded-xl hover:shadow-lg min-h-fit lg:w-1/2 lg:p-2 lg:pt-0">
-          <h2 class="p-3 text-xl font-bold text-gray-800 border-b border-gray-100 lg:text-2xl">Year Level Engagement</h2>
+          <h2 class="p-3 text-xl font-semibold text-gray-800 border-b border-gray-100 lg:text-2xl">Past Engagement Per Year Level</h2>
           <canvas id="engagement-per-year-level" class="w-full h-full lg:max-h-[230px]"></canvas>
         </div>
 
         <div class="pb-0 transition-shadow duration-300 bg-white shadow-md rounded-xl hover:shadow-lg min-h-fit lg:w-1/2 lg:p-2 lg:pt-0">
-          <h2 class="p-3 text-xl font-bold text-gray-800 border-b border-gray-100 lg:text-2xl">Departments Engagement</h2>
+          <h2 class="p-3 text-xl font-semibold text-gray-800 border-b border-gray-100 lg:text-2xl">Past Engagement Per Department</h2>
           <canvas id="engagement-per-department" class="w-full h-full lg:max-h-[230px]"></canvas>
         </div>
       </div>

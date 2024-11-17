@@ -13,13 +13,16 @@ exports.importUsersWorker = void 0;
 // importUsersWorker.ts
 const worker_threads_1 = require("worker_threads");
 const userService_1 = require("../../data_access/userService");
-function importUsersWorker(csvUsersData) {
+function importUsersWorker(csvUsersData, filename) {
     return __awaiter(this, void 0, void 0, function* () {
         const BATCH_SIZE = 100;
+        const importSize = csvUsersData.length;
         let userBatches = [];
         for (let i = 0; i < csvUsersData.length; i += BATCH_SIZE) {
             userBatches.push(csvUsersData.slice(i, i + BATCH_SIZE));
         }
+        console.log(`Importing ${filename}`);
+        const startTime = Date.now();
         for (let i = 0; i < userBatches.length; i++) {
             const userBatch = userBatches[i];
             try {
@@ -33,11 +36,17 @@ function importUsersWorker(csvUsersData) {
                 console.error(`Error inserting batch ${i + 1}:`, error);
             }
         }
-        return csvUsersData.length;
+        const endTime = Date.now();
+        const importTimeInMinutes = `${((endTime - startTime) / (1000 * 60)).toFixed(2)} mins `;
+        console.log(`Successfully processed ${importSize} users. \n Time taken: ${importTimeInMinutes} mins.`);
+        return {
+            importSize,
+            importTimeInMinutes
+        };
     });
 }
 exports.importUsersWorker = importUsersWorker;
-worker_threads_1.parentPort === null || worker_threads_1.parentPort === void 0 ? void 0 : worker_threads_1.parentPort.on('message', (csvUsersData) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield importUsersWorker(csvUsersData);
+worker_threads_1.parentPort === null || worker_threads_1.parentPort === void 0 ? void 0 : worker_threads_1.parentPort.on('message', (_a) => __awaiter(void 0, [_a], void 0, function* ({ csvUsersData, filename }) {
+    const result = yield importUsersWorker(csvUsersData, filename);
     worker_threads_1.parentPort === null || worker_threads_1.parentPort === void 0 ? void 0 : worker_threads_1.parentPort.postMessage(result);
 }));

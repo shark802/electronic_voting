@@ -75,6 +75,7 @@
           <table class="w-full border-collapse min-w-[640px]">
             <thead>
               <tr class="text-white bg-blue-600">
+                <th class="px-4 py-3 text-xs font-medium text-left lg:text-sm">#</th>
                 <th class="px-4 py-3 text-xs font-medium text-left lg:text-sm">Name</th>
                 <th class="px-4 py-3 text-xs font-medium text-left lg:text-sm">ID</th>
                 <th class="px-4 py-3 text-xs font-medium text-left lg:text-sm">Course</th>
@@ -86,7 +87,7 @@
 
             <tbody>
               <% if(votedUsers && votedUsers.length > 0) {
-                   votedUsers.forEach(voter => {
+                   votedUsers.forEach((voter, index )=> {
                      let candidateAddedAt = new Date(voter.time_casted);
                      const options = {
                        year: 'numeric',
@@ -96,14 +97,33 @@
                        minute: '2-digit',
                      };
                      const timeVoted = candidateAddedAt.toLocaleString('en-US', options);
+
               %>
-              <tr class="tablerow hover:bg-gray-100">
-                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm"> <%= voter.lastname %>, <%= voter.firstname %> </td>
-                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm"> <%= voter.id_number %> </td>
-                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm"> <%= voter.course %>-<%= voter.year_level %><%= voter.section %> </td>
-                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm"> <%= voter.election_name %> </td>
-                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm"> <%= voter.election_id %> </td>
-                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm"> <%= timeVoted %> </td>
+              <tr class="transition-colors duration-200 bg-white border-b border-gray-200 hover:bg-blue-100">
+                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm">
+                  <span class=""><%= index + 1 %></span>
+                </td>
+
+                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm">
+                  <span class="font-bold"><%= voter.lastname %></span>, <%= voter.firstname %>
+                </td>
+                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="ID Number">
+                  <%= voter.id_number %>
+                </td>
+                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="Course and Year Level">
+                  <%= voter.course %> - <%= voter.year_level %> <%= voter.section %>
+                </td>
+                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="Election Name">
+                  <span class="tooltip" data-tooltip="Election Name: <%= voter.election_name %>">
+                    <%= voter.election_name %>
+                  </span>
+                </td>
+                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="Election ID">
+                  <%= voter.election_id %>
+                </td>
+                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="Time Voted">
+                  <%= timeVoted %>
+                </td>
               </tr>
               <% });
                  } %>

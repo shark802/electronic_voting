@@ -19,6 +19,7 @@ const database_1 = require("../../config/database");
 const csvtojson_1 = __importDefault(require("csvtojson"));
 const fs_1 = __importDefault(require("fs"));
 const importUserToDatabase_1 = require("../../utils/importUserToDatabase");
+const uuid_1 = require("uuid");
 function newUserFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -118,8 +119,6 @@ function updateUserFunction(req, res, next) {
             finally {
                 yield connection.release();
             }
-            // const userUpdateResult = await updateQuery(pool, 'UPDATE users SET firstname = ?, lastname = ?, course = ? WHERE id_number = ?', [firstname, lastname, course, idNumber]);
-            // const userRolesUpdateResult = await updateQuery(pool, 'UPDATE roles SET voter = ?, program_head = ?, admin = ? WHERE id_number = ?', [voter, program_head, admin, idNumber]);
         }
         catch (error) {
             next(error);
@@ -152,19 +151,12 @@ function importUsers(req, res, next) {
             if (!usersFile)
                 throw new customErrors_1.BadRequestError('Users data file is not provided');
             const userCsvFile = yield (0, csvtojson_1.default)().fromFile(usersFile.path);
-            const fileName = usersFile.filename;
+            const filename = usersFile.filename;
             fs_1.default.unlinkSync(usersFile.path);
-            console.log(`Importing ${fileName}`);
-            const startTime = Date.now();
-            const importSize = yield (0, importUserToDatabase_1.importUsersToDatabase)(userCsvFile); // This function offload the process of importing the users in database on workter threads
-            const endTime = Date.now();
-            const importTimeInMinutes = (endTime - startTime) / 1000;
-            const processResult = {
-                timeTaken: importTimeInMinutes,
-                importSize: importSize
-            };
-            console.log(`Successfully processed ${importSize} users. \n Time taken: ${importTimeInMinutes} mins.`);
-            res.status(200).json({ message: `Successfully processed ${importSize} users.` });
+            const importId = (0, uuid_1.v4)();
+            yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO users_import_records (id) VALUES(?)', [importId]);
+            (0, importUserToDatabase_1.importUsersToDatabase)(userCsvFile, importId, filename); // This function offload the process of importing the users in database on workter threads
+            res.status(200).json({ import_date: new Date().toLocaleDateString(), message: 'Importing started' });
         }
         catch (error) {
             next(error);

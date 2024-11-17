@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
-import { selectQuery } from "../../data_access/query";
+import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { User } from "../../utils/types/User";
 import { pool } from "../../config/database";
 import { ResultSetHeader } from "mysql2";
@@ -8,6 +8,7 @@ import csv from 'csvtojson';
 import fs from "fs";
 import { CsvUserObject } from "../../utils/types/CsvUserObject";
 import { importUsersToDatabase } from "../../utils/importUserToDatabase";
+import { v4 as uuidV4 } from "uuid";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -97,10 +98,6 @@ export async function updateUserFunction(req: Request, res: Response, next: Next
             await connection.release();
         }
 
-        // const userUpdateResult = await updateQuery(pool, 'UPDATE users SET firstname = ?, lastname = ?, course = ? WHERE id_number = ?', [firstname, lastname, course, idNumber]);
-        // const userRolesUpdateResult = await updateQuery(pool, 'UPDATE roles SET voter = ?, program_head = ?, admin = ? WHERE id_number = ?', [voter, program_head, admin, idNumber]);
-
-
     } catch (error) {
         next(error)
     }
@@ -123,28 +120,21 @@ export async function getUserByIdNumber(req: Request, res: Response, next: NextF
 }
 
 export async function importUsers(req: Request, res: Response, next: NextFunction) {
+
     try {
         const usersFile = req.file;
         if (!usersFile) throw new BadRequestError('Users data file is not provided');
 
         const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);
-        const fileName = usersFile.filename;
+        const filename = usersFile.filename;
         fs.unlinkSync(usersFile.path);
 
-        console.log(`Importing ${fileName}`);
-        const startTime = Date.now();
-        const importSize = await importUsersToDatabase(userCsvFile); // This function offload the process of importing the users in database on workter threads
-        const endTime = Date.now();
+        const importId = uuidV4();
+        await insertQuery(pool, 'INSERT INTO users_import_records (id) VALUES(?)', [importId])
 
-        const importTimeInMinutes = (endTime - startTime) / 1000;
+        importUsersToDatabase(userCsvFile, importId, filename); // This function offload the process of importing the users in database on workter threads
 
-        const processResult = {
-            timeTaken: importTimeInMinutes,
-            importSize: importSize
-        }
-
-        console.log(`Successfully processed ${importSize} users. \n Time taken: ${importTimeInMinutes} mins.`);
-        res.status(200).json({ message: `Successfully processed ${importSize} users.` })
+        res.status(200).json({ import_date: new Date().toLocaleDateString(), message: 'Importing started' })
 
     } catch (error) {
         next(error);

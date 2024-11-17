@@ -151,7 +151,6 @@ export async function manageCandidate(req: Request, res: Response, next: NextFun
 
         const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
-        // const elections: Election[] = []
 
         res.render("admin/candidate_manage", { elections, positions })
     } catch (error) {
@@ -190,20 +189,19 @@ export async function manageVoter(req: Request, res: Response, next: NextFunctio
         } else if (user_id && !election) {
             votedUsers = await getAllUserElectionParticipatedIn(user_id as string);
         } else {
-            votedUsers = await getAllRecentUsersVoted(); // Fetch all recent voted users
+            votedUsers = await getAllRecentUsersVoted();
         }
 
         // Pagination logic
-        const limit = 30; // Number of records per page
-        const currentPage = parseInt(page as string) || 1; // Get current page from query, default to 1
-        const totalUsers = votedUsers.length; // Total number of users fetched
-        const totalPages = Math.ceil(totalUsers / limit); // Calculate total pages
+        const limit = 30;
+        const currentPage = parseInt(page as string) || 1;
+        const totalUsers = votedUsers.length;
+        const totalPages = Math.ceil(totalUsers / limit);
 
-        // Slice the votedUsers array to get the users for the current page
         const startIndex = (currentPage - 1) * limit;
         const paginatedUsers = votedUsers.slice(startIndex, startIndex + limit);
 
-        const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC LIMIT 10";
+        const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
         const availableElections = await selectQuery(pool, availableElectionQuery);
 
         res.render("admin/voter_manage", { votedUsers: paginatedUsers, totalUsers, election, user_id, availableElections, currentPage, totalPages, limit });
