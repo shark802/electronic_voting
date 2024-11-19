@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.importUsers = exports.getUserByIdNumber = exports.updateUserFunction = exports.newUserFunction = void 0;
+exports.getAllImportUserRecords = exports.importUsers = exports.getUserByIdNumber = exports.updateUserFunction = exports.newUserFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
@@ -20,6 +20,7 @@ const csvtojson_1 = __importDefault(require("csvtojson"));
 const fs_1 = __importDefault(require("fs"));
 const importUserToDatabase_1 = require("../../utils/importUserToDatabase");
 const uuid_1 = require("uuid");
+const events_1 = require("events");
 function newUserFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -154,7 +155,7 @@ function importUsers(req, res, next) {
             const filename = usersFile.filename;
             fs_1.default.unlinkSync(usersFile.path);
             const importId = (0, uuid_1.v4)();
-            yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO users_import_records (id) VALUES(?)', [importId]);
+            yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO users_import_records (id, import_size) VALUES(?, ?)', [importId, userCsvFile.length]);
             (0, importUserToDatabase_1.importUsersToDatabase)(userCsvFile, importId, filename); // This function offload the process of importing the users in database on workter threads
             res.status(200).json({ import_date: new Date().toLocaleDateString(), message: 'Importing started' });
         }
@@ -164,3 +165,15 @@ function importUsers(req, res, next) {
     });
 }
 exports.importUsers = importUsers;
+function getAllImportUserRecords(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const import_records = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users_import_records');
+            res.status(200).json({ import_records });
+        }
+        catch (error) {
+            next(events_1.errorMonitor);
+        }
+    });
+}
+exports.getAllImportUserRecords = getAllImportUserRecords;

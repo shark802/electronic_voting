@@ -1,10 +1,14 @@
-export async function confirmAlert(title, text) {
+export async function confirmAlert(title, text, options = {}) {
+
+    const { icon = null } = options
+
     const action = Swal.fire({
         title: title,
         text: text,
         showCancelButton: true,
         confirmButtonColor: "#2060f7",
         reverseButtons: true,
+        icon: icon
     });
 
     return action;

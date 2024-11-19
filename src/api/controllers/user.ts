@@ -9,6 +9,7 @@ import fs from "fs";
 import { CsvUserObject } from "../../utils/types/CsvUserObject";
 import { importUsersToDatabase } from "../../utils/importUserToDatabase";
 import { v4 as uuidV4 } from "uuid";
+import { errorMonitor } from "events";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -130,7 +131,7 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
         fs.unlinkSync(usersFile.path);
 
         const importId = uuidV4();
-        await insertQuery(pool, 'INSERT INTO users_import_records (id) VALUES(?)', [importId])
+        await insertQuery(pool, 'INSERT INTO users_import_records (id, import_size) VALUES(?, ?)', [importId, userCsvFile.length])
 
         importUsersToDatabase(userCsvFile, importId, filename); // This function offload the process of importing the users in database on workter threads
 
@@ -138,5 +139,15 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
 
     } catch (error) {
         next(error);
+    }
+}
+
+export async function getAllImportUserRecords(req: Request, res: Response, next: NextFunction) {
+    try {
+
+        const import_records = await selectQuery(pool, 'SELECT * FROM users_import_records');
+        res.status(200).json({ import_records });
+    } catch (error) {
+        next(errorMonitor)
     }
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUserByIdNumber, importUsers, newUserFunction, updateUserFunction } from "../controllers/user";
+import { getAllImportUserRecords, getUserByIdNumber, importUsers, newUserFunction, updateUserFunction } from "../controllers/user";
 import { toUpperCase } from "../../middlewares/toUpperCase";
 import upload from "../../config/multerConfig";
 
@@ -12,5 +12,6 @@ router.route('/user/:id')
 
 router.post('/user-new', newUserFunction);
 router.post('/import-user', upload.single('userFile'), importUsers);
+router.get('/import-records', getAllImportUserRecords);
 
 export default router;

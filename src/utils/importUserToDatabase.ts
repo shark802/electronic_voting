@@ -20,7 +20,7 @@ export function importUsersToDatabase(csvUsersData: CsvUserObject[], importId: s
         worker.postMessage({ csvUsersData, filename });
 
         worker.on('message', async ({ importSize, importTimeInMinutes }) => {
-            await updateQuery(pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [importTimeInMinutes, importSize, 'Completed', importId])
+            await updateQuery(pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [importTimeInMinutes, importSize, 'Successful', importId])
 
             resolve({
                 importSize,

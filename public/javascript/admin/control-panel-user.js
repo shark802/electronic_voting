@@ -343,11 +343,16 @@ document.body.querySelector('#import-user-form').addEventListener('submit', asyn
         if (!response.ok) {
             return confirmErrorAlert(responseObject.message);
         }
-
-        return showSwalSuccessToast(responseObject.message);
+        return Swal.fire({
+            title: 'Processing your request...',
+            text: 'This might take a few moments',
+            icon: 'success',
+            confirmButtonColor: "#2060f7",
+            reverseButtons: true,
+        });
 
     } catch (error) {
         console.error(error);
 
     }
-})
+});

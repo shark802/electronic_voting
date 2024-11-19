@@ -284,7 +284,8 @@ function fetchUser(req, res, next) {
         try {
             const departmentData = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
             const programs = departmentData.map(department => department.department_code);
-            res.render("admin/control-panel-user", { programs });
+            const import_records = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users_import_records ORDER BY import_date DESC');
+            res.render("admin/control-panel-user", { programs, import_records });
         }
         catch (error) {
             next(error);

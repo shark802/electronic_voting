@@ -259,7 +259,9 @@ export async function fetchUser(req: Request, res: Response, next: NextFunction)
         const departmentData = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
         const programs = departmentData.map(department => department.department_code);
 
-        res.render("admin/control-panel-user", { programs })
+        const import_records = await selectQuery(pool, 'SELECT * FROM users_import_records ORDER BY import_date DESC');
+
+        res.render("admin/control-panel-user", { programs, import_records })
     } catch (error) {
         next(error)
     }

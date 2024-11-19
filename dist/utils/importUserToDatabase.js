@@ -32,7 +32,7 @@ function importUsersToDatabase(csvUsersData, importId, filename) {
         const worker = new worker_threads_1.Worker(path_1.default.join(__dirname, './workerFiles/importUsersWorker.js'));
         worker.postMessage({ csvUsersData, filename });
         worker.on('message', (_a) => __awaiter(this, [_a], void 0, function* ({ importSize, importTimeInMinutes }) {
-            yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [importTimeInMinutes, importSize, 'Completed', importId]);
+            yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [importTimeInMinutes, importSize, 'Successful', importId]);
             resolve({
                 importSize,
                 importTimeInMinutes,

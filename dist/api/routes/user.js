@@ -14,4 +14,5 @@ router.route('/user/:id')
     .put(user_1.updateUserFunction);
 router.post('/user-new', user_1.newUserFunction);
 router.post('/import-user', multerConfig_1.default.single('userFile'), user_1.importUsers);
+router.get('/import-records', user_1.getAllImportUserRecords);
 exports.default = router;
