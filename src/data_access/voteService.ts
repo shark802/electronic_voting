@@ -4,6 +4,7 @@ import { Vote } from '../utils/types/Votes';
 import { pool } from '../config/database';
 import { Candidate } from '../utils/types/Candidate';
 import { NotFoundError } from '../utils/customErrors';
+import { CryptoService } from '../utils/cryptoService';
 
 
 export async function checkIfUserHasVoted(userId: string, electionId: string) {
@@ -12,14 +13,19 @@ export async function checkIfUserHasVoted(userId: string, electionId: string) {
 }
 
 export async function saveVote(connection: PoolConnection, selectedCandidateObject: Pick<Candidate, 'id_number' | 'position'>[], userId: string, electionId: string) {
-    const placeholders = selectedCandidateObject.map(() => "(?, ?, ?, ?)").join(", ");
+    const placeholders = selectedCandidateObject.map(() => "(?, ?, ?, ?, ?)").join(", ");
 
     const insertParameters = selectedCandidateObject.reduce((params, candidate) => {
-        params.push(userId, candidate.id_number, candidate.position, electionId);
+        const secretKey = CryptoService.secretKey()
+        const iv = CryptoService.generateIv();
+        const bufferIv = CryptoService.stringToBuffer(iv)
+        const decryptVote = CryptoService.encrypt(candidate.id_number, secretKey, bufferIv);
+
+        params.push(userId, decryptVote, candidate.position, iv, electionId);
         return params;
     }, [] as any[]);
 
-    const prepareStatement = `INSERT INTO votes (voter_id, candidate_id, position, election_id) VALUES ${placeholders}`;
+    const prepareStatement = `INSERT INTO votes (voter_id, candidate_id, position, encryption_iv, election_id) VALUES ${placeholders}`;
 
     await connection.execute(prepareStatement, insertParameters);
     return;

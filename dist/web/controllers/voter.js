@@ -18,6 +18,7 @@ const hasUserRegisterFaceImage_1 = require("../../utils/hasUserRegisterFaceImage
 const election_1 = require("../../data_access/election");
 const customErrors_1 = require("../../utils/customErrors");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
+const cryptoService_1 = require("../../utils/cryptoService");
 function electionPage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -85,6 +86,7 @@ function renderElectionBallot(req, res, next) {
     });
 }
 exports.renderElectionBallot = renderElectionBallot;
+// TODO election result
 function renderElectionResult(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -101,7 +103,17 @@ function renderElectionResult(req, res, next) {
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
             const positionList = (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
-            const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
+            const electionResult = yield (0, election_1.getElectionResult)(electionId);
+            let candidatesVoteTally;
+            if (!electionResult) {
+                candidatesVoteTally = yield (0, election_1.generateElectionResult)(electionId);
+            }
+            else {
+                const secretKey = cryptoService_1.CryptoService.secretKey();
+                const iv = cryptoService_1.CryptoService.stringToBuffer(electionResult.encryption_iv);
+                const decryptResult = cryptoService_1.CryptoService.decrypt(electionResult.result, secretKey, iv);
+                candidatesVoteTally = JSON.parse(decryptResult);
+            }
             return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, electionInfo });
         }
         catch (error) {

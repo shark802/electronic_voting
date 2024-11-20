@@ -6,12 +6,13 @@ import { User } from "../../utils/types/User";
 import { isValidTimeToVote } from "../../utils/isValidTimeToVote";
 import { checkIfUserHasVoted } from "../../data_access/voteService";
 import { hasUserRegisterFaceImage } from "../../utils/hasUserRegisterFaceImage";
-import { getCandidatesTotalTally, getElectionInfoById } from "../../data_access/election";
+import { generateElectionResult, getCandidatesTotalTally, getElectionInfoById, getElectionResult } from "../../data_access/election";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { Position } from "../../utils/types/Positions";
 import { Department } from "../../utils/types/Department";
 import { RegisterFaces } from "../../utils/types/RegisterFaces";
+import { CryptoService } from "../../utils/cryptoService";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -81,6 +82,8 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
     }
 }
 
+
+// TODO election result
 export async function renderElectionResult(req: Request, res: Response, next: NextFunction) {
     try {
         const userId = req.session.user!.user_id;
@@ -97,7 +100,17 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
 
         const positionList = (await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
-        const candidatesVoteTally = await getCandidatesTotalTally(electionId);
+
+        const electionResult = await getElectionResult(electionId);
+        let candidatesVoteTally
+        if (!electionResult) {
+            candidatesVoteTally = await generateElectionResult(electionId)
+        } else {
+            const secretKey = CryptoService.secretKey();
+            const iv = CryptoService.stringToBuffer(electionResult.encryption_iv)
+            const decryptResult = CryptoService.decrypt(electionResult.result, secretKey, iv);
+            candidatesVoteTally = JSON.parse(decryptResult)
+        }
 
         return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, electionInfo });
     } catch (error) {

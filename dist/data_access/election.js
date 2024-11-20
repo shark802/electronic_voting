@@ -8,10 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllCompleteElection = exports.getDepartmentsTotalVotes = exports.getDepartmentsTotalPopulation = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.getElectionInfoById = void 0;
+exports.getAllCompleteElection = exports.getDepartmentsTotalVotes = exports.getDepartmentsTotalPopulation = exports.totalUserVotedPerElection = exports.getAllCandidatesInElection = exports.getCandidatesTotalTally = exports.generateElectionResult = exports.getElectionResult = exports.getElectionInfoById = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("./query");
+const worker_threads_1 = require("worker_threads");
+const path_1 = __importDefault(require("path"));
+const cryptoService_1 = require("../utils/cryptoService");
 function getElectionInfoById(electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL', [electionId]);
@@ -19,16 +25,60 @@ function getElectionInfoById(electionId) {
     });
 }
 exports.getElectionInfoById = getElectionInfoById;
+function getElectionResult(electionId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const [result] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM election_results WHERE election_id = ?', [electionId]);
+        return result ? result : null;
+    });
+}
+exports.getElectionResult = getElectionResult;
+function generateElectionResult(electionId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const votes = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM votes WHERE election_id = ?', [electionId]);
+        const secretKey = cryptoService_1.CryptoService.secretKey();
+        if (votes.length === 0) {
+            const iv = cryptoService_1.CryptoService.generateIv();
+            const encryptionIv = cryptoService_1.CryptoService.stringToBuffer(iv);
+            const dataToEncrypt = JSON.stringify(votes);
+            const encryptVoteResult = cryptoService_1.CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
+            yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO election_results (election_id, result, encryption_iv) VALUES(?, ?, ?)', [electionId, encryptVoteResult, iv]);
+            return votes;
+        }
+        else {
+            return new Promise((resolve, reject) => {
+                try {
+                    const worker = new worker_threads_1.Worker(path_1.default.join(__dirname, '../utils/workerFiles/decryptVoteWorker.js'));
+                    worker.postMessage(votes);
+                    worker.on('message', (decryptedVotes) => __awaiter(this, void 0, void 0, function* () {
+                        const candidatesData = yield getCandidatesTotalTally(electionId);
+                        const voteTally = candidatesData.map(candidate => {
+                            const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
+                            return Object.assign(Object.assign({}, candidate), { vote_count });
+                        });
+                        const iv = cryptoService_1.CryptoService.generateIv();
+                        const encryptionIv = cryptoService_1.CryptoService.stringToBuffer(iv);
+                        const dataToEncrypt = JSON.stringify(voteTally);
+                        const encryptVoteResult = cryptoService_1.CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
+                        yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO election_results (election_id, result, encryption_iv) VALUES(?, ?, ?)', [electionId, encryptVoteResult, iv]);
+                        resolve(voteTally);
+                    }));
+                }
+                catch (error) {
+                    reject(error);
+                }
+            });
+        }
+    });
+}
+exports.generateElectionResult = generateElectionResult;
 function getCandidatesTotalTally(electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const sqlQuery = `
-        SELECT c.position, c.party, c.department, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, v.election_id, COUNT(v.candidate_id) AS vote_count
+        SELECT c.position, c.party, c.department, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, c.election_id
         FROM candidates c
-        LEFT JOIN votes v ON c.id_number = v.candidate_id AND v.election_id = c.election_id
         LEFT JOIN users u ON u.id_number = c.id_number     
-        WHERE c.election_id = ? AND c.deleted IS NULL 
-        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, v.election_id, c.party, c.department
-        ORDER BY vote_count DESC;
+        WHERE c.election_id = ? AND c.deleted IS NULL
+        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, c.party, c.department;
     `;
         const candidatesVoteTally = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery, [electionId]);
         return candidatesVoteTally;

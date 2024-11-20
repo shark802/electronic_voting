@@ -4,12 +4,14 @@ import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
 import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVotedInElection, getAllUserElectionParticipatedIn } from "../../data_access/voterService";
-import { getElectionInfoById, getCandidatesTotalTally } from "../../data_access/election";
+import { getElectionInfoById, getCandidatesTotalTally, getElectionResult, generateElectionResult } from "../../data_access/election";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { Department } from "../../utils/types/Department";
 import { Position } from "../../utils/types/Positions";
 import { Program } from "../../utils/types/Program";
+import { Candidate } from "../../utils/types/Candidate";
+import { CryptoService } from "../../utils/cryptoService";
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -118,6 +120,7 @@ export async function viewElectionHistory(req: Request, res: Response, next: Nex
     }
 }
 
+// !TODO change fetch result
 export async function renderAdminElectionResult(req: Request, res: Response, next: NextFunction) {
     try {
         const electionId = req.params.id;
@@ -130,12 +133,23 @@ export async function renderAdminElectionResult(req: Request, res: Response, nex
 
         // check if the election has ended
         if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
+
         const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
         const positionList = positions.map(position => position.position);
 
         const departmentData = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
         const departments = departmentData.map(department => department.department_code);
-        const candidatesVoteTally = await getCandidatesTotalTally(electionId);
+
+        const electionResult = await getElectionResult(electionId);
+        let candidatesVoteTally
+        if (!electionResult) {
+            candidatesVoteTally = await generateElectionResult(electionId)
+        } else {
+            const secretKey = CryptoService.secretKey();
+            const iv = CryptoService.stringToBuffer(electionResult.encryption_iv)
+            const decryptResult = CryptoService.decrypt(electionResult.result, secretKey, iv)
+            candidatesVoteTally = JSON.parse(decryptResult)
+        }
 
         return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
     } catch (error) {

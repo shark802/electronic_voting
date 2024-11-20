@@ -192,6 +192,7 @@ export async function getUserCandidateData(req: Request, res: Response, next: Ne
     }
 }
 
+//! TODO dashboard vote tally
 export async function getAllcandidatesInActiveElection(req: Request, res: Response, next: NextFunction) {
     try {
         const sqlQuery = `
@@ -202,11 +203,12 @@ export async function getAllcandidatesInActiveElection(req: Request, res: Respon
             LEFT JOIN votes v ON c.id_number = v.candidate_id AND e.election_id = v.election_id
             WHERE e.deleted_at IS NULL AND e.is_close = 0 AND c.deleted IS NULL AND c.enabled = 1
             GROUP BY c.election_id, u.id_number, c.position, v.election_id, c.department
-            ORDER BY lastname;
+            ORDER BY lastname
         `
 
         const candidatesData = await selectQuery(pool, sqlQuery);
-        res.status(200).json({ candidatesData });
+
+        res.status(200).json({ candidatesData })
 
     } catch (error) {
         next(error);

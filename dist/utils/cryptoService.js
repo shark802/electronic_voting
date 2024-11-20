@@ -18,14 +18,18 @@ class CryptoService {
         decrypted += decipher.final(this.INPUT_ENCODING);
         return decrypted;
     }
+    static secretKey() {
+        const key = '65a6b1c3ba49d76236d34006db51d32a258f28026921fa87f97662737971d9f5';
+        return Buffer.from(key, 'hex');
+    }
     static generateIv() {
-        return crypto_1.default.randomBytes(16).toString('base64');
+        return crypto_1.default.randomBytes(16).toString('hex');
     }
     static stringToBuffer(data) {
-        return Buffer.from(data, 'base64');
+        return Buffer.from(data, 'hex');
     }
 }
 exports.CryptoService = CryptoService;
 CryptoService.ALGORITHM = 'aes-256-cbc';
 CryptoService.INPUT_ENCODING = 'utf8';
-CryptoService.OUTPUT_ENCODING = 'base64';
+CryptoService.OUTPUT_ENCODING = 'hex';

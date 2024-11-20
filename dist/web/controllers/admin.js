@@ -16,6 +16,7 @@ const voterService_1 = require("../../data_access/voterService");
 const election_1 = require("../../data_access/election");
 const checkElectionTimeStatus_1 = require("../../utils/checkElectionTimeStatus");
 const customErrors_1 = require("../../utils/customErrors");
+const cryptoService_1 = require("../../utils/cryptoService");
 function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -132,6 +133,7 @@ function viewElectionHistory(req, res, next) {
     });
 }
 exports.viewElectionHistory = viewElectionHistory;
+// !TODO change fetch result
 function renderAdminElectionResult(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -149,7 +151,17 @@ function renderAdminElectionResult(req, res, next) {
             const positionList = positions.map(position => position.position);
             const departmentData = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
             const departments = departmentData.map(department => department.department_code);
-            const candidatesVoteTally = yield (0, election_1.getCandidatesTotalTally)(electionId);
+            const electionResult = yield (0, election_1.getElectionResult)(electionId);
+            let candidatesVoteTally;
+            if (!electionResult) {
+                candidatesVoteTally = yield (0, election_1.generateElectionResult)(electionId);
+            }
+            else {
+                const secretKey = cryptoService_1.CryptoService.secretKey();
+                const iv = cryptoService_1.CryptoService.stringToBuffer(electionResult.encryption_iv);
+                const decryptResult = cryptoService_1.CryptoService.decrypt(electionResult.result, secretKey, iv);
+                candidatesVoteTally = JSON.parse(decryptResult);
+            }
             return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
         }
         catch (error) {

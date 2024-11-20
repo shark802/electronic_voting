@@ -37,8 +37,11 @@ function importUsersWorker(csvUsersData, filename) {
             }
         }
         const endTime = Date.now();
-        const importTimeInMinutes = `${((endTime - startTime) / (1000 * 60)).toFixed(2)} mins `;
-        console.log(`Successfully processed ${importSize} users. \n Time taken: ${importTimeInMinutes} mins.`);
+        const totalTimeInMilliseconds = endTime - startTime;
+        const totalMinutes = Math.floor(totalTimeInMilliseconds / (1000 * 60)); // Whole minutes
+        const remainingSeconds = Math.floor((totalTimeInMilliseconds % (1000 * 60)) / 1000); // Remaining seconds
+        const importTimeInMinutes = `${totalMinutes}:${remainingSeconds} mins `;
+        console.log(`Successfully processed ${importSize} users. \n Time taken: ${importTimeInMinutes}`);
         return {
             importSize,
             importTimeInMinutes

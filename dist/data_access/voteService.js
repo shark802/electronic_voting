@@ -13,6 +13,7 @@ exports.updateVoterVoteStatus = exports.incrementCandidateVoteCount = exports.sa
 const query_1 = require("./query");
 const database_1 = require("../config/database");
 const customErrors_1 = require("../utils/customErrors");
+const cryptoService_1 = require("../utils/cryptoService");
 function checkIfUserHasVoted(userId, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const getUserVoteHistory = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM votes WHERE voter_id = ? AND election_id = ?", [userId, electionId]);
@@ -22,12 +23,16 @@ function checkIfUserHasVoted(userId, electionId) {
 exports.checkIfUserHasVoted = checkIfUserHasVoted;
 function saveVote(connection, selectedCandidateObject, userId, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const placeholders = selectedCandidateObject.map(() => "(?, ?, ?, ?)").join(", ");
+        const placeholders = selectedCandidateObject.map(() => "(?, ?, ?, ?, ?)").join(", ");
         const insertParameters = selectedCandidateObject.reduce((params, candidate) => {
-            params.push(userId, candidate.id_number, candidate.position, electionId);
+            const secretKey = cryptoService_1.CryptoService.secretKey();
+            const iv = cryptoService_1.CryptoService.generateIv();
+            const bufferIv = cryptoService_1.CryptoService.stringToBuffer(iv);
+            const decryptVote = cryptoService_1.CryptoService.encrypt(candidate.id_number, secretKey, bufferIv);
+            params.push(userId, decryptVote, candidate.position, iv, electionId);
             return params;
         }, []);
-        const prepareStatement = `INSERT INTO votes (voter_id, candidate_id, position, election_id) VALUES ${placeholders}`;
+        const prepareStatement = `INSERT INTO votes (voter_id, candidate_id, position, encryption_iv, election_id) VALUES ${placeholders}`;
         yield connection.execute(prepareStatement, insertParameters);
         return;
     });

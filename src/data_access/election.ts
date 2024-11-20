@@ -1,28 +1,96 @@
 import { QueryResult, RowDataPacket } from "mysql2";
 import { pool } from "../config/database";
 import { Election } from "../utils/types/Election";
-import { selectQuery } from "./query";
+import { insertQuery, selectQuery } from "./query";
 import { ProgramPopulations } from "../utils/types/ProgramPopulations";
 import { Department } from "../utils/types/Department";
 import { Program } from "../utils/types/Program";
+import { Vote } from "../utils/types/Votes";
+import { Worker } from "worker_threads";
+import path from "path";
+import { CryptoService } from "../utils/cryptoService";
+import { ElectionResult } from "../utils/types/ElectionResult";
 
 export async function getElectionInfoById(electionId: string) {
     const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL', [electionId]);
     return election;
 }
 
+export async function getElectionResult(electionId: string) {
+    const [result] = await selectQuery<ElectionResult>(pool, 'SELECT * FROM election_results WHERE election_id = ?', [electionId]);
+    return result ? result : null;
+}
+
+export async function generateElectionResult(electionId: string) {
+
+    const votes = await selectQuery<Vote>(pool, 'SELECT * FROM votes WHERE election_id = ?', [electionId]);
+    const secretKey = CryptoService.secretKey();
+
+    if (votes.length === 0) {
+        const iv = CryptoService.generateIv();
+        const encryptionIv = CryptoService.stringToBuffer(iv);
+        const dataToEncrypt = JSON.stringify(votes)
+        const encryptVoteResult = CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
+
+        await insertQuery(pool, 'INSERT INTO election_results (election_id, result, encryption_iv) VALUES(?, ?, ?)', [electionId, encryptVoteResult, iv])
+        return votes;
+
+    } else {
+        return new Promise((resolve, reject) => {
+            try {
+
+                const worker = new Worker(path.join(__dirname, '../utils/workerFiles/decryptVoteWorker.js'));
+                worker.postMessage(votes)
+                worker.on('message', async (decryptedVotes: Vote[]) => {
+
+                    const candidatesData = await getCandidatesTotalTally(electionId);
+
+                    const voteTally = candidatesData.map(candidate => {
+                        const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
+
+                        return { ...candidate, vote_count }
+                    });
+
+                    const iv = CryptoService.generateIv();
+                    const encryptionIv = CryptoService.stringToBuffer(iv);
+                    const dataToEncrypt = JSON.stringify(voteTally)
+                    const encryptVoteResult = CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
+
+                    await insertQuery(pool, 'INSERT INTO election_results (election_id, result, encryption_iv) VALUES(?, ?, ?)', [electionId, encryptVoteResult, iv])
+                    resolve(voteTally);
+
+                })
+            } catch (error) {
+                reject(error)
+            }
+        })
+
+    }
+}
+
+
 export async function getCandidatesTotalTally(electionId: string) {
 
+    type CandidateData = {
+        position: string;
+        party: string;
+        department: string;
+        candidate_profile: string;
+        id_number: number
+        lastname: number
+        firstname: number
+        course: number
+        election_id: number
+    }
+
     const sqlQuery = `
-        SELECT c.position, c.party, c.department, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, v.election_id, COUNT(v.candidate_id) AS vote_count
+        SELECT c.position, c.party, c.department, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, c.election_id
         FROM candidates c
-        LEFT JOIN votes v ON c.id_number = v.candidate_id AND v.election_id = c.election_id
         LEFT JOIN users u ON u.id_number = c.id_number     
-        WHERE c.election_id = ? AND c.deleted IS NULL 
-        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, v.election_id, c.party, c.department
-        ORDER BY vote_count DESC;
+        WHERE c.election_id = ? AND c.deleted IS NULL
+        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, c.party, c.department;
     `
-    const candidatesVoteTally = await selectQuery(pool, sqlQuery, [electionId]);
+    const candidatesVoteTally = await selectQuery<CandidateData>(pool, sqlQuery, [electionId]);
     return candidatesVoteTally;
 }
 
@@ -129,7 +197,6 @@ export async function getDepartmentsTotalVotes(electionIdArray: string[]) {
                 electionDepartmentVoteSummary.department_votes[department.department_code] = result ? result.total_voted : 0;
             }
 
-
         }
 
         departmentVotesSummary.push(electionDepartmentVoteSummary);
@@ -138,7 +205,7 @@ export async function getDepartmentsTotalVotes(electionIdArray: string[]) {
 }
 
 export async function getAllCompleteElection() {
-	const selectSqlQuery = 'SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC';
+    const selectSqlQuery = 'SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC';
     const elections = await selectQuery<Election>(pool, selectSqlQuery);
     return elections;
 }
