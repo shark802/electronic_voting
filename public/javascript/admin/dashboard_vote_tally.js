@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const positionDivContainer = election.querySelectorAll('#position-container'); // select all div that serve as container for group of candidate per position
         positionDivContainer.forEach(div => {
-            const canvas = div.querySelector('canvas'); // Represent as canvas element for each program on senator position
             const positionDataAttribute = div.dataset.position; // contain data attribute (data-position) to provide info what position the container holds. // Example: 'PRESIDENT', VICE_PRESIDENT', 'SENATOR'
 
             if (positionDataAttribute === 'SENATOR') {
@@ -57,14 +56,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 })
 
-let charts = {}; // Store references to charts by canvas ID
+let charts = {};
 
 function createChart(canvas, candidatesToDisplay) {
     // Check if a chart already exists for this canvas
     if (charts[canvas.id]) {
         // If it exists, update the chart data instead of recreating it
         updateChart(charts[canvas.id], candidatesToDisplay);
-        return; // Exit the function
+        return;
     }
 
     // Create a new chart and store the reference

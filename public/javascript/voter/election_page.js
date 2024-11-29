@@ -2,7 +2,7 @@ import "/javascript/voter/election_page_click_vote.js";
 import { displayRedirectMessage } from "/javascript/helper/showRedirectMessage.js";
 import { showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js";
 import "/javascript/logout.js"
-import socket from "/javascript/socket_io.js"
+import "/javascript/socket_io.js"
 
 document.addEventListener('DOMContentLoaded', async () => {
    try {

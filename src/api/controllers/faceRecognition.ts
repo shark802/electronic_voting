@@ -4,6 +4,7 @@ import { BadRequestError, NotFoundError, UnauthorizedError } from '../../utils/c
 import { insertQuery, selectQuery } from '../../data_access/query';
 import { pool } from '../../config/database';
 import { RegisterFaces } from '../../utils/types/RegisterFaces';
+import { v4 as uuid } from 'uuid'
 dotenv.config()
 
 export async function getFaceRecognitionServiceDomain(req: Request, res: Response, next: NextFunction) {
@@ -21,13 +22,15 @@ export async function getFaceRecognitionServiceDomain(req: Request, res: Respons
 export async function insertUserRegisterFaceInfo(req: Request, res: Response, next: NextFunction) {
     try {
 
-        if (!req.session) throw new UnauthorizedError('You need to login first!')
+        if (!req.session) throw new UnauthorizedError('You need to login first!');
+
+        const id = uuid()
         const userId = req.session?.user?.user_id;
         const savedFaceFilename = req.body.filename;
 
         if (!savedFaceFilename) throw new BadRequestError('Filename of saved face image is not provided');
 
-        const insertResult = await insertQuery(pool, 'INSERT INTO register_faces (id_number, saved_face_filename, registered_at) VALUES (?, ?, CURRENT_TIMESTAMP)', [userId, savedFaceFilename]);
+        const insertResult = await insertQuery(pool, 'INSERT INTO register_faces (id, id_number, saved_face_filename, registered_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)', [id, userId, savedFaceFilename]);
         if (insertResult.affectedRows === 0) throw new Error('Registration failed!')
 
         res.status(201).json({ message: 'Face registered' });

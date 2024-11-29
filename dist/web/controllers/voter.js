@@ -70,6 +70,8 @@ function renderElectionBallot(req, res, next) {
                 (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL", [election_id]),
                 (0, query_1.selectQuery)(database_1.pool, sqlQuery, [election_id])
             ]);
+            if (!election)
+                return res.redirect('/election?redirectMessage=Election Not Available');
             const candidatePositionList = (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
             const departmentsMaximumSenatorVote = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
             const departmentMaxSenatorVote = departmentsMaximumSenatorVote.reduce((acc, department) => {
@@ -86,7 +88,6 @@ function renderElectionBallot(req, res, next) {
     });
 }
 exports.renderElectionBallot = renderElectionBallot;
-// TODO election result
 function renderElectionResult(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

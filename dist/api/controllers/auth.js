@@ -24,6 +24,7 @@ function loginFunction(req, res, next) {
                 throw new customErrors_1.BadRequestError("Missing credentials!");
             const response = yield fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
             const apiResponseObject = yield response.json();
+            console.log(apiResponseObject);
             if (apiResponseObject.is_valid === false)
                 throw new customErrors_1.UnauthorizedError("Login Failed!");
             // Login successful

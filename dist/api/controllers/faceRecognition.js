@@ -17,6 +17,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const customErrors_1 = require("../../utils/customErrors");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
+const uuid_1 = require("uuid");
 dotenv_1.default.config();
 function getFaceRecognitionServiceDomain(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -38,11 +39,12 @@ function insertUserRegisterFaceInfo(req, res, next) {
         try {
             if (!req.session)
                 throw new customErrors_1.UnauthorizedError('You need to login first!');
+            const id = (0, uuid_1.v4)();
             const userId = (_b = (_a = req.session) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.user_id;
             const savedFaceFilename = req.body.filename;
             if (!savedFaceFilename)
                 throw new customErrors_1.BadRequestError('Filename of saved face image is not provided');
-            const insertResult = yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO register_faces (id_number, saved_face_filename, registered_at) VALUES (?, ?, CURRENT_TIMESTAMP)', [userId, savedFaceFilename]);
+            const insertResult = yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO register_faces (id, id_number, saved_face_filename, registered_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)', [id, userId, savedFaceFilename]);
             if (insertResult.affectedRows === 0)
                 throw new Error('Registration failed!');
             res.status(201).json({ message: 'Face registered' });

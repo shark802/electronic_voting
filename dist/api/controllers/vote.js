@@ -8,12 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveVoteFunction = void 0;
 const globalEventEmitterInstance_1 = require("./../../events/globalEventEmitterInstance");
 const customErrors_1 = require("../../utils/customErrors");
 const voteService_1 = require("../../data_access/voteService");
 const database_1 = require("../../config/database");
+const query_1 = require("../../data_access/query");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 function saveVoteFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -49,6 +55,11 @@ function saveVoteFunction(req, res, next) {
                         };
                     })
                 });
+                const ENVIRONMENT = process.env.NODE_ENV;
+                const FACE_SERVICE_DOMAIN = ENVIRONMENT === 'production' ? `https://${process.env.FACE_RECOGNITION_SERVICE_DOMAIN}` : 'http://localhost:8000';
+                const [registerFaceFilename] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [user_id]);
+                yield fetch(`${FACE_SERVICE_DOMAIN}/api/delete/${registerFaceFilename.saved_face_filename}`, { method: 'DELETE' });
+                yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE register_faces SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?', [registerFaceFilename.id]);
                 res.status(200).json({ message: "Vote saved!" });
             }
             catch (error) {

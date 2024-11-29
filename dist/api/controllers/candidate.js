@@ -212,13 +212,13 @@ function getAllcandidatesInActiveElection(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const sqlQuery = `
-            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, c.department, e.election_id, COUNT(v.candidate_id) AS vote_count
+            SELECT u.id_number, u.firstname, u.lastname, u.course, c.position, c.department, e.election_id, c.vote_count
             FROM candidates c
             JOIN elections e ON c.election_id = e.election_id
             LEFT JOIN users u ON c.id_number = u.id_number
             LEFT JOIN votes v ON c.id_number = v.candidate_id AND e.election_id = v.election_id
             WHERE e.deleted_at IS NULL AND e.is_close = 0 AND c.deleted IS NULL AND c.enabled = 1
-            GROUP BY c.election_id, u.id_number, c.position, v.election_id, c.department
+            GROUP BY c.election_id, u.id_number, c.position, v.election_id, c.department, c.vote_count
             ORDER BY lastname
         `;
             const candidatesData = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery);

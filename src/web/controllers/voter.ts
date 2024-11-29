@@ -66,6 +66,8 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
             selectQuery<Election>(pool, "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL", [election_id]),
             selectQuery(pool, sqlQuery, [election_id])
         ]);
+        if (!election) return res.redirect('/election?redirectMessage=Election Not Available')
+
         const candidatePositionList = (await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
         const departmentsMaximumSenatorVote = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
 
@@ -83,7 +85,6 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
 }
 
 
-// TODO election result
 export async function renderElectionResult(req: Request, res: Response, next: NextFunction) {
     try {
         const userId = req.session.user!.user_id;

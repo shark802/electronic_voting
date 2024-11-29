@@ -32,41 +32,52 @@ function getElectionResult(electionId) {
     });
 }
 exports.getElectionResult = getElectionResult;
+const events_1 = require("events");
 function generateElectionResult(electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const votes = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM votes WHERE election_id = ?', [electionId]);
         const secretKey = cryptoService_1.CryptoService.secretKey();
-        if (votes.length === 0) {
+        const insertResultQuery = `
+        INSERT INTO election_results (election_id, result, encryption_iv) VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE result = VALUES(result), encryption_iv = VALUES(encryption_iv);
+    `;
+        // Helper to encrypt and insert results
+        const encryptAndInsert = (data) => __awaiter(this, void 0, void 0, function* () {
             const iv = cryptoService_1.CryptoService.generateIv();
             const encryptionIv = cryptoService_1.CryptoService.stringToBuffer(iv);
-            const dataToEncrypt = JSON.stringify(votes);
-            const encryptVoteResult = cryptoService_1.CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
-            yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO election_results (election_id, result, encryption_iv) VALUES(?, ?, ?)', [electionId, encryptVoteResult, iv]);
+            const dataToEncrypt = JSON.stringify(data);
+            const encryptedResult = cryptoService_1.CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
+            yield (0, query_1.insertQuery)(database_1.pool, insertResultQuery, [electionId, encryptedResult, iv]);
+        });
+        if (votes.length === 0) {
+            yield encryptAndInsert(votes); // No votes, just insert an empty result
             return votes;
         }
-        else {
-            return new Promise((resolve, reject) => {
-                try {
-                    const worker = new worker_threads_1.Worker(path_1.default.join(__dirname, '../utils/workerFiles/decryptVoteWorker.js'));
-                    worker.postMessage(votes);
-                    worker.on('message', (decryptedVotes) => __awaiter(this, void 0, void 0, function* () {
-                        const candidatesData = yield getCandidatesTotalTally(electionId);
-                        const voteTally = candidatesData.map(candidate => {
-                            const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
-                            return Object.assign(Object.assign({}, candidate), { vote_count });
-                        });
-                        const iv = cryptoService_1.CryptoService.generateIv();
-                        const encryptionIv = cryptoService_1.CryptoService.stringToBuffer(iv);
-                        const dataToEncrypt = JSON.stringify(voteTally);
-                        const encryptVoteResult = cryptoService_1.CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
-                        yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO election_results (election_id, result, encryption_iv) VALUES(?, ?, ?)', [electionId, encryptVoteResult, iv]);
-                        resolve(voteTally);
-                    }));
-                }
-                catch (error) {
-                    reject(error);
-                }
+        // Use Worker to decrypt votes
+        const worker = new worker_threads_1.Worker(path_1.default.join(__dirname, '../utils/workerFiles/decryptVoteWorker.js'));
+        try {
+            worker.postMessage(votes);
+            // Wait for decrypted votes from the worker
+            const [decryptedVotes] = yield (0, events_1.once)(worker, 'message');
+            const candidatesData = yield getCandidatesTotalTally(electionId);
+            console.log(decryptedVotes.length, decryptedVotes);
+            // Tally the votes for each candidate
+            const voteTally = candidatesData.map(candidate => {
+                const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
+                console.log(vote_count);
+                return Object.assign(Object.assign({}, candidate), { vote_count });
             });
+            console.log('vote tally', voteTally);
+            // Encrypt and insert the tally result
+            yield encryptAndInsert(voteTally);
+            return voteTally;
+        }
+        catch (error) {
+            console.error('Error in generateElectionResult:', error);
+            throw error;
+        }
+        finally {
+            worker.terminate(); // Clean up the worker
         }
     });
 }

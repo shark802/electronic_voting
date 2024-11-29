@@ -42,12 +42,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             messageDiv.textContent = "Error accessing camera: " + err.message; // Display error message
         });
 
-    const socket = new WebSocket(`ws://localhost:8000/ws/authenticate-face`);
-    // const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/authenticate-face`);
+    // const socket = new WebSocket(`ws://localhost:8000/ws/authenticate-face`);
+    const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/authenticate-face`);
 
     // Update connection status
     socket.onopen = function () {
-        connectionStatusDiv.textContent = "WebSocket Status: Connected";
+        connectionStatusDiv.textContent = "Status: Connected";
         connectionStatusDiv.style.backgroundColor = "#d4edda"; // Light green background for connected status
     };
 
@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         // Update connection status
-        connectionStatusDiv.textContent = "WebSocket Status: Disconnected"; // Update status on close
+        connectionStatusDiv.textContent = "Status: Disconnected"; // Update status on close
         connectionStatusDiv.style.backgroundColor = "#f8d7da"; // Light red background for disconnected status
     };
 });

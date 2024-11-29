@@ -38,7 +38,7 @@ export async function filterVotersByFilterParameter(
 
     if (yearLevel) {
 
-        filteredVoters = filteredVoters.filter(voter => voter?.year_level === parseInt(yearLevel));
+        filteredVoters = filteredVoters.filter(voter => Number(voter?.year_level) == Number(yearLevel));
     }
 
     if (program && section) {

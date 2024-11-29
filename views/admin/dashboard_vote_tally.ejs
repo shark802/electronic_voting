@@ -82,10 +82,11 @@
         </div>
 
         <div class="flex lg:flex-row grow lg:justify-evenly gap-3 lg:flex-wrap lg:grow flex-col w-full md:w-[90%] lg:w-full m-auto px-1 py-4 mt-2 lg:px-1">
-          <% candidatePosition.forEach(position => { 
-              const candidatesPerPosition = candidates.filter(candidate => candidate.position === position && candidate.election_id === election.election_id);
-              if (candidatesPerPosition.length > 0) {
-                if (position === 'SENATOR') { 
+          <% 
+          candidatePosition.forEach(position => { 
+            const candidatesPerPosition = candidates.filter(candidate => candidate.position === position && candidate.election_id === election.election_id);
+            if (candidatesPerPosition.length > 0) {
+              if (position === 'SENATOR') { 
           %>
 
           <div data-position="<%= position %>" id="position-container" class="mb-6 overflow-hidden transition-all duration-300 bg-white rounded-lg shadow-lg lg:m-0 lg:w-full hover:shadow-xl">

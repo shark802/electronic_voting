@@ -21,52 +21,64 @@ export async function getElectionResult(electionId: string) {
     return result ? result : null;
 }
 
-export async function generateElectionResult(electionId: string) {
+import { once } from 'events';
 
+export async function generateElectionResult(electionId: string) {
     const votes = await selectQuery<Vote>(pool, 'SELECT * FROM votes WHERE election_id = ?', [electionId]);
     const secretKey = CryptoService.secretKey();
 
-    if (votes.length === 0) {
+    const insertResultQuery = `
+        INSERT INTO election_results (election_id, result, encryption_iv) VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE result = VALUES(result), encryption_iv = VALUES(encryption_iv);
+    `;
+
+    // Helper to encrypt and insert results
+    const encryptAndInsert = async (data: any): Promise<void> => {
         const iv = CryptoService.generateIv();
         const encryptionIv = CryptoService.stringToBuffer(iv);
-        const dataToEncrypt = JSON.stringify(votes)
-        const encryptVoteResult = CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
+        const dataToEncrypt = JSON.stringify(data);
+        const encryptedResult = CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
 
-        await insertQuery(pool, 'INSERT INTO election_results (election_id, result, encryption_iv) VALUES(?, ?, ?)', [electionId, encryptVoteResult, iv])
+        await insertQuery(pool, insertResultQuery, [electionId, encryptedResult, iv]);
+    };
+
+    if (votes.length === 0) {
+        await encryptAndInsert(votes); // No votes, just insert an empty result
         return votes;
+    }
 
-    } else {
-        return new Promise((resolve, reject) => {
-            try {
+    // Use Worker to decrypt votes
+    const worker = new Worker(path.join(__dirname, '../utils/workerFiles/decryptVoteWorker.js'));
 
-                const worker = new Worker(path.join(__dirname, '../utils/workerFiles/decryptVoteWorker.js'));
-                worker.postMessage(votes)
-                worker.on('message', async (decryptedVotes: Vote[]) => {
+    try {
+        worker.postMessage(votes);
 
-                    const candidatesData = await getCandidatesTotalTally(electionId);
+        // Wait for decrypted votes from the worker
+        const [decryptedVotes] = await once(worker, 'message') as [Vote[]];
+        const candidatesData = await getCandidatesTotalTally(electionId);
 
-                    const voteTally = candidatesData.map(candidate => {
-                        const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
+        console.log(decryptedVotes.length, decryptedVotes);
+        // Tally the votes for each candidate
+        const voteTally = candidatesData.map(candidate => {
+            const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
+            console.log(vote_count);
+            return { ...candidate, vote_count }
+        });
 
-                        return { ...candidate, vote_count }
-                    });
+        console.log('vote tally', voteTally);
 
-                    const iv = CryptoService.generateIv();
-                    const encryptionIv = CryptoService.stringToBuffer(iv);
-                    const dataToEncrypt = JSON.stringify(voteTally)
-                    const encryptVoteResult = CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
+        // Encrypt and insert the tally result
+        await encryptAndInsert(voteTally);
 
-                    await insertQuery(pool, 'INSERT INTO election_results (election_id, result, encryption_iv) VALUES(?, ?, ?)', [electionId, encryptVoteResult, iv])
-                    resolve(voteTally);
-
-                })
-            } catch (error) {
-                reject(error)
-            }
-        })
-
+        return voteTally;
+    } catch (error) {
+        console.error('Error in generateElectionResult:', error);
+        throw error;
+    } finally {
+        worker.terminate(); // Clean up the worker
     }
 }
+
 
 
 export async function getCandidatesTotalTally(electionId: string) {

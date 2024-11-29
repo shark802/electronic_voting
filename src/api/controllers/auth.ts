@@ -16,6 +16,8 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
 
         const response = await fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
         const apiResponseObject: TechnopalApiObject = await response.json();
+        
+        console.log(apiResponseObject);
 
         if (apiResponseObject.is_valid === false) throw new UnauthorizedError("Login Failed!");
 

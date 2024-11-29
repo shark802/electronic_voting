@@ -21,15 +21,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         video: true
     })
         .then(stream => {
-            video.srcObject = stream;
+            video.srcObject = stream
         })
         .catch(err => {
             console.error("Error accessing camera: ", err);
             messageDiv.textContent = "Error accessing camera: " + err.message; // Display error message
         });
 
-    const socket = new WebSocket(`ws://localhost:8000/ws/register-face`);
-    // const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/register-face`);
+    // const socket = new WebSocket(`ws://localhost:8000/ws/register-face`);
+    const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/register-face`);
 
     // Update connection status
     socket.onopen = function () {
@@ -79,8 +79,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const response = JSON.parse(event.data);
             if (response.success) {
-                console.log(response?.message);
-                console.log(response?.filename);
 
                 const postResponse = await fetch('/api/register-face', {
                     method: 'POST',
@@ -90,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 const responseObject = await postResponse.json();
 
-                if (!postResponse.ok) throw new Error(responseObject?.message);
+                if (!postResponse.ok) throw new Error(responseObject.message);
 
                 // Display success message and the ID of the saved face
                 messageDiv.textContent = `Face saved successfully! ID: ${response.face_id}`; // Display success message with ID

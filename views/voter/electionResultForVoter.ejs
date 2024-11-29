@@ -30,28 +30,31 @@
 
   </header>
 
-  <div class="relative px-4 mt-24 overflow-y-auto bg-blue-50">
+  <div class="relative px-2 mt-8 overflow-y-auto lg:px-4 bg-blue-50">
 
 
-    <div id="result-box" class="w-full lg:max-w-[750px] rounded-lg px-4 py-6 m-auto bg-white shadow-lg mb-10">
+    <div id="result-box" class="w-full lg:max-w-[750px] rounded-lg px-2 lg:px-4 py-3 lg:py-6 m-auto bg-white shadow-lg mb-10">
       <div class="mb-8 text-center">
-        <h2 class="mb-2 text-3xl font-bold leading-tight text-blue-800"><%= electionInfo.election_name %></h2>
-        <p class="mb-4 text-lg text-gray-600">Election Results</p>
+        <h2 class="text-xl font-bold leading-tight text-blue-800 lg:mb-2 lg:text-3xl"><%= electionInfo.election_name %></h2>
+        <p class="mb-2 text-gray-600 lg:text-lg">Election Results</p>
         <div class="flex flex-col items-center justify-center mb-4 space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
-          <div class="flex items-center text-sm text-gray-500">
+
+          <div class="flex items-center text-xs text-gray-500 lg:text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span class="font-medium">Start:</span>
             <%= formatDateTime(electionInfo.date_start, electionInfo.time_start) %>
           </div>
-          <div class="flex items-center text-sm text-gray-500">
+
+          <div class="flex items-center text-xs text-gray-500 lg:text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span class="font-medium">End:</span>
             <%= formatDateTime(electionInfo.date_end, electionInfo.time_end) %>
           </div>
+
         </div>
 
         <%
@@ -99,29 +102,29 @@
               const totalVotesInPosition = candidatePerPosition.reduce((total, candidateVotes) => total + candidateVotes.vote_count, 0);
           %>
         <section class="mb-8 overflow-hidden border border-gray-200 rounded-lg">
-          <h3 class="w-full py-2 text-lg font-bold text-center text-white bg-blue-600"><%= position %></h3>
+          <h3 class="w-full py-2 text-sm font-bold text-center text-white bg-blue-600 lg:text-lg"><%= position %></h3>
 
           <div class="divide-y divide-gray-200">
             <% candidatePerPosition.forEach((candidate, index) => { %>
 
-            <div class="flex items-center justify-between p-4 <%= candidate.vote_count === highestVoteInPosition ? 'bg-green-50' : 'hover:bg-gray-50' %> transition duration-150 ease-in-out">
+            <div class="flex items-center justify-between p-2 lg:p-4 <%= candidate.vote_count === highestVoteInPosition ? 'bg-green-50' : 'hover:bg-gray-50' %> transition duration-150 ease-in-out">
               <div class="flex items-center space-x-4">
                 <div class="flex-shrink-0">
                   <% if (candidate.candidate_profile) { %>
                   <img class="object-cover w-12 h-12 rounded-full" src="/img/candidate_profiles/<%= candidate.candidate_profile %>" alt="<%= candidate.firstname %> <%= candidate.lastname %>">
                   <% } else { %>
-                  <div class="flex items-center justify-center w-12 h-12 font-bold text-gray-600 bg-gray-300 rounded-full">
+                  <div class="flex items-center justify-center font-bold text-gray-600 bg-gray-300 rounded-full h-9 w-9 lg:w-12 lg:h-12">
                     <%= candidate.firstname.charAt(0) %><%= candidate.lastname.charAt(0) %>
                   </div>
                   <% } %>
                 </div>
                 <div>
-                  <p class="font-bold text-gray-800"><%= candidate.firstname %> <%= candidate.lastname %></p>
-                  <p class="text-sm text-left text-gray-500"><%= candidate.course %></p>
+                  <p class="text-xs font-bold text-gray-800 text-nowrap lg:text-base"><%= candidate.firstname %> <%= candidate.lastname %></p>
+                  <p class="text-xs text-left text-gray-500 lg:text-sm"><%= candidate.course %></p>
                 </div>
               </div>
               <div class="text-right">
-                <p class="text-2xl font-bold <%= index === 0 ? 'text-green-600' : 'text-gray-600' %>">
+                <p class="lg:text-2xl text-lg font-bold <%= candidate.vote_count === highestVoteInPosition ? 'text-green-600' : 'text-gray-600' %>">
                   <%= totalVotesInPosition === 0 ? '0%' : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2) + '%' %>
                 </p>
                 <p class="text-sm text-gray-500"><%= candidate.vote_count %> votes</p>

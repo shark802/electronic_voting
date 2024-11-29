@@ -28,7 +28,7 @@ function filterVotersByFilterParameter(voters, voteStatus, department, program, 
             filteredVoters = filteredVoters.filter(voter => voter.course === program);
         }
         if (yearLevel) {
-            filteredVoters = filteredVoters.filter(voter => (voter === null || voter === void 0 ? void 0 : voter.year_level) === parseInt(yearLevel));
+            filteredVoters = filteredVoters.filter(voter => Number(voter === null || voter === void 0 ? void 0 : voter.year_level) == Number(yearLevel));
         }
         if (program && section) {
             filteredVoters = filteredVoters.filter(voter => voter.section === section);

@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `register_faces` (
    `id_number` INT(10) NOT NULL,
    `saved_face_filename` VARCHAR(255), 
    `registered_at` TIMESTAMP,
+   `deleted_at` TIMESTAMP,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`)
 ) ENGINE=InnoDB;
 

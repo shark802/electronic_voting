@@ -223,7 +223,7 @@ function displayFetchCandidate(candidates) {
         const tableRow = `
             <tr data-candidate-id="${candidate.candidate_id}" class="border-b border-gray-200 hover:bg-gray-50">
                 <td class="px-2 py-2 text-sm text-gray-900 text-center">${candidate.id_number}</td>
-                <td class="px-2 py-2 text-sm text-gray-800">
+                <td class="px-2 py-2 text-nowrap text-sm text-gray-800">
                     <span class="font-medium">${candidate.lastname}</span>, ${candidate.firstname}
                 </td>
                 <td class="px-2 py-2 text-sm text-gray-700 text-center">${candidate.party}</td>

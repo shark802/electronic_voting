@@ -54,7 +54,7 @@ function prepareChartData(yearLevel, preparedData) {
         const turnoutData = preparedData.find(data => data.year === year)?.yearLevelTurnouts;
 
         let yearLvl = ''
-        switch (year) {
+        switch (Number(year)) {
             case 1:
                 yearLvl = '1st Year'
                 break;
@@ -126,9 +126,9 @@ export function renderYearLevelVoteTrends(chartId, completedElections, chartData
                         label: function (context) {
                             let yearLevel = context.dataset.label;
                             yearLevel = Number(yearLevel[0])
-
+                            
                             const electionId = completedElections[context.dataIndex].election_id;
-                            const yearLevelElectionTurnout = turnoutPerYearLevel.find(data => data.electionId === electionId && data.yearLevel === yearLevel)
+                            const yearLevelElectionTurnout = turnoutPerYearLevel.find(data => data.electionId === electionId && Number(data.yearLevel) === yearLevel)
                             const turnoutPercentage = context.raw;
 
                             return [

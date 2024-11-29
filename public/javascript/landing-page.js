@@ -1,7 +1,7 @@
 import { displayRedirectMessage } from "/javascript/helper/showRedirectMessage.js";
 import { isValidText } from "/javascript/formInputValidator/isValidText.js"
 import "/javascript/landing-page-login.js";
-import socket from "/javascript/socket_io.js";
+import "/javascript/socket_io.js";
 import { showSwalSuccessToast, showSwalErrorToast, confirmErrorAlert, confirmAlert } from '/javascript/helper/sweetAlertFunctions.js';
 import { showLoading, hideLoader } from "/javascript/helper/loader.js"
 
