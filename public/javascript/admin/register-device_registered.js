@@ -79,19 +79,26 @@ socket.on('client-connected', (onlineClientsUuid) => {
     Object.values(onlineClientsUuid).forEach(uuid => {
 
         const deviceStatus = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-indicator`);
-        deviceStatus.classList.remove('bg-red-500');
-        deviceStatus.classList.add('bg-green-500');
+        if (deviceStatus) {
 
-        const deviceStatusText = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-text`);
-        deviceStatusText.textContent = 'Online';
+            deviceStatus.classList.remove('bg-red-500');
+            deviceStatus.classList.add('bg-green-500');
+
+            const deviceStatusText = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-text`);
+            deviceStatusText.textContent = 'Online';
+        }
     })
 })
 
 socket.on('client-disconnected', (uuid) => {
     const deviceStatus = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-indicator`);
-    deviceStatus.classList.remove('bg-green-500');
-    deviceStatus.classList.add('bg-red-500');
 
-    const deviceStatusText = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-text`);
-    deviceStatusText.textContent = 'Offline';
+    if (deviceStatus) {
+
+        deviceStatus.classList.remove('bg-green-500');
+        deviceStatus.classList.add('bg-red-500');
+
+        const deviceStatusText = document.querySelector(`tr[data-uuid="${uuid}"] #device-status-text`);
+        deviceStatusText.textContent = 'Offline';
+    }
 })

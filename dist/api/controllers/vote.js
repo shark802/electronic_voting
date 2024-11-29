@@ -58,8 +58,12 @@ function saveVoteFunction(req, res, next) {
                 const ENVIRONMENT = process.env.NODE_ENV;
                 const FACE_SERVICE_DOMAIN = ENVIRONMENT === 'production' ? `https://${process.env.FACE_RECOGNITION_SERVICE_DOMAIN}` : 'http://localhost:8000';
                 const [registerFaceFilename] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [user_id]);
-                yield fetch(`${FACE_SERVICE_DOMAIN}/api/delete/${registerFaceFilename.saved_face_filename}`, { method: 'DELETE' });
-                yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE register_faces SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?', [registerFaceFilename.id]);
+                if (registerFaceFilename) {
+                    yield Promise.all([
+                        fetch(`${FACE_SERVICE_DOMAIN}/api/delete/${registerFaceFilename.saved_face_filename}`, { method: 'DELETE' }),
+                        (0, query_1.updateQuery)(database_1.pool, 'UPDATE register_faces SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?', [registerFaceFilename.id])
+                    ]);
+                }
                 res.status(200).json({ message: "Vote saved!" });
             }
             catch (error) {

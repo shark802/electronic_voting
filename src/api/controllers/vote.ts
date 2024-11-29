@@ -51,8 +51,13 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
             const ENVIRONMENT = process.env.NODE_ENV;
             const FACE_SERVICE_DOMAIN = ENVIRONMENT === 'production' ? `https://${process.env.FACE_RECOGNITION_SERVICE_DOMAIN}` : 'http://localhost:8000';
             const [registerFaceFilename] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [user_id])
-            await fetch(`${FACE_SERVICE_DOMAIN}/api/delete/${registerFaceFilename.saved_face_filename}`, { method: 'DELETE' });
-            await updateQuery(pool, 'UPDATE register_faces SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?', [registerFaceFilename.id])
+            if (registerFaceFilename) {
+
+                await Promise.all([
+                    fetch(`${FACE_SERVICE_DOMAIN}/api/delete/${registerFaceFilename.saved_face_filename}`, { method: 'DELETE' }),
+                    updateQuery(pool, 'UPDATE register_faces SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?', [registerFaceFilename.id])
+                ])
+            }
 
             res.status(200).json({ message: "Vote saved!" });
         } catch (error) {

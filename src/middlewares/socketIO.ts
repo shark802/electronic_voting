@@ -10,20 +10,20 @@ export function socketIO(io: Server) {
 		const uuid = socket.handshake.query.uuid;
 		if (uuid) {
 
-			const uuidExist = Object.values(clientUUID).find((value) => {
-				return value === uuid
-			});
+			clientUUID[socket.id] = uuid as string;
 
-			if (!uuidExist) {
-				clientUUID[socket.id] = uuid as string;
-
-				io.emit('client-connected', clientUUID);
-			}
+			io.emit('client-connected', clientUUID);
 
 			socket.on('disconnect', () => {
 				if (clientUUID[socket.id]) {
-					io.emit('client-disconnected', clientUUID[socket.id]);
+					const uuid = clientUUID[socket.id]
 					delete clientUUID[socket.id];
+
+					// Check if there are any other sockets still connected with the same UUID
+					const isUUIDStillConnected = Object.values(clientUUID).includes(uuid);
+					if (!isUUIDStillConnected) {
+						io.emit('client-disconnected', uuid);
+					}
 				}
 			});
 		};

@@ -6,17 +6,17 @@ function socketIO(io) {
     io.on('connection', (socket) => {
         const uuid = socket.handshake.query.uuid;
         if (uuid) {
-            const uuidExist = Object.values(clientUUID).find((value) => {
-                return value === uuid;
-            });
-            if (!uuidExist) {
-                clientUUID[socket.id] = uuid;
-                io.emit('client-connected', clientUUID);
-            }
+            clientUUID[socket.id] = uuid;
+            io.emit('client-connected', clientUUID);
             socket.on('disconnect', () => {
                 if (clientUUID[socket.id]) {
-                    io.emit('client-disconnected', clientUUID[socket.id]);
+                    const uuid = clientUUID[socket.id];
                     delete clientUUID[socket.id];
+                    // Check if there are any other sockets still connected with the same UUID
+                    const isUUIDStillConnected = Object.values(clientUUID).includes(uuid);
+                    if (!isUUIDStillConnected) {
+                        io.emit('client-disconnected', uuid);
+                    }
                 }
             });
         }
