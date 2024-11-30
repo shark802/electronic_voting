@@ -20,4 +20,5 @@ router.get('/program-voted', election_1.getTotalVotedInElectionByProgram);
 router.get('/election/complete/total-voted', election_1.completedElectionsTotalVoted);
 router.get('/election/turn-out/year-level', election_1.yearLevelTurnoutPercentage);
 router.get('/election/turn-out/department', election_1.departmentTurnoutPercentage);
+router.get('/election/turn-out/vote-mode', election_1.votingModeEngagement);
 exports.default = router;

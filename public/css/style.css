@@ -3418,6 +3418,10 @@ video {
     margin-top: 0px;
   }
 
+  .lg\:mt-10 {
+    margin-top: 2.5rem;
+  }
+
   .lg\:mt-11 {
     margin-top: 2.75rem;
   }

@@ -391,3 +391,57 @@ export async function departmentTurnoutPercentage(req: Request, res: Response, n
 		next(error)
 	}
 }
+
+export async function votingModeEngagement(req: Request, res: Response, next: NextFunction) {
+	try {
+
+		type VoteMode = {
+			election_id: string
+			voted_onsite: number
+			voted_online: number
+			total_voted: number
+		}
+
+		const sqlQuery = `
+			SELECT 
+				e.election_id, 
+				COUNT(CASE WHEN v.voting_mode = 'ON-SITE' THEN 1 END) as voted_onsite, 
+				COUNT(CASE WHEN v.voting_mode = 'ONLINE' THEN 1 END) as voted_online, 
+				COUNT(DISTINCT votes.voter_id) AS total_voted
+			FROM voters v
+			LEFT JOIN elections e ON e.election_id = v.election_id
+			LEFT JOIN (SELECT DISTINCT voter_id, election_id FROM votes) votes  ON votes.voter_id = v.id_number AND votes.election_id = v.election_id
+			WHERE (e.date_end < CURDATE()
+				OR (e.date_end = CURDATE() AND e.time_end < CURTIME()))
+				AND e.deleted_at IS NULL
+			GROUP BY e.election_id
+			ORDER BY e.date_end ASC, e.time_end ASC;	
+		`
+
+		const queryResult = await selectQuery<VoteMode>(pool, sqlQuery);
+
+		const votingModeSummary = queryResult.map(result => {
+			const totalVoted = Number(result.total_voted) || 0;
+
+			const voteOnsitePercentage = totalVoted > 0 && result.voted_onsite
+				? ((result.voted_onsite / totalVoted) * 100).toFixed(2)
+				: 0;
+
+			const voteOnlinePercentage = totalVoted > 0 && result.voted_online
+				? ((result.voted_online / totalVoted) * 100).toFixed(2)
+				: 0;
+
+			return {
+				...result,
+				onsite_vote_percentage: voteOnsitePercentage,
+				online_vote_percentage: voteOnlinePercentage,
+			};
+		});
+
+
+		res.status(200).json({ votingModeSummary });
+
+	} catch (error) {
+		next(error)
+	}
+}

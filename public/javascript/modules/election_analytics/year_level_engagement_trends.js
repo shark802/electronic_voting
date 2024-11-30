@@ -33,11 +33,6 @@ const electionIds = completeElections.map(election => election.election_id);
 function getTuroutPerentagePerYearLevel(electionIdArray, turnoutPerYearLevel, yearLevel) {
     return yearLevel.map(year => {
 
-        // const yearLevelTurnouts = turnoutPerYearLevel
-        //     .filter(data => electionIdArray.includes(data.electionId) && data.yearLevel === year)
-        //     .map(data => data.turnOutPercentage)
-
-
         const yearLevelTurnouts = electionIdArray.map(electionId => {
             const data = turnoutPerYearLevel.find(data => data.electionId === electionId && data.yearLevel === year);
             return data && data.turnOutPercentage !== undefined ? data.turnOutPercentage : null;
@@ -126,7 +121,7 @@ export function renderYearLevelVoteTrends(chartId, completedElections, chartData
                         label: function (context) {
                             let yearLevel = context.dataset.label;
                             yearLevel = Number(yearLevel[0])
-                            
+
                             const electionId = completedElections[context.dataIndex].election_id;
                             const yearLevelElectionTurnout = turnoutPerYearLevel.find(data => data.electionId === electionId && Number(data.yearLevel) === yearLevel)
                             const turnoutPercentage = context.raw;

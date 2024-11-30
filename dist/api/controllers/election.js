@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.departmentTurnoutPercentage = exports.yearLevelTurnoutPercentage = exports.completedElectionsTotalVoted = exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
+exports.votingModeEngagement = exports.departmentTurnoutPercentage = exports.yearLevelTurnoutPercentage = exports.completedElectionsTotalVoted = exports.getTotalVotedInElectionByProgram = exports.getTotalPopulationByProgram = exports.getNumberOfVoted = exports.getElectionPopulation = exports.closeElectionDashboard = exports.updateElectionStatus = exports.updateElection = exports.deleteElection = exports.findElectionByID = exports.createElection = void 0;
 const database_1 = require("../../config/database");
 const ulid_1 = require("ulid");
 const customErrors_1 = require("../../utils/customErrors");
@@ -365,3 +365,40 @@ function departmentTurnoutPercentage(req, res, next) {
     });
 }
 exports.departmentTurnoutPercentage = departmentTurnoutPercentage;
+function votingModeEngagement(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sqlQuery = `
+			SELECT 
+				e.election_id, 
+				COUNT(CASE WHEN v.voting_mode = 'ON-SITE' THEN 1 END) as voted_onsite, 
+				COUNT(CASE WHEN v.voting_mode = 'ONLINE' THEN 1 END) as voted_online, 
+				COUNT(DISTINCT votes.voter_id) AS total_voted
+			FROM voters v
+			LEFT JOIN elections e ON e.election_id = v.election_id
+			LEFT JOIN (SELECT DISTINCT voter_id, election_id FROM votes) votes  ON votes.voter_id = v.id_number AND votes.election_id = v.election_id
+			WHERE (e.date_end < CURDATE()
+				OR (e.date_end = CURDATE() AND e.time_end < CURTIME()))
+				AND e.deleted_at IS NULL
+			GROUP BY e.election_id
+			ORDER BY e.date_end ASC, e.time_end ASC;	
+		`;
+            const queryResult = yield (0, query_1.selectQuery)(database_1.pool, sqlQuery);
+            const votingModeSummary = queryResult.map(result => {
+                const totalVoted = Number(result.total_voted) || 0;
+                const voteOnsitePercentage = totalVoted > 0 && result.voted_onsite
+                    ? ((result.voted_onsite / totalVoted) * 100).toFixed(2)
+                    : 0;
+                const voteOnlinePercentage = totalVoted > 0 && result.voted_online
+                    ? ((result.voted_online / totalVoted) * 100).toFixed(2)
+                    : 0;
+                return Object.assign(Object.assign({}, result), { onsite_vote_percentage: voteOnsitePercentage, online_vote_percentage: voteOnlinePercentage });
+            });
+            res.status(200).json({ votingModeSummary });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.votingModeEngagement = votingModeEngagement;

@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `voters` (
    `voter_id` VARCHAR(50) NOT NULL PRIMARY KEY,
    `id_number` INT(10) NOT NULL, 
    `voted` TINYINT(1) DEFAULT 0,
-   `voting_mode` VARCHAR(55) NOT NULL,
+   `voting_mode` VARCHAR(55),
    `election_id` VARCHAR(50),
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`),
    FOREIGN KEY (`election_id`) REFERENCES `elections`(`election_id`)
