@@ -31,3 +31,4 @@ renderAllTurnoutStats(completedElections);
 import "/javascript/modules/election_analytics/year_level_engagement_trends.js"
 import "/javascript/modules/election_analytics/department_engagement_trends.js"
 import "/javascript/modules/election_analytics/onsite_engagement_trends.js"
+import "/javascript/modules/election_analytics/online_engagement_trends.js"

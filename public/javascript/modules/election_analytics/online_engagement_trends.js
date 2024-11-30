@@ -32,7 +32,7 @@ async function fetchVoteModeSummary() {
 }
 
 
-async function renderOnsiteEngagementTrends(completedElectionsArray, canvasId) {
+async function renderOnlineEngagementTrends(completedElectionsArray, canvasId) {
     try {
         const canvas = document.querySelector(`#${canvasId}`);
         if (!canvas) {
@@ -41,7 +41,7 @@ async function renderOnsiteEngagementTrends(completedElectionsArray, canvasId) {
 
         // Turnout percentage per election 
         let datasets = await fetchVoteModeSummary();
-        const onsiteVotingPercentage = datasets.map(data => data.onsite_vote_percentage)
+        const onlineVotingPercentage = datasets.map(data => data.online_vote_percentage)
 
         // destroy existing if present
         if (canvas.chartInstance) {
@@ -51,7 +51,7 @@ async function renderOnsiteEngagementTrends(completedElectionsArray, canvasId) {
         const ctx = canvas.getContext('2d'); // Get the canvas context
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height); // Create a vertical gradient
         gradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)'); // Start color (light blue)
-        gradient.addColorStop(1, 'rgba(147, 197, 253, 0.2)')
+        gradient.addColorStop(1, 'rgba(147, 197, 253, 0.2)'); // End color (lighter blue)
 
         canvas.chartInstance = new Chart(canvas, {
             type: 'line',
@@ -59,10 +59,10 @@ async function renderOnsiteEngagementTrends(completedElectionsArray, canvasId) {
                 labels: completedElectionsArray.map(election => election.election_name),
                 datasets: [{
                     label: 'Past Elections Voter Engagement Trends',
-                    data: onsiteVotingPercentage,
+                    data: onlineVotingPercentage,
                     borderWidth: 2,
                     borderColor: '#3b82f6',
-                    backgroundColor: gradient,
+                    backgroundColor: gradient, // Use the gradient as background color
                     fill: true,
                     tension: 0.3,
                 }]
@@ -88,7 +88,7 @@ async function renderOnsiteEngagementTrends(completedElectionsArray, canvasId) {
                 },
                 plugins: {
                     legend: {
-                        display: false,
+                        display: false, // Hides the legend
                     },
                     tooltip: {
                         callbacks: {
@@ -98,7 +98,7 @@ async function renderOnsiteEngagementTrends(completedElectionsArray, canvasId) {
                                 const electionNumberVoted = completedElectionsArray[context.dataIndex].total_voted;
                                 const date = new Date(completedElectionsArray[context.dataIndex].date_end).toLocaleDateString();
                                 const percentage = context.raw + '%';
-                                const votedOnCampus = datasets[context.dataIndex].voted_onsite
+                                const votedOnCampus = datasets[context.dataIndex].voted_online
 
                                 return [
                                     `Vote Onsite Percentage:  ${percentage}`,
@@ -121,8 +121,8 @@ async function renderOnsiteEngagementTrends(completedElectionsArray, canvasId) {
 }
 let completedElections = await getAllCompleteElections();
 completedElections.reverse()
-const canvasId = 'onsite-engagement'
-await renderOnsiteEngagementTrends(completedElections, canvasId)
+const canvasId = 'online-engagement'
+await renderOnlineEngagementTrends(completedElections, canvasId)
 
 
-export { getAllCompleteElections, renderOnsiteEngagementTrends };
+export { getAllCompleteElections, renderOnlineEngagementTrends };
