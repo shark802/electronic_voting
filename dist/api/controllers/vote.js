@@ -22,10 +22,12 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 function saveVoteFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             const { electionId } = req.body;
             const selectedCandidate = req.body.selectedCandidate;
             const user_id = req.session.user.user_id;
+            const faceVerified = (_a = req.session) === null || _a === void 0 ? void 0 : _a.faceVerified; // available if voter vote online and authenticated their face
             const socket = res.locals.io;
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election ID is missing');
@@ -40,7 +42,7 @@ function saveVoteFunction(req, res, next) {
                 yield connection.beginTransaction();
                 yield (0, voteService_1.saveVote)(connection, selectedCandidate, user_id, electionId);
                 yield (0, voteService_1.incrementCandidateVoteCount)(connection, selectedCandidate, electionId);
-                yield (0, voteService_1.updateVoterVoteStatus)(connection, user_id, electionId);
+                yield (0, voteService_1.updateVoterVoteStatus)(connection, user_id, electionId, faceVerified);
                 yield connection.commit();
                 // this event emitter emit a new-vote event that will trigger to send email with the user_id pass
                 globalEventEmitterInstance_1.eventEmitter.emit('new-vote', user_id, electionId);

@@ -43,9 +43,11 @@ export async function incrementCandidateVoteCount(connection: PoolConnection, se
     }
 }
 
-export async function updateVoterVoteStatus(connection: PoolConnection, userId: string, electionId: string) {
+export async function updateVoterVoteStatus(connection: PoolConnection, userId: string, electionId: string, isFaceVerified: boolean | undefined) {
 
-    const [updateVoteStatusResult] = await connection.execute<ResultSetHeader>('UPDATE voters SET voted = 1 WHERE id_number = ? AND election_id = ?', [userId, electionId]);
+    const votingMode = isFaceVerified ? 'ONLINE' : 'ON-SITE';
+
+    const [updateVoteStatusResult] = await connection.execute<ResultSetHeader>('UPDATE voters SET voted = 1, voting_mode = ? WHERE id_number = ? AND election_id = ?', [votingMode, userId, electionId]);
     if (updateVoteStatusResult.affectedRows === 0) throw new NotFoundError('Voter not Exist on this Election');
 
     return;

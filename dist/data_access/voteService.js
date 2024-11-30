@@ -51,9 +51,10 @@ function incrementCandidateVoteCount(connection, selectedCandidates, electionId)
     });
 }
 exports.incrementCandidateVoteCount = incrementCandidateVoteCount;
-function updateVoterVoteStatus(connection, userId, electionId) {
+function updateVoterVoteStatus(connection, userId, electionId, isFaceVerified) {
     return __awaiter(this, void 0, void 0, function* () {
-        const [updateVoteStatusResult] = yield connection.execute('UPDATE voters SET voted = 1 WHERE id_number = ? AND election_id = ?', [userId, electionId]);
+        const votingMode = isFaceVerified ? 'ONLINE' : 'ON-SITE';
+        const [updateVoteStatusResult] = yield connection.execute('UPDATE voters SET voted = 1, voting_mode = ? WHERE id_number = ? AND election_id = ?', [votingMode, userId, electionId]);
         if (updateVoteStatusResult.affectedRows === 0)
             throw new customErrors_1.NotFoundError('Voter not Exist on this Election');
         return;

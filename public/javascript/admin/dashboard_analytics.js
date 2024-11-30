@@ -1,10 +1,6 @@
-import { confirmErrorAlert, confirmAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js"
-import "/javascript/socket_io.js"
-import "/javascript/logout.js"
-
+import "/javascript/socket_io.js";
+import "/javascript/logout.js";
 import { getAllCompleteElections, renderVoterEngagementTrends, renderAllTurnoutStats } from "/javascript/modules/election_analytics/voter_engagement_trends.js"
-import "/javascript/modules/election_analytics/year_level_engagement_trends.js"
-import "/javascript/modules/election_analytics/department_engagement_trends.js"
 
 const dashboard_nav = document.querySelector("#dashboard_nav")
 const analytics_page = document.querySelector("#analytics_page")
@@ -29,6 +25,8 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 const voterEngagementCanvasId = 'voter-engagement-trends';
 const completedElections = await getAllCompleteElections();
 
-
 renderVoterEngagementTrends(completedElections.reverse(), voterEngagementCanvasId);
 renderAllTurnoutStats(completedElections);
+
+import "/javascript/modules/election_analytics/year_level_engagement_trends.js"
+import "/javascript/modules/election_analytics/department_engagement_trends.js"

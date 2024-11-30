@@ -15,6 +15,7 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
         const { electionId } = req.body;
         const selectedCandidate: Pick<Candidate, 'id_number' | 'position'>[] = req.body.selectedCandidate
         const user_id = req.session.user!.user_id;
+        const faceVerified = req.session?.faceVerified; // available if voter vote online and authenticated their face
 
         const socket: Socket = res.locals.io;
 
@@ -30,7 +31,7 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
             await connection.beginTransaction();
             await saveVote(connection, selectedCandidate, user_id, electionId);
             await incrementCandidateVoteCount(connection, selectedCandidate, electionId);
-            await updateVoterVoteStatus(connection, user_id, electionId);
+            await updateVoterVoteStatus(connection, user_id, electionId, faceVerified);
             await connection.commit();
 
             // this event emitter emit a new-vote event that will trigger to send email with the user_id pass

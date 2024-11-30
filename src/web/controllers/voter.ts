@@ -19,7 +19,7 @@ export async function electionPage(req: Request, res: Response, next: NextFuncti
         req.session.faceVerified = false;
 
         const user_id = req.session.user!.user_id;
-        const [register_face] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [user_id]);
+        const [register_face] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [user_id]);
 
         const face_registered = register_face ? true : false;
 
