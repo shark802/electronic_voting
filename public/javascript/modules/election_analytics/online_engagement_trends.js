@@ -50,8 +50,8 @@ async function renderOnlineEngagementTrends(completedElectionsArray, canvasId) {
 
         const ctx = canvas.getContext('2d'); // Get the canvas context
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height); // Create a vertical gradient
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)'); // Start color (light blue)
-        gradient.addColorStop(1, 'rgba(147, 197, 253, 0.2)'); // End color (lighter blue)
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); // Start color (light blue)
+        gradient.addColorStop(1, 'rgba(147, 197, 253, 0.3)'); // End color (lighter blue)
 
         canvas.chartInstance = new Chart(canvas, {
             type: 'line',

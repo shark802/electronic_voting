@@ -75,9 +75,18 @@ function createChart(canvas, candidatesToDisplay) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        stepSize: calculateStepSize(candidatesToDisplay),
                         font: {
                             size: 9
+                        },
+                        callback: function (value) {
+                            return Math.floor(value) === value ? value : '';
+                        }
+                    },
+                    grid: {
+                        drawOnChartArea: true,
+                        drawTicks: true,
+                        color: function (context) {
+                            return Math.floor(context.tick.value) === context.tick.value ? 'rgba(0,0,0,0.1)' : 'transparent';
                         }
                     }
                 },
@@ -140,11 +149,6 @@ function transformDataset(dataset) {
             maxBarThickness: 90
         }]
     }
-}
-
-function calculateStepSize(dataset) {
-    const range = Math.max(...dataset.map(item => item.vote_count)) - Math.min(...dataset.map(item => item.vote_count));
-    return range < 100 ? 1 : 10;
 }
 
 socket.on('new-vote', (data) => {

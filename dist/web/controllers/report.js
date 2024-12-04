@@ -41,8 +41,11 @@ function previewVoterParticipationReports(req, res, next) {
             const programs = departmentId ? (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE department = ? AND deleted_at IS NULL', [departmentId])).map(program => program.program_code) : [];
             // get year levels
             const yearLevels = [1, 2, 3, 4];
-            const currentYear = new Date().getFullYear();
-            const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : [];
+            const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, `SELECT DISTINCT users.section
+            FROM voters JOIN users ON voters.id_number = users.id_number 
+            WHERE voters.election_id = ?
+            AND course = ?
+            ORDER BY users.section`, [election_id, program]) : [];
             const sections = sqlSectionResult.map(section => Object.values(section)).flat();
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);
@@ -83,8 +86,11 @@ function programHeadVoterParticipationReport(req, res, next) {
             const programs = departmentId ? (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE department = ? AND deleted_at IS NULL', [departmentId])).map(program => program.program_code) : [];
             // get year levels
             const yearLevels = [1, 2, 3, 4];
-            const currentYear = new Date().getFullYear();
-            const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : [];
+            const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, `SELECT DISTINCT users.section
+            FROM voters JOIN users ON voters.id_number = users.id_number 
+            WHERE voters.election_id = ?
+            AND course = ?
+            ORDER BY users.section`, [election_id, program]) : [];
             const sections = sqlSectionResult.map(section => Object.values(section)).flat();
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);
@@ -125,8 +131,11 @@ function completeVoterParticipationReports(req, res, next) {
             const programs = departmentId ? (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM programs WHERE department = ? AND deleted_at IS NULL', [departmentId])).map(program => program.program_code) : [];
             // get year levels
             const yearLevels = [1, 2, 3, 4];
-            const currentYear = new Date().getFullYear();
-            const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : [];
+            const sqlSectionResult = program ? yield (0, query_1.selectQuery)(database_1.pool, `SELECT DISTINCT users.section
+            FROM voters JOIN users ON voters.id_number = users.id_number 
+            WHERE voters.election_id = ?
+            AND course = ?
+            ORDER BY users.section`, [election_id, program]) : [];
             const sections = sqlSectionResult.map(section => Object.values(section)).flat();
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
             const voters = yield (0, voterService_1.getAllVoterInElection)(election_id);

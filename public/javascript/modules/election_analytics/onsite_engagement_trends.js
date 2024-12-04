@@ -48,10 +48,10 @@ async function renderOnsiteEngagementTrends(completedElectionsArray, canvasId) {
             canvas.chartInstance.destroy();
         }
 
-        const ctx = canvas.getContext('2d'); // Get the canvas context
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height); // Create a vertical gradient
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)'); // Start color (light blue)
-        gradient.addColorStop(1, 'rgba(147, 197, 253, 0.2)')
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+        gradient.addColorStop(1, 'rgba(147, 197, 253, 0.3)')
 
         canvas.chartInstance = new Chart(canvas, {
             type: 'line',

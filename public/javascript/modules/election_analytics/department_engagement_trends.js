@@ -61,7 +61,7 @@ function prepareChartData(departments, preparedData) {
             backgroundColor: 'rgba(0, 0, 0, 0)',
             fill: true,
             tension: 0.4,
-            pointRadius: 3,
+            pointRadius: 2.3,
         }
     })
 }
@@ -95,7 +95,6 @@ export function renderDepartmentsVoteTrends(chartId, completedElections, chartDa
                             return value + '%';
                         }
                     },
-
                 },
                 x: {
                     ticks: {

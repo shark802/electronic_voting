@@ -73,7 +73,7 @@ function prepareChartData(yearLevel, preparedData) {
             backgroundColor: 'rgba(0, 0, 0, 0)',
             fill: true,
             tension: 0.4,
-            pointRadius: 3,
+            pointRadius: 2.3,
         }
     })
 }

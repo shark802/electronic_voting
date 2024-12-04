@@ -376,7 +376,7 @@ function votingModeEngagement(req, res, next) {
 				COUNT(DISTINCT votes.voter_id) AS total_voted
 			FROM voters v
 			LEFT JOIN elections e ON e.election_id = v.election_id
-			LEFT JOIN (SELECT DISTINCT voter_id, election_id FROM votes) votes  ON votes.voter_id = v.id_number AND votes.election_id = v.election_id
+			LEFT JOIN (SELECT DISTINCT voter_id, election_id FROM votes) votes ON votes.voter_id = v.id_number AND votes.election_id = v.election_id
 			WHERE (e.date_end < CURDATE()
 				OR (e.date_end = CURDATE() AND e.time_end < CURTIME()))
 				AND e.deleted_at IS NULL

@@ -39,8 +39,15 @@ export async function previewVoterParticipationReports(req: Request, res: Respon
         // get year levels
         const yearLevels = [1, 2, 3, 4];
 
-        const currentYear = new Date().getFullYear();
-        const sqlSectionResult = program ? await selectQuery<Pick<User, 'section'>[]>(pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : []
+        const sqlSectionResult = program ? await selectQuery<Pick<User, 'section'>[]>(
+            pool,
+            `SELECT DISTINCT users.section
+            FROM voters JOIN users ON voters.id_number = users.id_number 
+            WHERE voters.election_id = ?
+            AND course = ?
+            ORDER BY users.section`,
+            [election_id, program]
+        ) : []
         const sections = sqlSectionResult.map(section => Object.values(section)).flat();
 
         const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
@@ -85,8 +92,15 @@ export async function programHeadVoterParticipationReport(req: Request, res: Res
         // get year levels
         const yearLevels = [1, 2, 3, 4];
 
-        const currentYear = new Date().getFullYear();
-        const sqlSectionResult = program ? await selectQuery<Pick<User, 'section'>[]>(pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : []
+        const sqlSectionResult = program ? await selectQuery<Pick<User, 'section'>[]>(
+            pool,
+            `SELECT DISTINCT users.section
+            FROM voters JOIN users ON voters.id_number = users.id_number 
+            WHERE voters.election_id = ?
+            AND course = ?
+            ORDER BY users.section`,
+            [election_id, program]
+        ) : []
         const sections = sqlSectionResult.map(section => Object.values(section)).flat();
 
         const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
@@ -133,8 +147,15 @@ export async function completeVoterParticipationReports(req: Request, res: Respo
         // get year levels
         const yearLevels = [1, 2, 3, 4];
 
-        const currentYear = new Date().getFullYear();
-        const sqlSectionResult = program ? await selectQuery<Pick<User, 'section'>[]>(pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]) : []
+        const sqlSectionResult = program ? await selectQuery<Pick<User, 'section'>[]>(
+            pool,
+            `SELECT DISTINCT users.section
+            FROM voters JOIN users ON voters.id_number = users.id_number 
+            WHERE voters.election_id = ?
+            AND course = ?
+            ORDER BY users.section`,
+            [election_id, program]
+        ) : []
         const sections = sqlSectionResult.map(section => Object.values(section)).flat();
 
         const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [election_id]);
