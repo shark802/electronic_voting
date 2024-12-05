@@ -85,6 +85,22 @@
 
             <h2 id="election-title" class="mb-1 text-2xl font-bold text-gray-800"><%= election.election_name %></h2>
             <p id="election-card-id" class="text-sm text-gray-500"><%= election.election_id %></p>
+
+            <div class="relative group">
+              <% 
+                const electionCandidates = candidates.filter(candidate => candidate.election_id === election.election_id)
+              %>
+              <p id="candidate-count" class="text-sm text-gray-600 cursor-pointer">Candidates: <%= electionCandidates.length %></p>
+              <div id="candidate-details-<%= election.election_id %>" class="absolute z-10 hidden p-2 bg-gray-100 rounded-md shadow-md group-hover:block">
+                <% positions.forEach(position => { %>
+                <% const positionCandidatesCount = electionCandidates.filter(candidate => candidate.position === position) %>
+                <% if (positionCandidatesCount.length > 0) { %>
+                <p class="text-nowrap"><%= positionCandidatesCount.length %> candidates for <%= position.toLowerCase() %></p>
+                <% } %>
+                <% }) %>
+              </div>
+            </div>
+
           </div>
 
           <div id="option-section" class="relative">

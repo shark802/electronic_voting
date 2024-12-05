@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             messageDiv.textContent = "Error accessing camera: " + err.message; // Display error message
         });
 
-    // const socket = new WebSocket(`ws://localhost:8000/ws/authenticate-face`);
-    const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/authenticate-face`);
+    const socket = new WebSocket(`ws://localhost:8000/ws/authenticate-face`);
+    // const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/authenticate-face`);
 
     // Update connection status
     socket.onopen = function () {

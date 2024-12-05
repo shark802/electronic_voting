@@ -200,43 +200,43 @@ async function toggleRegisterDeviceButton() {
     }
 }
 
-function handleConnectionStatus() {
-    const ipAddressElement = document.querySelector('#ip-address');
-    const statusIndicator = document.querySelector('#connection-status');
+// function handleConnectionStatus() {
+//     const ipAddressElement = document.querySelector('#ip-address');
+//     const statusIndicator = document.querySelector('#connection-status');
 
-    ipAddressElement.addEventListener('click', async () => {
-        const ip = ipAddressElement.textContent;
-        if (ip && ip !== 'Not Available' && ip !== 'Offline') {
-            try {
-                await navigator.clipboard.writeText(ip);
-                showSwalSuccessToast('IP Address copied to clipboard!');
-            } catch (err) {
-                showSwalErrorToast('Failed to copy IP Address');
-            }
-        }
-    });
+//     ipAddressElement.addEventListener('click', async () => {
+//         const ip = ipAddressElement.textContent;
+//         if (ip && ip !== 'Not Available' && ip !== 'Offline') {
+//             try {
+//                 await navigator.clipboard.writeText(ip);
+//                 showSwalSuccessToast('IP Address copied to clipboard!');
+//             } catch (err) {
+//                 showSwalErrorToast('Failed to copy IP Address');
+//             }
+//         }
+//     });
 
-    function updateOnlineStatus() {
-        if (navigator.onLine) {
-            statusIndicator.classList.remove('bg-red-500');
-            statusIndicator.classList.add('bg-green-500');
-            fetchPublicIP().then(ip => {
-                if (ip) {
-                    ipAddressElement.textContent = ip;
-                }
-            });
-        } else {
-            statusIndicator.classList.remove('bg-green-500');
-            statusIndicator.classList.add('bg-red-500');
-            ipAddressElement.textContent = 'Offline';
-        }
-    }
+//     function updateOnlineStatus() {
+//         if (navigator.onLine) {
+//             statusIndicator.classList.remove('bg-red-500');
+//             statusIndicator.classList.add('bg-green-500');
+//             fetchPublicIP().then(ip => {
+//                 if (ip) {
+//                     ipAddressElement.textContent = ip;
+//                 }
+//             });
+//         } else {
+//             statusIndicator.classList.remove('bg-green-500');
+//             statusIndicator.classList.add('bg-red-500');
+//             ipAddressElement.textContent = 'Offline';
+//         }
+//     }
 
-    updateOnlineStatus();
+//     updateOnlineStatus();
 
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-}
+//     window.addEventListener('online', updateOnlineStatus);
+//     window.addEventListener('offline', updateOnlineStatus);
+// }
 
-handleConnectionStatus();
+// handleConnectionStatus();
 toggleRegisterDeviceButton();

@@ -72,9 +72,14 @@ export async function viewElection(req: Request, res: Response, next: NextFuncti
         const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end > CURTIME())) ORDER BY created_at DESC";
         const elections = await selectQuery<Election>(pool, query)
 
-        const candidates = await selectQuery<Candidate>(pool, 'SELECT * FROM candidates WHERE election_id IN(?) AND deleted IS NULL', [elections.map(election => election.election_id)])
-        const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
-        const positionName = positions.map(position => position.position)
+        let candidates: Candidate[] = [];
+        let positionName: string[] = []
+
+        if (elections.length > 0) {
+            candidates = await selectQuery<Candidate>(pool, 'SELECT * FROM candidates WHERE election_id IN(?) AND deleted IS NULL AND enabled = 1', [elections.map(election => election.election_id)])
+            const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+            positionName = positions.map(position => position.position);
+        }
         res.render("admin/election_view", { elections, candidates, positions: positionName })
     } catch (error) {
         next(error);
@@ -117,7 +122,11 @@ export async function viewElectionHistory(req: Request, res: Response, next: Nex
     try {
         const query = "SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
         const elections = await selectQuery<Election>(pool, query);
-        res.render("admin/election_history", { elections });
+
+        const candidates = await selectQuery<Candidate>(pool, 'SELECT * FROM candidates WHERE election_id IN(?) AND deleted IS NULL AND enabled = 1', [elections.map(election => election.election_id)])
+        const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+        const positionName = positions.map(position => position.position)
+        res.render("admin/election_history", { elections, candidates, positions: positionName });
     } catch (error) {
         next(error);
     }
