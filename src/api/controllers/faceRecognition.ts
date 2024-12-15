@@ -57,10 +57,10 @@ export async function isClientRegisteredFace(req: Request, res: Response, next: 
 
 export async function getClientRegisteredFaceFilename(req: Request, res: Response, next: NextFunction) {
     try {
-        if (!req.session) throw new UnauthorizedError(`Request failed, You have'nt login yet! `);
+        if (!req.session) throw new UnauthorizedError(`Request failed, You have'nt login yet!`);
         const userId = req.session.user?.user_id;
 
-        const [RegisterFaceInfo] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [userId]);
+        const [RegisterFaceInfo] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [userId]);
 
         if (!RegisterFaceInfo || !RegisterFaceInfo.saved_face_filename) throw new NotFoundError('Face Registration data not found!');
         return res.status(200).json({ filename: RegisterFaceInfo.saved_face_filename })

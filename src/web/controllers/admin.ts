@@ -123,27 +123,29 @@ export async function viewElectionHistory(req: Request, res: Response, next: Nex
         const query = "SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
         const elections = await selectQuery<Election>(pool, query);
 
-        const candidates = await selectQuery<Candidate>(pool, 'SELECT * FROM candidates WHERE election_id IN(?) AND deleted IS NULL AND enabled = 1', [elections.map(election => election.election_id)])
-        const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
-        const positionName = positions.map(position => position.position)
+        let candidates: Candidate[] = [];
+        let positionName: string[] = []
+
+        if (elections.length > 0) {
+            candidates = await selectQuery<Candidate>(pool, 'SELECT * FROM candidates WHERE election_id IN(?) AND deleted IS NULL AND enabled = 1', [elections.map(election => election.election_id)])
+            const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+            positionName = positions.map(position => position.position);
+        }
         res.render("admin/election_history", { elections, candidates, positions: positionName });
     } catch (error) {
         next(error);
     }
 }
 
-// !TODO change fetch result
 export async function renderAdminElectionResult(req: Request, res: Response, next: NextFunction) {
     try {
         const electionId = req.params.id;
 
         if (!electionId) throw new BadRequestError('Election id is missing');
 
-        // retrieve election here
         const electionInfo = await getElectionInfoById(electionId);
         if (!electionInfo) throw new NotFoundError('Election not exist');
 
-        // check if the election has ended
         if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
 
         const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');

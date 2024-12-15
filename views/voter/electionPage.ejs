@@ -232,7 +232,7 @@
 
     </main>
 
-    <dialog id="register-face-modal-option" class="w-full max-w-md px-6 py-6 pt-8 pb-6 rounded-lg shadow-xl">
+    <dialog id="register-face-modal-option" class="w-[95%] m-auto max-w-md px-6 py-6 pt-8 pb-6 rounded-lg shadow-xl">
       <div>
         <button id="close-face-register-modal" class="absolute text-gray-500 top-2 right-2 hover:text-gray-700">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -240,19 +240,20 @@
           </svg>
         </button>
         <h2 class="mb-4 text-lg font-bold text-blue-800">Register Face</h2>
-        <p class="mb-6 text-gray-600">Choose how you want to register your face:</p>
-
-        <!-- <div class="font-[sans-serif] max-w-md">
-          <input type="file" name="voter-face-image" accept="image/png, image/jpeg" class="w-full text-sm font-semibold text-gray-400 bg-white border border-gray-300 rounded cursor-pointer file:cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-gray-500" />
-          <p class="mt-2 text-xs text-gray-400">PNG or JPG are Allowed.</p>
-        </div>
-
-        <div class="text-center text-gray-500 ">or</div> -->
+        <p class="mb-2 text-gray-600">Follow these instructions to ensure accurate face registration:</p>
+        <ul class="mb-6 ml-4 text-sm text-gray-600 list-disc">
+          <li>Ensure the room is well-lit with no shadows on your face.</li>
+          <li>Position your face directly in front of the camera, keeping it centered.</li>
+          <li>Remove any accessories like hats or sunglasses that may obscure your face.</li>
+          <li>Maintain a neutral facial expression, avoiding exaggerated emotions.</li>
+          <li>Keep your face at a consistent distance from the camera (approximately 12–18 inches).</li>
+          <li>Avoid bright or uneven backlighting that could distort your facial features.</li>
+          <li>If using a webcam, ensure it is clean and positioned at eye level.</li>
+        </ul>
 
         <a href="/register-face" class="block mt-2">
-          <button id="realtime-registration" class="w-full py-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Real-time Registration</button>
+          <button id="realtime-registration" class="w-full py-3 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Register Now</button>
         </a>
-
       </div>
     </dialog>
   </body>

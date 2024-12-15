@@ -7,7 +7,7 @@ function errorHandler(error, req, res, next) {
         res.status(error.statusCode).json({ name: error.name, message: error.message });
     }
     else {
-        console.error(`${error.name}: ${error.message}`);
+        // console.error(`${error.name}: ${error.message}`);
         console.error(`${error.stack}`);
         res.status(500).send(`Unexpected error occured!`);
     }

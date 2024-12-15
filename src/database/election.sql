@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `register_faces` (
    `id_number` INT(10) NOT NULL,
    `saved_face_filename` VARCHAR(255), 
    `registered_at` TIMESTAMP,
-   `deleted_at` TIMESTAMP,
+   `deleted_at` TIMESTAMP NULL,
    FOREIGN KEY (`id_number`) REFERENCES `users`(`id_number`)
 ) ENGINE=InnoDB;
 
@@ -138,10 +138,10 @@ CREATE TABLE positions (
 
 CREATE TABLE users_import_records (
    `id` VARCHAR(100) NOT NULL PRIMARY KEY,
-   `import_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   `import_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    `time_taken` VARCHAR(50),
    `import_size` INT,
-   `status` VARCHAR(50),
+   `status` VARCHAR(50)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `election_results` (

@@ -11,10 +11,10 @@ export async function addIpAddress(req: Request, res: Response, next: NextFuncti
 
         if (!ipAddress || !networkName) throw new Error('Ip address and network name are required');
 
-        const existingIpAddress = await selectQuery<IpAddress>(pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [ipAddress]);
+        const existingIpAddress = await selectQuery<IpAddress>(pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [(ipAddress as string).trim()]);
         if (existingIpAddress.length > 0) throw new ConflictError(`${ipAddress} already exist`);
 
-        const insertedIpAddress = await insertQuery(pool, 'INSERT INTO ip_address (network_name, ip_address) VALUES (?, ?)', [networkName, ipAddress]);
+        const insertedIpAddress = await insertQuery(pool, 'INSERT INTO ip_address (network_name, ip_address) VALUES (?, ?)', [String(networkName).trim(), String(ipAddress).trim()]);
         if (insertedIpAddress.affectedRows === 0) {
             throw new Error('Failed to insert ip address');
         }
@@ -32,7 +32,7 @@ export async function getIpAddress(req: Request, res: Response, next: NextFuncti
 
         if (!ipAddress) return res.status(200);
 
-        const [ipAddressResult] = await selectQuery<IpAddress>(pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [ipAddress]);
+        const [ipAddressResult] = await selectQuery<IpAddress>(pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [(ipAddress as string).trim()]);
 
         if (!ipAddressResult) {
             return res.status(200).json({ message: `${ipAddress} is not registered` });

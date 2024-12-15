@@ -30,7 +30,7 @@
 
     .custom-checkbox:checked {
       background-color: #ffffff;
-      border-color: #3b82f6;
+      border-color: #005CC8;
     }
 
     .custom-checkbox:checked::after {
@@ -39,8 +39,8 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background-color: #2c74e8;
     }
@@ -58,98 +58,102 @@
     </a>
   </header>
 
-  <div class="px-3 pb-12 mt-8 lg:pb-32 lg:mt-11">
+  <div class="px-3 pb-12 mt-8 lg:pb-14 lg:mt-11">
 
-    <form id="ballot-form" class="m-auto align-middle pt-2 lg:py-5 lg:px-3 px-1 lg:border-4 border bg-white rounded-lg lg:p-6 h-fit max-w-[800px] min-h-4/5 lg:shadow-lg">
-      <div class="py-2 lg:mb-6">
-        <h1 class="text-xl font-bold text-center text-gray-800 lg:text-3xl"><%= election ? election.election_name : "Official Ballot" %></h1>
+    <form id="ballot-form" class="max-w-3xl mx-auto my-8 overflow-hidden bg-white border-2 rounded-lg shadow-lg">
+      <div class="p-3 py-4 text-white lg:p-6 bg-gradient-to-r from-blue-600 to-blue-800">
+        <h1 class="text-xl font-bold text-center lg:text-3xl">
+          <%= election ? election.election_name : "Official Ballot" %>
+        </h1>
       </div>
 
-      <% 
-    if (candidatePositionList && candidatePositionList.length > 0) {
-      
-      if(candidateList.length <= 0) {
-    %>
-      <div class="px-3 py-6 mt-6 text-lg font-semibold text-center text-blue-700 bg-blue-100 border border-blue-300 rounded-lg">
-        <p>No candidates to display for this election</p>
-      </div>
-      <%
-      }
-      candidatePositionList.forEach(position => {
-
-        let candidatePerPosition;
-        if (position === 'SENATOR') {
-          candidatePerPosition = candidateList.filter(candidate => {
-            return candidate.position === position && candidate.course === user.course;
-          });
-        } else {
-          candidatePerPosition = candidateList.filter(candidate => {
-            return candidate.position === position;
-          });
-        }
-    %>
-
-      <% if (candidatePerPosition.length > 0) { %>
-      <section class="transition-shadow duration-300 border rounded-md lg:my-3 lg:mb-7 hover:shadow-lg" <%= position === 'SENATOR' ? `data-max-vote=${departmentMaxSenatorVote[user.course]}` : '' %>>
-
-        <div class="w-full py-1 text-center bg-blue-600 lg:py-3 rounded-t-md">
-          <h2 id="position-label" class="text-lg font-bold text-white lg:mb-1 lg:text-2xl"><%= position %></h2>
-          <p class="text-sm text-blue-100">
-            Please select
-            <span class="font-semibold">
-              <%= position === 'SENATOR' ?`maximum ${departmentMaxSenatorVote[user.course]}` : 1 %>
-              <%= position === 'SENATOR' ? (departmentMaxSenatorVote[user.course] > 1 ? 'candidates' : 'candidate') : 'candidate' %>
-            </span>
-          </p>
+      <% if (candidatePositionList && candidatePositionList.length > 0) { %>
+      <% if (candidateList.length <= 0) { %>
+      <div class="p-6">
+        <div class="p-4 text-blue-700 border-l-4 border-blue-500 rounded-md bg-blue-50" role="alert">
+          <p class="font-medium">No candidates to display for this election</p>
         </div>
+      </div>
+      <% } else { %>
+      <div class="p-6 px-2 space-y-8 lg:px-6">
+        <% candidatePositionList.forEach(position => { %>
+        <% 
+            let candidatePerPosition;
+            if (position === 'SENATOR') {
+              candidatePerPosition = candidateList.filter(candidate => 
+                candidate.position === position && candidate.course === user.course
+              );
+            } else {
+              candidatePerPosition = candidateList.filter(candidate => 
+                candidate.position === position
+              );
+            }
+          %>
 
-        <div class="p-4">
-          <% candidatePerPosition.forEach(candidateOfPosition => { %>
-          <div class="flex items-center gap-2 py-1 transition-colors duration-200 rounded-md lg:py-3 lg:px-7 hover:bg-gray-50">
-            <% if (candidateOfPosition.candidate_profile) { %>
-            <img src="/img/candidate_profiles/<%=candidateOfPosition.candidate_profile%>" alt="candidate-profile" class="object-cover w-16 h-16 rounded-full lg:w-24 lg:h-24">
-            <% } else {%>
-            <img src="/img/default-profile.webp" alt="candidate-profile" class="object-cover w-16 h-16 rounded-full lg:w-24 lg:h-24">
-            <% } %>
-            <div class="flex-grow">
-              <label for="<%= candidateOfPosition.id_number %>" class="flex items-center cursor-pointer">
+        <% if (candidatePerPosition.length > 0) { %>
+        <section class="overflow-hidden rounded-lg shadow-sm bg-gray-50" <%= position === 'SENATOR' ? `data-max-vote=${departmentMaxSenatorVote[user.course]}` : '' %>>
+          <div class="p-2 bg-blue-600 lg:p-4">
+            <h2 id="position-label" class="text-lg font-semibold text-white lg:text-xl"><%= position %></h2>
+            <p class="text-sm text-blue-100 lg:mt-1">
+              Please select
+              <span class="font-medium">
+                <%= position === 'SENATOR' ? `maximum ${departmentMaxSenatorVote[user.course]}` : 1 %>
+                <%= position === 'SENATOR' ? (departmentMaxSenatorVote[user.course] > 1 ? 'candidates' : 'candidate') : 'candidate' %>
+              </span>
+            </p>
+          </div>
 
-                <% if (position === 'SENATOR') { %>
-                <input name="<%= position %>" type="checkbox" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 mr-3 custom-checkbox">
-                <% } else { %>
-                <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number%>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 mr-3 text-blue-600 bg-gray-100 border-gray-300 rounded-full focus:ring-blue-500 dark:focus:ring-blue-600">
-                <% } %>
-
-                <div>
-                  <span class="text-sm font-bold text-gray-700 lg:text-lg"><%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %></span>
-                  <span class="block text-xs font-normal text-gray-500 lg:text-sm"><%= candidateOfPosition.party %></span>
+          <div class="p-2 space-y-4 lg:p-4">
+            <% candidatePerPosition.forEach(candidateOfPosition => { %>
+            <div class="flex items-center p-3 space-x-4 transition-shadow duration-200 bg-white rounded-md shadow-sm hover:shadow-md">
+              <% if (candidateOfPosition.candidate_profile) { %>
+              <img src="/img/candidate_profiles/<%= candidateOfPosition.candidate_profile %>" alt="<%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %>" class="object-cover w-16 h-16 rounded-full shadow-sm lg:w-24 lg:h-24">
+              <% } else { %>
+              <img src="/img/default-profile.webp" alt="Default profile" class="object-cover w-16 h-16 rounded-full shadow-sm lg:w-24 lg:h-24">
+              <% } %>
+              <label for="<%= candidateOfPosition.id_number %>" class="flex-grow cursor-pointer">
+                <div class="flex items-center">
+                  <% if (position === 'SENATOR') { %>
+                  <input name="<%= position %>" type="checkbox" value="<%= candidateOfPosition.id_number %>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 text-blue-600 border-gray-300 rounded custom-checkbox focus:ring-blue-500">
+                  <% } else { %>
+                  <input name="<%= position %>" type="radio" value="<%= candidateOfPosition.id_number %>" id="<%= candidateOfPosition.alias %><%= candidateOfPosition.id_number %>" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                  <% } %>
+                  <div class="ml-3">
+                    <span class="text-sm font-medium text-gray-900 lg:text-lg">
+                      <%= candidateOfPosition.firstname %> <%= candidateOfPosition.lastname %>
+                    </span>
+                    <span class="block text-xs text-gray-500 lg:text-sm"><%= candidateOfPosition.party %></span>
+                  </div>
                 </div>
               </label>
             </div>
+            <% }) %>
           </div>
-          <% }) %>
-        </div>
 
-      </section>
-
-      <%
-        }
-      });
-    }
-
-    if (candidateList.length > 0) {
-    %>
-
-      <div class="relative flex justify-end gap-1 py-3 mt-8 lg:gap-3">
-        <button type="reset" class="px-2 py-2 text-sm font-semibold text-gray-600 transition-all bg-gray-200 rounded-md lg:px-4 hover:bg-gray-300 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400">Reset</button>
-        <button class="px-3 py-2 text-sm font-semibold text-white transition-all bg-green-500 rounded-md lg:px-6 lg:text-base hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400" type="submit">Submit Ballot</button>
+          <div class="px-2 lg:pb-4 lg:px-4">
+            <div class="text-xs text-red-500 lg:text-sm error-message min-h-6" id="error-<%= position %>"></div>
+          </div>
+        </section>
+        <% } %>
+        <% }) %>
       </div>
+      <% } %>
+      <% } %>
 
-      <%
-  }
-    %>
-
+      <% if (candidateList.length > 0) { %>
+      <div class="p-6 border-t border-gray-200 bg-gray-50">
+        <div class="flex justify-end space-x-4">
+          <button type="reset" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Reset
+          </button>
+          <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Submit Ballot
+          </button>
+        </div>
+      </div>
+      <% } %>
     </form>
+
 
   </div>
 

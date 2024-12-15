@@ -20,10 +20,10 @@ function addIpAddress(req, res, next) {
             const networkName = req.body.networkName;
             if (!ipAddress || !networkName)
                 throw new Error('Ip address and network name are required');
-            const existingIpAddress = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [ipAddress]);
+            const existingIpAddress = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [ipAddress.trim()]);
             if (existingIpAddress.length > 0)
                 throw new customErrors_1.ConflictError(`${ipAddress} already exist`);
-            const insertedIpAddress = yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO ip_address (network_name, ip_address) VALUES (?, ?)', [networkName, ipAddress]);
+            const insertedIpAddress = yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO ip_address (network_name, ip_address) VALUES (?, ?)', [String(networkName).trim(), String(ipAddress).trim()]);
             if (insertedIpAddress.affectedRows === 0) {
                 throw new Error('Failed to insert ip address');
             }
@@ -41,7 +41,7 @@ function getIpAddress(req, res, next) {
             const ipAddress = req.query.ipAddress;
             if (!ipAddress)
                 return res.status(200);
-            const [ipAddressResult] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [ipAddress]);
+            const [ipAddressResult] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [ipAddress.trim()]);
             if (!ipAddressResult) {
                 return res.status(200).json({ message: `${ipAddress} is not registered` });
             }

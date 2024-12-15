@@ -5,7 +5,7 @@ import path from 'path';
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadPath = path.join(__dirname, '../../public/img/candidate_profiles')
-        cb(null, uploadPath); // Folder where the files will be stored
+        cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 const upload: Multer = multer({
     storage: storage,
     limits: {
-        fileSize: 1024 * 1024 * 5 // Limit file size to 5MB
+        fileSize: 1024 * 1024 * 5
     },
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png|xls|csv/;

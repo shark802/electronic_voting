@@ -11,8 +11,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.error(error);
     }
 
-    console.log(faceRecognitionSeviceDomain);
-
     const video = document.getElementById('video');
     const messageDiv = document.getElementById('message'); // Get the message display area
     const connectionStatusDiv = document.getElementById('connection-status'); // Get the connection status display area
@@ -28,12 +26,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             messageDiv.textContent = "Error accessing camera: " + err.message; // Display error message
         });
 
-    const socket = new WebSocket(`ws://localhost:8000/ws/register-face`);
-    // const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/register-face`);
+    // const socket = new WebSocket(`ws://localhost:8000/ws/register-face`);
+    const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/register-face`);
 
     // Update connection status
     socket.onopen = function () {
-        connectionStatusDiv.textContent = "WebSocket Status: Connected"; // Update status on successful connection
+        connectionStatusDiv.textContent = "Status: Connected"; // Update status on successful connection
         connectionStatusDiv.style.backgroundColor = "#d4edda"; // Light green background for connected status
     };
 
@@ -95,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 // if (response.message === "Face detected and saved") {
                 //     // socket.close();
-                messageDiv.textContent += " WebSocket connection closed.";
+                messageDiv.textContent += "Connection closed.";
 
                 Swal.fire({
                     title: 'Success!',
@@ -129,13 +127,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     socket.onclose = async function (event) {
 
         console.log("WebSocket connection closed.");
-        // Stop the video stream
-        // const stream = video.srcObject;
-        // if (stream) {
-        //     const tracks = stream.getTracks();
-        //     tracks.forEach(track => track.stop());
-        //     video.srcObject = null;
-        // }
 
         // Display the reason for closure
         let reasonMessage = "WebSocket connection closed.";
@@ -160,7 +151,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         // Update connection status
-        connectionStatusDiv.textContent = "WebSocket Status: Disconnected"; // Update status on close
+        connectionStatusDiv.textContent = "Status: Disconnected"; // Update status on close
         connectionStatusDiv.style.backgroundColor = "#f8d7da"; // Light red background for disconnected status
     };
 });

@@ -132,9 +132,13 @@ function viewElectionHistory(req, res, next) {
         try {
             const query = "SELECT * FROM elections WHERE (date_end < CURDATE() OR (date_end = CURDATE() AND time_end < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
             const elections = yield (0, query_1.selectQuery)(database_1.pool, query);
-            const candidates = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE election_id IN(?) AND deleted IS NULL AND enabled = 1', [elections.map(election => election.election_id)]);
-            const positions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
-            const positionName = positions.map(position => position.position);
+            let candidates = [];
+            let positionName = [];
+            if (elections.length > 0) {
+                candidates = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM candidates WHERE election_id IN(?) AND deleted IS NULL AND enabled = 1', [elections.map(election => election.election_id)]);
+                const positions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+                positionName = positions.map(position => position.position);
+            }
             res.render("admin/election_history", { elections, candidates, positions: positionName });
         }
         catch (error) {
@@ -143,18 +147,15 @@ function viewElectionHistory(req, res, next) {
     });
 }
 exports.viewElectionHistory = viewElectionHistory;
-// !TODO change fetch result
 function renderAdminElectionResult(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const electionId = req.params.id;
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election id is missing');
-            // retrieve election here
             const electionInfo = yield (0, election_1.getElectionInfoById)(electionId);
             if (!electionInfo)
                 throw new customErrors_1.NotFoundError('Election not exist');
-            // check if the election has ended
             if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
             const positions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');

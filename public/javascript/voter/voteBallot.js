@@ -43,10 +43,16 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
 // Returns an object mapping position labels (as keys) to the values of the selected candidates' id numbers.\
 
 function getSelectedCandidatePerPosition(event) {
-    let castedVote = []
+    let castedVote = [];
+    let hasError = false;
 
     event.target.querySelectorAll("section").forEach(position => {
         const positionCandidateRun = position.querySelector('#position-label').textContent.trim();
+        const errorMessageContainer = document.getElementById(`error-${positionCandidateRun}`);
+
+        // Clear previous error messages
+        errorMessageContainer.style.display = 'hidden';
+        errorMessageContainer.textContent = '';
 
         if (positionCandidateRun === 'SENATOR') {
             const senatorSelectedCandidates = position.querySelectorAll('input[type=checkbox]:checked');
@@ -55,19 +61,33 @@ function getSelectedCandidatePerPosition(event) {
                 castedVote.push({
                     position: positionCandidateRun,
                     id_number: candidate.value
-                })
-            })
+                });
+            });
+
+            if (senatorSelectedCandidates.length === 0) {
+                hasError = true;
+                errorMessageContainer.textContent = `Please select at least one candidate for ${positionCandidateRun}.`;
+                errorMessageContainer.style.display = 'block';
+            }
 
         } else {
-
             const selectedCandidate = position.querySelector('input[type=radio]:checked');
-            castedVote.push({
-                position: positionCandidateRun,
-                id_number: selectedCandidate.value
-            })
+            if (!selectedCandidate) {
+                hasError = true;
+                errorMessageContainer.textContent = `Please select a candidate for ${positionCandidateRun}.`;
+                errorMessageContainer.style.display = 'block';
+            } else {
+                castedVote.push({
+                    position: positionCandidateRun,
+                    id_number: selectedCandidate.value
+                });
+            }
         }
-
     });
+
+    if (hasError) {
+        return []; // Return an empty array to indicate failure
+    }
 
     return castedVote;
 }
@@ -78,15 +98,15 @@ function displayConfirmVoteModal(candidateObjectArray) {
     if (!candidateObjectArray || candidateObjectArray.length < 1) return;
     const confirmModal = document.createElement('dialog');
     confirmModal.id = "confirm-modal";
-    confirmModal.classList.add('confirm-modal', 'bg-white', 'rounded-lg', 'shadow-xl', 'p-6', 'max-w-md', 'w-full', 'mx-auto');
+    confirmModal.classList.add('confirm-modal', 'bg-white', 'rounded-lg', 'shadow-xl', 'p-6', 'max-w-md', 'w-full', 'mx-auto', 'mx-4');
     document.body.append(confirmModal);
 
     confirmModal.innerHTML = `
         <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800">Please Confirm Your Vote</h2>
-            <p class="text-gray-600 mt-2">Review your selections before casting your vote</p>
+            <h2 class="lg:text-2xl text-lg font-bold text-gray-800">Please Confirm Your Vote</h2>
+            <p class="text-gray-600 text-sm lg:text-base mt-2">Review your selections before casting your vote</p>
         </div>
-        <div class="space-y-4 mb-6">
+        <div class="space-y-4 mb-6 text-sm lg:text-base">
             ${candidateObjectArray.map(candidateObject => `
                 <div class="bg-gray-100 p-3 rounded-md">
                     <p class="text-gray-500 text-sm font-medium">${candidateObject.position}</p>

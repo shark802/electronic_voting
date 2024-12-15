@@ -97,6 +97,7 @@ function updateCandidateFunction(req, res, next) {
             return res.status(200).json({ message: 'Candidate updated successfully' });
         }
         catch (error) {
+            console.log('invalid image');
             return next(error);
         }
     });

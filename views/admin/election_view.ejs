@@ -93,7 +93,7 @@
                 const electionCandidates = candidates.filter(candidate => candidate.election_id === element.election_id)
               %>
               <p id="candidate-count" class="text-sm text-gray-600 cursor-pointer">Candidates: <%= electionCandidates.length %></p>
-              <div id="candidate-details-<%= element.election_id %>" class="absolute z-10 hidden p-2 bg-gray-100 rounded-md shadow-md group-hover:block">
+              <div id="candidate-details-<%= element.election_id %>" class="absolute z-10 hidden p-2 text-blue-700 rounded-md shadow-md lg:shadow-lg bg-blue-50 group-hover:block">
                 <% positions.forEach(position => { %>
                 <% const positionCandidatesCount = electionCandidates.filter(candidate => candidate.position === position) %>
                 <% if (positionCandidatesCount.length > 0) { %>

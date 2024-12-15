@@ -77,9 +77,9 @@ function getClientRegisteredFaceFilename(req, res, next) {
         var _a;
         try {
             if (!req.session)
-                throw new customErrors_1.UnauthorizedError(`Request failed, You have'nt login yet! `);
+                throw new customErrors_1.UnauthorizedError(`Request failed, You have'nt login yet!`);
             const userId = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.user_id;
-            const [RegisterFaceInfo] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? LIMIT 1', [userId]);
+            const [RegisterFaceInfo] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [userId]);
             if (!RegisterFaceInfo || !RegisterFaceInfo.saved_face_filename)
                 throw new customErrors_1.NotFoundError('Face Registration data not found!');
             return res.status(200).json({ filename: RegisterFaceInfo.saved_face_filename });

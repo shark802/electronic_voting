@@ -24,9 +24,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.error(error);
     }
 
-    console.log(savedFaceFilename);
-    console.log(faceRecognitionSeviceDomain);
-
     const video = document.getElementById('video');
     const messageDiv = document.getElementById('message'); // Get the message display area
     const connectionStatusDiv = document.getElementById('connection-status'); // Get the connection status display area
@@ -42,8 +39,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             messageDiv.textContent = "Error accessing camera: " + err.message; // Display error message
         });
 
-    const socket = new WebSocket(`ws://localhost:8000/ws/authenticate-face`);
-    // const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/authenticate-face`);
+    // const socket = new WebSocket(`ws://localhost:8000/ws/authenticate-face`);
+    const socket = new WebSocket(`wss://${faceRecognitionSeviceDomain}/ws/authenticate-face`);
 
     // Update connection status
     socket.onopen = function () {
@@ -95,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (response.success) {
 
                 const faceVerified = response.faceVerified ?? false;
-                console.log('face verify result: ', faceVerified);
+                // console.log('face verify result: ', faceVerified);
                 await fetch('/api/verified-face/status', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -137,6 +134,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                 socket.close();
 
             } else {
+
+                if (response.error) {
+                    Swal.fire({
+                        title: 'Something went wrong!',
+                        text: response.error,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+
+                        window.location.href = '/election';
+                    });
+                }
+
                 console.warn(response.message);
                 messageDiv.textContent = response.message;
             }
@@ -156,14 +166,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     socket.onclose = async function (event) {
         console.log("WebSocket connection closed.");
-
-        // Stop the video stream
-        // const stream = video.srcObject;
-        // if (stream) {
-        //     const tracks = stream.getTracks();
-        //     tracks.forEach(track => track.stop());
-        //     video.srcObject = null;
-        // }
 
         // Display the reason for closure
         let reasonMessage = "WebSocket connection closed.";
