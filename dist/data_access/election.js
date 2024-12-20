@@ -60,14 +60,11 @@ function generateElectionResult(electionId) {
             // Wait for decrypted votes from the worker
             const [decryptedVotes] = yield (0, events_1.once)(worker, 'message');
             const candidatesData = yield getCandidatesTotalTally(electionId);
-            console.log(decryptedVotes.length, decryptedVotes);
             // Tally the votes for each candidate
             const voteTally = candidatesData.map(candidate => {
                 const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
-                console.log(vote_count);
                 return Object.assign(Object.assign({}, candidate), { vote_count });
             });
-            console.log('vote tally', voteTally);
             // Encrypt and insert the tally result
             yield encryptAndInsert(voteTally);
             return voteTally;

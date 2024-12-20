@@ -277,19 +277,51 @@ async function displayVoterElectionHistory(idNumber) {
                     status = 'Finished';
                 }
 
+                const displayVoteDetails = historyInfo.voted ? `
+                    <div class="px-2 my-2" id="vote-detail">
+                        <div class="text-gray-500 w-fit text-sm cursor-pointer flex items-center ${!historyInfo.voted && historyInfo.voted !== 'null' ? 'invisible' : ''}" id="view-details-toggle">
+                            <span class="mr-2">View Details</span>
+                            <svg class="transform transition-transform duration-300" id="details-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.293 5.293a1 1 0 0 1 1.414 0L8 7.586l2.293-2.293a1 1 0 0 1 1.414 1.414l-3 3a1 1 0 0 1-1.414 0l-3-3a1 1 0 0 1 0-1.414z"/>
+                            </svg>
+                        </div> 
+                    
+                        <div class="hidden mt-1 border rounded-md shadow-sm bg-gray-50 p-2" id="details-content">
+                            <div class="w-full">
+                                <span class="font-semibold">Time casted:</span>
+                                <span class="text-gray-700">${historyInfo.time_casted ? new Date(historyInfo.time_casted).toLocaleString() : 'N/A'}</span>
+                            </div>
+                            <div class="w-full">
+                                <span class="font-semibold">Voting mode:</span>
+                                <span class="text-gray-700">${historyInfo.voting_mode ? historyInfo.voting_mode : 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                ` : `
+                    <div class="min-h-6"></div>
+                `;
+
                 return `
                 <div class="bg-white shadow-md rounded-lg p-4 mb-4 border-2">
-                    <p class="text-gray-500 text-sm text-right">${status}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 text-nowrap min-w-fit inline-block py-1 text-sm font-medium w-12 mb-2 rounded-full ${historyInfo.voted ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                            ${historyInfo.voted ? 'Voted' : 'Not Voted'}
+                        </span>
+                        <p class="text-gray-500 text-sm text-right">${status}</p>
+                    </div>
+                    
 
                     <h3 class="text-xl font-semibold">${historyInfo.election_name}</h3>
                     <p class="text-gray-500 text-sm">Election ID: <span class="font-medium">${historyInfo.election_id}</span></p>
                     
-                    <div class="min-h-8 flex items-center justify-between mt-4">
-                        <span class="px-3 inline-block py-1 mb-2 text-sm font-medium min-w-12 mt-3 rounded-full ${historyInfo.voted ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
-                            ${historyInfo.voted ? 'Voted' : 'Not Voted'}
-                        </span>
+                    <div class="min-h-8 flex flex-col">
+                        
 
-                        <p class="text-gray-700 float-right font-medium">${electionDate.toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
+                        ${displayVoteDetails}
+
+                        <div class="">
+                            <p class="text-gray-700 float-right font-medium">${electionDate.toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
+                        </div>
                     </div>
                 </div>
                 `
@@ -356,3 +388,23 @@ document.body.querySelector('#import-user-form').addEventListener('submit', asyn
 
     }
 });
+
+// document.getElementById('view-details-toggle').addEventListener('click', () => {
+//     const detailsContent = document.getElementById('details-content');
+//     const detailsIcon = document.getElementById('details-icon');
+
+//     detailsContent.classList.toggle('hidden');
+//     detailsIcon.classList.toggle('rotate-180'); // Add rotation class for the icon
+// });
+
+document.querySelector('#user-info').addEventListener('click', (event) => {
+
+    if (event.target.closest("#view-details-toggle")) {
+
+        const detailsContent = event.target.closest('#vote-detail').querySelector('#details-content');
+        const detailsIcon = document.getElementById('details-icon');
+
+        $(detailsContent).slideToggle(300)
+        detailsIcon.classList.toggle('rotate-180');
+    }
+})

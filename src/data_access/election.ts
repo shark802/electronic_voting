@@ -57,15 +57,11 @@ export async function generateElectionResult(electionId: string) {
         const [decryptedVotes] = await once(worker, 'message') as [Vote[]];
         const candidatesData = await getCandidatesTotalTally(electionId);
 
-        console.log(decryptedVotes.length, decryptedVotes);
         // Tally the votes for each candidate
         const voteTally = candidatesData.map(candidate => {
             const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
-            console.log(vote_count);
             return { ...candidate, vote_count }
         });
-
-        console.log('vote tally', voteTally);
 
         // Encrypt and insert the tally result
         await encryptAndInsert(voteTally);
