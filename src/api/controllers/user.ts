@@ -10,6 +10,7 @@ import { CsvUserObject } from "../../utils/types/CsvUserObject";
 import { importUsersToDatabase } from "../../utils/importUserToDatabase";
 import { v4 as uuidV4 } from "uuid";
 import { errorMonitor } from "events";
+import { Connection } from "mysql2/promise";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -121,24 +122,39 @@ export async function getUserByIdNumber(req: Request, res: Response, next: NextF
 }
 
 export async function importUsers(req: Request, res: Response, next: NextFunction) {
-
     try {
-        const usersFile = req.file;
-        if (!usersFile) throw new BadRequestError('Users data file is not provided');
+        const socket = req.socket;
+        const connection = await pool.getConnection();
+        try {
+            const usersFile = req.file;
+            if (!usersFile) throw new BadRequestError('Users data file is not provided');
 
-        const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);
-        const filename = usersFile.filename;
-        fs.unlinkSync(usersFile.path);
+            const importId = uuidV4();
+            const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);
+            const filename = usersFile.filename;
+            fs.unlinkSync(usersFile.path);
 
-        const importId = uuidV4();
-        await insertQuery(pool, 'INSERT INTO users_import_records (id, import_size) VALUES(?, ?)', [importId, userCsvFile.length])
+            await insertQuery(pool, 'INSERT INTO users_import_records (id, import_size) VALUES(?, ?)', [importId, userCsvFile.length])
 
-        importUsersToDatabase(userCsvFile, importId, filename); // This function offload the process of importing the users in database on workter threads
+            await connection.beginTransaction();
+            await connection.execute('UPDATE users SET is_active = null WHERE is_active = ?', [0]);
 
-        res.status(200).json({ import_date: new Date().toLocaleDateString(), message: 'Importing started' })
+            await connection.commit();
+            const result = await importUsersToDatabase(userCsvFile, importId, filename, connection);
+            console.log(result);
+            await updateQuery(pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [result.importTimeInMinutes, result.importSize, 'Successful', importId])
+
+            res.status(200).json({ import_date: new Date().toLocaleDateString(), message: 'Importing started' })
+
+        } catch (error) {
+            if (connection) await connection.rollback();
+            next(error);
+        } finally {
+            if (connection) await connection.release();
+        }
 
     } catch (error) {
-        next(error);
+        next(error)
     }
 }
 

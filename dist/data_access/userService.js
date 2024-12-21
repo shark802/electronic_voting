@@ -13,18 +13,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.insertUsersInDatabase = void 0;
-const database_1 = require("../config/database");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-function insertUsersInDatabase(csvUserObject) {
+function insertUsersInDatabase(csvUserObject, connection) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-            const connection = yield database_1.pool.getConnection();
+            // const connection = await pool.getConnection();
             try {
-                yield connection.beginTransaction();
+                // await connection.beginTransaction();
                 for (const user of csvUserObject) {
                     const sqlQuery = `
-                    INSERT INTO users (id_number, lastname, firstname, middlename, course, year_level, section, password, year_active, user_group)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO users (id_number, lastname, firstname, middlename, course, year_level, section, password, year_active, user_group, is_active)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON DUPLICATE KEY UPDATE
                         lastname = VALUES(lastname),
                         firstname = VALUES(firstname),
@@ -34,31 +33,30 @@ function insertUsersInDatabase(csvUserObject) {
                         section = VALUES(section),
                         password = VALUES(password),
                         year_active = VALUES(year_active),
-                        user_group = VALUES(user_group)
+                        user_group = VALUES(user_group),
+                        is_active = VALUES(is_active)
                 `;
                     const salt = yield bcrypt_1.default.genSalt(10);
                     const hashedPassword = yield bcrypt_1.default.hash(user.PASSWORD, salt);
                     const year_active = new Date().getFullYear();
-                    yield connection.execute(sqlQuery, [user["ID NUMBER"], user["LAS NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, hashedPassword, year_active, 'STUDENT']);
+                    yield connection.execute(sqlQuery, [user["ID NUMBER"], user["LAS NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, hashedPassword, year_active, 'STUDENT', 1]);
                     const [userRole] = yield connection.execute('SELECT * FROM roles WHERE id_number = ? LIMIT 1', [user["ID NUMBER"]]);
                     if (userRole.length === 0) {
                         yield connection.execute('INSERT INTO roles (id_number, voter) VALUES (?, 1)', [user["ID NUMBER"]]);
                     }
                 }
-                yield connection.commit();
+                // await connection.commit();
                 resolve({
                     message: "All users inserted/updated successfully",
                     totalUsersProcessed: csvUserObject.length
                 });
             }
             catch (error) {
-                yield connection.rollback();
+                // await connection.rollback();
                 reject(error);
-            }
-            finally {
-                yield connection.release();
             }
         }));
     });
 }
 exports.insertUsersInDatabase = insertUsersInDatabase;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlclNlcnZpY2UuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvZGF0YV9hY2Nlc3MvdXNlclNlcnZpY2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7O0FBR0Esb0RBQTJCO0FBRzNCLFNBQXNCLHFCQUFxQixDQUFDLGFBQThCLEVBQUUsVUFBc0I7O1FBQzlGLE9BQU8sSUFBSSxPQUFPLENBQUMsQ0FBTyxPQUFPLEVBQUUsTUFBTSxFQUFFLEVBQUU7WUFDekMsaURBQWlEO1lBRWpELElBQUksQ0FBQztnQkFDRCx1Q0FBdUM7Z0JBRXZDLEtBQUssTUFBTSxJQUFJLElBQUksYUFBYSxFQUFFLENBQUM7b0JBQy9CLE1BQU0sUUFBUSxHQUFHOzs7Ozs7Ozs7Ozs7OztpQkFjaEIsQ0FBQztvQkFFRixNQUFNLElBQUksR0FBRyxNQUFNLGdCQUFNLENBQUMsT0FBTyxDQUFDLEVBQUUsQ0FBQyxDQUFDO29CQUN0QyxNQUFNLGNBQWMsR0FBRyxNQUFNLGdCQUFNLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxRQUFRLEVBQUUsSUFBSSxDQUFDLENBQUM7b0JBRTlELE1BQU0sV0FBVyxHQUFHLElBQUksSUFBSSxFQUFFLENBQUMsV0FBVyxFQUFFLENBQUM7b0JBRTdDLE1BQU0sVUFBVSxDQUFDLE9BQU8sQ0FBQyxRQUFRLEVBQUUsQ0FBQyxJQUFJLENBQUMsV0FBVyxDQUFDLEVBQUUsSUFBSSxDQUFDLFVBQVUsQ0FBQyxFQUFFLElBQUksQ0FBQyxZQUFZLENBQUMsRUFBRSxJQUFJLENBQUMsYUFBYSxDQUFDLEVBQUUsSUFBSSxDQUFDLE1BQU0sRUFBRSxJQUFJLENBQUMsSUFBSSxFQUFFLElBQUksQ0FBQyxPQUFPLEVBQUUsY0FBYyxFQUFFLFdBQVcsRUFBRSxTQUFTLEVBQUUsQ0FBQyxDQUFDLENBQUMsQ0FBQztvQkFFcE0sTUFBTSxDQUFDLFFBQVEsQ0FBQyxHQUFHLE1BQU0sVUFBVSxDQUFDLE9BQU8sQ0FBQyxpREFBaUQsRUFBRSxDQUFDLElBQUksQ0FBQyxXQUFXLENBQUMsQ0FBQyxDQUFDLENBQUM7b0JBQ3BILElBQUssUUFBMEIsQ0FBQyxNQUFNLEtBQUssQ0FBQyxFQUFFLENBQUM7d0JBQzNDLE1BQU0sVUFBVSxDQUFDLE9BQU8sQ0FBQyxvREFBb0QsRUFBRSxDQUFDLElBQUksQ0FBQyxXQUFXLENBQUMsQ0FBQyxDQUFDLENBQUM7b0JBQ3hHLENBQUM7Z0JBQ0wsQ0FBQztnQkFFRCw2QkFBNkI7Z0JBRTdCLE9BQU8sQ0FBQztvQkFDSixPQUFPLEVBQUUseUNBQXlDO29CQUNsRCxtQkFBbUIsRUFBRSxhQUFhLENBQUMsTUFBTTtpQkFDNUMsQ0FBQyxDQUFDO1lBRVAsQ0FBQztZQUFDLE9BQU8sS0FBSyxFQUFFLENBQUM7Z0JBQ2IsK0JBQStCO2dCQUMvQixNQUFNLENBQUMsS0FBSyxDQUFDLENBQUM7WUFDbEIsQ0FBQztRQUNMLENBQUMsQ0FBQSxDQUFDLENBQUM7SUFDUCxDQUFDO0NBQUE7QUFqREQsc0RBaURDIn0=

@@ -19,6 +19,10 @@
     #details-icon {
       transition: transform 0.3s ease;
     }
+
+    [popover]::backdrop {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
   </style>
 </head>
 
@@ -96,7 +100,7 @@
                 <div class="p-4 pb-1 transition-colors border border-gray-300 rounded-md hover:bg-blue-50">
 
                   <div class="py-1 text-right min-h-5">
-                    <% if (record.status) { %>
+                    <% if (record.status && record.status !== 'Failed') { %>
                     <p class="flex items-center font-medium text-green-600">
                       <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm4.29 7.29l-5 5a1 1 0 01-1.42 0l-2-2a1 1 0 011.42-1.42L10 10.59l4.29-4.29a1 1 0 011.42 1.42z" />
@@ -220,8 +224,34 @@
       </div>
     </div>
 
+    <!-- Import user progress modal -->
+    <div id="import-progress-modal" popover class="relative p-8 bg-white rounded-lg shadow-md w-96">
+      <button id="close-modal" class="absolute text-gray-500 top-2 right-2 hover:text-gray-800 focus:outline-none" aria-label="Close modal">
+        &times;
+      </button>
+      <h2 class="mb-4 text-xl font-semibold text-gray-700">Import Progress</h2>
+      <div id="progress-bar" class="h-4 mb-4 overflow-hidden bg-gray-300 rounded-md">
+        <div id="progress-fill" class="h-full transition-all duration-300 bg-blue-600" style="width: 23%;"></div>
+      </div>
+      <div id="progress-text" class="mb-4 text-lg font-bold text-blue-600">Importing users... <span id="percentage">23%</span></div>
+      <div class="mt-4 text-sm text-gray-600">
+        <p>Total Users: <span id="total-users">100</span></p>
+        <p>Successfully Imported: <span id="success-count">23</span></p>
+        <p>Errors: <span id="error-count">5</span></p>
+      </div>
+      <div id="error-message" class="mt-4 text-sm text-red-600">
+        <span id="error-text"></span>
+      </div>
+    </div>
+
   </main>
 
 </body>
 
 </html>
+
+<script>
+  document.getElementById('close-modal').addEventListener('click', function() {
+    document.getElementById('import-progress-modal').style.display = 'none';
+  });
+</script>

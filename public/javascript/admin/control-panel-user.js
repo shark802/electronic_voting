@@ -320,7 +320,7 @@ async function displayVoterElectionHistory(idNumber) {
                         ${displayVoteDetails}
 
                         <div class="">
-                            <p class="text-gray-700 float-right font-medium">${electionDate.toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric', hour12: true })}</p>
+                            <p class="text-gray-700 float-right font-medium">${electionDate.toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                         </div>
                     </div>
                 </div>
@@ -389,14 +389,7 @@ document.body.querySelector('#import-user-form').addEventListener('submit', asyn
     }
 });
 
-// document.getElementById('view-details-toggle').addEventListener('click', () => {
-//     const detailsContent = document.getElementById('details-content');
-//     const detailsIcon = document.getElementById('details-icon');
-
-//     detailsContent.classList.toggle('hidden');
-//     detailsIcon.classList.toggle('rotate-180'); // Add rotation class for the icon
-// });
-
+// Toggle view vote detail history of voter
 document.querySelector('#user-info').addEventListener('click', (event) => {
 
     if (event.target.closest("#view-details-toggle")) {
@@ -408,3 +401,7 @@ document.querySelector('#user-info').addEventListener('click', (event) => {
         detailsIcon.classList.toggle('rotate-180');
     }
 })
+
+// Import User Progress modal
+const importUsersModal = document.querySelector('#import-progress-modal')
+importUsersModal.showPopover();

@@ -3,6 +3,8 @@ import { CsvUserObject } from "./types/CsvUserObject";
 import { Worker } from "worker_threads";
 import { pool } from "../config/database";
 import { updateQuery } from "../data_access/query";
+import { Connection } from "mysql2/promise";
+import { insertUsersInDatabase } from "../data_access/userService";
 
 /**
  * Processes and inserts user data into the database in batches using a worker thread.
@@ -14,30 +16,50 @@ import { updateQuery } from "../data_access/query";
  * @returns {Promise<number>} - A promise that resolves with the number of successfully processed users.
  *                              If an error occurs, the promise is rejected with the error.
  */
-export function importUsersToDatabase(csvUsersData: CsvUserObject[], importId: string, filename: string) {
-    return new Promise((resolve, reject) => {
-        const worker = new Worker(path.join(__dirname, './workerFiles/importUsersWorker.js'));
-        worker.postMessage({ csvUsersData, filename });
+export async function importUsersToDatabase(csvUsersData: CsvUserObject[], importId: string, filename: string, connection: Connection) {
 
-        worker.on('message', async ({ importSize, importTimeInMinutes }) => {
-            await updateQuery(pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [importTimeInMinutes, importSize, 'Successful', importId])
+    const BATCH_SIZE = 100;
+    const importSize = csvUsersData.length;
 
-            resolve({
-                importSize,
-                importTimeInMinutes,
-                importId
-            });
+    let userBatches: CsvUserObject[][] = []
+    for (let i = 0; i < csvUsersData.length; i += BATCH_SIZE) {
+        userBatches.push(csvUsersData.slice(i, i + BATCH_SIZE))
+    }
 
-        });
+    console.log(`Importing ${filename}`);
+    const startTime = Date.now();
 
-        worker.on('error', (error) => {
-            reject(error);
-        });
+    for (let i = 0; i < userBatches.length; i++) {
+        const userBatch = userBatches[i];
 
-        worker.on('exit', (code) => {
-            if (code !== 0) {
-                reject(new Error(`Worker stopped with exit code ${code}`));
-            }
-        });
-    });
+        try {
+            const startTime = Date.now();
+
+            await insertUsersInDatabase(userBatch, connection);
+
+            const endTime = Date.now();
+            const timeTaken = (endTime - startTime) / 1000;
+
+            console.log(`Batch ${i + 1} inserted successfully. Time taken: ${timeTaken.toFixed(2)} seconds`);
+
+        } catch (error) {
+            console.error(`Error inserting batch ${i + 1}:`, error);
+            throw error
+        }
+    }
+
+    const endTime = Date.now();
+
+    const totalTimeInMilliseconds = endTime - startTime;
+    const totalMinutes = Math.floor(totalTimeInMilliseconds / (1000 * 60));
+    const remainingSeconds = Math.floor((totalTimeInMilliseconds % (1000 * 60)) / 1000);
+
+    const importTimeInMinutes = `${totalMinutes}:${remainingSeconds} mins `;
+    console.log(`Successfully processed ${importSize} users.\n Time taken: ${importTimeInMinutes}`);
+
+    return {
+        importSize,
+        importTimeInMinutes
+    }
+
 }
