@@ -233,11 +233,10 @@
       <div id="progress-bar" class="h-4 mb-4 overflow-hidden bg-gray-300 rounded-md">
         <div id="progress-fill" class="h-full transition-all duration-300 bg-blue-600" style="width: 23%;"></div>
       </div>
-      <div id="progress-text" class="mb-4 text-lg font-bold text-blue-600">Importing users... <span id="percentage">23%</span></div>
-      <div class="mt-4 text-sm text-gray-600">
-        <p>Total Users: <span id="total-users">100</span></p>
+      <div id="progress-text" class="text-lg font-bold text-blue-600 ">Importing users... <span id="percentage">23%</span></div>
+      <div class="text-sm text-gray-600 ">
+        <!-- <p>Total Users: <span id="total-users">100</span></p> -->
         <p>Successfully Imported: <span id="success-count">23</span></p>
-        <p>Errors: <span id="error-count">5</span></p>
       </div>
       <div id="error-message" class="mt-4 text-sm text-red-600">
         <span id="error-text"></span>
@@ -249,9 +248,3 @@
 </body>
 
 </html>
-
-<script>
-  document.getElementById('close-modal').addEventListener('click', function() {
-    document.getElementById('import-progress-modal').style.display = 'none';
-  });
-</script>

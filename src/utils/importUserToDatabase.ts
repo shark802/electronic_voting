@@ -5,6 +5,7 @@ import { pool } from "../config/database";
 import { updateQuery } from "../data_access/query";
 import { Connection } from "mysql2/promise";
 import { insertUsersInDatabase } from "../data_access/userService";
+import { Socket } from "socket.io";
 
 /**
  * Processes and inserts user data into the database in batches using a worker thread.
@@ -16,35 +17,35 @@ import { insertUsersInDatabase } from "../data_access/userService";
  * @returns {Promise<number>} - A promise that resolves with the number of successfully processed users.
  *                              If an error occurs, the promise is rejected with the error.
  */
-export async function importUsersToDatabase(csvUsersData: CsvUserObject[], importId: string, filename: string, connection: Connection) {
+export async function importUsersToDatabase(csvUsersData: CsvUserObject[], importId: string, filename: string, connection: Connection, socket: Socket) {
 
-    const BATCH_SIZE = 100;
     const importSize = csvUsersData.length;
-
-    let userBatches: CsvUserObject[][] = []
-    for (let i = 0; i < csvUsersData.length; i += BATCH_SIZE) {
-        userBatches.push(csvUsersData.slice(i, i + BATCH_SIZE))
-    }
 
     console.log(`Importing ${filename}`);
     const startTime = Date.now();
 
-    for (let i = 0; i < userBatches.length; i++) {
-        const userBatch = userBatches[i];
+    for (let i = 0; i < csvUsersData.length; i++) {
+        const user = csvUsersData[i];
 
         try {
-            const startTime = Date.now();
 
-            await insertUsersInDatabase(userBatch, connection);
+            await insertUsersInDatabase([user], connection);
+            const percentageInserted = ((i + 1) / importSize) * 100;
+            socket.emit('user-import-update', {
+                percentage: percentageInserted,
+                status: 'PENDING',
+                currentInserted: i + 1
+            });
 
-            const endTime = Date.now();
-            const timeTaken = (endTime - startTime) / 1000;
-
-            console.log(`Batch ${i + 1} inserted successfully. Time taken: ${timeTaken.toFixed(2)} seconds`);
 
         } catch (error) {
-            console.error(`Error inserting batch ${i + 1}:`, error);
-            throw error
+            console.error(`Error inserting user ${i + 1}:`, error);
+            socket.emit('user-import-update', {
+                status: 'FAILED',
+                userIndex: i + 1,
+                errorMessage: (error as Error).message // Send the error message
+            });
+            throw error;
         }
     }
 
@@ -60,6 +61,5 @@ export async function importUsersToDatabase(csvUsersData: CsvUserObject[], impor
     return {
         importSize,
         importTimeInMinutes
-    }
-
+    };
 }

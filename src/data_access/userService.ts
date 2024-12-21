@@ -6,10 +6,8 @@ import { QueryResult } from "mysql2";
 
 export async function insertUsersInDatabase(csvUserObject: CsvUserObject[], connection: Connection) {
     return new Promise(async (resolve, reject) => {
-        // const connection = await pool.getConnection();
 
         try {
-            // await connection.beginTransaction();
 
             for (const user of csvUserObject) {
                 const sqlQuery = `
@@ -41,15 +39,12 @@ export async function insertUsersInDatabase(csvUserObject: CsvUserObject[], conn
                 }
             }
 
-            // await connection.commit();
-
             resolve({
                 message: "All users inserted/updated successfully",
                 totalUsersProcessed: csvUserObject.length
             });
 
         } catch (error) {
-            // await connection.rollback();
             reject(error);
         }
     });

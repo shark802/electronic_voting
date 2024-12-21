@@ -404,4 +404,72 @@ document.querySelector('#user-info').addEventListener('click', (event) => {
 
 // Import User Progress modal
 const importUsersModal = document.querySelector('#import-progress-modal')
-importUsersModal.showPopover();
+
+let isModalOpen = false; // Flag to track if the modal is currently open
+
+// Function to show the import progress modal
+function showImportProgressModal() {
+    importUsersModal.showPopover();
+    isModalOpen = true; // Set the flag to true when the modal is shown
+}
+
+// Listen for user import updates
+socket.on('user-import-update', (data) => {
+
+    if (data.status === 'FAILED') {
+
+        if (isModalOpen) {
+            importUsersModal.hidePopover();
+            isModalOpen = false;
+        }
+
+        return Swal.fire({
+            title: 'Import Failed',
+            text: `Error inserting data on row ${data?.userIndex}`,
+            icon: 'error',
+            confirmButtonColor: "#2060f7",
+            confirmButtonText: 'Okay',
+            reverseButtons: true,
+        });
+
+    } else if (data.status === 'SUCCESSFULL') {
+
+        if (isModalOpen) {
+            importUsersModal.hidePopover();
+            isModalOpen = false;
+        }
+
+        return Swal.fire({
+            title: data.message,
+            text: `Successfully import ${data.importSize} users`,
+            icon: 'success',
+            confirmButtonColor: "#2060f7",
+            confirmButtonText: 'Okay',
+            reverseButtons: true,
+        });
+    }
+
+    const { percentage, currentInserted } = data;
+    const progressBar = document.getElementById('progress-fill');
+    const progressText = document.getElementById('percentage');
+    const successCount = document.getElementById('success-count');
+    const totalUsers = document.getElementById('total-users');
+    const errorCount = document.getElementById('error-count');
+
+    // Update the progress bar width and text
+    progressBar.style.width = `${percentage}%`;
+    progressText.textContent = `${Math.round(percentage)}%`;
+    successCount.textContent = currentInserted;
+
+
+    // Show the modal only if it is not already open
+    if (!isModalOpen) {
+        showImportProgressModal();
+    }
+});
+
+// Close modal event listener
+document.getElementById('close-modal').addEventListener('click', function () {
+    document.getElementById('import-progress-modal').style.display = 'none';
+    isModalOpen = false; // Set the flag to false when the modal is closed
+});

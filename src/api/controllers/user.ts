@@ -123,7 +123,7 @@ export async function getUserByIdNumber(req: Request, res: Response, next: NextF
 
 export async function importUsers(req: Request, res: Response, next: NextFunction) {
     try {
-        const socket = req.socket;
+        const socket = res.locals.io;
         const connection = await pool.getConnection();
         try {
             const usersFile = req.file;
@@ -140,9 +140,16 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
             await connection.execute('UPDATE users SET is_active = null WHERE is_active = ?', [0]);
 
             await connection.commit();
-            const result = await importUsersToDatabase(userCsvFile, importId, filename, connection);
+            const result = await importUsersToDatabase(userCsvFile, importId, filename, connection, socket);
             console.log(result);
             await updateQuery(pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [result.importTimeInMinutes, result.importSize, 'Successful', importId])
+            socket.emit('user-import-update', {
+                message: 'Import completed successfully!',
+                importId: importId,
+                importSize: result.importSize,
+                percentage: 100,
+                timeTaken: result.importTimeInMinutes
+            });
 
             res.status(200).json({ import_date: new Date().toLocaleDateString(), message: 'Importing started' })
 
