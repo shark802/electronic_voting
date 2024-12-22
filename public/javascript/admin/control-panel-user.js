@@ -375,13 +375,15 @@ document.body.querySelector('#import-user-form').addEventListener('submit', asyn
         if (!response.ok) {
             return confirmErrorAlert(responseObject.message);
         }
-        return Swal.fire({
-            title: 'Processing your request...',
-            text: 'This might take a few moments',
-            icon: 'success',
-            confirmButtonColor: "#2060f7",
-            reverseButtons: true,
-        });
+
+        return;
+        // return Swal.fire({
+        //     title: 'Processing your request...',
+        //     text: 'This might take a few moments',
+        //     icon: 'success',
+        //     confirmButtonColor: "#2060f7",
+        //     reverseButtons: true,
+        // });
 
     } catch (error) {
         console.error(error);
@@ -413,10 +415,61 @@ function showImportProgressModal() {
     isModalOpen = true; // Set the flag to true when the modal is shown
 }
 
+const importRecords = document.querySelector('#import-records').querySelectorAll('#import-record');
+for (const record of importRecords) {
+    const recordId = record.querySelector('[name=importId]').value;
+    console.log(recordId);
+
+    const recordStatus = record.querySelector('.record-status');
+    console.log(recordStatus);
+}
+
 // Listen for user import updates
 socket.on('user-import-update', (data) => {
 
-    if (data.status === 'FAILED') {
+    const { percentage, currentInserted } = data;
+    const progressBar = document.getElementById('progress-fill');
+    const progressText = document.getElementById('percentage');
+    const successCount = document.getElementById('success-count');
+
+    // Update the progress bar width and text
+    progressBar.style.width = `${percentage}%`;
+    progressText.textContent = `${Math.round(percentage)}%`;
+    successCount.textContent = currentInserted;
+
+
+    // Show the modal only if it is not already open
+    if (!isModalOpen) {
+        showImportProgressModal();
+    }
+
+    for (const record of importRecords) {
+
+        const recordId = record.querySelector('[name=importId]').value;
+        const recordStatus = record.querySelector('.record-status');
+
+        if (recordId === data.importId) {
+            recordStatus.outerHTML = `
+                <div class="flex items-center font-medium text-blue-600 record-status">
+                    <svg class="w-4 h-4 mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.5" />
+                        <path d="M12 2v4M12 18v4M2 12h4m14 0h4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+                    </svg>
+                    <span>
+                        On Progress
+                    </span>
+                </div>
+            `;
+            break;
+        }
+    }
+
+});
+
+// Listen for failed import users
+socket.on('user-import-failed', (data) => {
+    console.log('Failed');
+    if (data?.status === 'FAILED') {
 
         if (isModalOpen) {
             importUsersModal.hidePopover();
@@ -432,44 +485,50 @@ socket.on('user-import-update', (data) => {
             reverseButtons: true,
         });
 
-    } else if (data.status === 'SUCCESSFULL') {
+    }
+})
 
+// Listen if users import success
+socket.on('user-import-success', (data) => {
+    if (data?.status === 'SUCCESSFUL') {
         if (isModalOpen) {
             importUsersModal.hidePopover();
             isModalOpen = false;
         }
 
+        for (const record of importRecords) {
+
+            const recordId = record.querySelector('[name=importId]').value;
+            const recordStatus = record.querySelector('.record-status');
+
+            if (recordId === data.importId) {
+                recordStatus.outerHTML = `
+                 <div class="flex items-center font-medium text-green-600 record-status">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm4.29 7.29l-5 5a1 1 0 01-1.42 0l-2-2a1 1 0 011.42-1.42L10 10.59l4.29-4.29a1 1 0 011.42 1.42z" />
+                    </svg>
+                    <span>
+                        Success
+                    </span>
+                </div>
+            `;
+                break;
+            }
+        }
+
         return Swal.fire({
             title: data.message,
-            text: `Successfully import ${data.importSize} users`,
+            text: `Successfully imported ${data.importSize} users`,
             icon: 'success',
             confirmButtonColor: "#2060f7",
             confirmButtonText: 'Okay',
             reverseButtons: true,
         });
     }
-
-    const { percentage, currentInserted } = data;
-    const progressBar = document.getElementById('progress-fill');
-    const progressText = document.getElementById('percentage');
-    const successCount = document.getElementById('success-count');
-    const totalUsers = document.getElementById('total-users');
-    const errorCount = document.getElementById('error-count');
-
-    // Update the progress bar width and text
-    progressBar.style.width = `${percentage}%`;
-    progressText.textContent = `${Math.round(percentage)}%`;
-    successCount.textContent = currentInserted;
-
-
-    // Show the modal only if it is not already open
-    if (!isModalOpen) {
-        showImportProgressModal();
-    }
 });
 
 // Close modal event listener
 document.getElementById('close-modal').addEventListener('click', function () {
     document.getElementById('import-progress-modal').style.display = 'none';
-    isModalOpen = false; // Set the flag to false when the modal is closed
+    isModalOpen = false;
 });

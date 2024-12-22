@@ -143,7 +143,9 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
             const result = await importUsersToDatabase(userCsvFile, importId, filename, connection, socket);
             console.log(result);
             await updateQuery(pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [result.importTimeInMinutes, result.importSize, 'Successful', importId])
-            socket.emit('user-import-update', {
+
+            socket.emit('user-import-success', {
+                status: 'SUCCESSFUL',
                 message: 'Import completed successfully!',
                 importId: importId,
                 importSize: result.importSize,

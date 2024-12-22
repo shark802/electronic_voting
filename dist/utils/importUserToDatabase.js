@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.importUsersToDatabase = void 0;
+const database_1 = require("../config/database");
+const query_1 = require("../data_access/query");
 const userService_1 = require("../data_access/userService");
 /**
  * Processes and inserts user data into the database in batches using a worker thread.
@@ -34,15 +36,16 @@ function importUsersToDatabase(csvUsersData, importId, filename, connection, soc
                 socket.emit('user-import-update', {
                     percentage: percentageInserted,
                     status: 'PENDING',
-                    currentInserted: i + 1
+                    currentInserted: i + 1,
+                    importId: importId
                 });
             }
             catch (error) {
                 console.error(`Error inserting user ${i + 1}:`, error);
-                socket.emit('user-import-update', {
+                yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE users_import_records SET status = ? WHERE id = ? ', ['Failed', importId]);
+                socket.emit('user-import-failed', {
                     status: 'FAILED',
                     userIndex: i + 1,
-                    errorMessage: error.message // Send the error message
                 });
                 throw error;
             }
@@ -60,4 +63,3 @@ function importUsersToDatabase(csvUsersData, importId, filename, connection, soc
     });
 }
 exports.importUsersToDatabase = importUsersToDatabase;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW1wb3J0VXNlclRvRGF0YWJhc2UuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvdXRpbHMvaW1wb3J0VXNlclRvRGF0YWJhc2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7O0FBTUEsNERBQW1FO0FBR25FOzs7Ozs7Ozs7R0FTRztBQUNILFNBQXNCLHFCQUFxQixDQUFDLFlBQTZCLEVBQUUsUUFBZ0IsRUFBRSxRQUFnQixFQUFFLFVBQXNCLEVBQUUsTUFBYzs7UUFFakosTUFBTSxVQUFVLEdBQUcsWUFBWSxDQUFDLE1BQU0sQ0FBQztRQUV2QyxPQUFPLENBQUMsR0FBRyxDQUFDLGFBQWEsUUFBUSxFQUFFLENBQUMsQ0FBQztRQUNyQyxNQUFNLFNBQVMsR0FBRyxJQUFJLENBQUMsR0FBRyxFQUFFLENBQUM7UUFFN0IsS0FBSyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxHQUFHLFlBQVksQ0FBQyxNQUFNLEVBQUUsQ0FBQyxFQUFFLEVBQUUsQ0FBQztZQUMzQyxNQUFNLElBQUksR0FBRyxZQUFZLENBQUMsQ0FBQyxDQUFDLENBQUM7WUFFN0IsSUFBSSxDQUFDO2dCQUVELE1BQU0sSUFBQSxtQ0FBcUIsRUFBQyxDQUFDLElBQUksQ0FBQyxFQUFFLFVBQVUsQ0FBQyxDQUFDO2dCQUNoRCxNQUFNLGtCQUFrQixHQUFHLENBQUMsQ0FBQyxDQUFDLEdBQUcsQ0FBQyxDQUFDLEdBQUcsVUFBVSxDQUFDLEdBQUcsR0FBRyxDQUFDO2dCQUN4RCxNQUFNLENBQUMsSUFBSSxDQUFDLG9CQUFvQixFQUFFO29CQUM5QixVQUFVLEVBQUUsa0JBQWtCO29CQUM5QixNQUFNLEVBQUUsU0FBUztvQkFDakIsZUFBZSxFQUFFLENBQUMsR0FBRyxDQUFDO2lCQUN6QixDQUFDLENBQUM7WUFHUCxDQUFDO1lBQUMsT0FBTyxLQUFLLEVBQUUsQ0FBQztnQkFDYixPQUFPLENBQUMsS0FBSyxDQUFDLHdCQUF3QixDQUFDLEdBQUcsQ0FBQyxHQUFHLEVBQUUsS0FBSyxDQUFDLENBQUM7Z0JBQ3ZELE1BQU0sQ0FBQyxJQUFJLENBQUMsb0JBQW9CLEVBQUU7b0JBQzlCLE1BQU0sRUFBRSxRQUFRO29CQUNoQixTQUFTLEVBQUUsQ0FBQyxHQUFHLENBQUM7b0JBQ2hCLFlBQVksRUFBRyxLQUFlLENBQUMsT0FBTyxDQUFDLHlCQUF5QjtpQkFDbkUsQ0FBQyxDQUFDO2dCQUNILE1BQU0sS0FBSyxDQUFDO1lBQ2hCLENBQUM7UUFDTCxDQUFDO1FBRUQsTUFBTSxPQUFPLEdBQUcsSUFBSSxDQUFDLEdBQUcsRUFBRSxDQUFDO1FBRTNCLE1BQU0sdUJBQXVCLEdBQUcsT0FBTyxHQUFHLFNBQVMsQ0FBQztRQUNwRCxNQUFNLFlBQVksR0FBRyxJQUFJLENBQUMsS0FBSyxDQUFDLHVCQUF1QixHQUFHLENBQUMsSUFBSSxHQUFHLEVBQUUsQ0FBQyxDQUFDLENBQUM7UUFDdkUsTUFBTSxnQkFBZ0IsR0FBRyxJQUFJLENBQUMsS0FBSyxDQUFDLENBQUMsdUJBQXVCLEdBQUcsQ0FBQyxJQUFJLEdBQUcsRUFBRSxDQUFDLENBQUMsR0FBRyxJQUFJLENBQUMsQ0FBQztRQUVwRixNQUFNLG1CQUFtQixHQUFHLEdBQUcsWUFBWSxJQUFJLGdCQUFnQixRQUFRLENBQUM7UUFDeEUsT0FBTyxDQUFDLEdBQUcsQ0FBQywwQkFBMEIsVUFBVSx5QkFBeUIsbUJBQW1CLEVBQUUsQ0FBQyxDQUFDO1FBRWhHLE9BQU87WUFDSCxVQUFVO1lBQ1YsbUJBQW1CO1NBQ3RCLENBQUM7SUFDTixDQUFDO0NBQUE7QUE3Q0Qsc0RBNkNDIn0=

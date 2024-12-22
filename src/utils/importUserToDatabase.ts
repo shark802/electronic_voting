@@ -30,20 +30,25 @@ export async function importUsersToDatabase(csvUsersData: CsvUserObject[], impor
         try {
 
             await insertUsersInDatabase([user], connection);
+
             const percentageInserted = ((i + 1) / importSize) * 100;
             socket.emit('user-import-update', {
                 percentage: percentageInserted,
                 status: 'PENDING',
-                currentInserted: i + 1
+                currentInserted: i + 1,
+                importId: importId
             });
 
 
         } catch (error) {
+
             console.error(`Error inserting user ${i + 1}:`, error);
-            socket.emit('user-import-update', {
+
+            await updateQuery(pool, 'UPDATE users_import_records SET status = ? WHERE id = ? ', ['Failed', importId])
+
+            socket.emit('user-import-failed', {
                 status: 'FAILED',
                 userIndex: i + 1,
-                errorMessage: (error as Error).message // Send the error message
             });
             throw error;
         }
