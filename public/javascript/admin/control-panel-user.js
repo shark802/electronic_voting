@@ -416,13 +416,6 @@ function showImportProgressModal() {
 }
 
 const importRecords = document.querySelector('#import-records').querySelectorAll('#import-record');
-for (const record of importRecords) {
-    const recordId = record.querySelector('[name=importId]').value;
-    console.log(recordId);
-
-    const recordStatus = record.querySelector('.record-status');
-    console.log(recordStatus);
-}
 
 // Listen for user import updates
 socket.on('user-import-update', (data) => {
@@ -468,7 +461,6 @@ socket.on('user-import-update', (data) => {
 
 // Listen for failed import users
 socket.on('user-import-failed', (data) => {
-    console.log('Failed');
     if (data?.status === 'FAILED') {
 
         if (isModalOpen) {

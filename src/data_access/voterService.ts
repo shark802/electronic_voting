@@ -28,6 +28,7 @@ export async function getAllRecentUsersVoted() {
                     FROM users u
                     JOIN votes v ON u.id_number = v.voter_id
                     JOIN elections e ON v.election_id = e.election_id
+                    WHERE e.deleted_at IS NULL
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
                 ORDER BY time_casted DESC;`
@@ -43,7 +44,7 @@ export async function getAllRecentUsersVotedInElection(electionId: string) {
                     FROM users u
                     JOIN votes v ON u.id_number = v.voter_id
                     JOIN elections e ON v.election_id = e.election_id
-                    WHERE v.election_id = ?
+                    WHERE v.election_id = ? AND e.deleted_at IS NULL
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
                 ORDER BY time_casted DESC;`
@@ -59,7 +60,7 @@ export async function findOneUserVotedInElection(electionId: string, userId: str
                     FROM users u
                     JOIN votes v ON u.id_number = v.voter_id
                     JOIN elections e ON v.election_id = e.election_id
-                    WHERE v.election_id = ? AND u.id_number = ?
+                    WHERE v.election_id = ? AND u.id_number = ? AND e.deleted_at IS NULL
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
                 ORDER BY time_casted DESC;`
@@ -75,7 +76,7 @@ export async function getAllUserElectionParticipatedIn(userId: string) {
                     FROM users u
                     JOIN votes v ON u.id_number = v.voter_id
                     JOIN elections e ON v.election_id = e.election_id
-                    WHERE u.id_number = ?
+                    WHERE u.id_number = ? AND e.deleted_at IS NULL
                     GROUP BY v.election_id, u.id_number
                 ) AS subquery
                 ORDER BY time_casted DESC;`
