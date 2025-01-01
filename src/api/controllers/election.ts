@@ -21,7 +21,7 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 		}
 
 		const openElection = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME())) AND deleted_at IS NULL');
-		if (openElection.length > 0) throw new ConflictError('An active election is currrently running');
+		if (openElection.length > 0) throw new ConflictError('An active election is currently running');
 
 		const election_id = ulid();
 		const totalQualifiedVoter = await countAllQualifiedVoterForElection();

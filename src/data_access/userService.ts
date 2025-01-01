@@ -1,5 +1,4 @@
 import { Connection } from "mysql2/promise";
-import { pool } from "../config/database";
 import { CsvUserObject } from "../utils/types/CsvUserObject";
 import bcrypt from 'bcrypt'
 import { QueryResult } from "mysql2";

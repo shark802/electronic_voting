@@ -1,4 +1,4 @@
-import { confirmAlert, confirmErrorAlert, showSwalSuccessToast } from "/javascript/helper/sweetAlertFunctions.js"
+import {confirmErrorAlert, showSwalSuccessToast} from "/javascript/helper/sweetAlertFunctions.js"
 import "/javascript/logout.js"
 import socket from "/javascript/socket_io.js"
 
@@ -42,7 +42,6 @@ document.querySelector('#remove-device-modal').addEventListener('click', async (
     if (event.target.id !== "confirm-remove") return;
 
     const uuid = event.target.closest('#remove-device-modal').querySelector('#uuid').textContent;
-    console.log(uuid);
 
     try {
         const response = await sendRequestToRemoveDevice(uuid);
@@ -66,13 +65,11 @@ function displayRegisteredDeviceInfo(modal, codename, uuid, requestDate) {
 }
 
 async function sendRequestToRemoveDevice(uuid) {
-    const response = await fetch(`/api/uuid/${uuid}`, {
+    return await fetch(`/api/uuid/${uuid}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isToRegister: false })
-    })
-
-    return response;
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({isToRegister: false})
+    });
 }
 
 socket.on('client-connected', (onlineClientsUuid) => {

@@ -27,7 +27,7 @@ function createElection(req, res, next) {
             }
             const openElection = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_active = 1 AND (date_end > CURRENT_DATE OR (date_end = CURRENT_DATE AND time_end > CURTIME())) AND deleted_at IS NULL');
             if (openElection.length > 0)
-                throw new customErrors_1.ConflictError('An active election is currrently running');
+                throw new customErrors_1.ConflictError('An active election is currently running');
             const election_id = (0, ulid_1.ulid)();
             const totalQualifiedVoter = yield (0, voterService_1.countAllQualifiedVoterForElection)();
             const connection = yield database_1.pool.getConnection();

@@ -1,6 +1,4 @@
-import path from "path";
 import { CsvUserObject } from "./types/CsvUserObject";
-import { Worker } from "worker_threads";
 import { pool } from "../config/database";
 import { updateQuery } from "../data_access/query";
 import { Connection } from "mysql2/promise";

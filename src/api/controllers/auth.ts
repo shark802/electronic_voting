@@ -17,7 +17,7 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
         const response = await fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
         const apiResponseObject: TechnopalApiObject = await response.json();
         
-        if (apiResponseObject.is_valid === false) throw new UnauthorizedError("Login Failed!");
+        if (!apiResponseObject.is_valid) throw new UnauthorizedError("Login Failed!");
 
         // Login successful
         const user = convertApiObjectToUser(apiResponseObject);
@@ -29,11 +29,11 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
             await createUser(connection, user); // save user info in database.
             const [rowResult] = await connection.execute<RowDataPacket[]>("SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
 
-            // If user dont have role yet, add role
+            // If user don't have role yet, add role
             if (rowResult.length === 0) {
                 const voterRole = apiResponseObject.user_group === "STUDENT" ? 1 : 0; // assign the voter role if the user is student.
                 await connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
-            };
+            }
             await connection.commit();
 
         } catch (error) {
@@ -69,7 +69,7 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
         }
     }
 
-};
+}
 
 export async function logoutFunction(req: Request, res: Response, next: NextFunction) {
     try {

@@ -19,8 +19,12 @@ import {
     commpleteElectionResult,
     electionAnalytics
 } from '../controllers/admin';
+import { isAdmin, isAuthenticated } from "../../middlewares/authorization";
 
 const router = Router();
+
+router.use(isAuthenticated)
+router.use(isAdmin)
 
 // Dashboard
 router.get("/dashboard/overview", dashboardOverview);

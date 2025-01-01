@@ -24,7 +24,7 @@ function loginFunction(req, res, next) {
                 throw new customErrors_1.BadRequestError("Missing credentials!");
             const response = yield fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
             const apiResponseObject = yield response.json();
-            if (apiResponseObject.is_valid === false)
+            if (!apiResponseObject.is_valid)
                 throw new customErrors_1.UnauthorizedError("Login Failed!");
             // Login successful
             const user = (0, convertApiObjectToUser_1.convertApiObjectToUser)(apiResponseObject);
@@ -33,12 +33,11 @@ function loginFunction(req, res, next) {
                 yield connection.beginTransaction();
                 yield (0, createUser_1.createUser)(connection, user); // save user info in database.
                 const [rowResult] = yield connection.execute("SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
-                // If user dont have role yet, add role
+                // If user don't have role yet, add role
                 if (rowResult.length === 0) {
                     const voterRole = apiResponseObject.user_group === "STUDENT" ? 1 : 0; // assign the voter role if the user is student.
                     yield connection.execute("INSERT INTO roles (voter, id_number) VALUES (?, ?)", [voterRole, user.id_number]);
                 }
-                ;
                 yield connection.commit();
             }
             catch (error) {
@@ -75,7 +74,6 @@ function loginFunction(req, res, next) {
     });
 }
 exports.loginFunction = loginFunction;
-;
 function logoutFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

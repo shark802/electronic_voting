@@ -4,7 +4,7 @@ import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
 import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVotedInElection, getAllUserElectionParticipatedIn } from "../../data_access/voterService";
-import { getElectionInfoById, getCandidatesTotalTally, getElectionResult, generateElectionResult } from "../../data_access/election";
+import { getElectionInfoById, getElectionResult, generateElectionResult } from "../../data_access/election";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { Department } from "../../utils/types/Department";

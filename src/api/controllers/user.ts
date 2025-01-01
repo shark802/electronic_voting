@@ -10,7 +10,6 @@ import { CsvUserObject } from "../../utils/types/CsvUserObject";
 import { importUsersToDatabase } from "../../utils/importUserToDatabase";
 import { v4 as uuidV4 } from "uuid";
 import { errorMonitor } from "events";
-import { Connection } from "mysql2/promise";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
     try {

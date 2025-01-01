@@ -2,7 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const admin_1 = require("../controllers/admin");
+const authorization_1 = require("../../middlewares/authorization");
 const router = (0, express_1.Router)();
+router.use(authorization_1.isAuthenticated);
+router.use(authorization_1.isAdmin);
 // Dashboard
 router.get("/dashboard/overview", admin_1.dashboardOverview);
 router.get("/dashboard/vote-tally", admin_1.dashboardVoteTally);
