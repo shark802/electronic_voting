@@ -10,6 +10,7 @@ import { CsvUserObject } from "../../utils/types/CsvUserObject";
 import { importUsersToDatabase } from "../../utils/importUserToDatabase";
 import { v4 as uuidV4 } from "uuid";
 import { errorMonitor } from "events";
+import { log } from "console";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -126,12 +127,20 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
         const connection = await pool.getConnection();
         try {
             const usersFile = req.file;
-            if (!usersFile) throw new BadRequestError('Users data file is not provided');
+            if (!usersFile) throw new BadRequestError('No users data file was provided for import.');
 
             const importId = uuidV4();
             const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);
             const filename = usersFile.filename;
             fs.unlinkSync(usersFile.path);
+
+            // Validate that all required fields are present in the CSV data
+            const requiredFields = ['ID NUMBER', 'LAST NAME', 'FIRST NAME', 'MIDDLE NAME', 'COURSE', 'YEAR', 'SECTION', 'PASSWORD'];
+            requiredFields.forEach(fieldname => {
+                if (!Object.keys(userCsvFile[0]).includes(fieldname)) {
+                    throw new BadRequestError(`Error importing users: Missing required field "${fieldname}".`)
+                }
+            })
 
             await insertQuery(pool, 'INSERT INTO users_import_records (id, import_size) VALUES(?, ?)', [importId, userCsvFile.length])
 

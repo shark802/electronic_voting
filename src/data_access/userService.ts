@@ -30,7 +30,7 @@ export async function insertUsersInDatabase(csvUserObject: CsvUserObject[], conn
 
                 const year_active = new Date().getFullYear();
 
-                await connection.execute(sqlQuery, [user["ID NUMBER"], user["LAS NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, hashedPassword, year_active, 'STUDENT', 1]);
+                await connection.execute(sqlQuery, [user["ID NUMBER"], user["LAST NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, hashedPassword, year_active, 'STUDENT', 1]);
 
                 const [userRole] = await connection.execute('SELECT * FROM roles WHERE id_number = ? LIMIT 1', [user["ID NUMBER"]]);
                 if ((userRole as QueryResult[]).length === 0) {

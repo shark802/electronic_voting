@@ -37,7 +37,7 @@ function insertUsersInDatabase(csvUserObject, connection) {
                     const salt = yield bcrypt_1.default.genSalt(10);
                     const hashedPassword = yield bcrypt_1.default.hash(user.PASSWORD, salt);
                     const year_active = new Date().getFullYear();
-                    yield connection.execute(sqlQuery, [user["ID NUMBER"], user["LAS NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, hashedPassword, year_active, 'STUDENT', 1]);
+                    yield connection.execute(sqlQuery, [user["ID NUMBER"], user["LAST NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, hashedPassword, year_active, 'STUDENT', 1]);
                     const [userRole] = yield connection.execute('SELECT * FROM roles WHERE id_number = ? LIMIT 1', [user["ID NUMBER"]]);
                     if (userRole.length === 0) {
                         yield connection.execute('INSERT INTO roles (id_number, voter) VALUES (?, 1)', [user["ID NUMBER"]]);

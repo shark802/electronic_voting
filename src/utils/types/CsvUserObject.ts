@@ -1,6 +1,6 @@
 type CsvUserObject = {
     "ID NUMBER": string;
-    "LAS NAME": string;
+    "LAST NAME": string;
     "FIRST NAME": string;
     "MIDDLE NAME": string;
     "COURSE": string;

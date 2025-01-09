@@ -369,7 +369,7 @@ function votingModeEngagement(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const sqlQuery = `
-			SELECT 
+			SELECT
 				e.election_id, 
 				COUNT(CASE WHEN v.voting_mode = 'ON-SITE' THEN 1 END) as voted_onsite, 
 				COUNT(CASE WHEN v.voting_mode = 'ONLINE' THEN 1 END) as voted_online, 

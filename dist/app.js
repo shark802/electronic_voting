@@ -83,7 +83,7 @@ app.use(session.default({
     store: sessionStore,
     cookie: {
         // secure: process.env.NODE_ENV === "production",
-        maxAge: 25 * 60000,
+        maxAge: 60 * 60000,
         httpOnly: true,
     },
 }));

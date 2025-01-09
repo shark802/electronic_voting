@@ -153,11 +153,18 @@ function importUsers(req, res, next) {
             try {
                 const usersFile = req.file;
                 if (!usersFile)
-                    throw new customErrors_1.BadRequestError('Users data file is not provided');
+                    throw new customErrors_1.BadRequestError('No users data file was provided for import.');
                 const importId = (0, uuid_1.v4)();
                 const userCsvFile = yield (0, csvtojson_1.default)().fromFile(usersFile.path);
                 const filename = usersFile.filename;
                 fs_1.default.unlinkSync(usersFile.path);
+                // Validate that all required fields are present in the CSV data
+                const requiredFields = ['ID NUMBER', 'LAST NAME', 'FIRST NAME', 'MIDDLE NAME', 'COURSE', 'YEAR', 'SECTION', 'PASSWORD'];
+                requiredFields.forEach(fieldname => {
+                    if (!Object.keys(userCsvFile[0]).includes(fieldname)) {
+                        throw new customErrors_1.BadRequestError(`Error importing users: Missing required field "${fieldname}".`);
+                    }
+                });
                 yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO users_import_records (id, import_size) VALUES(?, ?)', [importId, userCsvFile.length]);
                 yield connection.beginTransaction();
                 yield connection.execute('UPDATE users SET is_active = null WHERE is_active = ?', [0]);

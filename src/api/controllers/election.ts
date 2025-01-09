@@ -403,7 +403,7 @@ export async function votingModeEngagement(req: Request, res: Response, next: Ne
 		}
 
 		const sqlQuery = `
-			SELECT 
+			SELECT
 				e.election_id, 
 				COUNT(CASE WHEN v.voting_mode = 'ON-SITE' THEN 1 END) as voted_onsite, 
 				COUNT(CASE WHEN v.voting_mode = 'ONLINE' THEN 1 END) as voted_online, 
