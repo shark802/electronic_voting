@@ -40,7 +40,7 @@ function genereateTablePdf(users, reportTitle, electionName) {
         pdf.setTextColor(100); // Set to a gray color
         const dateTimeWidth = pdf.getTextWidth(dateTimeString);
         pdf.text(dateTimeString, (pageWidth - dateTimeWidth) / 2, yPosition);
-        yPosition += 10;
+        yPosition += 8;
         // Reset text color to black for the rest of the document
         pdf.setTextColor(0);
         // Set the start position for the table
@@ -58,11 +58,12 @@ function genereateTablePdf(users, reportTitle, electionName) {
             body: tableBody, // Table rows data
             startY: startY, // Start position for the table
             styles: {
-                fontSize: 8,
+                fontSize: 9,
                 cellPadding: 3,
-                lineColor: [0, 0, 0], // Border color
-                lineWidth: 0.1 // Border width
+                // lineColor: [0, 0, 0], // Border color
+                // lineWidth: 0.1  // Border width
             },
+            headStyles: { fillColor: [51, 108, 232] },
             theme: 'grid', // Adds borders to all cells
             didDrawPage: function () {
                 // Footer - Page number

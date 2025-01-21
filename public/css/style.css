@@ -1237,8 +1237,8 @@ video {
   max-height: calc(100% - 80px);
 }
 
-.max-h-\[calc\(100vh-345px\)\] {
-  max-height: calc(100vh - 345px);
+.max-h-\[calc\(100vh-363px\)\] {
+  max-height: calc(100vh - 363px);
 }
 
 .min-h-14 {
@@ -1446,6 +1446,10 @@ video {
 
 .max-w-3xl {
   max-width: 48rem;
+}
+
+.max-w-56 {
+  max-width: 14rem;
 }
 
 .max-w-6xl {
@@ -1769,6 +1773,10 @@ video {
 
 .overflow-x-hidden {
   overflow-x: hidden;
+}
+
+.overflow-y-hidden {
+  overflow-y: hidden;
 }
 
 .scroll-smooth {

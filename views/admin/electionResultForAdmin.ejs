@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/jquery-3.7.1.min.js"></script>
   <script src="/javascript/lib/socket.io.min.js" defer></script>
+  <script src="/javascript/lib/sweetalert2@11.js" defer></script>
   <script type="module" src="/javascript/voter/electionResultForVoter.js"></script>
 
   <style>
@@ -28,11 +29,21 @@
       </svg>
       <span class="font-medium">Back to Election History</span>
     </a>
+
+    <div class="flex justify-end flex-1">
+      <button id="generate-result-pdf" class="flex items-center px-3 py-2 text-sm font-medium text-white transition-colors duration-300 bg-green-500 rounded-md sm:px-4 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+        <svg class="w-5 h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        <span class="hidden sm:inline">Generate PDF Report</span>
+        <span class="sm:hidden">PDF</span>
+      </button>
+    </div>
   </header>
 
   <div class="relative px-4 mt-12 overflow-y-auto bg-blue-50">
     <div id="result-box" class="w-full lg:max-w-[750px] rounded-lg px-4 py-6 m-auto bg-white shadow-lg mb-10">
-
+      <input type="hidden" id="election-id" value="<%= electionInfo.election_id %>">
       <h2 class="mb-2 text-3xl font-bold leading-tight text-center text-blue-800"><%= electionInfo.election_name %></h2>
       <p class="mb-4 text-lg text-center text-gray-600">Election Results</p>
       <div class="flex flex-col items-center justify-center mb-4 space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">

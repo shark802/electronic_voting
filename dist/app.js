@@ -81,9 +81,10 @@ app.use(session.default({
     resave: true,
     saveUninitialized: false,
     store: sessionStore,
+    rolling: true,
     cookie: {
         // secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60000,
+        maxAge: 12 * 60 * 60 * 1000, // 12 hours
         httpOnly: true,
     },
 }));
