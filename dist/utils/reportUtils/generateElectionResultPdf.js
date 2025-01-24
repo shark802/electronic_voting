@@ -26,7 +26,7 @@ function generateElectionResultPdf(_a) {
         pdf.setFont("helvetica", "bold");
         const electionNameWidth = pdf.getTextWidth(electionName);
         pdf.text(electionName, (pageWidth - electionNameWidth) / 2, yPosition);
-        yPosition += 10;
+        yPosition += 8;
         // Add report title (subtitle)
         const reportTitle = "Election Result";
         pdf.setFontSize(14);

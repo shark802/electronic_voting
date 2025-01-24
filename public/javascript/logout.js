@@ -16,7 +16,7 @@ logoutButton.addEventListener('click', () => {
                     return;
                 }
                 Swal.fire({
-                    title: "You have been logout",
+                    title: "You have been logged out",
                     icon: "success",
                     confirmButtonColor: "#2060f7",
                 })

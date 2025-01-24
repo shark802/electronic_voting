@@ -22,12 +22,20 @@ function loginFunction(req, res, next) {
         try {
             if (!id_number || !password)
                 throw new customErrors_1.BadRequestError("Missing credentials!");
-            const response = yield fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
-            const apiResponseObject = yield response.json();
+            const response = yield fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json; charset=utf-8',
+                }
+            });
+            const arrayBuffer = yield response.arrayBuffer();
+            const decoder = new TextDecoder('iso-8859-1');
+            const decodedText = decoder.decode(arrayBuffer);
+            const apiResponseObject = JSON.parse(decodedText);
             if (!apiResponseObject.is_valid)
                 throw new customErrors_1.UnauthorizedError("Login Failed!");
             // Login successful
-            const user = (0, convertApiObjectToUser_1.convertApiObjectToUser)(apiResponseObject);
+            let user = (0, convertApiObjectToUser_1.convertApiObjectToUser)(apiResponseObject);
             const connection = yield database_1.pool.getConnection();
             try {
                 yield connection.beginTransaction();
@@ -65,6 +73,7 @@ function loginFunction(req, res, next) {
         }
         catch (error) {
             if (error instanceof Error && error.name === 'TypeError' && error.message === 'fetch failed') {
+                console.log(error);
                 yield (0, handleLocalLogin_1.handleLocalLogin)(id_number, password, req, res, next);
             }
             else {

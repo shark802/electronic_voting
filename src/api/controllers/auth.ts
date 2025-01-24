@@ -14,15 +14,24 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
     try {
         if (!id_number || !password) throw new BadRequestError("Missing credentials!");
 
-        const response = await fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`);
-        const apiResponseObject: TechnopalApiObject = await response.json();
-        
+        const response = await fetch(`https://bagocitycollege.com/BCCWeb/TPLoginAPI?txtUserName=${id_number}&txtPassword=${password}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json; charset=utf-8',
+            }
+        });
+
+        const arrayBuffer = await response.arrayBuffer();
+        const decoder = new TextDecoder('iso-8859-1');
+        const decodedText = decoder.decode(arrayBuffer);
+        const apiResponseObject = JSON.parse(decodedText);
+
         if (!apiResponseObject.is_valid) throw new UnauthorizedError("Login Failed!");
 
         // Login successful
-        const user = convertApiObjectToUser(apiResponseObject);
-        const connection = await pool.getConnection();
+        let user = convertApiObjectToUser(apiResponseObject);
 
+        const connection = await pool.getConnection();
         try {
             await connection.beginTransaction();
 
@@ -61,6 +70,7 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
 
     } catch (error) {
         if (error instanceof Error && error.name === 'TypeError' && error.message === 'fetch failed') {
+            console.log(error);
 
             await handleLocalLogin(id_number, password, req, res, next);
         } else {

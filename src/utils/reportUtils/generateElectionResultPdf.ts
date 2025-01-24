@@ -13,6 +13,7 @@ export async function generateElectionResultPdf({
     positionArray: string[];
     departmentArray: string[];
 }) {
+
     const pdf = new jsPDF();
     const pageWidth = pdf.internal.pageSize.getWidth();
     const margin = 15;
@@ -23,7 +24,7 @@ export async function generateElectionResultPdf({
     pdf.setFont("helvetica", "bold");
     const electionNameWidth = pdf.getTextWidth(electionName);
     pdf.text(electionName, (pageWidth - electionNameWidth) / 2, yPosition);
-    yPosition += 10;
+    yPosition += 8;
 
     // Add report title (subtitle)
     const reportTitle = "Election Result";
