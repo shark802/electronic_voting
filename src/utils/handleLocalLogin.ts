@@ -11,7 +11,7 @@ export async function handleLocalLogin(id_number: string, password: string, req:
     try {
         const [user] = await selectQuery<User>(pool, 'SELECT password FROM users WHERE id_number = ?', [id_number]);
 
-        if (!user) {
+        if (!user || !user.password) {
             return next(new UnauthorizedError("Login Failed!"));
         }
 

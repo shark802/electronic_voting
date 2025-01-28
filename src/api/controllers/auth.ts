@@ -70,8 +70,6 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
 
     } catch (error) {
         if (error instanceof Error && error.name === 'TypeError' && error.message === 'fetch failed') {
-            console.log(error);
-
             await handleLocalLogin(id_number, password, req, res, next);
         } else {
 
