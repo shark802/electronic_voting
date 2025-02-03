@@ -29,10 +29,10 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 const MySQLStore = expressMysqlSession(session);
 const sessionStore = new MySQLStore({
-    host: process.env.JAWSDB_URL.HOST,
-    user: process.env.JAWSDB_URL.USER,
-    password: process.env.JAWSDB_URL.PASSWORD,
-    database: process.env.JAWSDB_URL.DATABASE,
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE,
     clearExpired: true,
     expiration: 60 * 60000,
     createDatabaseTable: true,
