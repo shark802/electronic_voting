@@ -10,6 +10,7 @@ import apiRoutes from "./api";
 import webRoutes from "./web";
 import expressMysqlSession from "express-mysql-session";
 import upload from './config/multerConfig';
+import url from 'url';
 
 // register all files that listening on event emitter
 import './events';
@@ -27,14 +28,18 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../views"));
 app.use(express.static(path.join(__dirname, "../public")));
 
+// Parse the JAWSDB_URL from Heroku's config vars
+const dbUrl = new url.URL(process.env.JAWSDB_URL);
+
+// Create the session store with JawsDB MySQL credentials
 const MySQLStore = expressMysqlSession(session);
 const sessionStore = new MySQLStore({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
+    host: dbUrl.hostname,      // Hostname from the parsed URL
+    user: dbUrl.username,      // Username from the parsed URL
+    password: dbUrl.password,  // Password from the parsed URL
+    database: dbUrl.pathname.slice(1),  // Remove the leading "/" from the database name
     clearExpired: true,
-    expiration: 60 * 60000,
+    expiration: 60 * 60000,  // Session expiration time
     createDatabaseTable: true,
     endConnectionOnClose: true,
     disableTouch: true,
@@ -54,6 +59,7 @@ const sessionStore = new MySQLStore({
     queueLimit: 10,
 });
 
+// Initialize session middleware
 app.use(
     session.default({
         secret: process.env.SESSION_SECRET || "session-secret",
@@ -62,7 +68,7 @@ app.use(
         store: sessionStore,
         rolling: true,
         cookie: {
-            // secure: process.env.NODE_ENV === "production",
+            // secure: process.env.NODE_ENV === "production", // Uncomment for HTTPS
             maxAge: 5 * 60 * 60 * 1000, // 5 hours
             httpOnly: true,
         },

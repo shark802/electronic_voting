@@ -17,11 +17,11 @@ const pool = promise_1.default.createPool({
     host: dbUrl.hostname,      // Hostname from the parsed URL
     user: dbUrl.username,      // Username from the parsed URL
     password: dbUrl.password,  // Password from the parsed URL
-    database: dbUrl.pathname.slice(1),  // Remove the leading "/" from the database name
+    database: dbUrl.pathname.slice(1), // Remove the leading "/" from the database name
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    ssl: { rejectUnauthorized: false }, // Add SSL configuration for Heroku/JawsDB
+    ssl: { rejectUnauthorized: false }, // SSL configuration if required by JawsDB
 });
 
 exports.pool = pool;
