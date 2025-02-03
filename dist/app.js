@@ -42,6 +42,13 @@ app.use(express_1.default.static(node_path_1.default.join(__dirname, "../public"
 // Parse JAWSDB_URL from Heroku config vars
 const dbUrl = new URL(process.env.JAWSDB_URL);
 
+// Log the URL parts for debugging purposes
+console.log('DB URL:', dbUrl);
+console.log('Host:', dbUrl.hostname);
+console.log('User:', dbUrl.username);
+console.log('Password:', dbUrl.password);
+console.log('Database:', dbUrl.pathname.slice(1));
+
 // MySQL session store using JawsDB details
 const MySQLStore = (0, express_mysql_session_1.default)(session);
 const sessionStore = new MySQLStore({

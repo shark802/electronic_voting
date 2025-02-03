@@ -12,6 +12,13 @@ if (!jawsDbUrl) {
 // Parse the JAWSDB_URL to extract connection details
 const dbUrl = new url.URL(jawsDbUrl);
 
+// Log the URL parts for debugging purposes
+console.log('DB URL:', dbUrl);
+console.log('Host:', dbUrl.hostname);
+console.log('User:', dbUrl.username);
+console.log('Password:', dbUrl.password);
+console.log('Database:', dbUrl.pathname.slice(1));
+
 const pool = mysql2.createPool({
 	host: dbUrl.hostname,        // Hostname from the parsed URL
     user: dbUrl.username,        // Username from the parsed URL

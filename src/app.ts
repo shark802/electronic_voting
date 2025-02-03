@@ -38,6 +38,13 @@ if (!jawsDbUrl) {
 // Parse the JAWSDB_URL from Heroku's config vars
 const dbUrl = new url.URL(jawsDbUrl);
 
+// Log the URL parts for debugging purposes
+console.log('DB URL:', dbUrl);
+console.log('Host:', dbUrl.hostname);
+console.log('User:', dbUrl.username);
+console.log('Password:', dbUrl.password);
+console.log('Database:', dbUrl.pathname.slice(1));
+
 const MySQLStore = expressMysqlSession(session);
 const sessionStore = new MySQLStore({
     host: dbUrl.hostname,
