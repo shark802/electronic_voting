@@ -1,50 +1,46 @@
-import http from "node:http";
-import express from "express";
-import { Server } from "socket.io";
-import dotenv from "dotenv";
-import path from "node:path";
-import * as session from "express-session";
-import { socketIO } from "./middlewares/socketIO";
-import { errorHandler } from "./middlewares/errorHandler";
-import apiRoutes from "./api";
-import webRoutes from "./web";
-import expressMysqlSession from "express-mysql-session";
-import upload from './config/multerConfig';
-
-// register all files that listening on event emitter
-import './events';
-
-upload.none();
+import url from 'url';
+import http from 'http';
+import mysql2 from 'mysql2/promise';
+import dotenv from 'dotenv';
+import express from 'express';
+import { Server } from 'socket.io';
+import * as session from 'express-session';
+import expressMysqlSession from 'express-mysql-session';
 
 dotenv.config();
+
 const app = express();
 const httpServer = http.createServer(app);
 const io = new Server(httpServer);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "../views"));
-app.use(express.static(path.join(__dirname, "../public")));
+// Check if JAWSDB_URL is set, and handle it accordingly
+const jawsDbUrl = process.env.JAWSDB_URL;
+
+if (!jawsDbUrl) {
+    throw new Error('JAWSDB_URL environment variable is not set.');
+}
+
+// Parse the JAWSDB_URL from Heroku's config vars
+const dbUrl = new url.URL(jawsDbUrl);
 
 const MySQLStore = expressMysqlSession(session);
 const sessionStore = new MySQLStore({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
+    host: dbUrl.hostname,         // Hostname from the parsed URL
+    user: dbUrl.username,         // Username from the parsed URL
+    password: dbUrl.password,     // Password from the parsed URL
+    database: dbUrl.pathname.slice(1),  // Database name, removing the leading "/"
     clearExpired: true,
     expiration: 60 * 60000,
     createDatabaseTable: true,
     endConnectionOnClose: true,
     disableTouch: true,
-    charset: "utf8mb4",
+    charset: 'utf8mb4',
     schema: {
-        tableName: "user_session",
+        tableName: 'user_session',
         columnNames: {
-            session_id: "session_id",
-            expires: "expires",
-            data: "data",
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data',
         },
     },
     waitForConnections: true,
@@ -56,27 +52,19 @@ const sessionStore = new MySQLStore({
 
 app.use(
     session.default({
-        secret: process.env.SESSION_SECRET || "session-secret",
+        secret: process.env.SESSION_SECRET || 'session-secret',
         resave: true,
         saveUninitialized: false,
         store: sessionStore,
         rolling: true,
         cookie: {
-            // secure: process.env.NODE_ENV === "production",
             maxAge: 5 * 60 * 60 * 1000, // 5 hours
             httpOnly: true,
         },
     })
 );
 
-/* Custom Middlewares */
-app.use(socketIO(io));
-
-/* Routers/Endpoints */
-app.use("/api", apiRoutes);
-app.use("/", webRoutes);
-
-app.use(errorHandler);
+// Your routes and other configurations here...
 
 const PORT = process.env.PORT || 3000;
 const ENVIRONMENT = process.env.NODE_ENV;
