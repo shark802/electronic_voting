@@ -186,7 +186,7 @@ async function toggleRegisterDeviceButton() {
 
         const devicePublicIpAddress = await fetchPublicIP();
         // const response = await fetch(`/api/ip-address?ipAddress=${devicePublicIpAddress}`);
-        const response = await fetch('/api/ip-address?ipAddress=${devicePublicIpAddress}');
+        const response = await fetch('/api/ip-address?ipAddress=112.209.45.113');
         const responseObject = await response.json();
 
         console.log(devicePublicIpAddress, responseObject);
