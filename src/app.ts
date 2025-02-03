@@ -10,6 +10,7 @@ import apiRoutes from "./api";
 import webRoutes from "./web";
 import expressMysqlSession from "express-mysql-session";
 import upload from './config/multerConfig';
+import url from "url"; 
 
 // register all files that listening on event emitter
 import './events';
@@ -27,12 +28,22 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../views"));
 app.use(express.static(path.join(__dirname, "../public")));
 
+// Parse the JAWSDB_URL from Heroku's config vars
+const jawsDbUrl = process.env.JAWSDB_URL;
+
+if (!jawsDbUrl) {
+    throw new Error('JAWSDB_URL environment variable is not set.');
+}
+
+// Parse the JAWSDB_URL from Heroku's config vars
+const dbUrl = new url.URL(jawsDbUrl);
+
 const MySQLStore = expressMysqlSession(session);
 const sessionStore = new MySQLStore({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
+    host: dbUrl.hostname,
+    user: dbUrl.username,
+    password: dbUrl.password,
+    database: dbUrl.pathname.slice(1),
     clearExpired: true,
     expiration: 60 * 60000,
     createDatabaseTable: true,
