@@ -1,5 +1,5 @@
 import url from 'url';
-import http from 'http';
+import http from 'http'
 import mysql2 from 'mysql2/promise';
 import dotenv from 'dotenv';
 import express from 'express';
