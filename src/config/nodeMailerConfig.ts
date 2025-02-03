@@ -1,20 +1,24 @@
-import mysql2 from "mysql2/promise";
-import dotenv from "dotenv";
-import url from "url";
-
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 dotenv.config();
 
-// Parse the JAWSDB_URL from Heroku's config vars
-const dbUrl = new url.URL(process.env.JAWSDB_URL);
-
-const pool = mysql2.createPool({
-    host: dbUrl.hostname,        // Hostname from the parsed URL
-    user: dbUrl.username,        // Username from the parsed URL
-    password: dbUrl.password,    // Password from the parsed URL
-    database: dbUrl.pathname.slice(1),  // Remove the leading "/" from the database name
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.NODEMAILER_USER,
+        pass: process.env.NODEMAILER_PASSWORD,
+    }
 });
 
-export { pool };
+export function mailOptions(from: string, to: string, subject: string, content: string) {
+    return {
+        from: from,
+        to: to,
+        subject: subject,
+        text: content,
+    }
+}
+
+export { transporter }
