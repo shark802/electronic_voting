@@ -33,7 +33,7 @@ function loginFunction(req, res, next) {
             const decodedText = decoder.decode(arrayBuffer);
             const apiResponseObject = JSON.parse(decodedText);
             if (!apiResponseObject.is_valid)
-                throw new customErrors_1.UnauthorizedError("Login Failed!");
+                throw new customErrors_1.UnauthorizedError(error);
             // Login successful
             let user = (0, convertApiObjectToUser_1.convertApiObjectToUser)(apiResponseObject);
             const connection = yield database_1.pool.getConnection();
