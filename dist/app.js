@@ -10,7 +10,18 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-// Other imports remain unchanged
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -27,6 +38,7 @@ const api_1 = __importDefault(require("./api"));
 const web_1 = __importDefault(require("./web"));
 const express_mysql_session_1 = __importDefault(require("express-mysql-session"));
 const multerConfig_1 = __importDefault(require("./config/multerConfig"));
+// register all files that listening on event emitter
 require("./events");
 multerConfig_1.default.none();
 dotenv_1.default.config();
@@ -38,27 +50,14 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", node_path_1.default.join(__dirname, "../views"));
 app.use(express_1.default.static(node_path_1.default.join(__dirname, "../public")));
-
-// Parse JAWSDB_URL from Heroku config vars
-const dbUrl = new URL(process.env.JAWSDB_URL);
-
-// Log the URL parts for debugging purposes
-console.log('DB URL:', dbUrl);
-console.log('Host:', dbUrl.hostname);
-console.log('User:', dbUrl.username);
-console.log('Password:', dbUrl.password);
-console.log('Database:', dbUrl.pathname.slice(1));
-
-// MySQL session store using JawsDB details
 const MySQLStore = (0, express_mysql_session_1.default)(session);
 const sessionStore = new MySQLStore({
-    host: dbUrl.hostname,        // Hostname from JAWSDB_URL
-    user: dbUrl.username,        // Username from JAWSDB_URL
-    password: dbUrl.password,    // Password from JAWSDB_URL
-    database: dbUrl.pathname.slice(1),  // Database name from JAWSDB_URL (remove leading '/')
-    port: 3306,                  // Default MySQL port
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE,
     clearExpired: true,
-    expiration: 60 * 60000,      // Session expiration time
+    expiration: 60 * 60000,
     createDatabaseTable: true,
     endConnectionOnClose: true,
     disableTouch: true,
@@ -76,9 +75,7 @@ const sessionStore = new MySQLStore({
     maxIdle: 10,
     idleTimeout: 60000,
     queueLimit: 10,
-    ssl: { rejectUnauthorized: false },  // SSL config (if required by JawsDB)
 });
-
 app.use(session.default({
     secret: process.env.SESSION_SECRET || "session-secret",
     resave: true,
@@ -86,19 +83,17 @@ app.use(session.default({
     store: sessionStore,
     rolling: true,
     cookie: {
+        // secure: process.env.NODE_ENV === "production",
         maxAge: 5 * 60 * 60 * 1000, // 5 hours
         httpOnly: true,
     },
 }));
-
 /* Custom Middlewares */
 app.use((0, socketIO_1.socketIO)(io));
-
 /* Routers/Endpoints */
 app.use("/api", api_1.default);
 app.use("/", web_1.default);
 app.use(errorHandler_1.errorHandler);
-
 const PORT = process.env.PORT || 3000;
 const ENVIRONMENT = process.env.NODE_ENV;
 httpServer.listen(PORT, () => {
