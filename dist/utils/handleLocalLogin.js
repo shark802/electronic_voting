@@ -21,7 +21,7 @@ function handleLocalLogin(id_number, password, req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT password FROM users WHERE id_number = ?', [id_number]);
-            if (!user) {
+            if (!user || !user.password) {
                 return next(new customErrors_1.UnauthorizedError("Login Failed!"));
             }
             const isPasswordMatch = yield bcrypt_1.default.compare(password, user.password);
