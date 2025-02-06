@@ -56,7 +56,6 @@ const sessionStore = new MySQLStore({
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
-    port: 3306,
     clearExpired: true,
     expiration: 60 * 60000,
     createDatabaseTable: true,
