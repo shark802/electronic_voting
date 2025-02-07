@@ -9,7 +9,6 @@ import { selectQuery } from "../../data_access/query";
 import { RowDataPacket } from 'mysql2/promise';
 import { handleLocalLogin } from "../../utils/handleLocalLogin";
 import { User } from "../../utils/types/User";
-import bcrypt from 'bcrypt';
 
 export async function loginFunction(req: Request, res: Response, next: NextFunction) {
     const { id_number, password } = req.body;

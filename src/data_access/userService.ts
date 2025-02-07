@@ -1,6 +1,5 @@
 import { Connection } from "mysql2/promise";
 import { CsvUserObject } from "../utils/types/CsvUserObject";
-import bcrypt from 'bcrypt'
 import { QueryResult } from "mysql2";
 
 export async function insertUsersInDatabase(csvUserObject: CsvUserObject[], connection: Connection) {
@@ -25,12 +24,9 @@ export async function insertUsersInDatabase(csvUserObject: CsvUserObject[], conn
                         is_active = VALUES(is_active)
                 `;
 
-                const salt = await bcrypt.genSalt(10);
-                const hashedPassword = await bcrypt.hash(user.PASSWORD, salt);
-
                 const year_active = new Date().getFullYear();
 
-                await connection.execute(sqlQuery, [user["ID NUMBER"], user["LAST NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, hashedPassword, year_active, 'STUDENT', 1]);
+                await connection.execute(sqlQuery, [user["ID NUMBER"], user["LAST NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, user.PASSWORD, year_active, 'STUDENT', 1]);
 
                 const [userRole] = await connection.execute('SELECT * FROM roles WHERE id_number = ? LIMIT 1', [user["ID NUMBER"]]);
                 if ((userRole as QueryResult[]).length === 0) {

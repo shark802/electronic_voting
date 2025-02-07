@@ -8,12 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.insertUsersInDatabase = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
 function insertUsersInDatabase(csvUserObject, connection) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
@@ -34,10 +30,8 @@ function insertUsersInDatabase(csvUserObject, connection) {
                         user_group = VALUES(user_group),
                         is_active = VALUES(is_active)
                 `;
-                    const salt = yield bcrypt_1.default.genSalt(10);
-                    const hashedPassword = yield bcrypt_1.default.hash(user.PASSWORD, salt);
                     const year_active = new Date().getFullYear();
-                    yield connection.execute(sqlQuery, [user["ID NUMBER"], user["LAST NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, hashedPassword, year_active, 'STUDENT', 1]);
+                    yield connection.execute(sqlQuery, [user["ID NUMBER"], user["LAST NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, user.PASSWORD, year_active, 'STUDENT', 1]);
                     const [userRole] = yield connection.execute('SELECT * FROM roles WHERE id_number = ? LIMIT 1', [user["ID NUMBER"]]);
                     if (userRole.length === 0) {
                         yield connection.execute('INSERT INTO roles (id_number, voter) VALUES (?, 1)', [user["ID NUMBER"]]);

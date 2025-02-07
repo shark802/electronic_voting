@@ -4,7 +4,6 @@ import { selectQuery } from "../data_access/query";
 import { UnauthorizedError } from "./customErrors";
 import { Role } from "./types/Role";
 import { User } from "./types/User";
-import bcrypt from 'bcrypt';
 
 
 export async function handleLocalLogin(id_number: string, password: string, req: Request, res: Response, next: NextFunction) {
@@ -15,7 +14,7 @@ export async function handleLocalLogin(id_number: string, password: string, req:
             return next(new UnauthorizedError("Login Failed!"));
         }
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        const isPasswordMatch = user.password === password;
 
         if (!isPasswordMatch) throw new UnauthorizedError("Login Failed!");
 

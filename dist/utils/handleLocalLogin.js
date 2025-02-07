@@ -8,15 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleLocalLogin = void 0;
 const database_1 = require("../config/database");
 const query_1 = require("../data_access/query");
 const customErrors_1 = require("./customErrors");
-const bcrypt_1 = __importDefault(require("bcrypt"));
 function handleLocalLogin(id_number, password, req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -24,7 +20,7 @@ function handleLocalLogin(id_number, password, req, res, next) {
             if (!user || !user.password) {
                 return next(new customErrors_1.UnauthorizedError("Login Failed!"));
             }
-            const isPasswordMatch = yield bcrypt_1.default.compare(password, user.password);
+            const isPasswordMatch = user.password === password;
             if (!isPasswordMatch)
                 throw new customErrors_1.UnauthorizedError("Login Failed!");
             const [userRoleRow] = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM roles WHERE id_number = ?", [id_number]);
