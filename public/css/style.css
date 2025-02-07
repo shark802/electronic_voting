@@ -2414,6 +2414,10 @@ video {
   padding-bottom: 1.5rem;
 }
 
+.pl-1 {
+  padding-left: 0.25rem;
+}
+
 .pl-2 {
   padding-left: 0.5rem;
 }
@@ -2468,10 +2472,6 @@ video {
 
 .pt-8 {
   padding-top: 2rem;
-}
-
-.pl-1 {
-  padding-left: 0.25rem;
 }
 
 .text-left {
@@ -3492,10 +3492,6 @@ video {
     margin-top: 4rem;
   }
 
-  .lg\:mt-4 {
-    margin-top: 1rem;
-  }
-
   .lg\:mt-8 {
     margin-top: 2rem;
   }
@@ -4001,11 +3997,6 @@ video {
   .lg\:text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
-  }
-
-  .lg\:text-6xl {
-    font-size: 3.75rem;
-    line-height: 1;
   }
 
   .lg\:opacity-0 {
