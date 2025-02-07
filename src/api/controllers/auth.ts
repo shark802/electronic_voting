@@ -68,7 +68,8 @@ export async function loginFunction(req: Request, res: Response, next: NextFunct
             throw new UnauthorizedError('Login failed!')
         }
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        // const isPasswordMatch = await bcrypt.compare(password, user.password);
+        const isPasswordMatch = user.password === password;
         if (!isPasswordMatch) throw new UnauthorizedError("Login Failed!");
 
 
