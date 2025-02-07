@@ -8,16 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isFaceVerified = exports.logoutFunction = exports.loginFunction = void 0;
 const customErrors_1 = require("../../utils/customErrors");
 const database_1 = require("../../config/database");
 const query_1 = require("../../data_access/query");
 const handleLocalLogin_1 = require("../../utils/handleLocalLogin");
-const bcrypt_1 = __importDefault(require("bcrypt"));
 function loginFunction(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id_number, password } = req.body;
@@ -62,7 +58,8 @@ function loginFunction(req, res, next) {
             if (!user || !(user === null || user === void 0 ? void 0 : user.password)) {
                 throw new customErrors_1.UnauthorizedError('Login failed!');
             }
-            const isPasswordMatch = yield bcrypt_1.default.compare(password, user.password);
+            // const isPasswordMatch = await bcrypt.compare(password, user.password);
+            const isPasswordMatch = user.password === password;
             if (!isPasswordMatch)
                 throw new customErrors_1.UnauthorizedError("Login Failed!");
             // const [userRoleRow] = await selectQuery<Role>(pool, "SELECT * FROM roles WHERE id_number = ?", [user.id_number]);
