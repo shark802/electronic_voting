@@ -180,7 +180,7 @@ exports.removeProgram = removeProgram;
 function getAllYearLevel(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let yearLevelsResult = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT year_level FROM users');
+            let yearLevelsResult = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT DISTINCT year_level FROM users WHERE year_level IS NOT NULL');
             const yearLevels = yearLevelsResult.map(level => level.year_level).sort();
             return res.status(200).json({ yearLevels });
         }

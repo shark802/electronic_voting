@@ -318,8 +318,8 @@ export async function yearLevelTurnoutPercentage(req: Request, res: Response, ne
 			LEFT JOIN votes ON voters.id_number = votes.voter_id AND voters.election_id = votes.election_id
 			LEFT JOIN elections ON voters.election_id = elections.election_id
 			WHERE (elections.date_end < CURDATE() 
-			OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
-			AND elections.deleted_at IS NULL
+				OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
+				AND elections.deleted_at IS NULL
 			GROUP BY users.year_level, elections.election_id
 			ORDER BY elections.date_end ASC, elections.time_end ASC
 		`
@@ -369,8 +369,9 @@ export async function departmentTurnoutPercentage(req: Request, res: Response, n
 				OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
 				AND elections.deleted_at IS NULL
 				AND programs.deleted_at IS NULL
+				AND users.course IS NOT NULL
 			GROUP BY elections.election_id, departments.department_code
-			ORDER BY elections.date_end ASC, elections.time_end ASC;
+			ORDER BY elections.date_end ASC, elections.time_end ASC, departments.department_code;
 			`
 		const result = await selectQuery<TurnoutPerYear>(pool, sqlQuery);
 		const turnoutPerDepartment = result.map(election => {
