@@ -102,7 +102,7 @@ function removeDepartment(req, res, next) {
             if (sqlRemoveDepartment.affectedRows === 0)
                 throw new customErrors_1.NotFoundError(`Department ${departmentId} not found`);
             yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE programs SET deleted_at = ? WHERE department = ?', [new Date(), departmentId]);
-            return res.status(200).json({ message: "Department removed successfully" });
+            return res.status(200).json({ message: "Department and its programs have been successfully removed." });
         }
         catch (error) {
             next(error);

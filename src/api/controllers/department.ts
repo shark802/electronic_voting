@@ -92,7 +92,7 @@ export async function removeDepartment(req: Request, res: Response, next: NextFu
 
         await updateQuery(pool, 'UPDATE programs SET deleted_at = ? WHERE department = ?', [new Date(), departmentId]);
 
-        return res.status(200).json({ message: "Department removed successfully" })
+        return res.status(200).json({ message: "Department and its programs have been successfully removed." })
     } catch (error) {
         next(error)
     }

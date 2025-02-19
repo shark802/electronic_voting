@@ -50,6 +50,7 @@ function getTuroutPerentagePerDepartment(electionIdArray, turnoutPerDepartment, 
 const chartLineColor = ['#eab308', '#ef4444', '#3b82f6', '#22c55e', '#8b5cf6', '#0891b2']
 
 function prepareChartData(departments, preparedData) {
+    departments.sort((a, b) => a.department_code.localeCompare(b.department_code));
     return departments.map((department, index) => {
         const turnoutData = preparedData.find(data => data.departmentCode === department.department_code)?.departmentsTurnouts;
 
