@@ -203,10 +203,10 @@
             </p>
             <div class="flex items-center space-x-2">
               <% if (page > 1) { %>
-              <a href="?page=<%= parseInt(page) - 1 %>&voteStatus=<%= selectedVoteStatus %>&department=<%= selectedDepartment %>&program=<%= selectedProgram %>&year_level=<%= selectedYearLevel %>" class="px-3 py-1 text-sm font-medium text-white transition-colors duration-300 bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Previous</a>
+              <a href="?page=<%= parseInt(page) - 1 %>&voteStatus=<%= selectedVoteStatus %>&department=<%= selectedDepartment %>&program=<%= selectedProgram %>&year_level=<%= selectedYearLevel %>&section=<%= selectedSection %>" class="px-3 py-1 text-sm font-medium text-white transition-colors duration-300 bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Previous</a>
               <% } %>
               <% if (page * 30 < usersSize) { %>
-              <a href="?page=<%= parseInt(page) + 1 %>&voteStatus=<%= selectedVoteStatus %>&department=<%= selectedDepartment %>&program=<%= selectedProgram %>&year_level=<%= selectedYearLevel %>" class="px-3 py-1 text-sm font-medium text-white transition-colors duration-300 bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Next</a>
+              <a href="?page=<%= parseInt(page) + 1 %>&voteStatus=<%= selectedVoteStatus %>&department=<%= selectedDepartment %>&program=<%= selectedProgram %>&year_level=<%= selectedYearLevel %>&section=<%= selectedSection %>" class="px-3 py-1 text-sm font-medium text-white transition-colors duration-300 bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Next</a>
               <% } %>
             </div>
           </div>

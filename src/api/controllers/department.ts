@@ -75,7 +75,7 @@ export async function getProgramSection(req: Request, res: Response, next: NextF
         const sqlSectionResult = await selectQuery<Pick<User, 'section'>>(pool, 'SELECT DISTINCT section FROM users WHERE course = ? AND (year_active = ? OR is_active = 1) ORDER BY section', [program, currentYear]);
         const sections = sqlSectionResult.map(section => section.section);
 
-        return res.status(200).json({ sections })
+        return res.status(200).json({ sections });
 
     } catch (error) {
         next(error)
