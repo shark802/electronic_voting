@@ -43,7 +43,7 @@ globalEventEmitterInstance_1.eventEmitter.on('new-vote', (userId, electionId) =>
                 <p>Thank you again for your civic engagement!</p>
                 <p>Best regards,<br>BCC Comelec</p>
             </div>
-`;
+            `;
         const options = {
             from: process.env.NODEMAILER_USER,
             to: userEmailAddress, subject,

@@ -35,7 +35,7 @@ eventEmitter.on('new-vote', async (userId: string, electionId: string) => {
                 <p>Thank you again for your civic engagement!</p>
                 <p>Best regards,<br>BCC Comelec</p>
             </div>
-`;
+            `;
 
         const options = {
             from: process.env.NODEMAILER_USER,
