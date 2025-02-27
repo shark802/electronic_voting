@@ -23,7 +23,7 @@ globalEventEmitterInstance_1.eventEmitter.on('new-vote', (userId, electionId) =>
         const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
         const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [electionId]);
         const userEmailAddress = user.email;
-        if (!process.env.NODEMAILER_USER || !userEmailAddress)
+        if (!process.env.NODEMAILER_USER || !(userEmailAddress === null || userEmailAddress === void 0 ? void 0 : userEmailAddress.trim()))
             return;
         let electionDateStart = new Date(election.date_start);
         const [hour, minute] = election.time_start.split(':');

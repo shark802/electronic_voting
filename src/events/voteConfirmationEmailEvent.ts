@@ -2,7 +2,7 @@ import { pool } from '../config/database';
 import { selectQuery } from '../data_access/query';
 import { User } from '../utils/types/User';
 import { eventEmitter } from './globalEventEmitterInstance';
-import { transporter, mailOptions } from '../config/nodeMailerConfig';
+import { transporter } from '../config/nodeMailerConfig';
 import dotenv from 'dotenv';
 import { Election } from '../utils/types/Election';
 
@@ -14,7 +14,7 @@ eventEmitter.on('new-vote', async (userId: string, electionId: string) => {
         const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ? LIMIT 1', [electionId]);
         const userEmailAddress = user.email;
 
-        if (!process.env.NODEMAILER_USER || !userEmailAddress) return;
+        if (!process.env.NODEMAILER_USER || !userEmailAddress?.trim()) return;
 
         let electionDateStart = new Date(election.date_start);
         const [hour, minute] = election.time_start.split(':');
