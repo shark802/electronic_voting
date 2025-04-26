@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.genereateTablePdf = void 0;
 const jspdf_1 = __importDefault(require("jspdf"));
+require("jspdf-autotable");
+const jspdf_autotable_1 = __importDefault(require("jspdf-autotable"));
 function genereateTablePdf(users, reportTitle, electionName) {
     return __awaiter(this, void 0, void 0, function* () {
         // Create a new instance of jsPDF
@@ -45,31 +47,30 @@ function genereateTablePdf(users, reportTitle, electionName) {
         pdf.setTextColor(0);
         // Set the start position for the table
         const startY = yPosition;
-        // Prepare table data
+        // Prepare table data - ensure it's properly typed
         const tableBody = users.map((user, index) => [
-            index + 1,
-            user.id_number,
-            `${user.lastname}, ${user.firstname}`,
-            `${user.course} ${user.year_level} - ${user.section}`
+            (index + 1).toString(),
+            user.id_number || '',
+            `${user.lastname || ''}, ${user.firstname || ''}`,
+            `${user.course || ''} ${user.year_level || ''} - ${user.section || ''}`
         ]);
-        // Add the table using autoTable and page numbers
-        pdf.autoTable({
+        // Use type assertion for pdf
+        (0, jspdf_autotable_1.default)(pdf, {
             head: [['#', 'User ID', 'Full Name', 'Course/Year/Section']], // Table headers
             body: tableBody, // Table rows data
             startY: startY, // Start position for the table
             styles: {
                 fontSize: 9,
                 cellPadding: 3,
-                // lineColor: [0, 0, 0], // Border color
-                // lineWidth: 0.1  // Border width
             },
             headStyles: { fillColor: [51, 108, 232] },
             theme: 'grid', // Adds borders to all cells
             didDrawPage: function () {
                 // Footer - Page number
-                const pageText = `Page ${pdf.internal.getCurrentPageInfo().pageNumber}`;
+                const pageInfo = pdf.internal.getCurrentPageInfo();
+                const pageText = `Page ${pageInfo.pageNumber}`;
                 pdf.setFontSize(10);
-                pdf.text(pageText, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10); // Positioned at bottom-right
+                pdf.text(pageText, pdf.internal.pageSize.getWidth() - 30, pdf.internal.pageSize.getHeight() - 10);
             }
         });
         // Generate PDF as a Buffer

@@ -4,37 +4,37 @@ export function createVoterReportTitle(
     program?: string,
     yearLevel?: string,
     section?: string
-) {
-
-    let reportTitle = "List of"
+): string {
+    let reportTitle = "List of";
 
     if (voteStatus === 0) {
-        reportTitle += ' Not Voted'
+        reportTitle += " Students Who Have Not Voted";
+    } else if (voteStatus === 1) {
+        reportTitle += " Students Who Have Voted";
+    } else {
+        reportTitle += " Students";
     }
 
-    if (voteStatus === 1) {
-        reportTitle += ' Voted'
-    }
+    const details: string[] = [];
 
     if (department) {
-
-        reportTitle += ` in ${department} Department`
+        details.push(`${department} Department`);
     }
 
     if (program) {
-        reportTitle += `, ${program}`
+        let programStr = program;
+        if (yearLevel) {
+            programStr += ` ${yearLevel}`;
+        }
+        if (section) {
+            programStr += `-${section}`;
+        }
+        details.push(programStr);
     }
 
-    if (yearLevel) {
-        reportTitle += ` ${yearLevel}`
+    if (details.length > 0) {
+        reportTitle += ` – ${details.join(", ")}`;
     }
-
-    if (program && section) {
-        reportTitle += `-${section}`
-
-    }
-
-    reportTitle += ` students`
 
     return reportTitle;
 }

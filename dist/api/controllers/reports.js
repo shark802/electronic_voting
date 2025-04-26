@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generatePdfElectionResult = exports.generateVoterReportInPdf = void 0;
 const voterService_1 = require("../../data_access/voterService");
-require("jspdf-autotable");
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const generateTablePdf_1 = require("../../utils/reportUtils/generateTablePdf");
@@ -21,6 +20,7 @@ const createVoterReportTitle_1 = require("../../utils/createVoterReportTitle");
 const election_1 = require("../../data_access/election");
 const cryptoService_1 = require("../../utils/cryptoService");
 const generateElectionResultPdf_1 = require("../../utils/reportUtils/generateElectionResultPdf");
+require("jspdf-autotable");
 function generateVoterReportInPdf(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -40,9 +40,12 @@ function generateVoterReportInPdf(req, res, next) {
             const filteredVoters = yield (0, filterVotersByFilterParameter_1.filterVotersByFilterParameter)(voters, selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const reportTitle = (0, createVoterReportTitle_1.createVoterReportTitle)(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
             const pdfBuffer = yield (0, generateTablePdf_1.genereateTablePdf)(filteredVoters, reportTitle, election.election_name);
-            // Set headers for PDF download
+            const filename = reportTitle
+                .replace(/[^\w\s-]/g, "")
+                .replace(/\s+/g, "_")
+                .toLowerCase();
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', 'attachment; filename="election_voters_report.pdf"');
+            res.setHeader('Content-Disposition', `attachment; filename="${filename}.pdf"`);
             // Send the PDF as a response
             res.send(pdfBuffer);
         }

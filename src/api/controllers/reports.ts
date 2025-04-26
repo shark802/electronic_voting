@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { getAllVoterInElection } from "../../data_access/voterService";
-import 'jspdf-autotable';
 import { selectQuery } from "../../data_access/query";
 import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
@@ -16,6 +15,8 @@ import { CandidateVoteTally } from "../../utils/types/CandidatesVoteTally";
 import { generateElectionResultPdf } from "../../utils/reportUtils/generateElectionResultPdf";
 import { Department } from "../../utils/types/Department";
 import { Position } from "../../utils/types/Positions";
+import 'jspdf-autotable';
+
 
 export async function generateVoterReportInPdf(req: Request, res: Response, next: NextFunction) {
     try {
@@ -40,10 +41,13 @@ export async function generateVoterReportInPdf(req: Request, res: Response, next
         const reportTitle = createVoterReportTitle(selectedVoteStatus, selectedDepartment, selectedProgram, selectedYearLevel, selectedSection);
 
         const pdfBuffer = await genereateTablePdf(filteredVoters, reportTitle, election.election_name)
+        const filename = reportTitle
+            .replace(/[^\w\s-]/g, "")
+            .replace(/\s+/g, "_")
+            .toLowerCase();
 
-        // Set headers for PDF download
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="election_voters_report.pdf"');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}.pdf"`);
 
         // Send the PDF as a response
         res.send(pdfBuffer);
