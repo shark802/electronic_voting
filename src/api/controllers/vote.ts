@@ -1,7 +1,7 @@
 import { eventEmitter } from './../../events/globalEventEmitterInstance';
 import { NextFunction, Request, Response } from "express";
 import { BadRequestError, ConflictError } from "../../utils/customErrors";
-import { checkIfUserHasVoted, incrementCandidateVoteCount, saveVote, updateVoterVoteStatus } from "../../data_access/voteService";
+import { checkIfUserHasVoted, getVoterDepartment, incrementCandidateVoteCount, saveVote, updateVoterVoteStatus } from "../../data_access/voteService";
 import { pool } from "../../config/database";
 import { Socket } from "socket.io";
 import { Candidate } from "../../utils/types/Candidate";
@@ -38,26 +38,30 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
             eventEmitter.emit('new-vote', user_id, electionId);
 
             //broadcast an event when new vote saved for to update the dashboard realtime
+            const department = await getVoterDepartment(user_id);
+
             socket.emit('new-vote', {
                 election_id: electionId,
                 voter_id: user_id,
-                voted_candidate_list: selectedCandidate.map(candidate => {
-                    return {
-                        candidate_id: candidate.id_number,
-                        candidate_position: candidate.position
-                    }
-                })
+                department,
+                voted_candidate_list: selectedCandidate.map(candidate => ({
+                    candidate_id: candidate.id_number,
+                    candidate_position: candidate.position
+                }))
             });
 
-            const ENVIRONMENT = process.env.NODE_ENV;
-            const FACE_SERVICE_DOMAIN = ENVIRONMENT === 'production' ? `https://${process.env.FACE_RECOGNITION_SERVICE_DOMAIN}` : 'http://localhost:8000';
-            const [registerFaceFilename] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [user_id])
-            if (registerFaceFilename) {
 
-                await Promise.all([
-                    fetch(`${FACE_SERVICE_DOMAIN}/api/delete/${registerFaceFilename.saved_face_filename}`, { method: 'DELETE' }),
-                    updateQuery(pool, 'UPDATE register_faces SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?', [registerFaceFilename.id])
-                ])
+            if (faceVerified) {
+                const ENVIRONMENT = process.env.NODE_ENV;
+                const FACE_SERVICE_DOMAIN = ENVIRONMENT === 'production' ? `https://${process.env.FACE_RECOGNITION_SERVICE_DOMAIN}` : 'http://localhost:8000';
+                const [registerFaceFilename] = await selectQuery<RegisterFaces>(pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [user_id])
+                if (registerFaceFilename) {
+
+                    await Promise.all([
+                        fetch(`${FACE_SERVICE_DOMAIN}/api/delete/${registerFaceFilename.saved_face_filename}`, { method: 'DELETE' }),
+                        updateQuery(pool, 'UPDATE register_faces SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?', [registerFaceFilename.id])
+                    ])
+                }
             }
 
             res.status(200).json({ message: "Vote saved!" });

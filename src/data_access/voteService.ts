@@ -5,6 +5,7 @@ import { pool } from '../config/database';
 import { Candidate } from '../utils/types/Candidate';
 import { NotFoundError } from '../utils/customErrors';
 import { CryptoService } from '../utils/cryptoService';
+import { Department } from '../utils/types/Department';
 
 
 export async function checkIfUserHasVoted(userId: string, electionId: string) {
@@ -51,4 +52,18 @@ export async function updateVoterVoteStatus(connection: PoolConnection, userId: 
     if (updateVoteStatusResult.affectedRows === 0) throw new NotFoundError('Voter not Exist on this Election');
 
     return;
+}
+
+export async function getVoterDepartment(user_id: string) {
+    const query = `
+        SELECT departments.department_code
+        FROM users
+        LEFT JOIN programs ON programs.program_code = users.course
+        LEFT JOIN departments ON departments.department_id = programs.department
+        WHERE users.id_number = ?
+        LIMIT 1
+    `
+
+    const [department] = await selectQuery<Pick<Department, 'department_code'>>(pool, query, [user_id])
+    return department.department_code
 }

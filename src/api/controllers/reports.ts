@@ -43,8 +43,7 @@ export async function generateVoterReportInPdf(req: Request, res: Response, next
         const pdfBuffer = await genereateTablePdf(filteredVoters, reportTitle, election.election_name)
         const filename = reportTitle
             .replace(/[^\w\s-]/g, "")
-            .replace(/\s+/g, "_")
-            .toLowerCase();
+            .replace(/\s+/g, "_");
 
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}.pdf"`);

@@ -42,9 +42,14 @@ export async function generateElectionResult(electionId: string) {
         await insertQuery(pool, insertResultQuery, [electionId, encryptedResult, iv]);
     };
 
+    const candidatesData = await getCandidatesTotalTally(electionId);
+
     if (votes.length === 0) {
-        await encryptAndInsert(votes); // No votes, just insert an empty result
-        return votes;
+        const voteTally = candidatesData.map(candidate => {
+            return { ...candidate, vote_count: 0 }
+        });
+        await encryptAndInsert(voteTally); // No votes, just insert an candidates data with 0 votes
+        return voteTally;
     }
 
     // Use Worker to decrypt votes
@@ -55,7 +60,6 @@ export async function generateElectionResult(electionId: string) {
 
         // Wait for decrypted votes from the worker
         const [decryptedVotes] = await once(worker, 'message') as [Vote[]];
-        const candidatesData = await getCandidatesTotalTally(electionId);
 
         // Tally the votes for each candidate
         const voteTally = candidatesData.map(candidate => {
@@ -71,7 +75,7 @@ export async function generateElectionResult(electionId: string) {
         console.error('Error in generateElectionResult:', error);
         throw error;
     } finally {
-        worker.terminate(); // Clean up the worker
+        worker.terminate();
     }
 }
 

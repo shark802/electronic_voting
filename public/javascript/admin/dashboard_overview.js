@@ -307,35 +307,54 @@ async function putRequestToCloseElection(electionId) {
     return result;
 }
 
+
 socket.on('new-vote', (data) => {
     const electionSection = document.querySelector(`section[data-election-id="${data.election_id}"]`);
+    if (!electionSection) return;
 
-    // Update total voted count
     const totalVotedElement = electionSection.querySelector('#total-voted');
     const totalVotedPercentageElement = electionSection.querySelector('#total-voted-percentage');
+    const totalPopulationElement = electionSection.querySelector('#total-population');
+    const numberOfNotVotedElement = electionSection.querySelector('#number-of-not-voted');
+    const notVotedPercentageElement = electionSection.querySelector('#total-not-voted-percentage');
+
+    if (!totalVotedElement || !totalVotedPercentageElement || !totalPopulationElement || !numberOfNotVotedElement || !notVotedPercentageElement) {
+        console.error('Missing DOM elements for election update');
+        return;
+    }
 
     let totalVoted = parseInt(totalVotedElement.textContent) || 0;
     totalVoted += 1; // Increment total voted
     totalVotedElement.textContent = totalVoted;
 
-    // Update percentage
-    const totalPopulation = parseInt(electionSection.querySelector('#total-population').textContent) || 0;
+    const totalPopulation = parseInt(totalPopulationElement.textContent) || 0;
     if (totalPopulation > 0) {
         const votedPercentage = ((totalVoted / totalPopulation) * 100).toFixed(2);
         totalVotedPercentageElement.textContent = `(${votedPercentage}%)`;
     }
 
-    // Update total not voted count
-    const numberOfNotVotedElement = electionSection.querySelector('#number-of-not-voted');
-    const totalNotVotedElement = electionSection.querySelector('#total-not-voted-percentage');
-
     let totalNotVoted = parseInt(numberOfNotVotedElement.textContent) || totalPopulation;
     totalNotVoted -= 1; // Decrement total not voted
     numberOfNotVotedElement.textContent = totalNotVoted;
 
-    // Update not voted percentage
     if (totalPopulation > 0) {
         const notVotedPercentage = ((totalNotVoted / totalPopulation) * 100).toFixed(2);
-        totalNotVotedElement.textContent = `(${notVotedPercentage}%)`;
+        notVotedPercentageElement.textContent = `(${notVotedPercentage}%)`;
     }
+
+    // Update department vote count
+    const departments = electionSection.querySelectorAll('#program')
+    departments.forEach(dept => {
+        if (dept.querySelector('#program-code').dataset.programCode === data.department) {
+
+            const deptTotalVoted = dept.querySelector('#departmentTotalVotes')
+            const deptTotalNotVoted = dept.querySelector('#departmentNumberOfNotVoted')
+
+            deptTotalVoted.textContent = Number(deptTotalVoted.textContent) + 1
+            deptTotalNotVoted.textContent = Number(deptTotalNotVoted.textContent) - 1
+
+        }
+    })
+
+
 });

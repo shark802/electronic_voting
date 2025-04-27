@@ -42,8 +42,7 @@ function generateVoterReportInPdf(req, res, next) {
             const pdfBuffer = yield (0, generateTablePdf_1.genereateTablePdf)(filteredVoters, reportTitle, election.election_name);
             const filename = reportTitle
                 .replace(/[^\w\s-]/g, "")
-                .replace(/\s+/g, "_")
-                .toLowerCase();
+                .replace(/\s+/g, "_");
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename="${filename}.pdf"`);
             // Send the PDF as a response

@@ -49,9 +49,13 @@ function generateElectionResult(electionId) {
             const encryptedResult = cryptoService_1.CryptoService.encrypt(dataToEncrypt, secretKey, encryptionIv);
             yield (0, query_1.insertQuery)(database_1.pool, insertResultQuery, [electionId, encryptedResult, iv]);
         });
+        const candidatesData = yield getCandidatesTotalTally(electionId);
         if (votes.length === 0) {
-            yield encryptAndInsert(votes); // No votes, just insert an empty result
-            return votes;
+            const voteTally = candidatesData.map(candidate => {
+                return Object.assign(Object.assign({}, candidate), { vote_count: 0 });
+            });
+            yield encryptAndInsert(voteTally); // No votes, just insert an candidates data with 0 votes
+            return voteTally;
         }
         // Use Worker to decrypt votes
         const worker = new worker_threads_1.Worker(path_1.default.join(__dirname, '../utils/workerFiles/decryptVoteWorker.js'));
@@ -59,7 +63,6 @@ function generateElectionResult(electionId) {
             worker.postMessage(votes);
             // Wait for decrypted votes from the worker
             const [decryptedVotes] = yield (0, events_1.once)(worker, 'message');
-            const candidatesData = yield getCandidatesTotalTally(electionId);
             // Tally the votes for each candidate
             const voteTally = candidatesData.map(candidate => {
                 const vote_count = decryptedVotes.filter(vote => Number(vote.candidate_id) === Number(candidate.id_number)).length;
@@ -74,7 +77,7 @@ function generateElectionResult(electionId) {
             throw error;
         }
         finally {
-            worker.terminate(); // Clean up the worker
+            worker.terminate();
         }
     });
 }

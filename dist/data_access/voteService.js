@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateVoterVoteStatus = exports.incrementCandidateVoteCount = exports.saveVote = exports.checkIfUserHasVoted = void 0;
+exports.getVoterDepartment = exports.updateVoterVoteStatus = exports.incrementCandidateVoteCount = exports.saveVote = exports.checkIfUserHasVoted = void 0;
 const query_1 = require("./query");
 const database_1 = require("../config/database");
 const customErrors_1 = require("../utils/customErrors");
@@ -61,3 +61,18 @@ function updateVoterVoteStatus(connection, userId, electionId, isFaceVerified) {
     });
 }
 exports.updateVoterVoteStatus = updateVoterVoteStatus;
+function getVoterDepartment(user_id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const query = `
+        SELECT departments.department_code
+        FROM users
+        LEFT JOIN programs ON programs.program_code = users.course
+        LEFT JOIN departments ON departments.department_id = programs.department
+        WHERE users.id_number = ?
+        LIMIT 1
+    `;
+        const [department] = yield (0, query_1.selectQuery)(database_1.pool, query, [user_id]);
+        return department.department_code;
+    });
+}
+exports.getVoterDepartment = getVoterDepartment;
