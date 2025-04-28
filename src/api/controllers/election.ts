@@ -425,12 +425,13 @@ export async function votingModeEngagement(req: Request, res: Response, next: Ne
 			const totalVoted = Number(result.total_voted) || 0;
 
 			const voteOnsitePercentage = totalVoted > 0 && result.voted_onsite
-				? ((result.voted_onsite / totalVoted) * 100).toFixed(2)
+				? Number(((result.voted_onsite / totalVoted) * 100).toFixed(2))
 				: 0;
 
 			const voteOnlinePercentage = totalVoted > 0 && result.voted_online
-				? ((result.voted_online / totalVoted) * 100).toFixed(2)
+				? Number(((result.voted_online / totalVoted) * 100).toFixed(2))
 				: 0;
+
 
 			return {
 				...result,
@@ -438,7 +439,6 @@ export async function votingModeEngagement(req: Request, res: Response, next: Ne
 				online_vote_percentage: voteOnlinePercentage,
 			};
 		});
-
 
 		res.status(200).json({ votingModeSummary });
 

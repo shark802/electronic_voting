@@ -43,8 +43,8 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
                     label: 'Past Elections Voter Engagement Trends',
                     data: datasets,
                     borderWidth: 2,
-                    borderColor: '#3b82f6',
-                    backgroundColor: '#93c5fd',
+                    borderColor: '#3b82f6', // Medium blue for the line
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)', // Lighter transparent blue for the fill
                     fill: true,
                     tension: 0.4,
                 }]
@@ -68,28 +68,65 @@ function renderVoterEngagementTrends(completedElectionsArray, canvasId) {
                     }
                 },
                 plugins: {
+                    legend: {
+                        display: false,
+                    },
                     tooltip: {
-                        callbacks: {
-                            label: function (context) {
-
-                                const electionPopulation = completedElectionsArray[context.dataIndex].total_populations;
-                                const electionNumberVoted = completedElectionsArray[context.dataIndex].total_voted;
-                                const date = new Date(completedElectionsArray[context.dataIndex].date_end).toLocaleDateString();
-                                const percentage = context.raw.toFixed(2) + '%';
-
-                                return [
-                                    `Percentage:  ${percentage}`,
-                                    `Total Population:  ${electionPopulation}`,
-                                    `Total Voted:  ${electionNumberVoted}`,
-                                    `Date:  ${date}`
-                                ];
-                            }
+                        backgroundColor: 'rgba(22, 41, 88, 0.85)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        titleFont: {
+                            size: 16,
+                            weight: 'bold'
                         },
                         bodyFont: {
-                            size: 16,
+                            size: 14
                         },
-                        padding: 10,
+                        padding: 12,
+                        cornerRadius: 6,
+                        displayColors: false,
+                        callbacks: {
+                            title: function (context) {
+                                return completedElectionsArray[context[0].dataIndex].election_name;
+                            },
+                            label: function (context) {
+                                const election = completedElectionsArray[context.dataIndex];
+                                const electionPopulation = election.total_populations;
+                                const electionNumberVoted = election.total_voted;
+
+                                // Format values for better readability
+                                const percentage = context.raw.toFixed(1) + '%';
+                                const notVoted = electionPopulation - electionNumberVoted;
+
+                                // Format date nicely
+                                const date = new Date(election.date_end);
+                                const formattedDate = date.toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+
+                                return [
+                                    `Date: ${formattedDate}`,
+                                    ``,
+                                    `📊 Voter Turnout: ${percentage}`,
+                                    `✅ Voted: ${electionNumberVoted} voters`,
+                                    `❌ Did not vote: ${notVoted} eligible voters`,
+                                    `👥 Total eligible: ${electionPopulation} voters`
+                                ];
+                            }
+                        }
                     }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: false
                 }
             }
         });

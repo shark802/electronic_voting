@@ -48,21 +48,21 @@ async function renderOnlineEngagementTrends(completedElectionsArray, canvasId) {
             canvas.chartInstance.destroy();
         }
 
-        const ctx = canvas.getContext('2d'); // Get the canvas context
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height); // Create a vertical gradient
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); // Start color (light blue)
-        gradient.addColorStop(1, 'rgba(147, 197, 253, 0.3)'); // End color (lighter blue)
+        const ctx = canvas.getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+        gradient.addColorStop(1, 'rgba(147, 197, 253, 0.3)')
 
         canvas.chartInstance = new Chart(canvas, {
             type: 'line',
             data: {
                 labels: completedElectionsArray.map(election => election.election_name),
                 datasets: [{
-                    label: 'Past Elections Voter Engagement Trends',
+                    label: 'Past Elections Online Voting Trends',
                     data: onlineVotingPercentage,
                     borderWidth: 2,
                     borderColor: '#3b82f6',
-                    backgroundColor: gradient, // Use the gradient as background color
+                    backgroundColor: gradient,
                     fill: true,
                     tension: 0.3,
                 }]
@@ -77,7 +77,6 @@ async function renderOnlineEngagementTrends(completedElectionsArray, canvasId) {
                     },
                     y: {
                         beginAtZero: true,
-                        max: 100,
                         ticks: {
                             stepSize: 20,
                             callback: function (value) {
@@ -88,30 +87,67 @@ async function renderOnlineEngagementTrends(completedElectionsArray, canvasId) {
                 },
                 plugins: {
                     legend: {
-                        display: false, // Hides the legend
+                        display: false,
                     },
                     tooltip: {
+                        backgroundColor: 'rgba(22, 41, 88, 0.85)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        titleFont: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 14
+                        },
+                        padding: 12,
+                        cornerRadius: 6,
+                        displayColors: false,
                         callbacks: {
+                            title: function (context) {
+                                return completedElectionsArray[context[0].dataIndex].election_name;
+                            },
                             label: function (context) {
+                                // Get the data for this specific data point
+                                const electionData = completedElectionsArray[context.dataIndex];
+                                const datasetData = datasets[context.dataIndex];
 
-                                const electionPopulation = completedElectionsArray[context.dataIndex].total_populations;
-                                const electionNumberVoted = completedElectionsArray[context.dataIndex].total_voted;
-                                const date = new Date(completedElectionsArray[context.dataIndex].date_end).toLocaleDateString();
-                                const percentage = context.raw + '%';
-                                const votedOnCampus = datasets[context.dataIndex].voted_online
+                                // Calculate turnout percentage
+                                const turnoutPercentage = Math.round((electionData.total_voted / electionData.total_populations) * 100);
+
+                                // Format date nicely
+                                const date = new Date(electionData.date_end);
+                                const formattedDate = date.toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+
+                                // Calculate percentages
+                                const onlinePercent = context.raw;
+
+                                // Calculate absolute numbers
+                                const votedOnline = datasetData.voted_online;
 
                                 return [
-                                    `Vote Onsite Percentage:  ${percentage}`,
-                                    `Voted on Campus: ${votedOnCampus}/${electionNumberVoted}`,
-                                    `Date:  ${date}`
+                                    `Date: ${formattedDate}`,
+                                    ``,
+                                    `📊 Turnout: ${turnoutPercentage}% (${electionData.total_voted}/${electionData.total_populations})`,
+                                    `💻 Online Voting: ${onlinePercent}% (${votedOnline} voters)`,
                                 ];
                             }
                         },
-                        bodyFont: {
-                            size: 16,
-                        },
-                        padding: 10,
                     }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: false
                 }
             }
         });

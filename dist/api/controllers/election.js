@@ -388,10 +388,10 @@ function votingModeEngagement(req, res, next) {
             const votingModeSummary = queryResult.map(result => {
                 const totalVoted = Number(result.total_voted) || 0;
                 const voteOnsitePercentage = totalVoted > 0 && result.voted_onsite
-                    ? ((result.voted_onsite / totalVoted) * 100).toFixed(2)
+                    ? Number(((result.voted_onsite / totalVoted) * 100).toFixed(2))
                     : 0;
                 const voteOnlinePercentage = totalVoted > 0 && result.voted_online
-                    ? ((result.voted_online / totalVoted) * 100).toFixed(2)
+                    ? Number(((result.voted_online / totalVoted) * 100).toFixed(2))
                     : 0;
                 return Object.assign(Object.assign({}, result), { onsite_vote_percentage: voteOnsitePercentage, online_vote_percentage: voteOnlinePercentage });
             });
