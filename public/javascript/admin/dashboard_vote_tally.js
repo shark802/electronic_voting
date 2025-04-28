@@ -1,5 +1,6 @@
 import "/javascript/logout.js"
 import socket from "/javascript/socket_io.js"
+// import $ from 'jquery';
 // import Chart from '/javascript/lib/chart.js';
 
 let electionsCandidateData; // Declare the variable in a higher scope
@@ -71,13 +72,39 @@ function createChart(canvas, candidatesToDisplay) {
         type: 'bar',
         data: transformDataset(candidatesToDisplay),
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    padding: 10,
+                    cornerRadius: 6,
+                    callbacks: {
+                        label: function (context) {
+                            return `Votes: ${context.raw}`;
+                        }
+                    }
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,
                     ticks: {
                         font: {
-                            size: 9
+                            size: 11,
+                            weight: '500'
                         },
+                        padding: 8,
                         callback: function (value) {
                             return Math.floor(value) === value ? value : '';
                         }
@@ -86,21 +113,47 @@ function createChart(canvas, candidatesToDisplay) {
                         drawOnChartArea: true,
                         drawTicks: true,
                         color: function (context) {
-                            return Math.floor(context.tick.value) === context.tick.value ? 'rgba(0,0,0,0.1)' : 'transparent';
+                            return Math.floor(context.tick.value) === context.tick.value ? 'rgba(0,0,0,0.07)' : 'transparent';
                         }
+                    },
+                    border: {
+                        display: true,
+                        color: 'rgba(0,0,0,0.1)'
                     }
                 },
                 x: {
                     ticks: {
                         font: {
-                            size: 9
-                        }
+                            size: 11,
+                            weight: '500'
+                        },
+                        padding: 6,
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
+                    grid: {
+                        display: false
+                    },
+                    border: {
+                        display: true,
+                        color: 'rgba(0,0,0,0.1)'
                     }
                 },
             },
             layout: {
-                padding: 10
-            }
+                padding: {
+                    top: 16,
+                    right: 16,
+                    bottom: 16,
+                    left: 8
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            },
+            barPercentage: 0.8,
+            categoryPercentage: 0.8
         }
     });
 }
@@ -124,29 +177,46 @@ async function fetchAllCandidatesDataForActiveElection() {
 }
 
 function transformDataset(dataset) {
+    // Generate a unique color for each candidate
+    const generateUniqueColors = (count) => {
+        const colors = [];
+        const baseColors = [
+            [54, 162, 235],   // blue
+            [75, 192, 192],   // teal
+            [153, 102, 255],  // purple
+            [255, 159, 64],   // orange
+            [255, 99, 132],   // pink
+            [255, 206, 86]    // yellow
+        ];
+
+        for (let i = 0; i < count; i++) {
+            const colorIndex = i % baseColors.length;
+            const baseColor = baseColors[colorIndex];
+            // Add slight variation to colors if we have more candidates than base colors
+            const variation = Math.floor(i / baseColors.length) * 20;
+            const r = Math.max(0, Math.min(255, baseColor[0] - variation));
+            const g = Math.max(0, Math.min(255, baseColor[1] - variation));
+            const b = Math.max(0, Math.min(255, baseColor[2] - variation));
+
+            colors.push(`rgba(${r}, ${g}, ${b}, 0.7)`);
+        }
+        return colors;
+    };
+
+    const backgroundColors = generateUniqueColors(dataset.length);
+    const borderColors = backgroundColors.map(color => color.replace('0.7', '0.9'));
+
     return {
         labels: dataset.map(candidate => `${candidate.firstname} ${candidate.lastname}`),
         datasets: [{
             label: 'Vote count',
             data: dataset.map(candidate => Math.round(candidate.vote_count)),
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(75, 192, 192, 0.6)',
-                'rgba(153, 102, 255, 0.6)',
-                'rgba(255, 159, 64, 0.6)'
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)'
-            ],
+            backgroundColor: backgroundColors,
+            borderColor: borderColors,
             borderWidth: 1,
-            maxBarThickness: 90
+            borderRadius: 4,
+            maxBarThickness: 80,
+            minBarLength: 2
         }]
     }
 }
