@@ -23,7 +23,7 @@ export async function electionPage(req: Request, res: Response, next: NextFuncti
 
         const face_registered = register_face ? true : false;
 
-        const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start";
+        const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start DESC";
         const electionList = await selectQuery<Election>(pool, query);
         const [user] = await selectQuery<User>(pool, 'SELECT * FROM users WHERE id_number = ?', [user_id])
 

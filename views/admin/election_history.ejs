@@ -86,11 +86,11 @@
             <!-- Display past elections -->
             <% elections.forEach(election => { %>
             <div class="carousel-item flex-shrink-0 <%= elections.length === 1 ? 'w-full' : '' %>">
-              <section id="election-card" class="lg:w-[700px] shadow-md border border-gray-200 w-full bg-white rounded-lg min-h-fit m-auto py-6 lg:px-12 px-4 mb-6">
+              <section id="election-card" class="lg:w-[700px] shadow-md border border-gray-200 w-full bg-white rounded-lg min-h-fit m-auto py-6 lg:px-12 px-4 mb-6 hover:shadow-lg transition-all duration-300">
+                <!-- Preserve the exact original structure for the header section -->
                 <div id="electionSection" class="relative flex justify-between pb-4 border-b border-gray-200">
-
                   <div class="relative">
-
+                    <!-- Original Status Indicator with Original Classes -->
                     <%  if (election.is_active) { %>
                     <p id="display-status" class="px-3 py-1 mb-2 text-sm font-medium text-green-600 bg-green-100 rounded-full w-fit">Active</p>
                     <% } else { %>
@@ -100,40 +100,51 @@
                     <h2 id="election-title" class="mb-1 text-2xl font-bold text-gray-800"><%= election.election_name %></h2>
                     <p id="election-card-id" class="text-sm text-gray-500"><%= election.election_id %></p>
 
+                    <!-- Enhanced candidate info while preserving original ID -->
                     <div class="relative group">
-                      <% 
-                        const electionCandidates = candidates.filter(candidate => candidate.election_id === election.election_id)
-                      %>
-                      <p id="candidate-count" class="text-sm text-gray-600 cursor-pointer">Candidates: <%= electionCandidates.length %></p>
-                      <div id="candidate-details-<%= election.election_id %>" class="absolute z-30 hidden p-2 text-blue-700 rounded-md shadow-md bg-blue-50 lg:shadow-lg group-hover:block">
+                      <% const electionCandidates = candidates.filter(candidate => candidate.election_id === election.election_id) %>
+                      <div class="flex items-center mt-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 text-blue-500">
+                          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="9" cy="7" r="4"></circle>
+                          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <!-- Preserve original ID -->
+                        <p id="candidate-count" class="text-sm text-gray-600 cursor-pointer">Candidates: <%= electionCandidates.length %></p>
+                      </div>
+
+                      <!-- Enhanced dropdown with preserved ID -->
+                      <div id="candidate-details-<%= election.election_id %>" class="absolute z-30 hidden p-3 text-blue-700 bg-white border border-blue-100 rounded-md shadow-lg min-w-48 group-hover:block">
+                        <h4 class="pb-1 mb-2 font-semibold text-gray-800 border-b border-gray-100">Candidate Breakdown</h4>
                         <% positions.forEach(position => { %>
                         <% const positionCandidatesCount = electionCandidates.filter(candidate => candidate.position === position) %>
                         <% if (positionCandidatesCount.length > 0) { %>
-                        <p class="text-nowrap"><%= positionCandidatesCount.length %> candidates for <%= position.toLowerCase() %></p>
+                        <div class="flex items-center justify-between py-1">
+                          <p class="text-gray-600"><%= position.toLowerCase() %>:</p>
+                          <span class="px-2 py-0.5 bg-blue-50 rounded-md text-blue-700 font-medium"><%= positionCandidatesCount.length %></span>
+                        </div>
                         <% } %>
                         <% }) %>
                       </div>
                     </div>
-
                   </div>
 
+                  <!-- Preserve the exact original structure for options menu -->
                   <div id="option-section" class="relative">
                     <img id="more-button" src="/img/more.webp" alt="more" class="w-6 h-6 p-1 transition-colors duration-200 rounded-full cursor-pointer hover:bg-gray-100">
 
                     <div id="more-option" class="absolute right-0 z-30 hidden w-48 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-
                       <% if (election.is_active === 1) { %>
                       <div id="toggleElectionEventVisibility" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
                         <img id="viewStatusImage" src="/img/hide.webp" alt="hide" class="w-4 h-4 mr-2">
                         <p id="viewStatus" class="text-gray-700">Deactivate</p>
                       </div>
-
                       <% } else { %>
                       <div id="toggleElectionEventVisibility" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
                         <img id="viewStatusImage" src="/img/view.webp" alt="view" class="w-4 h-4 mr-2">
                         <p id="viewStatus" class="text-gray-700">Activate</p>
                       </div>
-
                       <% } %>
                       <a href="/admin/election/complete/<%= election.election_id %>">
                         <div id="election-report" class="flex items-center px-4 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-50">
@@ -146,33 +157,47 @@
                           <p class="text-gray-700">View Report</p>
                         </div>
                       </a>
-
                     </div>
                   </div>
                 </div>
 
+                <!-- Date Information Section - Enhanced but preserving all original structure -->
                 <% 
-                const formatOptions = {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                }
-                
-                const startDateTime = new Date(election.date_start);
-                const [startHour, startMinute, startSecond] = election.time_start.split(":");
-                startDateTime.setHours(startHour, startMinute, startSecond);
-                const formattedStartDateTime = startDateTime.toLocaleString('en-US', formatOptions);
+  const formatOptions = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  }
+  
+  const startDateTime = new Date(election.date_start);
+  const [startHour, startMinute, startSecond] = election.time_start.split(":");
+  startDateTime.setHours(startHour, startMinute, startSecond);
+  const formattedStartDateTime = startDateTime.toLocaleString('en-US', formatOptions);
 
-                const electionEndDateTime = new Date(election.date_end);
-                const [endHour, endMinute, endSecond] = election.time_end.split(":");
-                electionEndDateTime.setHours(endHour, endMinute, endSecond);
-                const formattedEndDateTime = electionEndDateTime.toLocaleString('en-US', formatOptions);
-                %>
+  const electionEndDateTime = new Date(election.date_end);
+  const [endHour, endMinute, endSecond] = election.time_end.split(":");
+  electionEndDateTime.setHours(endHour, endMinute, endSecond);
+  const formattedEndDateTime = electionEndDateTime.toLocaleString('en-US', formatOptions);
+  
+  // Calculate if election is current, past or future
+  const now = new Date();
+  const isCurrentElection = now >= startDateTime && now <= electionEndDateTime;
+  const isPastElection = now > electionEndDateTime;
+  %>
 
                 <div class="p-4 mt-6 space-y-4 rounded-lg bg-gray-50">
+                  <!-- Timeline Indicator -->
+                  <div class="relative h-2 mb-4 overflow-hidden bg-gray-200 rounded-full">
+                    <% if (isPastElection) { %>
+                    <div class="absolute top-0 left-0 w-full h-full bg-green-500"></div>
+                    <% } else if (isCurrentElection) { %>
+                    <div class="absolute top-0 left-0 h-full bg-blue-500" style="width: 50%;"></div>
+                    <% } %>
+                  </div>
+
                   <div class="flex items-center">
                     <svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -190,19 +215,28 @@
                     <div>
                       <p class="text-sm font-medium text-gray-500">End</p>
                       <p class="text-base font-semibold text-gray-900"><%= formattedEndDateTime %></p>
+                      <% if (isCurrentElection) { %>
+                      <p class="mt-1 text-xs text-green-600">Election in progress</p>
+                      <% } %>
                     </div>
                   </div>
                 </div>
 
+                <!-- Action Button - Preserving original ID and structure -->
                 <div class="flex justify-end mt-6">
                   <a href="/admin/election/result/<%=election.election_id %>">
                     <button id="view-result" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-all duration-200 ease-in-out transform bg-green-500 rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:scale-105">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                        <path d="M2 12h5"></path>
+                        <path d="M7 17l-5-5 5-5"></path>
+                        <path d="M22 12H10"></path>
+                      </svg>
                       View Results
                     </button>
                   </a>
                 </div>
-
               </section>
+
             </div>
             <% }) %>
 

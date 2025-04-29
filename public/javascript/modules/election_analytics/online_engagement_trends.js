@@ -76,6 +76,7 @@ async function renderOnlineEngagementTrends(completedElectionsArray, canvasId) {
                         }
                     },
                     y: {
+                        max: 100,
                         beginAtZero: true,
                         ticks: {
                             stepSize: 20,

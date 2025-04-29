@@ -44,7 +44,10 @@
 
       <div class="flex flex-col lg:flex-row">
         <div class="w-full lg:w-[85%] lg:float-left bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 px-2 lg:mr-2">
-          <h2 class="p-3 text-xl font-semibold text-gray-800 border-b border-gray-100 lg:text-2xl">Voter Engagement Trends</h2>
+          <div class="px-5 py-4 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 lg:text-2xl">Voter Engagement Trends</h2>
+            <p class="mt-1 text-sm text-gray-600">Historical voter participation rates across all past elections, showing turnout percentages over time.</p>
+          </div>
           <!-- Chart Container -->
           <canvas id="voter-engagement-trends" class="min-w-full lg:max-h-[360px] mb-1"></canvas>
         </div>
@@ -86,31 +89,38 @@
 
       <div class="flex flex-col gap-4 mt-4 lg:flex-row">
         <div class="pb-0 transition-shadow duration-300 bg-white shadow-sm rounded-xl hover:shadow-lg min-h-fit lg:w-1/2 lg:p-2 lg:pt-0">
-          <h2 class="p-3 pb-0 text-xl font-semibold text-gray-800 lg:text-2xl">Engagement Per Year Level</h2>
-          <!-- Added description paragraph -->
-          <p class="pb-2 pl-4 text-sm text-gray-600 border-b border-gray-200">Historical trends of voter engagement per year level over the past elections.</p>
-          <canvas id="engagement-per-year-level" class="w-full h-full lg:max-h-[230px] mt-2"></canvas>
+          <div class="px-5 py-2 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 lg:text-2xl">Engagement Per Year Level</h2>
+            <p class="mt-1 text-sm text-gray-600">Comparison of voter participation rates across different year levels, showing which groups are most engaged.</p>
+          </div>
+
+          <canvas id="engagement-per-year-level" class="w-full h-full lg:max-h-[280px]"></canvas>
         </div>
 
         <div class="pb-0 transition-shadow duration-300 bg-white shadow-md rounded-xl hover:shadow-lg min-h-fit lg:w-1/2 lg:p-2 lg:pt-0">
-          <h2 class="p-3 pb-0 text-xl font-semibold text-gray-800 lg:text-2xl">Engagement Per Department</h2>
-          <!-- Added description paragraph -->
-          <p class="pb-2 pl-4 text-sm text-gray-600 border-b border-gray-200">Historical trends of voter engagement per department over the past elections.</p>
-          <canvas id="engagement-per-department" class="w-full h-full lg:max-h-[230px] mt-2"></canvas>
+          <div class="px-5 py-2 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 lg:text-2xl">Engagement Per Department</h2>
+            <p class="mt-1 text-sm text-gray-600">Analysis of voter turnout by academic department, highlighting departmental participation differences.</p>
+          </div>
+          <canvas id="engagement-per-department" class="w-full h-full lg:max-h-[280px]"></canvas>
         </div>
       </div>
 
       <div class="flex flex-col gap-4 mt-4 lg:mt-10 lg:flex-row">
         <div class="pb-0 transition-shadow duration-300 bg-white shadow-sm rounded-xl hover:shadow-lg min-h-fit lg:w-1/2 lg:p-2 lg:pt-0">
-          <h2 class="p-3 pb-0 text-xl font-semibold text-gray-800 lg:text-2xl">Trends in Campus Voter Participation</h2>
-          <p class="pb-2 pl-4 text-sm text-gray-600 border-b border-gray-200">Historical trends of voter participation on campus over the past elections.</p>
-          <canvas id="onsite-engagement" class="w-full mt-2 h-full lg:max-h-[230px]"></canvas>
+          <div class="px-5 py-4 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 lg:text-2xl">On-Campus Voter Participation</h2>
+            <p class="mt-1 text-sm text-gray-600">Trends in physical polling station usage over time, showing how on-campus voting patterns have evolved.</p>
+          </div>
+          <canvas id="onsite-engagement" class="w-full h-full lg:max-h-[230px]"></canvas>
         </div>
 
         <div class="pb-0 transition-shadow duration-300 bg-white shadow-md rounded-xl hover:shadow-lg min-h-fit lg:w-1/2 lg:p-2 lg:pt-0">
-          <h2 class="p-3 pb-0 text-xl font-semibold text-gray-800 lg:text-2xl">Trends in Online Voter Participation</h2>
-          <p class="pb-2 pl-4 text-sm text-gray-600 border-b border-gray-200">Historical trends of voter participation online over the past elections.</p>
-          <canvas id="online-engagement" class="w-full mt-2 h-full lg:max-h-[230px]"></canvas>
+          <div class="px-5 py-4 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 lg:text-2xl">Online Voter Participation</h2>
+            <p class="mt-1 text-sm text-gray-600">Analysis of remote voting trends, showing the adoption and usage patterns of the online voting platform.</p>
+          </div>
+          <canvas id="online-engagement" class="w-full h-full lg:max-h-[230px]"></canvas>
         </div>
       </div>
 

@@ -26,7 +26,7 @@ function electionPage(req, res, next) {
             const user_id = req.session.user.user_id;
             const [register_face] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM register_faces WHERE id_number = ? AND deleted_at IS NULL LIMIT 1', [user_id]);
             const face_registered = register_face ? true : false;
-            const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start";
+            const query = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_active = 1 ORDER BY date_start DESC";
             const electionList = yield (0, query_1.selectQuery)(database_1.pool, query);
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ?', [user_id]);
             res.render("voter/electionPage", { electionList, user, face_registered });
