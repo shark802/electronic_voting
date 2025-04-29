@@ -20,7 +20,7 @@ const cryptoService_1 = require("../../utils/cryptoService");
 function dashboardOverview(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
+            const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start DESC, time_start DESC');
             const electionIdList = elections.map(election => election.election_id);
             let populationPerProgram = [];
             if (electionIdList.length > 0) {
@@ -37,7 +37,7 @@ exports.dashboardOverview = dashboardOverview;
 function dashboardVoteTally(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
+            const elections = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start DESC, time_start DESC');
             // get all positions
             const positions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
             const candidatePosition = positions.map(position => position.position);

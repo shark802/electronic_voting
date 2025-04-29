@@ -16,7 +16,7 @@ import { CryptoService } from "../../utils/cryptoService";
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
 
-        const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
+        const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start DESC, time_start DESC');
 
         const electionIdList = elections.map(election => election.election_id);
         let populationPerProgram: unknown[] = []
@@ -33,7 +33,7 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
 
 export async function dashboardVoteTally(req: Request, res: Response, next: NextFunction) {
     try {
-        const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start, time_start');
+        const elections = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE is_close = 0 AND deleted_at IS NULL ORDER BY date_start DESC, time_start DESC');
 
         // get all positions
         const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');

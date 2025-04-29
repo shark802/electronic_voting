@@ -27,48 +27,66 @@ document.querySelector("#hide-sidebar").addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', async () => {
     electionsCandidateData = await fetchAllCandidatesDataForActiveElection(); // Assign data to the variable
 
-    const activeElections = document.querySelectorAll('section'); // select all section element that represent each active election
+    // Initialize charts for all active elections
+    initializeCharts();
+});
+
+// Global charts object to store references to all created charts
+let charts = {};
+
+function initializeCharts() {
+    const activeElections = document.querySelectorAll('section'); // select all section elements that represent each active election
+
     activeElections.forEach(election => {
         const electionId = election.dataset.electionId;
 
         const positionDivContainer = election.querySelectorAll('#position-container'); // select all div that serve as container for group of candidate per position
         positionDivContainer.forEach(div => {
-            const positionDataAttribute = div.dataset.position; // contain data attribute (data-position) to provide info what position the container holds. // Example: 'PRESIDENT', VICE_PRESIDENT', 'SENATOR'
+            const positionDataAttribute = div.dataset.position; // Example: 'PRESIDENT', 'VICE_PRESIDENT', 'SENATOR'
 
             if (positionDataAttribute === 'SENATOR') {
+                const senatorPositionPerProgram = div.querySelectorAll('#senator-by-program'); // SENATOR div container holds multiple canvas per program
 
-                const senatorPositionPerProgam = div.querySelectorAll('#senator-by-program'); // SENATOR div container holds multiple canvas per program
-                senatorPositionPerProgam.forEach(program => {
-
-                    const canvas = program.querySelector('canvas'); // Represent as canvas element for each program on senator position
-                    const candidatesToDisplay = electionsCandidateData.filter(candidate => candidate.position === 'SENATOR' && candidate.election_id === electionId && candidate.department === canvas.id);
-                    createChart(canvas, candidatesToDisplay);
-                })
-
+                senatorPositionPerProgram.forEach(program => {
+                    const canvas = program.querySelector('canvas');
+                    if (canvas) {
+                        const candidatesToDisplay = electionsCandidateData.filter(candidate =>
+                            candidate.position === 'SENATOR' &&
+                            candidate.election_id === electionId &&
+                            candidate.department === canvas.id
+                        );
+                        createChart(canvas, candidatesToDisplay);
+                    }
+                });
             } else {
-
                 const canvas = div.querySelector('canvas');
-                const candidatesToDisplay = electionsCandidateData.filter(candidate => candidate.position === canvas.id && candidate.election_id === electionId);
-                createChart(canvas, candidatesToDisplay);
+                if (canvas) {
+                    // Important: use positionDataAttribute instead of canvas.id for filtering the position
+                    const candidatesToDisplay = electionsCandidateData.filter(candidate =>
+                        candidate.position === positionDataAttribute &&
+                        candidate.election_id === electionId
+                    );
+                    createChart(canvas, candidatesToDisplay);
+                }
             }
         });
-
     });
-
-})
-
-let charts = {};
+}
 
 function createChart(canvas, candidatesToDisplay) {
-    // Check if a chart already exists for this canvas
-    if (charts[canvas.id]) {
+    // Create a unique chart ID that includes both canvas ID and election ID
+    const electionId = canvas.closest('section').dataset.electionId;
+    const uniqueChartId = `${canvas.id}_${electionId}`;
+
+    // Check if a chart already exists for this canvas and election combination
+    if (charts[uniqueChartId]) {
         // If it exists, update the chart data instead of recreating it
-        updateChart(charts[canvas.id], candidatesToDisplay);
+        updateChart(charts[uniqueChartId], candidatesToDisplay);
         return;
     }
 
-    // Create a new chart and store the reference
-    charts[canvas.id] = new Chart(canvas, {
+    // Create a new chart and store the reference with the unique ID
+    charts[uniqueChartId] = new Chart(canvas, {
         type: 'bar',
         data: transformDataset(candidatesToDisplay),
         options: {
@@ -170,9 +188,10 @@ async function fetchAllCandidatesDataForActiveElection() {
         const responseObject = await response.json();
 
         if (response.ok) return responseObject.candidatesData;
+        return [];
     } catch (error) {
-        console.error(error);
-
+        console.error("Error fetching candidate data:", error);
+        return [];
     }
 }
 
@@ -221,68 +240,107 @@ function transformDataset(dataset) {
     }
 }
 
+// Socket event handler for real-time vote updates
 socket.on('new-vote', (data) => {
-
     if (!electionsCandidateData) {
         console.error("electionsCandidateData is not defined.");
         return;
     }
 
+    console.log("Received new vote data:", data);
+
+    // Track which candidates were actually updated
+    const updatedCandidates = [];
+
+    // Update our local data with the new votes
     data.voted_candidate_list.forEach(vote => {
-        console.log(`Checking vote for candidate_id: ${vote.candidate_id}, election_id: ${data.election_id}, position: ${vote.candidate_position}`);
+        console.log(`Processing vote for candidate_id: ${vote.candidate_id}, position: ${vote.candidate_position}`);
 
-        const candidate = electionsCandidateData.find(c =>
-            String(c.id_number) === String(vote.candidate_id) &&
-            c.election_id === data.election_id &&
-            c.position === vote.candidate_position
-        );
+        // We need to find ALL instances of this candidate across all elections
+        electionsCandidateData.forEach((candidate, index) => {
+            if (String(candidate.id_number) === String(vote.candidate_id) &&
+                candidate.position === vote.candidate_position) {
 
-        if (candidate) {
-            console.log(`Found candidate: ${candidate.firstname} ${candidate.lastname}`);
-            candidate.vote_count = (candidate.vote_count || 0) + 1;
+                // Update the vote count
+                electionsCandidateData[index].vote_count =
+                    (electionsCandidateData[index].vote_count || 0) + 1;
 
-            const activeElections = document.querySelectorAll('section');
-            activeElections.forEach(election => {
-                if (election.dataset.electionId === data.election_id) {
-                    const positionDivContainer = election.querySelectorAll('#position-container');
-                    positionDivContainer.forEach(div => {
-                        const canvas = div.querySelector('canvas');
-                        const positionDataAttribute = div.dataset.position;
+                console.log(`Updated vote count for ${candidate.firstname} ${candidate.lastname} to ${electionsCandidateData[index].vote_count}`);
 
-                        if (positionDataAttribute === 'SENATOR') {
-                            const senatorCanvases = div.querySelectorAll('canvas');
+                // Add to our list of updated candidates with their election ID
+                updatedCandidates.push({
+                    candidateId: candidate.id_number,
+                    electionId: candidate.election_id
+                });
+            }
+        });
+    });
 
-                            senatorCanvases.forEach(canvas => {
-                                const department = canvas.id;
+    // Update charts for all affected elections
+    const affectedElectionIds = [...new Set(updatedCandidates.map(c => c.electionId))];
+    console.log(`Updating charts for ${affectedElectionIds.length} affected elections`);
 
-                                console.log(`Updating chart for department: ${department}`);
-
-                                const candidatesToDisplay = electionsCandidateData.filter(candidate =>
-                                    candidate.election_id === data.election_id &&
-                                    candidate.position === positionDataAttribute &&
-                                    candidate.department === department
-                                );
-
-                                if (candidatesToDisplay.length > 0) {
-                                    updateChart(charts[canvas.id], candidatesToDisplay);
-                                } else {
-                                    console.log(`No candidates found for department: ${department}`);
-                                }
-                            });
-                        } else {
-                            const candidatesToDisplay = electionsCandidateData.filter(candidate =>
-                                candidate.election_id === data.election_id &&
-                                candidate.position === positionDataAttribute
-                            );
-
-                            updateChart(charts[canvas.id], candidatesToDisplay);
-                        }
-                    });
-                }
-            });
-
-        } else {
-            console.log(`Candidate not found for candidate_id: ${vote.candidate_id} in election_id: ${data.election_id}`);
-        }
+    affectedElectionIds.forEach(electionId => {
+        updateChartsForElection(electionId);
     });
 });
+
+// Function to update all charts for a specific election
+function updateChartsForElection(electionId) {
+    // Get ALL election sections with the matching election ID
+    // Using querySelectorAll instead of querySelector to handle multiple sections with the same election ID
+    const electionSections = document.querySelectorAll(`section[data-election-id="${electionId}"]`);
+
+    if (electionSections.length === 0) {
+        console.warn(`No election sections found for election ID: ${electionId}`);
+        return;
+    }
+
+    console.log(`Found ${electionSections.length} election sections for election ID: ${electionId}`);
+
+    // Update charts in each matching election section
+    electionSections.forEach(electionSection => {
+        const positionContainers = electionSection.querySelectorAll('#position-container');
+
+        positionContainers.forEach(container => {
+            const position = container.dataset.position;
+
+            if (position === 'SENATOR') {
+                // Update senator charts by department
+                const senatorPrograms = container.querySelectorAll('#senator-by-program');
+                senatorPrograms.forEach(program => {
+                    const canvas = program.querySelector('canvas');
+                    if (canvas) {
+                        const uniqueChartId = `${canvas.id}_${electionId}`;
+
+                        if (charts[uniqueChartId]) {
+                            const department = canvas.id;
+                            const candidatesToDisplay = electionsCandidateData.filter(candidate =>
+                                candidate.position === 'SENATOR' &&
+                                candidate.election_id === electionId &&
+                                candidate.department === department
+                            );
+
+                            updateChart(charts[uniqueChartId], candidatesToDisplay);
+                        }
+                    }
+                });
+            } else {
+                // Update other position charts
+                const canvas = container.querySelector('canvas');
+                if (canvas) {
+                    const uniqueChartId = `${canvas.id}_${electionId}`;
+
+                    if (charts[uniqueChartId]) {
+                        const candidatesToDisplay = electionsCandidateData.filter(candidate =>
+                            candidate.position === position &&
+                            candidate.election_id === electionId
+                        );
+
+                        updateChart(charts[uniqueChartId], candidatesToDisplay);
+                    }
+                }
+            }
+        });
+    });
+}
