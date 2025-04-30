@@ -42,7 +42,6 @@
       </div>
 
       <div class="flex items-center space-x-2 md:space-x-3">
-
         <button id="generate-result-pdf" class="flex items-center px-3 py-2 text-sm font-medium text-white transition-colors duration-300 bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
           <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -50,7 +49,6 @@
           <span class="hidden sm:inline">Generate PDF</span>
           <span class="sm:hidden">PDF</span>
         </button>
-
       </div>
     </div>
 
@@ -81,28 +79,27 @@
 
       <div class="flex items-center">
         <% 
-      const now = new Date();
-      const startDate = new Date(electionInfo.date_start);
-      startDate.setHours(parseInt(electionInfo.time_start.split(':')[0]), parseInt(electionInfo.time_start.split(':')[1]));
-      
-      const endDate = new Date(electionInfo.date_end);
-      endDate.setHours(parseInt(electionInfo.time_end.split(':')[0]), parseInt(electionInfo.time_end.split(':')[1]));
-      
-      let statusClass = '';
-      let statusText = '';
-      
-      if (now < startDate) {
-        statusClass = 'bg-yellow-500';
-        statusText = 'Upcoming';
-      } else if (now > endDate) {
-        statusClass = 'bg-green-500';
-        statusText = 'Completed';
-      } else {
-        statusClass = 'bg-blue-500';
-        statusText = 'In Progress';
-      }
-      %>
-
+        const now = new Date();
+        const startDate = new Date(electionInfo.date_start);
+        startDate.setHours(parseInt(electionInfo.time_start.split(':')[0]), parseInt(electionInfo.time_start.split(':')[1]));
+        
+        const endDate = new Date(electionInfo.date_end);
+        endDate.setHours(parseInt(electionInfo.time_end.split(':')[0]), parseInt(electionInfo.time_end.split(':')[1]));
+        
+        let statusClass = '';
+        let statusText = '';
+        
+        if (now < startDate) {
+          statusClass = 'bg-yellow-500';
+          statusText = 'Upcoming';
+        } else if (now > endDate) {
+          statusClass = 'bg-green-500';
+          statusText = 'Completed';
+        } else {
+          statusClass = 'bg-blue-500';
+          statusText = 'In Progress';
+        }
+        %>
       </div>
     </div>
   </header>
@@ -163,17 +160,128 @@
         <!-- Results by position with improved design -->
         <div class="space-y-8">
           <% 
-              positionList.forEach((position, posIndex) => {
-                let candidatePerPosition = position === 'SENATOR'
-                  ? candidatesVoteTally.filter(candidate => candidate.position === position)
-                  : candidatesVoteTally.filter(candidate => candidate.position === position);
+          positionList.forEach((position, posIndex) => {
+            // Special handling for SENATOR position
+            if (position === 'SENATOR') {
+              // Get all senator candidates
+              const senatorCandidates = candidatesVoteTally.filter(candidate => candidate.position === position);
+              
+              if (senatorCandidates.length > 0) {
+                // Get unique departments from senators
+                const departments = [...new Set(senatorCandidates.map(candidate => candidate.department))];
+          %>
+          <!-- SENATOR section header -->
+          <section class="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+            <div class="py-3 text-center text-white bg-blue-600">
+              <h3 class="text-lg font-bold">SENATOR</h3>
+            </div>
 
-                if (candidatePerPosition.length > 0) {
-                  candidatePerPosition.sort((a, b) => b.vote_count - a.vote_count);
-                  const highestVoteInPosition = candidatePerPosition.reduce((highest, currentCandidateIteration) => 
-                    currentCandidateIteration.vote_count > highest ? currentCandidateIteration.vote_count : highest, 0);
-                  const totalVotesInPosition = candidatePerPosition.reduce((total, candidateVotes) => 
-                    total + candidateVotes.vote_count, 0);
+            <!-- Main container for all departments -->
+            <div class="p-1 divide-y divide-gray-200 ">
+              <% 
+            // Group candidates by department first
+            const departmentGroups = {};
+            
+            // Populate department groups
+            departments.forEach(department => {
+              const candidatesInDept = senatorCandidates.filter(candidate => candidate.department === department);
+              
+              if (candidatesInDept.length > 0) {
+                // Sort candidates by vote count in descending order
+                candidatesInDept.sort((a, b) => b.vote_count - a.vote_count);
+                
+                // Calculate metrics for this department
+                const highestVoteInDept = candidatesInDept.reduce((highest, candidate) => 
+                  candidate.vote_count > highest ? candidate.vote_count : highest, 0);
+                
+                const totalVotesInDept = candidatesInDept.reduce((total, candidate) => 
+                  total + candidate.vote_count, 0);
+                  
+                departmentGroups[department] = {
+                  candidates: candidatesInDept,
+                  highestVote: highestVoteInDept,
+                  totalVotes: totalVotesInDept
+                };
+              }
+            });
+            
+            // render each department group
+            Object.keys(departmentGroups).forEach(department => {
+              const deptData = departmentGroups[department];
+            %>
+              <!-- Department section -->
+              <div class="mb-1 department-section">
+
+                <!-- Department header -->
+                <div class="py-2 pl-3 text-center text-blue-700 bg-blue-200 border-t border-blue-600">
+                  <h4 class="font-semibold "><%= department %> Department</h4>
+                </div>
+
+                <!-- Candidates in this department -->
+                <div class="divide-y divide-gray-100">
+                  <% deptData.candidates.forEach(candidate => { 
+                              const votePercentage = deptData.totalVotes === 0 ? 0 : ((candidate.vote_count / deptData.totalVotes) * 100).toFixed(2);
+                              const isWinning = candidate.vote_count === deptData.highestVote && candidate.vote_count > 0;
+                          %>
+
+                  <div class="p-4 transition-colors duration-200 <%= isWinning ? 'bg-green-50' : 'hover:bg-blue-50' %>">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-4">
+                        <div class="relative flex-shrink-0">
+                          <% if (candidate.candidate_profile) { %>
+                          <img class="object-cover w-14 h-14 rounded-full border-2 <%= isWinning ? 'border-green-500' : 'border-gray-200' %>" src="/img/candidate_profiles/<%= candidate.candidate_profile %>" alt="<%= candidate.firstname %> <%= candidate.lastname %>">
+                          <% } else { %>
+                          <div class="flex items-center justify-center w-14 h-14 text-lg font-bold text-white <%= isWinning ? 'bg-green-500' : 'bg-blue-400' %> rounded-full">
+                            <%= candidate.firstname.charAt(0) %><%= candidate.lastname.charAt(0) %>
+                          </div>
+                          <% } %>
+                          <% if (isWinning) { %>
+                          <div class="absolute flex items-center justify-center w-6 h-6 text-white bg-green-500 rounded-full -top-1 -right-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <% } %>
+                        </div>
+                        <div>
+                          <p class="text-base font-bold text-gray-800 md:text-lg"><%= candidate.firstname %> <%= candidate.lastname %></p>
+                          <p class="text-sm text-gray-500"><%= candidate.course %></p>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <div class="flex flex-col items-end">
+                          <p class="text-xl font-bold <%= isWinning ? 'text-green-600' : 'text-gray-700' %>">
+                            <%= votePercentage %>%
+                          </p>
+                          <p class="text-sm text-gray-500"><%= candidate.vote_count %> votes</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Vote percentage bar -->
+                    <div class="w-full h-2 mt-3 overflow-hidden bg-gray-100 rounded-full">
+                      <div class="h-full <%= isWinning ? 'bg-green-500' : 'bg-blue-500' %> rounded-full" style="width: <%= votePercentage %>%"></div>
+                    </div>
+                  </div>
+                  <% }); %>
+                </div>
+              </div>
+              <% }); %>
+            </div>
+          </section>
+
+          <% 
+              }
+            } else {
+              // Handle other positions as before
+              const candidatePerPosition = candidatesVoteTally.filter(candidate => candidate.position === position);
+              
+              if (candidatePerPosition.length > 0) {
+                candidatePerPosition.sort((a, b) => b.vote_count - a.vote_count);
+                const highestVoteInPosition = candidatePerPosition.reduce((highest, currentCandidateIteration) => 
+                  currentCandidateIteration.vote_count > highest ? currentCandidateIteration.vote_count : highest, 0);
+                const totalVotesInPosition = candidatePerPosition.reduce((total, candidateVotes) => 
+                  total + candidateVotes.vote_count, 0);
           %>
           <section class="overflow-hidden bg-white border border-gray-200 shadow-sm result-card rounded-xl" style="animation-delay: <%= (posIndex * 0.1).toFixed(1) %>s">
             <div class="py-3 text-center text-white bg-blue-600">
@@ -182,9 +290,9 @@
 
             <div class="divide-y divide-gray-100">
               <% candidatePerPosition.forEach((candidate, index) => { 
-                      const votePercentage = totalVotesInPosition === 0 ? 0 : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2);
-                      const isWinning = candidate.vote_count === highestVoteInPosition && candidate.vote_count > 0;
-                    %>
+                    const votePercentage = totalVotesInPosition === 0 ? 0 : ((candidate.vote_count / totalVotesInPosition) * 100).toFixed(2);
+                    const isWinning = candidate.vote_count === highestVoteInPosition && candidate.vote_count > 0;
+              %>
               <div class="p-4 transition-colors duration-200 <%= isWinning ? 'bg-green-50' : 'hover:bg-blue-50' %>">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center space-x-4">
@@ -228,9 +336,10 @@
             </div>
           </section>
           <% 
-                }
-              });
-              %>
+              }
+            }
+          });
+          %>
         </div>
         <% } %>
 
