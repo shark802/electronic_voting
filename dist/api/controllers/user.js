@@ -167,7 +167,7 @@ function importUsers(req, res, next) {
                 });
                 yield (0, query_1.insertQuery)(database_1.pool, 'INSERT INTO users_import_records (id, import_size) VALUES(?, ?)', [importId, userCsvFile.length]);
                 yield connection.beginTransaction();
-                yield connection.execute('UPDATE users SET is_active = null WHERE is_active = ?', [0]);
+                yield connection.execute('UPDATE users SET is_active = 0 WHERE is_active = 1');
                 yield connection.commit();
                 const result = yield (0, importUserToDatabase_1.importUsersToDatabase)(userCsvFile, importId, filename, connection, socket);
                 console.log(result);

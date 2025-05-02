@@ -145,7 +145,7 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
             await insertQuery(pool, 'INSERT INTO users_import_records (id, import_size) VALUES(?, ?)', [importId, userCsvFile.length])
 
             await connection.beginTransaction();
-            await connection.execute('UPDATE users SET is_active = null WHERE is_active = ?', [0]);
+            await connection.execute('UPDATE users SET is_active = 0 WHERE is_active = 1');
 
             await connection.commit();
             const result = await importUsersToDatabase(userCsvFile, importId, filename, connection, socket);

@@ -24,7 +24,7 @@ function dashboardOverview(req, res, next) {
             const electionIdList = elections.map(election => election.election_id);
             let populationPerProgram = [];
             if (electionIdList.length > 0) {
-                populationPerProgram = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList]);
+                populationPerProgram = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? ) ORDER BY program_code', [electionIdList]);
             }
             res.render("admin/dashboard_overview", { elections, populationPerProgram });
         }

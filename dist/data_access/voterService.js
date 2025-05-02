@@ -98,8 +98,7 @@ exports.getAllUserElectionParticipatedIn = getAllUserElectionParticipatedIn;
 // Count all total voter for election
 function countAllQualifiedVoterForElection() {
     return __awaiter(this, void 0, void 0, function* () {
-        const year_active = new Date().getFullYear();
-        const [totalPopulation] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT COUNT(*) as total_population FROM users WHERE year_active = ?', [year_active]);
+        const [totalPopulation] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT COUNT(*) as total_population FROM users WHERE is_active = 1');
         return totalPopulation.total_population;
     });
 }

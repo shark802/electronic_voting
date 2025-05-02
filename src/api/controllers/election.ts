@@ -3,7 +3,7 @@ import { pool } from "../../config/database";
 import { ulid } from "ulid"
 import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
 import { Election } from "../../utils/types/Election";
-import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
+import { selectQuery, updateQuery } from "../../data_access/query";
 import { isElectionEnded, isElectionStarted } from '../../utils/checkElectionTimeStatus';
 import { eventEmitter } from '../../events/globalEventEmitterInstance';
 import { countAllQualifiedVoterForElection } from "../../data_access/voterService";
@@ -40,9 +40,8 @@ export async function createElection(req: Request, res: Response, next: NextFunc
 
 			for (const department of departments) {
 				const programs = prgrams.filter(program => program.department === department.department_id).map(program => program.program_code);
-				const year_active = new Date().getFullYear();
 
-				const [countDepartmentPopulation] = await selectQuery<{ population: number }>(pool, 'SELECT COUNT(*) as population FROM users WHERE course IN (?) AND year_active = ?', [programs, year_active])
+				const [countDepartmentPopulation] = await selectQuery<{ population: number }>(pool, 'SELECT COUNT(*) as population FROM users WHERE course IN (?) AND is_active = 1', [programs])
 
 				const insertProgramPopulationQuery = 'INSERT INTO program_populations (program_code, program_population, election_id) VALUES(?, ?, ?)';
 				await connection.execute(insertProgramPopulationQuery, [department.department_code, countDepartmentPopulation.population, election_id]);

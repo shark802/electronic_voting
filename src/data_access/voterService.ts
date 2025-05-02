@@ -86,13 +86,12 @@ export async function getAllUserElectionParticipatedIn(userId: string) {
 
 // Count all total voter for election
 export async function countAllQualifiedVoterForElection() {
-    const year_active = new Date().getFullYear();
 
     interface TotalPopulation extends RowDataPacket {
         total_population: number
     }
 
-    const [totalPopulation] = await selectQuery<TotalPopulation>(pool, 'SELECT COUNT(*) as total_population FROM users WHERE year_active = ?', [year_active]);
+    const [totalPopulation] = await selectQuery<TotalPopulation>(pool, 'SELECT COUNT(*) as total_population FROM users WHERE is_active = 1',);
     return totalPopulation.total_population;
 
 }

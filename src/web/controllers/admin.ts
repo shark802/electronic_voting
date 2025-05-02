@@ -22,7 +22,7 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
         let populationPerProgram: unknown[] = []
 
         if (electionIdList.length > 0) {
-            populationPerProgram = await selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? )', [electionIdList])
+            populationPerProgram = await selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? ) ORDER BY program_code', [electionIdList])
         }
 
         res.render("admin/dashboard_overview", { elections, populationPerProgram })
