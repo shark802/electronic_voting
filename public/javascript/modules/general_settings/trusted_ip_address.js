@@ -80,9 +80,7 @@ const displayTableData = document.getElementById('display-table-data');
 export function showTrustedIpAddress() {
 
     showTrustedIpAddressSpan.addEventListener('click', async () => {
-        dataTableContainer.classList.remove('hidden');
-        dataTableContainer.classList.add('block');
-        dataTableContainer.classList.add('animate-slide-in');
+        dataTableContainer.classList.add('hidden');
         displayTableData.innerHTML = "";
 
         const ipAddress = await getAllIpAddress();
@@ -97,6 +95,10 @@ export function showTrustedIpAddress() {
         `;
 
         displayTableData.appendChild(table);
+
+        dataTableContainer.classList.remove('hidden');
+        dataTableContainer.classList.add('block');
+        dataTableContainer.classList.add('animate-slide-in');
 
         const displayedTable = document.getElementById("trusted-ip-address-table");
         if (displayedTable) {

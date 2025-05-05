@@ -78,10 +78,7 @@ const displayTableData = document.getElementById('display-table-data');
 export async function showDepartmentTable() {
 
     showAllDepartmentsSpan.addEventListener('click', async (event) => {
-
-        dataTableContainer.classList.remove('hidden');
-        dataTableContainer.classList.add('block');
-        dataTableContainer.classList.add('animate-slide-in');
+        dataTableContainer.classList.add('hidden');
         displayTableData.innerHTML = "";
 
         const departments = await getAllDepartments();
@@ -94,6 +91,10 @@ export async function showDepartmentTable() {
             </div>
         `;
         displayTableData.appendChild(table);
+
+        dataTableContainer.classList.remove('hidden');
+        dataTableContainer.classList.add('block');
+        dataTableContainer.classList.add('animate-slide-in');
 
         const displayedTable = document.getElementById("department-table");
         if (displayedTable) {

@@ -9,8 +9,8 @@ export async function insertUsersInDatabase(csvUserObject: CsvUserObject[], conn
 
             for (const user of csvUserObject) {
                 const sqlQuery = `
-                    INSERT INTO users (id_number, lastname, firstname, middlename, course, year_level, section, password, year_active, user_group, is_active)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO users (id_number, lastname, firstname, middlename, course, year_level, section, password, year_active, user_group, is_active, email)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON DUPLICATE KEY UPDATE
                         lastname = VALUES(lastname),
                         firstname = VALUES(firstname),
@@ -21,12 +21,13 @@ export async function insertUsersInDatabase(csvUserObject: CsvUserObject[], conn
                         password = VALUES(password),
                         year_active = VALUES(year_active),
                         user_group = VALUES(user_group),
-                        is_active = VALUES(is_active)
+                        is_active = VALUES(is_active),
+                        email = VALUES(email)
                 `;
 
                 const year_active = new Date().getFullYear();
 
-                await connection.execute(sqlQuery, [user["ID NUMBER"], user["LAST NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, user.PASSWORD, year_active, 'STUDENT', 1]);
+                await connection.execute(sqlQuery, [user["ID NUMBER"], user["LAST NAME"], user["FIRST NAME"], user["MIDDLE NAME"], user.COURSE, user.YEAR, user.SECTION, user.PASSWORD, year_active, 'STUDENT', 1, user.EMAIL]);
 
                 const [userRole] = await connection.execute('SELECT * FROM roles WHERE id_number = ? LIMIT 1', [user["ID NUMBER"]]);
                 if ((userRole as QueryResult[]).length === 0) {

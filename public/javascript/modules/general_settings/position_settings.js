@@ -69,10 +69,7 @@ const displayTableData = document.getElementById('display-table-data');
 
 export async function showAllPositions() {
     showAllPositionsSpan.addEventListener('click', async (event) => {
-
-        dataTableContainer.classList.remove('hidden');
-        dataTableContainer.classList.add('block');
-        dataTableContainer.classList.add('animate-slide-in');
+        dataTableContainer.classList.add('hidden');
         displayTableData.innerHTML = "";
 
         const positions = await getAllPositions();
@@ -84,6 +81,10 @@ export async function showAllPositions() {
             </div>
         `;
         displayTableData.appendChild(table);
+
+        dataTableContainer.classList.remove('hidden');
+        dataTableContainer.classList.add('block');
+        dataTableContainer.classList.add('animate-slide-in');
 
         const displayedTable = document.getElementById("position-table");
         if (displayedTable) {

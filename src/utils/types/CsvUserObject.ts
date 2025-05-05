@@ -7,6 +7,7 @@ type CsvUserObject = {
     "YEAR": string;
     "SECTION": string;
     "PASSWORD": string
+    "EMAIL": string;
 };
 
 export { CsvUserObject };

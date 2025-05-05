@@ -127,7 +127,9 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
         const connection = await pool.getConnection();
         try {
             const usersFile = req.file;
-            if (!usersFile) throw new BadRequestError('No users data file was provided for import.');
+            if (!usersFile) {
+                throw new BadRequestError('No file uploaded. Please upload a CSV file to import users into the database.');
+            }
 
             const importId = uuidV4();
             const userCsvFile: CsvUserObject[] = await csv().fromFile(usersFile.path);

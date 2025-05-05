@@ -68,7 +68,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col w-full gap-6 p-4 lg:flex-row lg:flex-wrap lg:justify-between lg:p-6">
+        <div class="flex flex-col w-full gap-6 p-2 gap-x-4 lg:flex-row lg:flex-wrap lg:justify-between lg:p-6">
           <% 
           candidatePosition.forEach(position => { 
             const candidatesPerPosition = candidates.filter(candidate => candidate.position === position && candidate.election_id === election.election_id);

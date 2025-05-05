@@ -152,8 +152,9 @@ function importUsers(req, res, next) {
             const connection = yield database_1.pool.getConnection();
             try {
                 const usersFile = req.file;
-                if (!usersFile)
-                    throw new customErrors_1.BadRequestError('No users data file was provided for import.');
+                if (!usersFile) {
+                    throw new customErrors_1.BadRequestError('No file uploaded. Please upload a CSV file to import users into the database.');
+                }
                 const importId = (0, uuid_1.v4)();
                 const userCsvFile = yield (0, csvtojson_1.default)().fromFile(usersFile.path);
                 const filename = usersFile.filename;

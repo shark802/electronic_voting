@@ -88,9 +88,7 @@ const displayTableData = document.getElementById('display-table-data');
 
 export async function showAllProgramsTable() {
     showAllProgramsSpan.addEventListener('click', async () => {
-        dataTableContainer.classList.remove('hidden');
-        dataTableContainer.classList.add('block');
-        dataTableContainer.classList.add('animate-slide-in');
+        dataTableContainer.classList.add('hidden');
         displayTableData.innerHTML = "";
 
         const programs = await getAllPrograms();
@@ -108,6 +106,10 @@ export async function showAllProgramsTable() {
             </div>
         `;
             displayTableData.appendChild(table);
+
+            dataTableContainer.classList.remove('hidden');
+            dataTableContainer.classList.add('block');
+            dataTableContainer.classList.add('animate-slide-in');
         });
 
         document.querySelectorAll('table').forEach(table => {
