@@ -78,7 +78,9 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
 
         if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=Voting is currently closed")
 
-        return res.render('voter/voteBallot', { user, candidatePositionList, candidateList, election, departmentMaxSenatorVote });
+        const shuffledCandidateList = candidateList.sort(() => Math.random() - 0.5);
+
+        return res.render('voter/voteBallot', { user, candidatePositionList, shuffledCandidateList, election, departmentMaxSenatorVote });
     } catch (error) {
         next(error);
     }

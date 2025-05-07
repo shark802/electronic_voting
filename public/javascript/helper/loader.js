@@ -45,7 +45,7 @@ export function showLoading() {
             }
 
             .container {
-                --uib-size: 80px; /* Increased size for better visibility */
+                --uib-size: 60px; /* Increased size for better visibility */
                 --uib-color: white;
                 --uib-speed: .8s;
                 --uib-bg-opacity: 0.3;

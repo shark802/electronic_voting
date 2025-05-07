@@ -18,7 +18,7 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
                 confirmModal.close();
                 confirmModal.remove();
             } else if (event.target.id === "submit-vote") {
-                console.log('submitting vote..');
+
                 confirmModal.close();
                 confirmModal.remove();
                 const response = await submitVote(selectedCandidate);
@@ -31,7 +31,7 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
                     window.location.href = "/election?isVoted=true";
                 }
             }
-        }, { once: true }); // Use `once: true` to ensure the listener is removed after it is invoked
+        }, { once: true });
     } catch (error) {
         console.error(error);
     }
@@ -96,6 +96,15 @@ function displayConfirmVoteModal(candidateObjectArray) {
     hideLoader();
 
     if (!candidateObjectArray || candidateObjectArray.length < 1) return;
+
+    // Define the desired order
+    const positionOrder = ['PRESIDENT', 'VICE PRESIDENT', 'SENATOR'];
+
+    // Sort the candidates according to the defined position order
+    candidateObjectArray.sort((a, b) => {
+        return positionOrder.indexOf(a.position) - positionOrder.indexOf(b.position);
+    });
+
     const confirmModal = document.createElement('dialog');
     confirmModal.id = "confirm-modal";
     confirmModal.classList.add('confirm-modal', 'bg-white', 'rounded-lg', 'shadow-xl', 'p-6', 'max-w-md', 'w-full', 'mx-auto', 'mx-4');
@@ -122,6 +131,7 @@ function displayConfirmVoteModal(candidateObjectArray) {
 
     confirmModal.showModal();
 }
+
 
 // Send request to fetch candidate info of selected candidate
 async function fetchSelectedCandidateInfo(selectedCandidateObject) {
