@@ -100,28 +100,28 @@
 
               %>
               <tr class="transition-colors duration-200 bg-white border-b border-gray-200 hover:bg-blue-100">
-                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm">
+                <td class="px-4 py-2 text-xs font-medium text-gray-600">
                   <span class=""><%= index + 1 %></span>
                 </td>
 
-                <td class="px-4 py-2 text-xs font-medium text-gray-600 lg:text-sm">
+                <td class="px-4 py-2 text-xs font-medium text-gray-600">
                   <span class="font-bold"><%= voter.lastname %></span>, <%= voter.firstname %>
                 </td>
-                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="ID Number">
+                <td class="px-4 py-2 text-xs text-gray-600" title="ID Number">
                   <%= voter.id_number %>
                 </td>
-                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="Course and Year Level">
+                <td class="px-4 py-2 text-xs text-gray-600" title="Course and Year Level">
                   <%= voter.course %> - <%= voter.year_level %> <%= voter.section %>
                 </td>
-                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="Election Name">
+                <td class="px-4 py-2 text-xs text-gray-600" title="Election Name">
                   <span class="tooltip" data-tooltip="Election Name: <%= voter.election_name %>">
                     <%= voter.election_name %>
                   </span>
                 </td>
-                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="Election ID">
+                <td class="px-4 py-2 text-xs text-gray-600" title="Election ID">
                   <%= voter.election_id %>
                 </td>
-                <td class="px-4 py-2 text-xs text-gray-600 lg:text-sm" title="Time Voted">
+                <td class="px-4 py-2 text-xs text-gray-600" title="Time Voted">
                   <%= timeVoted %>
                 </td>
               </tr>

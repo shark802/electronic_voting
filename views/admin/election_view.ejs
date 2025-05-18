@@ -77,30 +77,37 @@
 
             <%  if (element.is_active) { %>
 
-            <p id="display-status" class="px-3 py-1 mb-2 text-sm font-medium text-green-600 bg-green-100 rounded-full w-fit">Active</p>
+            <p id="display-status" class="px-3 py-1 mb-1 text-sm font-medium text-green-600 bg-green-100 rounded-full w-fit">Active</p>
 
             <% } else { %>
 
-            <p id="display-status" class="px-3 py-1 mb-2 text-sm font-medium text-red-600 bg-red-100 rounded-full w-fit">Inactive</p>
+            <p id="display-status" class="px-3 py-1 mb-1 text-sm font-medium text-red-600 bg-red-100 rounded-full w-fit">Inactive</p>
 
             <% } %>
 
             <h2 id="election-title" class="mb-1 text-2xl font-bold text-gray-800"><%= element.election_name %></h2>
-            <p id="election-card-id" class="text-sm text-gray-500"><%= element.election_id %></p>
+            <p id="election-card-id" class="text-xs text-gray-500"><%= element.election_id %></p>
 
             <div class="relative group">
               <% 
                 const electionCandidates = candidates.filter(candidate => candidate.election_id === element.election_id)
               %>
               <p id="candidate-count" class="text-sm text-gray-600 cursor-pointer">Candidates: <%= electionCandidates.length %></p>
-              <div id="candidate-details-<%= element.election_id %>" class="absolute z-10 hidden p-2 text-blue-700 rounded-md shadow-md lg:shadow-lg bg-blue-50 group-hover:block">
+
+
+              <div id="candidate-details-<%= element.election_id %>" class="absolute z-30 hidden p-3 text-blue-700 bg-white border border-blue-100 rounded-md shadow-lg min-w-48 group-hover:block">
+                <h4 class="pb-1 mb-2 font-semibold text-gray-800 border-b border-gray-100">Candidate Breakdown</h4>
                 <% positions.forEach(position => { %>
                 <% const positionCandidatesCount = electionCandidates.filter(candidate => candidate.position === position) %>
                 <% if (positionCandidatesCount.length > 0) { %>
-                <p class="text-nowrap"><%= positionCandidatesCount.length %> candidates for <%= position.toLowerCase() %></p>
+                <div class="flex items-center justify-between py-1">
+                  <p class="text-gray-600"><%= position.toLowerCase() %>:</p>
+                  <span class="px-2 py-0.5 bg-blue-50 rounded-md text-blue-700 font-medium"><%= positionCandidatesCount.length %></span>
+                </div>
                 <% } %>
                 <% }) %>
               </div>
+
             </div>
           </div>
 
@@ -158,14 +165,14 @@
         const formattedEndDateTime = electionEndDateTime.toLocaleString('en-US', formatOptions);
         %>
 
-        <div class="p-4 mt-6 space-y-4 rounded-lg bg-gray-50">
+        <div class="p-4 mt-4 space-y-4 text-sm rounded-lg bg-gray-50">
           <div class="flex items-center">
             <svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
             <div>
               <p class="text-sm font-medium text-gray-500">Start</p>
-              <p id="displayStart" class="text-base font-semibold text-gray-900"><%= formattedStartDateTime %></p>
+              <p id="displayStart" class="font-semibold text-gray-900 "><%= formattedStartDateTime %></p>
             </div>
           </div>
 
@@ -175,12 +182,12 @@
             </svg>
             <div>
               <p class="text-sm font-medium text-gray-500">End</p>
-              <p id="displayEnd" class="text-base font-semibold text-gray-900"><%= formattedEndDateTime %></p>
+              <p id="displayEnd" class="font-semibold text-gray-900 "><%= formattedEndDateTime %></p>
             </div>
           </div>
         </div>
 
-        <div class="flex justify-end mt-6">
+        <div class="flex justify-end mt-4">
           <button id="add-candidate" class="px-4 py-2 text-sm font-medium text-white transition-colors duration-200 bg-blue-500 rounded-md hover:bg-blue-600">Add Candidate</button>
         </div>
 

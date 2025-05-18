@@ -58,15 +58,24 @@ function renderElectionBallot(req, res, next) {
                 return res.redirect(`/authenticate-face?election=${election_id}`);
             }
             const sqlQuery = `
-        SELECT u.id_number, u.firstname, u.lastname , u.course, c.position, c.candidate_profile, c.party
-        FROM users u JOIN candidates c
-        ON u.id_number = c.id_number
-        WHERE c.election_id = ?
-        AND c.enabled = 1
-        AND c.deleted IS NULL
+            SELECT DISTINCT u.id_number, u.firstname, u.lastname, u.course, p.program_code, d.department_code AS department_name, c.position, c.candidate_profile, c.party
+            FROM users u
+            JOIN candidates c ON u.id_number = c.id_number
+            LEFT JOIN programs p ON u.course = p.program_code
+            LEFT JOIN departments d ON p.department = d.department_id
+            WHERE c.election_id = '01JVH0XBJHBPYCCHADRGZM39HY'
+            AND c.deleted IS NULL
+            AND c.enabled = 1
+        `;
+            const userQuery = `
+            SELECT u.*, p.program_code, d.department_id, d.department_code AS department_name
+            FROM users u
+            LEFT JOIN programs p ON u.course = p.program_code
+            LEFT JOIN departments d ON p.department = d.department_id
+            WHERE u.id_number = ?
         `;
             const [[user], [election], candidateList] = yield Promise.all([
-                (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM users WHERE id_number = ?", [id_number]),
+                (0, query_1.selectQuery)(database_1.pool, userQuery, [id_number]),
                 (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM elections WHERE election_id = ? AND deleted_at IS NULL", [election_id]),
                 (0, query_1.selectQuery)(database_1.pool, sqlQuery, [election_id])
             ]);
@@ -81,6 +90,7 @@ function renderElectionBallot(req, res, next) {
             if (!(0, isValidTimeToVote_1.isValidTimeToVote)(election))
                 return res.redirect("/election?redirectMessage=Voting is currently closed");
             const shuffledCandidateList = candidateList.sort(() => Math.random() - 0.5);
+            console.log(shuffledCandidateList);
             return res.render('voter/voteBallot', { user, candidatePositionList, shuffledCandidateList, election, departmentMaxSenatorVote });
         }
         catch (error) {
@@ -104,19 +114,41 @@ function renderElectionResult(req, res, next) {
             if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
             const positionList = (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
-            const [user] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE id_number = ? LIMIT 1', [userId]);
+            // Get user with department information
+            const [user] = yield (0, query_1.selectQuery)(database_1.pool, `
+            SELECT 
+                u.*,
+                p.program_code,
+                d.department_code AS department_name
+            FROM 
+                users u
+            LEFT JOIN 
+                programs p ON u.course = p.program_code
+            LEFT JOIN 
+                departments d ON p.department = d.department_id
+            WHERE 
+                u.id_number = ? 
+            LIMIT 1`, [userId]);
             const electionResult = yield (0, election_1.getElectionResult)(electionId);
             let candidatesVoteTally;
             if (!electionResult) {
+                // If no election result exists yet, generate it with department information
                 candidatesVoteTally = yield (0, election_1.generateElectionResult)(electionId);
             }
             else {
+                // Decrypt the existing election result
                 const secretKey = cryptoService_1.CryptoService.secretKey();
                 const iv = cryptoService_1.CryptoService.stringToBuffer(electionResult.encryption_iv);
                 const decryptResult = cryptoService_1.CryptoService.decrypt(electionResult.result, secretKey, iv);
                 candidatesVoteTally = JSON.parse(decryptResult);
             }
-            return res.render('voter/electionResultForVoter', { user, candidatesVoteTally, positionList, electionInfo });
+            console.log(candidatesVoteTally);
+            return res.render('voter/electionResultForVoter', {
+                user,
+                candidatesVoteTally,
+                positionList,
+                electionInfo
+            });
         }
         catch (error) {
             next(error);

@@ -86,22 +86,34 @@ export async function getCandidatesTotalTally(electionId: string) {
     type CandidateData = {
         position: string;
         party: string;
-        department: string;
+        department_name: string;
         candidate_profile: string;
-        id_number: number
-        lastname: number
-        firstname: number
-        course: number
-        election_id: number
+        id_number: number;
+        lastname: string;
+        firstname: string;
+        course: string;
+        election_id: string;
     }
 
     const sqlQuery = `
-        SELECT c.position, c.party, c.department, MAX(c.candidate_profile) AS candidate_profile, u.id_number, u.lastname, u.firstname, u.course, c.election_id
+        SELECT 
+            c.position, 
+            c.party, 
+            d.department_code AS department_name, 
+            MAX(c.candidate_profile) AS candidate_profile, 
+            u.id_number, 
+            u.lastname, 
+            u.firstname, 
+            u.course, 
+            c.election_id
         FROM candidates c
-        LEFT JOIN users u ON u.id_number = c.id_number     
+        LEFT JOIN users u ON u.id_number = c.id_number
+        LEFT JOIN programs p ON u.course = p.program_code
+        LEFT JOIN departments d ON p.department = d.department_id
         WHERE c.election_id = ? AND c.deleted IS NULL
-        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, c.party, c.department;
-    `
+        GROUP BY c.position, u.id_number, u.lastname, u.firstname, u.course, c.party, d.department_code;
+    `;
+
     const candidatesVoteTally = await selectQuery<CandidateData>(pool, sqlQuery, [electionId]);
     return candidatesVoteTally;
 }

@@ -92,13 +92,13 @@
                   <div class="relative">
                     <!-- Original Status Indicator with Original Classes -->
                     <%  if (election.is_active) { %>
-                    <p id="display-status" class="px-3 py-1 mb-2 text-sm font-medium text-green-600 bg-green-100 rounded-full w-fit">Active</p>
+                    <p id="display-status" class="px-3 py-1 mb-1 text-sm font-medium text-green-600 bg-green-100 rounded-full w-fit">Active</p>
                     <% } else { %>
-                    <p id="display-status" class="px-3 py-1 mb-2 text-sm font-medium text-red-600 bg-red-100 rounded-full w-fit">Inactive</p>
+                    <p id="display-status" class="px-3 py-1 mb-1 text-sm font-medium text-red-600 bg-red-100 rounded-full w-fit">Inactive</p>
                     <% } %>
 
                     <h2 id="election-title" class="mb-1 text-2xl font-bold text-gray-800"><%= election.election_name %></h2>
-                    <p id="election-card-id" class="text-sm text-gray-500"><%= election.election_id %></p>
+                    <p id="election-card-id" class="text-xs text-gray-500"><%= election.election_id %></p>
 
                     <!-- Enhanced candidate info while preserving original ID -->
                     <div class="relative group">
@@ -188,33 +188,26 @@
   const isPastElection = now > electionEndDateTime;
   %>
 
-                <div class="p-4 mt-6 space-y-4 rounded-lg bg-gray-50">
-                  <!-- Timeline Indicator -->
-                  <div class="relative h-2 mb-4 overflow-hidden bg-gray-200 rounded-full">
-                    <% if (isPastElection) { %>
-                    <div class="absolute top-0 left-0 w-full h-full bg-green-500"></div>
-                    <% } else if (isCurrentElection) { %>
-                    <div class="absolute top-0 left-0 h-full bg-blue-500" style="width: 50%;"></div>
-                    <% } %>
-                  </div>
+                <div class="p-4 mt-4 space-y-4 rounded-lg bg-gray-50">
 
-                  <div class="flex items-center">
+
+                  <div class="flex items-center text-sm">
                     <svg class="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <div>
                       <p class="text-sm font-medium text-gray-500">Start</p>
-                      <p class="text-base font-semibold text-gray-900"><%= formattedStartDateTime %></p>
+                      <p class="font-semibold text-gray-900 "><%= formattedStartDateTime %></p>
                     </div>
                   </div>
 
-                  <div class="flex items-center">
+                  <div class="flex items-center text-sm">
                     <svg class="w-6 h-6 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <div>
                       <p class="text-sm font-medium text-gray-500">End</p>
-                      <p class="text-base font-semibold text-gray-900"><%= formattedEndDateTime %></p>
+                      <p class="font-semibold text-gray-900 "><%= formattedEndDateTime %></p>
                       <% if (isCurrentElection) { %>
                       <p class="mt-1 text-xs text-green-600">Election in progress</p>
                       <% } %>
@@ -223,7 +216,7 @@
                 </div>
 
                 <!-- Action Button - Preserving original ID and structure -->
-                <div class="flex justify-end mt-6">
+                <div class="flex justify-end mt-4">
                   <a href="/admin/election/result/<%=election.election_id %>">
                     <button id="view-result" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-all duration-200 ease-in-out transform bg-green-500 rounded-md shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:scale-105">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
@@ -245,7 +238,7 @@
 
         <!-- Election Name Shortcuts Navigation -->
         <% if (elections.length > 1) { %>
-        <div class="mt-8 mb-2 w-full absolute bottom-[-80px] no-scrollbar">
+        <div class=" mb-2 w-full absolute bottom-[-70px] no-scrollbar">
           <h3 class="mb-2 text-sm font-medium text-gray-700">Quick Navigation:</h3>
           <div class="relative px-3 election-shortcuts-container no-scrollbar">
             <div class="absolute top-0 bottom-0 left-0 z-10 w-8 pointer-events-none bg-gradient-to-r from-blue-50 to-transparent"></div>
@@ -263,7 +256,7 @@
         </div>
 
         <!-- Small Dot Indicators -->
-        <div class="flex justify-center mt-4 space-x-2 absolute bottom-[-100px]">
+        <div class="flex justify-center mt-4 space-x-2 absolute bottom-[-80px]">
           <% for(let i = 0; i < elections.length; i++) { %>
           <button class="carousel-indicator w-2 h-2 rounded-full bg-gray-300 hover:bg-blue-400 focus:outline-none transition-all duration-300 <%= i === 0 ? 'bg-blue-500' : '' %>" data-index="<%= i %>"></button>
           <% } %>

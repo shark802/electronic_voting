@@ -92,7 +92,7 @@
       <% } %>
     </header>
 
-    <main class="flex gap-7 flex-col px-4 items-center pt-10 overflow-y-auto lg:mb-0 h-[calc(100%-60px)] lg:mx-0 pb-24 lg:pb-8 no-scrollbar">
+    <main class="flex flex-col px-4 items-center justify-center overflow-y-auto lg:mb-0 h-[calc(100%-60px)] lg:mx-0 pb-24 no-scrollbar">
 
       <!-- <h1 class="mb-4 text-4xl font-extrabold tracking-tight text-blue-900 sm:text-5xl">
       <span class="inline-block text-blue-700 transform -rotate-2">Your</span>
@@ -103,7 +103,7 @@
 
       <% if (electionList.length < 1) { %>
 
-      <section class="max-w-2xl mx-auto mt-10 overflow-hidden bg-white border border-gray-200 rounded-lg shadow-lg">
+      <section class="max-w-2xl mx-auto overflow-hidden bg-white border border-gray-200 rounded-lg shadow-lg">
         <div class="p-4 text-center lg:p-10">
           <div class="relative mb-2 lg:mb-6">
             <img src="/img/empty-folder.webp" alt="Empty folder" class="w-16 h-16 mx-auto transition-transform duration-300 opacity-75 lg:w-24 lg:h-24 hover:scale-110">
@@ -148,14 +148,14 @@
           <div id="carousel-track" class="flex transition-all duration-500 ease-out">
             <% electionList.forEach(element => { %>
             <div class="carousel-item flex-shrink-0 <%= electionList.length === 1 ? 'w-full' : '' %>">
-              <section class="bg-white rounded-lg min-h-fit w-full py-10 px-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300 transform <%= electionList.length === 1 ? 'max-w-[700px] mx-auto' : '' %>">
+              <section class="bg-white rounded-lg min-h-fit w-full py-8 px-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all duration-300 transform <%= electionList.length === 1 ? 'max-w-[700px] mx-auto' : '' %>">
                 <div id="election-id" class="hidden"><%= element.election_id %></div>
                 <input type="hidden" value="<%= element.date_start %>" id="date-start">
                 <input type="hidden" value="<%= element.time_start %>" id="time-start">
                 <input type="hidden" value="<%= element.date_end %>" id="date-end">
                 <input type="hidden" value="<%= element.time_end %>" id="time-end">
 
-                <h2 class="mb-4 text-2xl font-bold text-center text-blue-800 lg:mb-8 lg:text-3xl"><%= element.election_name %></h2>
+                <h2 class="mb-4 text-xl font-bold text-center text-blue-800 lg:mb-5 lg:text-2xl"><%= element.election_name %></h2>
 
                 <% 
               const formatOptions = {
@@ -178,9 +178,9 @@
               const formattedEndDateAndTime = dateEnd.toLocaleString('en-US', formatOptions);
             %>
 
-                <div class="flex flex-col mb-8 lg:gap-3">
-                  <div class="flex items-center p-3 text-sm text-gray-600 border border-gray-100 rounded-lg lg:text-base bg-gray-50">
-                    <div class="flex items-center lg:text-base min-w-20">
+                <div class="flex flex-col mb-8 text-sm lg:gap-3">
+                  <div class="flex items-center p-3 text-sm text-gray-600 border border-gray-100 rounded-lg bg-gray-50">
+                    <div class="flex items-center min-w-20">
                       <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                       </svg>
@@ -188,7 +188,7 @@
                     </div>
                     <p id="start" class="font-medium"><%= formattedStartDateAndTime %></p>
                   </div>
-                  <div class="flex items-center p-3 text-sm text-gray-600 border border-gray-100 rounded-lg lg:text-base bg-gray-50">
+                  <div class="flex items-center p-3 text-sm text-gray-600 border border-gray-100 rounded-lg bg-gray-50">
                     <div class="flex items-center min-w-20">
                       <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -200,7 +200,7 @@
                 </div>
 
                 <% if (presentDate >= dateStart && presentDate <= dateEnd) { %>
-                <div id="election-status-message" class="p-4 mb-3 text-sm font-bold text-center text-blue-700 bg-blue-100 border-l-4 border-blue-500 rounded-lg lg:text-base">
+                <div id="election-status-message" class="p-3 mb-3 text-sm font-bold text-center text-blue-700 bg-blue-100 border-l-4 border-blue-500 rounded-lg">
                   <div class="flex items-center justify-center">
                     <span class="relative flex w-3 h-3 mr-3">
                       <span class="absolute inline-flex w-full h-full bg-blue-400 rounded-full opacity-75 animate-ping"></span>
@@ -210,7 +210,7 @@
                   </div>
                 </div>
                 <% } else if (presentDate < dateStart) { %>
-                <div id="election-status-message" class="p-4 mb-3 text-sm font-bold text-center text-gray-700 bg-gray-100 border-l-4 border-gray-400 rounded-lg lg:text-base">
+                <div id="election-status-message" class="p-3 mb-3 text-sm font-bold text-center text-gray-700 bg-gray-100 border-l-4 border-gray-400 rounded-lg">
                   <div class="flex items-center justify-center">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
@@ -219,7 +219,7 @@
                   </div>
                 </div>
                 <% } else if (presentDate > dateEnd) { %>
-                <div id="election-status-message" class="p-4 mb-3 text-sm font-bold text-center text-green-700 bg-green-100 border-l-4 border-green-500 rounded-lg lg:text-base">
+                <div id="election-status-message" class="p-3 mb-3 text-sm font-bold text-center text-green-700 bg-green-100 border-l-4 border-green-500 rounded-lg">
                   <div class="flex items-center justify-center">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
@@ -230,21 +230,21 @@
                 <% } %>
 
                 <% if (presentDate >= dateStart && presentDate <= dateEnd) { %>
-                <button id="vote-now-button" class="w-full py-4 text-base font-semibold text-white transition-all duration-300 transform bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:scale-105">
+                <button id="vote-now-button" class="w-full py-4 text-sm font-semibold text-white transition-all duration-300 transform bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:scale-105">
                   <svg class="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
                   </svg>
                   Vote Now
                 </button>
                 <% } else if (presentDate < dateStart) { %>
-                <button id="vote-now-button" class="w-full py-4 text-base font-semibold text-gray-500 transition-colors duration-200 bg-gray-200 border border-gray-300 rounded-lg cursor-not-allowed">
+                <button id="vote-now-button" class="w-full py-4 text-sm font-semibold text-gray-500 transition-colors duration-200 bg-gray-200 border border-gray-300 rounded-lg cursor-not-allowed">
                   <svg class="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                   </svg>
                   Vote Now
                 </button>
                 <% } else if (presentDate > dateEnd) { %>
-                <button id="vote-now-button" class="w-full py-4 text-base font-semibold text-white transition-all duration-300 transform bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:scale-105">
+                <button id="vote-now-button" class="w-full py-4 text-sm font-semibold text-white transition-all duration-300 transform bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:scale-105">
                   <svg class="inline w-5 h-5 mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                   </svg>
@@ -259,14 +259,14 @@
 
         <!-- Election Name Shortcuts Navigation -->
         <% if (electionList.length > 1) { %>
-        <div class="mt-8 w-full absolute bottom-[-80px] no-scrollbar">
+        <div class="w-full absolute bottom-[-50px] no-scrollbar">
           <h3 class="mb-2 text-sm font-medium text-gray-700">Quick Navigation:</h3>
           <div class="relative px-3 election-shortcuts-container">
             <div class="absolute top-0 bottom-0 left-0 z-10 w-8 pointer-events-none bg-gradient-to-r from-blue-100 to-transparent"></div>
             <div class="px-2 pb-2 -mx-2 overflow-auto election-shortcuts-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent no-scrollbar">
               <div class="flex space-x-2 election-shortcuts-wrapper min-w-max no-scrollbar">
                 <% electionList.forEach((element, index) => { %>
-                <button class="election-shortcut-btn text-sm px-3 py-2 rounded-md border transition-all duration-200 whitespace-nowrap <%= index === 0 ? 'bg-blue-100 border-blue-300 text-blue-800 font-medium' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100' %>" data-index="<%= index %>">
+                <button class="election-shortcut-btn text-sm px-3 py-2 rounded-md border-2 transition-all duration-200 whitespace-nowrap <%= index === 0 ? 'bg-white border-blue-500 text-blue-800 font-medium' : 'border-blue-200 bg-blue-100 text-gray-700 hover:bg-blue-100' %>" data-index="<%= index %>">
                   <%= element.election_name %>
                 </button>
                 <% }) %>
@@ -277,7 +277,7 @@
         </div>
 
         <!-- Small Dot Indicators (Optional, can be removed if not needed) -->
-        <div class="flex justify-center space-x-2 absolute bottom-[-100px]">
+        <div class="flex justify-center space-x-2 absolute bottom-[-65px]">
           <% for(let i = 0; i < electionList.length; i++) { %>
           <button class="carousel-indicator w-2 h-2 rounded-full bg-gray-300 hover:bg-blue-400 focus:outline-none transition-all duration-300 <%= i === 0 ? 'bg-blue-500' : '' %>" data-index="<%= i %>"></button>
           <% } %>
@@ -344,8 +344,8 @@
           // Update shortcut buttons
           shortcutButtons.forEach((btn, index) => {
             if (index === currentIndex) {
-              btn.classList.add('bg-blue-100', 'border-blue-300', 'text-blue-800', 'font-medium');
-              btn.classList.remove('bg-gray-50', 'border-gray-200', 'text-gray-700');
+              btn.classList.add('bg-white', 'border-blue-500', 'text-blue-800', 'font-medium');
+              btn.classList.remove('bg-blue-50', 'border-blue-200', 'text-gray-700');
 
               // Scroll the active button into view with a smooth animation
               setTimeout(() => {
@@ -356,8 +356,8 @@
                 });
               }, 100);
             } else {
-              btn.classList.remove('bg-blue-100', 'border-blue-300', 'text-blue-800', 'font-medium');
-              btn.classList.add('bg-gray-50', 'border-gray-200', 'text-gray-700');
+              btn.classList.remove('bg-white', 'border-blue-500', 'text-blue-800', 'font-medium');
+              btn.classList.add('bg-blue-50', 'border-blue-200', 'text-gray-700');
             }
           });
         }
