@@ -176,7 +176,7 @@
             let candidatePerPosition;
             if (position === 'SENATOR') {
               candidatePerPosition = shuffledCandidateList.filter(candidate => 
-                candidate.position === position && candidate.department_name === user.department_name
+                candidate.position === position && candidate.department_name.toUpperCase().trim() === user.department_name.toUpperCase().trim()
               );
             } else {
               candidatePerPosition = shuffledCandidateList.filter(candidate => 

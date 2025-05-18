@@ -90,7 +90,6 @@ function renderElectionBallot(req, res, next) {
             if (!(0, isValidTimeToVote_1.isValidTimeToVote)(election))
                 return res.redirect("/election?redirectMessage=Voting is currently closed");
             const shuffledCandidateList = candidateList.sort(() => Math.random() - 0.5);
-            console.log(shuffledCandidateList);
             return res.render('voter/voteBallot', { user, candidatePositionList, shuffledCandidateList, election, departmentMaxSenatorVote });
         }
         catch (error) {
@@ -142,7 +141,6 @@ function renderElectionResult(req, res, next) {
                 const decryptResult = cryptoService_1.CryptoService.decrypt(electionResult.result, secretKey, iv);
                 candidatesVoteTally = JSON.parse(decryptResult);
             }
-            console.log(candidatesVoteTally);
             return res.render('voter/electionResultForVoter', {
                 user,
                 candidatesVoteTally,

@@ -4,6 +4,7 @@ import socket from "/javascript/socket_io.js"
 import { isValidStartDate, isValidEndDate } from "/javascript/formInputValidator/dateValidator.js"
 import { isValidText } from "/javascript/formInputValidator/isValidText.js";
 import { isValidEndTime, isValidStartTime } from "/javascript/formInputValidator/timeValidator.js";
+import { showLoading, hideLoader } from "/javascript/helper/loader.js";
 import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 
 // Style active navbar
@@ -70,6 +71,7 @@ document.querySelector("#create_election_form").addEventListener("submit", async
     } else {
         try {
 
+            showLoading()
             const response = await fetch('/api/elections', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -81,7 +83,7 @@ document.querySelector("#create_election_form").addEventListener("submit", async
                     time_end: time_end.value
                 })
             })
-
+            hideLoader()
             if (response.ok) {
                 const message = await response.json();
                 Swal.fire({

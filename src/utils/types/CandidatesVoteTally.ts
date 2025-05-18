@@ -1,7 +1,7 @@
 type CandidateVoteTally = {
     position: string;
     party: string;
-    department: string;
+    department_name: string;
     candidate_profile: string;
     id_number: number;
     lastname: string;

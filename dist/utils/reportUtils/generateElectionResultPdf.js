@@ -15,223 +15,207 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateElectionResultPdf = void 0;
 const jspdf_1 = __importDefault(require("jspdf"));
 const jspdf_autotable_1 = __importDefault(require("jspdf-autotable"));
+/**
+ * Generates a formal election results PDF document
+ * @param params - Configuration parameters for the PDF generation
+ * @returns Promise with PDF buffer
+ */
 function generateElectionResultPdf(_a) {
     return __awaiter(this, arguments, void 0, function* ({ candidatesVoteTally, electionName, positionArray, departmentArray, }) {
-        // Create PDF document with custom options
-        const pdf = new jspdf_1.default({
-            orientation: "portrait",
-            unit: "mm",
-            format: "a4"
-        });
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 15;
+        // Initialize PDF document
+        const pdf = new jspdf_1.default({ orientation: "portrait", unit: "mm", format: "a4" });
+        const { width: pageWidth, height: pageHeight } = pdf.internal.pageSize;
+        const margin = 12;
         let yPosition = margin;
-        // Add header with logo placeholder
-        addHeader(pdf, pageWidth, electionName);
-        yPosition = 40;
-        // Add summary statistics
-        // yPosition = addElectionSummary(pdf, candidatesVoteTally, yPosition, margin, pageWidth);
-        yPosition += 10;
-        // Add position-specific results
-        positionArray.forEach((position) => {
+        // Add header with title and date
+        yPosition = renderHeader(pdf, pageWidth, electionName) + 8;
+        // Process each position
+        for (const position of positionArray) {
             const candidatesForPosition = candidatesVoteTally.filter((candidate) => candidate.position === position);
-            // Render only if there are candidates for the position
-            if (candidatesForPosition.length > 0) {
-                // Check if we need a new page
-                if (yPosition > pageHeight - 60) {
-                    pdf.addPage();
-                    yPosition = margin;
-                    // Add small header on new pages
-                    pdf.setFontSize(10);
-                    pdf.setFont("helvetica", "normal");
-                    pdf.text(`Election Results - ${electionName} (continued)`, margin, margin);
-                    yPosition += 10;
-                }
-                // Add position header
-                pdf.setFontSize(14);
-                pdf.setFont("helvetica", "bold");
-                pdf.text(`${formatPositionName(position)}`, margin, yPosition);
-                yPosition += 6;
-                if (position === "SENATOR") {
-                    departmentArray.forEach((department) => {
-                        const candidatesForDepartment = candidatesForPosition.filter((candidate) => candidate.department === department);
-                        // Render only if there are candidates for the department
-                        if (candidatesForDepartment.length > 0) {
-                            // Check if we need a new page
-                            if (yPosition > pageHeight - 60) {
-                                pdf.addPage();
-                                yPosition = margin;
-                                // Add small header on new pages
-                                pdf.setFontSize(10);
-                                pdf.setFont("helvetica", "normal");
-                                pdf.text(`Election Results - ${electionName} (continued)`, margin, margin);
-                                yPosition += 10;
-                                // Re-add position header on new page
-                                pdf.setFontSize(14);
-                                pdf.setFont("helvetica", "bold");
-                                pdf.text(`${formatPositionName(position)} (continued)`, margin, yPosition);
-                                yPosition += 10;
-                            }
-                            // Add department header
-                            pdf.setFontSize(12);
-                            pdf.setFont("helvetica", "italic");
-                            pdf.text(`Department: ${department}`, margin, yPosition);
-                            yPosition += 6;
-                            // Sort candidates by vote count (descending)
-                            const sortedCandidates = [...candidatesForDepartment].sort((a, b) => b.vote_count - a.vote_count);
-                            // Prepare table data
-                            const tableData = sortedCandidates.map((candidate, index) => [
-                                index + 1, // Rank
-                                `${candidate.firstname} ${candidate.lastname}`,
-                                candidate.party || '-',
-                                candidate.vote_count,
-                                calculatePercentage(candidate.vote_count, getTotalVotes(candidatesForDepartment))
-                            ]);
-                            // Render table
-                            (0, jspdf_autotable_1.default)(pdf, {
-                                startY: yPosition,
-                                head: [["Rank", "Name", "Partylist", "Vote Count", "Percentage"]],
-                                body: tableData,
-                                margin: { left: margin, right: margin },
-                                styles: {
-                                    fontSize: 10,
-                                    cellPadding: 3
-                                },
-                                headStyles: {
-                                    fillColor: [51, 108, 232],
-                                    textColor: [255, 255, 255],
-                                    fontStyle: 'bold'
-                                },
-                                columnStyles: {
-                                    0: { cellWidth: 15 },
-                                    3: { halign: 'right' },
-                                    4: { halign: 'right' }
-                                }
-                            });
-                            // Update yPosition after table
-                            yPosition = pdf.lastAutoTable.finalY + 10;
-                        }
-                    });
-                }
-                else {
-                    // Sort candidates by vote count (descending)
-                    const sortedCandidates = [...candidatesForPosition].sort((a, b) => b.vote_count - a.vote_count);
-                    // Render non-department-specific positions
-                    const tableData = sortedCandidates.map((candidate, index) => [
-                        index + 1, // Rank
-                        `${candidate.firstname} ${candidate.lastname}`,
-                        candidate.party || '-',
-                        candidate.department || '-',
-                        candidate.vote_count,
-                        calculatePercentage(candidate.vote_count, getTotalVotes(candidatesForPosition))
-                    ]);
-                    // Render table only if there's data
-                    if (tableData.length > 0) {
-                        (0, jspdf_autotable_1.default)(pdf, {
-                            startY: yPosition,
-                            head: [["Rank", "Name", "Partylist", "Department", "Vote Count", "Percentage"]],
-                            body: tableData,
-                            margin: { left: margin, right: margin },
-                            styles: {
-                                fontSize: 10,
-                                cellPadding: 3
-                            },
-                            headStyles: {
-                                fillColor: [51, 108, 232],
-                                textColor: [255, 255, 255],
-                                fontStyle: 'bold'
-                            },
-                            columnStyles: {
-                                0: { cellWidth: 15 },
-                                4: { halign: 'right' },
-                                5: { halign: 'right' }
-                            }
-                        });
-                        // Update yPosition after table
-                        yPosition = pdf.lastAutoTable.finalY + 10;
-                    }
-                }
+            if (!candidatesForPosition.length)
+                continue;
+            // Check if we need a new page
+            if (yPosition > pageHeight - 60) {
+                pdf.addPage();
+                yPosition = renderContinuationHeader(pdf, electionName, margin) + 10;
             }
-        });
-        // Add footer with page numbers
-        const totalPages = pdf.getNumberOfPages();
-        for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            addFooter(pdf, i, totalPages, pageWidth, pageHeight);
+            // Add position header
+            yPosition = renderPositionHeader(pdf, position, margin, yPosition) + 6;
+            // Render either by department (for senators) or directly
+            if (position === "SENATOR") {
+                yPosition = renderSenatorsByDepartment(pdf, candidatesForPosition, departmentArray, electionName, position, margin, yPosition, pageHeight);
+            }
+            else {
+                yPosition = renderCandidatesTable(pdf, candidatesForPosition, margin, yPosition) + 10;
+            }
         }
-        // Output PDF buffer
-        const pdfBuffer = Buffer.from(pdf.output("arraybuffer"));
-        return pdfBuffer;
+        // Add footer with page numbers
+        addFooters(pdf, pageWidth, pageHeight);
+        // Return PDF buffer
+        return Buffer.from(pdf.output("arraybuffer"));
     });
 }
 exports.generateElectionResultPdf = generateElectionResultPdf;
-// Helper function to add the header section
-function addHeader(pdf, pageWidth, electionName) {
-    const margin = 15;
-    let yPosition = margin;
-    // Add election name (main title)
+/**
+ * Renders the main document header
+ */
+function renderHeader(pdf, pageWidth, electionName) {
+    // Main title
     pdf.setFontSize(18);
     pdf.setFont("helvetica", "bold");
-    pdf.setTextColor(51, 108, 232); // Blue color for header
+    pdf.setTextColor(30, 90, 180);
     const electionNameWidth = pdf.getTextWidth(electionName);
-    pdf.text(electionName, (pageWidth - electionNameWidth) / 2, yPosition + 10);
-    yPosition += 18;
-    // Add report title (subtitle)
+    pdf.text(electionName, (pageWidth - electionNameWidth) / 2, 22);
+    // Subtitle
     const reportTitle = "OFFICIAL ELECTION RESULTS";
     pdf.setFontSize(12);
-    pdf.setFont("helvetica", "bold");
-    pdf.setTextColor(0); // Black color
+    pdf.setTextColor(0);
     const reportTitleWidth = pdf.getTextWidth(reportTitle);
-    pdf.text(reportTitle, (pageWidth - reportTitleWidth) / 2, yPosition);
-    yPosition += 8;
-    // Add generation date and time
-    const currentDate = new Date();
-    const options = {
+    pdf.text(reportTitle, (pageWidth - reportTitleWidth) / 2, 30);
+    // Generation timestamp
+    const dateTimeString = `Generated on: ${new Date().toLocaleString(undefined, {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
-    };
-    const dateTimeString = `Generated on: ${currentDate.toLocaleString(undefined, options)}`;
+    })}`;
     pdf.setFontSize(10);
     pdf.setFont("helvetica", "italic");
-    pdf.setTextColor(100); // Gray color
+    pdf.setTextColor(100);
     const dateTimeWidth = pdf.getTextWidth(dateTimeString);
-    pdf.text(dateTimeString, (pageWidth - dateTimeWidth) / 2, yPosition);
-    // Reset text color
+    pdf.text(dateTimeString, (pageWidth - dateTimeWidth) / 2, 34);
     pdf.setTextColor(0);
+    return 42;
+}
+/**
+ * Renders a continuation header for subsequent pages
+ */
+function renderContinuationHeader(pdf, electionName, margin) {
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`Election Results - ${electionName} (continued)`, margin, margin);
+    return margin;
+}
+/**
+ * Renders the position header
+ */
+function renderPositionHeader(pdf, position, margin, yPosition) {
+    pdf.setFontSize(14);
+    pdf.setFont("helvetica", "bold");
+    pdf.text(formatPositionName(position).toUpperCase(), margin, yPosition);
     return yPosition;
 }
-// Helper function to add footer with page numbers
-function addFooter(pdf, currentPage, totalPages, pageWidth, pageHeight) {
-    pdf.setFont("helvetica", "italic");
-    pdf.setFontSize(8);
-    pdf.setTextColor(100);
-    const pageText = `Page ${currentPage} of ${totalPages}`;
-    pdf.text(pageText, pageWidth - 25, pageHeight - 10);
-    const footerText = "Confidential - Official Election Results";
-    pdf.text(footerText, 15, pageHeight - 10);
-    // Add horizontal line above footer
-    pdf.setDrawColor(200, 200, 200);
-    pdf.setLineWidth(0.3);
-    pdf.line(15, pageHeight - 15, pageWidth - 15, pageHeight - 15);
+/**
+ * Renders senators grouped by department
+ */
+function renderSenatorsByDepartment(pdf, candidatesForPosition, departmentArray, electionName, position, margin, yPosition, pageHeight) {
+    for (const department of departmentArray) {
+        const candidatesForDepartment = candidatesForPosition.filter((candidate) => candidate.department_name === department);
+        if (!candidatesForDepartment.length)
+            continue;
+        // Check if we need a new page
+        if (yPosition > pageHeight - 60) {
+            pdf.addPage();
+            yPosition = margin;
+            // Add continuation headers
+            pdf.setFontSize(10);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(`Election Results - ${electionName} (continued)`, margin, margin);
+            yPosition += 10;
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(`${formatPositionName(position)} (continued)`, margin, yPosition);
+            yPosition += 10;
+        }
+        // Add department header
+        pdf.setFontSize(12);
+        pdf.setFont("helvetica", "italic");
+        pdf.text(`Department: ${department}`, margin, yPosition);
+        yPosition += 3;
+        // Render table for this department
+        yPosition = renderCandidatesTable(pdf, candidatesForDepartment, margin, yPosition) + 10;
+    }
+    return yPosition;
 }
-// Helper function to format position names
+/**
+ * Renders the candidates table
+ */
+function renderCandidatesTable(pdf, candidates, margin, yPosition) {
+    // Sort candidates by vote count (descending)
+    const sortedCandidates = [...candidates].sort((a, b) => b.vote_count - a.vote_count);
+    const totalVotes = getTotalVotes(candidates);
+    // Prepare table data
+    const tableData = sortedCandidates.map((candidate, index) => [
+        index + 1, // Rank
+        `${candidate.firstname} ${candidate.lastname}`,
+        candidate.party || '-',
+        candidate.course || '-',
+        candidate.vote_count,
+        calculatePercentage(candidate.vote_count, totalVotes)
+    ]);
+    // Skip if no data
+    if (!tableData.length)
+        return yPosition;
+    // Render table
+    (0, jspdf_autotable_1.default)(pdf, {
+        startY: yPosition,
+        head: [["Rank", "Name", "Partylist", "Course", "Vote Count", "Percentage"]],
+        body: tableData,
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 10, cellPadding: 2 },
+        headStyles: {
+            fillColor: [51, 108, 232],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold'
+        },
+        columnStyles: {
+            0: { cellWidth: 15 },
+            4: { halign: 'center' },
+            5: { halign: 'center' }
+        }
+    });
+    return pdf.lastAutoTable.finalY;
+}
+/**
+ * Adds footers to all pages
+ */
+function addFooters(pdf, pageWidth, pageHeight) {
+    const totalPages = pdf.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        // Draw footer line
+        pdf.setDrawColor(200, 200, 200);
+        pdf.setLineWidth(0.3);
+        pdf.line(15, pageHeight - 15, pageWidth - 15, pageHeight - 15);
+        // Add page number and footer text
+        pdf.setFont("helvetica", "italic");
+        pdf.setFontSize(8);
+        pdf.setTextColor(100);
+        pdf.text(`Page ${i} of ${totalPages}`, pageWidth - 25, pageHeight - 10);
+        pdf.text("Confidential - Official Election Results", 15, pageHeight - 10);
+    }
+}
+/**
+ * Formats position names from snake_case to Title Case
+ */
 function formatPositionName(position) {
     return position
         .split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(' ');
 }
-// Helper function to calculate percentage
+/**
+ * Calculates percentage with 2 decimal places
+ */
 function calculatePercentage(votes, totalVotes) {
     if (totalVotes === 0)
         return "0.00%";
-    return (votes / totalVotes * 100).toFixed(2) + "%";
+    return `${(votes / totalVotes * 100).toFixed(2)}%`;
 }
-// Helper function to get total votes
+/**
+ * Gets total votes for a set of candidates
+ */
 function getTotalVotes(candidates) {
     return candidates.reduce((sum, candidate) => sum + candidate.vote_count, 0);
 }

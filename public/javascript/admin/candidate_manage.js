@@ -2,6 +2,8 @@
 import "/javascript/logout.js";
 import { isInputNotEmpty } from '/javascript/formInputValidator/isInputNotEmpty.js'
 import { confirmAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js";
+import { showLoading, hideLoader } from "/javascript/helper/loader.js";
+
 import socket from "/javascript/socket_io.js"
 
 const candidate_nav = document.querySelector("#candidate_nav");
@@ -105,11 +107,13 @@ function updateCandidateStatus() {
                 const action = await confirmAlert("Confirm Update", "Please confirm your action to update the candidate status")
                 if (!action.isConfirmed) return;
 
+                showLoading()
                 const response = await fetch(`/api/candidate/status/${candidate_id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: status })
                 });
+                hideLoader()
 
                 const responseObject = await response.json()
                 if (!response.ok) {
@@ -133,8 +137,11 @@ async function deleteCandidate(event) {
     const action = await confirmAlert("Are you sure you want to delete this candidate?");
     if (!action.isConfirmed) return;
 
+    showLoading()
     const response = await fetch(`/api/candidate/${candidateId}`, { method: 'DELETE' });
     const responseObject = await response.json();
+    hideLoader()
+
     if (!response.ok) {
         showSwalErrorToast(responseObject.message)
         return;
@@ -173,9 +180,11 @@ async function fetchCandidates(position) {
 
         if (!electionsQueryParameter) return; // return if no election exist
 
+        showLoading()
         const url = `/api/candidate?position=${position}&${electionsQueryParameter}`
 
         const response = await fetch(url);
+        hideLoader()
         if (response.ok) {
             const responseObject = await response.json();
             return responseObject;
@@ -230,7 +239,7 @@ function displayFetchCandidate(candidates) {
                 <td class="px-2 py-2 text-sm text-gray-700 text-center">${candidate.course}</td>
                 <td class="px-2 py-2 text-sm text-gray-600 whitespace-nowrap">${candidateAddedAt}</td>
                 <td data-status="${candidate.enabled}" class="px-2 py-2 text-sm text-center">
-                    <span class="px-1.5 py-0.5 text-xs ${candidate.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded">
+                    <span class=" py-0.5 text-xs ${candidate.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded">
                         ${status}
                     </span>
                 </td>
@@ -314,6 +323,7 @@ async function displayEditForm(event) {
     try {
         const candidateId = event.target.closest('tr[data-candidate-id]').dataset.candidateId;
 
+
         const response = await fetch(`/api/candidate/${candidateId}`);
         const responseObject = await response.json();
 
@@ -364,11 +374,13 @@ async function confirmCandidateUpdate(candidateId) {
 
             const formData = new FormData(event.target);
 
+            showLoading()
             const response = await fetch(`/api/candidate/${candidateId}`, {
                 method: 'PUT',
                 body: formData
             });
             const responseObject = await response.json();
+            hideLoader()
             if (!response.ok) {
                 showSwalErrorToast(responseObject.message);
                 return;

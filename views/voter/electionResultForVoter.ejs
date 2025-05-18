@@ -140,10 +140,13 @@
             // Special handling for SENATOR position
             if (position === 'SENATOR') {
               // Get all senator candidates for the voter's department only
-              const senatorCandidates = candidatesVoteTally.filter(candidate => 
-                candidate.position === position && candidate.department_name === user.department_name
+              const senatorCandidates = candidatesVoteTally.filter(candidate =>
+              candidate.position === position &&
+              candidate.department_name &&
+              user.department_name &&
+              candidate.department_name.toUpperCase().trim() === user.department_name.toUpperCase().trim()
               );
-              
+
               if (senatorCandidates.length > 0) {
           %>
         <!-- SENATOR section for voter's department only -->

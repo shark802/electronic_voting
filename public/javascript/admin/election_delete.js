@@ -1,3 +1,5 @@
+import { showLoading, hideLoader } from "/javascript/helper/loader.js";
+
 document.querySelectorAll("#delete_election_button").forEach(deleteButon => {
     deleteButon.addEventListener('click', async (event) => {
         const electionId = event.target.closest("#electionSection").querySelector("#election-card-id").textContent;
@@ -13,8 +15,10 @@ document.querySelectorAll("#delete_election_button").forEach(deleteButon => {
         }).then(async (result) => {
             if (result.isConfirmed) {
 
+                showLoading()
                 const response = await fetch(`/api/elections/${electionId}`, { method: "DELETE" });
 
+                hideLoader()
                 if (response.ok) {
                     $(event.target.closest("#election-card")).hide(100);
 
