@@ -68,6 +68,9 @@ export async function generateElectionResultPdf({
         }
     }
 
+    // Add signatures section
+    yPosition = renderSignatures(pdf, pageWidth, pageHeight, yPosition);
+
     // Add footer with page numbers
     addFooters(pdf, pageWidth, pageHeight);
 
@@ -235,6 +238,108 @@ function renderCandidatesTable(
 
     return (pdf as any).lastAutoTable.finalY;
 }
+
+/**
+ * Renders signature section at the end of the document
+ */
+function renderSignatures(pdf: jsPDF, pageWidth: number, pageHeight: number, yPosition: number): number {
+    // Always create a new page for signatures
+    pdf.addPage();
+    yPosition = 30;
+
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("CERTIFICATION", pageWidth / 2 - 20, yPosition);
+    yPosition += 15;
+
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "normal");
+
+    // Column position
+    const leftColX = 30;
+    const rightColX = pageWidth - 80;
+
+    // First row label
+    pdf.text("Prepared by:", leftColX, yPosition);
+    yPosition += 10;
+
+    // Prepared by signature
+    pdf.text("_______________________", leftColX, yPosition);
+    yPosition += 5;
+
+    pdf.text("Earl John Paildan", leftColX, yPosition);
+    yPosition += 5;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.text("BCC COMELEC Chairperson", leftColX, yPosition);
+    pdf.setFont("helvetica", "normal");
+
+    // "Noted by" section
+    yPosition += 25;
+    pdf.text("Noted by:", leftColX, yPosition);
+    yPosition += 10;
+
+    // First row of Department Heads
+    pdf.text("_______________________", leftColX, yPosition);
+    pdf.text("_______________________", rightColX, yPosition);
+    yPosition += 5;
+
+    pdf.text("Mr. Anthony S. Malabanan, MIT", leftColX, yPosition);
+    pdf.text("Dr. Rosemarie Lagunday, Ed.D", rightColX, yPosition);
+    yPosition += 5;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.text("MAT-MATH BSIS Department Head", leftColX, yPosition);
+    pdf.text("AB Department Head", rightColX, yPosition);
+    pdf.setFont("helvetica", "normal");
+
+    // Second row
+    yPosition += 25;
+    pdf.text("_______________________", leftColX, yPosition);
+    pdf.text("_______________________", rightColX, yPosition);
+    yPosition += 5;
+
+    pdf.text("Mr. Alain S. Acuna", leftColX, yPosition);
+    pdf.text("Dr. Remedios E. Alvarez, PhD", rightColX, yPosition);
+    yPosition += 5;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Criminology Department Head", leftColX, yPosition);
+    pdf.text("Education Department Head", rightColX, yPosition);
+    pdf.setFont("helvetica", "normal");
+
+    // Third row (only one person now)
+    yPosition += 25;
+    pdf.text("_______________________", leftColX, yPosition);
+    yPosition += 5;
+
+    pdf.text("Ma. Lucille Del Castillo", leftColX, yPosition);
+    yPosition += 5;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.text("SASO Chairperson - Designate", leftColX, yPosition);
+    pdf.setFont("helvetica", "normal");
+
+    // Approved by section moved to bottom left
+    yPosition += 25;
+    pdf.text("Approved by:", leftColX, yPosition);
+    yPosition += 10;
+
+    pdf.text("_______________________", leftColX, yPosition);
+    yPosition += 5;
+
+    pdf.text("Dr. Deborah Natalia E. Singson", leftColX, yPosition);
+    yPosition += 5;
+
+    pdf.setFont("helvetica", "bold");
+    pdf.text("College President", leftColX, yPosition);
+    pdf.setFont("helvetica", "normal");
+
+    return yPosition + 15;
+}
+
+
+
 
 /**
  * Adds footers to all pages
