@@ -59,7 +59,7 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
             JOIN candidates c ON u.id_number = c.id_number
             LEFT JOIN programs p ON u.course = p.program_code
             LEFT JOIN departments d ON p.department = d.department_id
-            WHERE c.election_id = '01JVH0XBJHBPYCCHADRGZM39HY'
+            WHERE c.election_id = ?
             AND c.deleted IS NULL
             AND c.enabled = 1
         `
@@ -90,6 +90,8 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         if (!isValidTimeToVote(election)) return res.redirect("/election?redirectMessage=Voting is currently closed")
 
         const shuffledCandidateList = candidateList.sort(() => Math.random() - 0.5);
+
+        console.log(shuffledCandidateList);
 
         return res.render('voter/voteBallot', { user, candidatePositionList, shuffledCandidateList, election, departmentMaxSenatorVote });
     } catch (error) {
