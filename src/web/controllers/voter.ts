@@ -91,8 +91,6 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
 
         const shuffledCandidateList = candidateList.sort(() => Math.random() - 0.5);
 
-        console.log(shuffledCandidateList);
-
         return res.render('voter/voteBallot', { user, candidatePositionList, shuffledCandidateList, election, departmentMaxSenatorVote });
     } catch (error) {
         next(error);

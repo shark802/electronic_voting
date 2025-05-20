@@ -20,6 +20,7 @@ function getAllVoterInElection(electionId) {
         JOIN voters v
         ON u.id_number = v.id_number
         WHERE v.election_id = ?
+        AND u.is_active = 1
         ORDER BY u.lastname
         `;
         const voters = yield (0, query_1.selectQuery)(database_1.pool, selectAllVoterQuery, [electionId]);

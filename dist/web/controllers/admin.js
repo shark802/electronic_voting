@@ -118,7 +118,7 @@ function commpleteElectionResult(req, res, next) {
         try {
             const electionId = req.params.id;
             const election = yield (0, election_1.getElectionInfoById)(electionId);
-            const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId]);
+            const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id = ? ORDER BY program_code', [electionId]);
             res.render('admin/complete_election_report', { election, departments });
         }
         catch (error) {

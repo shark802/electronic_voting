@@ -110,7 +110,7 @@ export async function commpleteElectionResult(req: Request, res: Response, next:
         const electionId = req.params.id;
 
         const election = await getElectionInfoById(electionId);
-        const departments = await selectQuery<Program>(pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId]);
+        const departments = await selectQuery<Program>(pool, 'SELECT * FROM program_populations WHERE election_id = ? ORDER BY program_code', [electionId]);
 
         res.render('admin/complete_election_report', { election, departments });
     } catch (error) {
