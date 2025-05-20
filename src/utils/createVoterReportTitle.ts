@@ -5,36 +5,39 @@ export function createVoterReportTitle(
     yearLevel?: string,
     section?: string
 ): string {
-    let reportTitle = "List of";
-
+    // Base title by vote status
+    let baseTitle = "";
     if (voteStatus === 0) {
-        reportTitle += " Students Who Have Not Voted";
+        baseTitle = "Non-Voting Students Report";
     } else if (voteStatus === 1) {
-        reportTitle += " Students Who Have Voted";
+        baseTitle = "Voting Students Report";
     } else {
-        reportTitle += " Students";
+        baseTitle = "Student Voting Status Report";
     }
 
-    const details: string[] = [];
+    // Build filter description
+    const filters: string[] = [];
 
     if (department) {
-        details.push(`${department} Department`);
+        filters.push(department);
     }
 
     if (program) {
-        let programStr = program;
-        if (yearLevel) {
-            programStr += ` ${yearLevel}`;
-        }
-        if (section) {
-            programStr += `-${section}`;
-        }
-        details.push(programStr);
+        filters.push(program);
     }
 
-    if (details.length > 0) {
-        reportTitle += ` – ${details.join(", ")}`;
+    if (yearLevel) {
+        filters.push(`Year ${yearLevel}`);
     }
 
-    return reportTitle;
+    if (section) {
+        filters.push(`Section ${section}`);
+    }
+
+    // Combine into final title
+    if (filters.length > 0) {
+        return `${baseTitle}: ${filters.join(" | ")}`;
+    }
+
+    return baseTitle;
 }
