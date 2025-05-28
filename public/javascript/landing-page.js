@@ -176,6 +176,7 @@ async function fetchPublicIP() {
         return data.ip;
     } catch (error) {
         console.error('Error fetching IP address:', error);
+        return confirmErrorAlert('Error fetching IP address');
     }
 }
 

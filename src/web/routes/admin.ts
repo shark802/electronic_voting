@@ -51,8 +51,8 @@ router.get("/department/manage", manageDepartment);
 router.get("/department/programs", departmentPrograms);
 
 //Register Device
-router.get("/register-device/request", reviewRegisterDevice);
-router.get("/register-device/registered", viewRegisterDevice);
+// router.get("/register-device/request", reviewRegisterDevice);
+// router.get("/register-device/registered", viewRegisterDevice);
 
 // Control Panel
 router.get("/control-panel/user", fetchUser);

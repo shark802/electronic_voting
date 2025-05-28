@@ -112,23 +112,27 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
         // check if the election has ended
         if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
 
+        const [positions, departmentData] = await Promise.all([
+            selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL'),
+            selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL')
+        ]);
         const positionList = (await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
 
         // Get user with department information
         const [user] = await selectQuery<User>(pool, `
-            SELECT 
-                u.*,
-                p.program_code,
-                d.department_code AS department_name
-            FROM 
-                users u
-            LEFT JOIN 
-                programs p ON u.course = p.program_code
-            LEFT JOIN 
-                departments d ON p.department = d.department_id
-            WHERE 
-                u.id_number = ? 
+            SELECT u.*, p.program_code, d.department_code AS department_name
+            FROM users u
+            LEFT JOIN programs p ON u.course = p.program_code
+            LEFT JOIN departments d ON p.department = d.department_id
+            WHERE u.id_number = ? 
             LIMIT 1`, [userId]);
+
+        // Batch all election-specific queries
+        const [
+            departmentsPopulation
+        ] = await Promise.all([
+            selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId])
+        ]);
 
         const electionResult = await getElectionResult(electionId);
         let candidatesVoteTally;
@@ -149,7 +153,9 @@ export async function renderElectionResult(req: Request, res: Response, next: Ne
             user,
             candidatesVoteTally,
             positionList,
-            electionInfo
+            electionInfo,
+            departmentData,
+            departmentsPopulation
         });
     } catch (error) {
         next(error);

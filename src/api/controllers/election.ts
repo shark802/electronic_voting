@@ -318,7 +318,8 @@ export async function yearLevelTurnoutPercentage(req: Request, res: Response, ne
 			LEFT JOIN elections ON voters.election_id = elections.election_id
 			WHERE (elections.date_end < CURDATE() 
 				OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
-				AND elections.deleted_at IS NULL
+			AND elections.deleted_at IS NULL
+			AND users.is_active = 1
 			GROUP BY users.year_level, elections.election_id
 			ORDER BY elections.date_end ASC, elections.time_end ASC
 		`
@@ -366,9 +367,10 @@ export async function departmentTurnoutPercentage(req: Request, res: Response, n
 			LEFT JOIN elections ON elections.election_id = voters.election_id
 			WHERE (elections.date_end < CURDATE()
 				OR (elections.date_end = CURDATE() AND elections.time_end < CURTIME()))
-				AND elections.deleted_at IS NULL
-				AND programs.deleted_at IS NULL
-				AND users.course IS NOT NULL
+			AND elections.deleted_at IS NULL
+			AND programs.deleted_at IS NULL
+			AND users.course IS NOT NULL
+			AND users.is_active = 1
 			GROUP BY elections.election_id, departments.department_code
 			ORDER BY elections.date_end ASC, elections.time_end ASC, departments.department_code;
 			`
@@ -384,6 +386,8 @@ export async function departmentTurnoutPercentage(req: Request, res: Response, n
 				totalVoted: election.total_voted,
 			}
 		});
+
+		console.log(turnoutPerDepartment);
 
 		return res.status(200).json({ turnoutPerDepartment })
 

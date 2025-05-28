@@ -112,22 +112,23 @@ function renderElectionResult(req, res, next) {
             // check if the election has ended
             if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
+            const [positions, departmentData] = yield Promise.all([
+                (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL'),
+                (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL')
+            ]);
             const positionList = (yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL')).map(position => position.position);
             // Get user with department information
             const [user] = yield (0, query_1.selectQuery)(database_1.pool, `
-            SELECT 
-                u.*,
-                p.program_code,
-                d.department_code AS department_name
-            FROM 
-                users u
-            LEFT JOIN 
-                programs p ON u.course = p.program_code
-            LEFT JOIN 
-                departments d ON p.department = d.department_id
-            WHERE 
-                u.id_number = ? 
+            SELECT u.*, p.program_code, d.department_code AS department_name
+            FROM users u
+            LEFT JOIN programs p ON u.course = p.program_code
+            LEFT JOIN departments d ON p.department = d.department_id
+            WHERE u.id_number = ? 
             LIMIT 1`, [userId]);
+            // Batch all election-specific queries
+            const [departmentsPopulation] = yield Promise.all([
+                (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId])
+            ]);
             const electionResult = yield (0, election_1.getElectionResult)(electionId);
             let candidatesVoteTally;
             if (!electionResult) {
@@ -145,7 +146,9 @@ function renderElectionResult(req, res, next) {
                 user,
                 candidatesVoteTally,
                 positionList,
-                electionInfo
+                electionInfo,
+                departmentData,
+                departmentsPopulation
             });
         }
         catch (error) {

@@ -68,7 +68,7 @@
       <% if (elections && elections.length > 0) { 
         elections.forEach(election => { %>
 
-      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-3 mb-8 overflow-hidden bg-white shadow-lg rounded-xl">
+      <section id="election-section" data-election-id="<%= election.election_id %>" class="pb-3 mb-5 overflow-hidden bg-white shadow-lg rounded-xl">
         <input id="date-end" type="hidden" value="<%= election.date_end %>">
         <input id="time-end" type="hidden" value="<%= election.time_end %>">
 
@@ -97,6 +97,22 @@
               <span id="election-status" class="px-4 py-1.5 text-xs font-medium rounded-full <%= election.is_active ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-800' %> shadow-md">
                 <%= election.is_active ? 'Active' : 'Inactive' %>
               </span>
+
+              <!-- View Results Button - Only show when election has ended -->
+              <% 
+                const currentDate = new Date();
+                const electionEndDate = new Date(election.date_end + ' ' + election.time_end);
+                const hasElectionEnded = currentDate > electionEndDate;
+              %>
+              <button id="result-button" class="hidden">
+                <a href="/admin/election/result/<%= election.election_id %>" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-all duration-200 rounded-lg bg-white/20 backdrop-blur-sm hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 group">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  View Results
+                </a>
+              </button>
+
               <button id="manage" class="hidden p-2 text-blue-100 transition-colors duration-200 rounded-full hover:text-white focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 pulse-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -123,7 +139,7 @@
                   <p class="text-xs font-medium tracking-wider text-blue-100 uppercase">Total Students</p>
                   <div class="flex items-baseline">
                     <p id="total-population" class="text-2xl font-bold transition-all duration-300 origin-left group-hover:scale-110"><%= election.total_populations || "N/A" %></p>
-                    <p id="total-population-percentage" class="ml-2 text-sm text-blue-200"></p>
+                    <p id="total-population-percentage" class="ml-2 text-blue-200">100.00%</p>
                   </div>
                 </div>
               </div>
@@ -143,7 +159,7 @@
                   <p class="text-xs font-medium tracking-wider text-green-100 uppercase">Voted</p>
                   <div class="flex items-baseline">
                     <p id="total-voted" class="text-2xl font-bold transition-all duration-300 origin-left group-hover:scale-110">0</p>
-                    <p id="total-voted-percentage" class="ml-2 text-sm text-green-200">(0.00%)</p>
+                    <p id="total-voted-percentage" class="ml-2 text-green-200">(0.00%)</p>
                   </div>
                 </div>
               </div>
@@ -163,7 +179,7 @@
                   <p class="text-xs font-medium tracking-wider text-red-100 uppercase">Not Voted</p>
                   <div class="flex items-baseline">
                     <p id="number-of-not-voted" class="text-2xl font-bold transition-all duration-300 origin-left group-hover:scale-110">N/A</p>
-                    <p id="total-not-voted-percentage" class="ml-2 text-sm text-red-200">(N/A)</p>
+                    <p id="total-not-voted-percentage" class="ml-2 text-red-200">(N/A)</p>
                   </div>
                 </div>
               </div>
@@ -250,8 +266,6 @@
           </div>
           <% }) %>
         </div>
-
-
 
       </section>
 

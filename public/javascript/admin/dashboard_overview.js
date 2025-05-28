@@ -1,6 +1,7 @@
 import { confirmErrorAlert, confirmAlert, showSwalSuccessToast, showSwalErrorToast } from "/javascript/helper/sweetAlertFunctions.js"
 import socket from "/javascript/socket_io.js"
 import "/javascript/logout.js"
+import { hideLoader, showLoading } from "/javascript/helper/loader.js"
 
 const dashboard_nav = document.querySelector("#dashboard_nav")
 const overview_page = document.querySelector("#overview_page")
@@ -222,9 +223,12 @@ document.querySelectorAll('section').forEach(electionSection => {
 
     if (PRESENT_DATE > endDate) {
         const manageElection = electionSection.querySelector('#manage');
+        const resultButton = electionSection.querySelector('#result-button');
         if (manageElection) {
-
             manageElection.style.display = 'block';
+        }
+        if (resultButton) {
+            resultButton.style.display = 'block';
         }
     }
 });
@@ -283,10 +287,11 @@ function confirmCloseElection() {
         const action = await confirmAlert('Are you sure you want to close the election dashboard?')
         if (!action.isConfirmed) return document.querySelector('#close-election').showModal();
 
+        showLoading()
         try {
             const response = await putRequestToCloseElection(electionId);
             const responseObject = await response.json();
-
+            hideLoader()
             if (!response.ok) {
                 return confirmErrorAlert(responseObject.message);
             }

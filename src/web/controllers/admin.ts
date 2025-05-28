@@ -4,7 +4,7 @@ import { Election } from "../../utils/types/Election";
 import { pool } from "../../config/database";
 import { RegisterDevice } from "../../utils/types/RegisterDevice";
 import { findOneUserVotedInElection, getAllRecentUsersVoted, getAllRecentUsersVotedInElection, getAllUserElectionParticipatedIn } from "../../data_access/voterService";
-import { getElectionInfoById, getElectionResult, generateElectionResult } from "../../data_access/election";
+import { getElectionInfoById, getElectionResult, generateElectionResult, getDepartmentsTotalVotes } from "../../data_access/election";
 import { isElectionEnded } from "../../utils/checkElectionTimeStatus";
 import { BadRequestError, NotFoundError } from "../../utils/customErrors";
 import { Department } from "../../utils/types/Department";
@@ -24,6 +24,8 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
         if (electionIdList.length > 0) {
             populationPerProgram = await selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? ) ORDER BY program_code', [electionIdList])
         }
+
+
 
         res.render("admin/dashboard_overview", { elections, populationPerProgram })
     } catch (error) {
@@ -143,31 +145,65 @@ export async function renderAdminElectionResult(req: Request, res: Response, nex
 
         if (!electionId) throw new BadRequestError('Election id is missing');
 
+        // Single query to get election info and check if it exists
         const electionInfo = await getElectionInfoById(electionId);
         if (!electionInfo) throw new NotFoundError('Election not exist');
 
-        if (!isElectionEnded(electionInfo)) return res.redirect('/election?redirectMessage=Result Not Available Yet');
-
-        const positions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
-        const positionList = positions.map(position => position.position);
-
-        const departmentData = await selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
-        const departments = departmentData.map(department => department.department_code);
-
-        const electionResult = await getElectionResult(electionId);
-        let candidatesVoteTally
-        if (!electionResult) {
-            candidatesVoteTally = await generateElectionResult(electionId)
-        } else {
-            const secretKey = CryptoService.secretKey();
-            const iv = CryptoService.stringToBuffer(electionResult.encryption_iv)
-            const decryptResult = CryptoService.decrypt(electionResult.result, secretKey, iv)
-            candidatesVoteTally = JSON.parse(decryptResult)
+        if (!isElectionEnded(electionInfo)) {
+            return res.redirect('/election?redirectMessage=Result Not Available Yet');
         }
 
-        return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
+        // Batch all static data queries that don't depend on electionId
+        const [positions, departmentData] = await Promise.all([
+            selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL'),
+            selectQuery<Department>(pool, 'SELECT * FROM departments WHERE deleted_at IS NULL')
+        ]);
+
+        // Extract the data we need
+        const positionList = positions.map(position => position.position);
+
+        const departments = departmentData.map(department => department.department_code);
+
+        // Batch all election-specific queries
+        const [
+            departmentsPopulation,
+            totalVotedResult,
+            departmentVoteSummary,
+            electionResult
+        ] = await Promise.all([
+            selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId]),
+            selectQuery(pool, 'SELECT COUNT(DISTINCT voter_id) as total_voted FROM votes WHERE election_id = ?', [electionId]),
+            getDepartmentsTotalVotes([electionId]),
+            getElectionResult(electionId)
+        ]);
+
+        // Extract the data from query results
+        const totalVoted = totalVotedResult[0] as any;
+        const departmentVoteSummaryData = departmentVoteSummary[0] as any;
+
+        // Handle election result decryption or generation
+        let candidatesVoteTally;
+        if (!electionResult) {
+            candidatesVoteTally = await generateElectionResult(electionId);
+        } else {
+            const secretKey = CryptoService.secretKey();
+            const iv = CryptoService.stringToBuffer(electionResult.encryption_iv);
+            const decryptResult = CryptoService.decrypt(electionResult.result, secretKey, iv);
+            candidatesVoteTally = JSON.parse(decryptResult);
+        }
+
+        return res.render('admin/electionResultForAdmin', {
+            candidatesVoteTally,
+            positionList,
+            departments,
+            electionInfo,
+            departmentsPopulation,
+            totalVoted,
+            departmentVoteSummary: departmentVoteSummaryData,
+            departmentData
+        });
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
@@ -177,7 +213,7 @@ export async function manageCandidate(req: Request, res: Response, next: NextFun
         const candidatePositions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
         const positions = candidatePositions.map(position => position.position);
 
-        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
+        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
 
         res.render("admin/candidate_manage", { elections, positions })

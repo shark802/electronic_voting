@@ -153,16 +153,32 @@ function renderAdminElectionResult(req, res, next) {
             const electionId = req.params.id;
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election id is missing');
+            // Single query to get election info and check if it exists
             const electionInfo = yield (0, election_1.getElectionInfoById)(electionId);
             if (!electionInfo)
                 throw new customErrors_1.NotFoundError('Election not exist');
-            if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo))
+            if (!(0, checkElectionTimeStatus_1.isElectionEnded)(electionInfo)) {
                 return res.redirect('/election?redirectMessage=Result Not Available Yet');
-            const positions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
+            }
+            // Batch all static data queries that don't depend on electionId
+            const [positions, departmentData] = yield Promise.all([
+                (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL'),
+                (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL')
+            ]);
+            // Extract the data we need
             const positionList = positions.map(position => position.position);
-            const departmentData = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM departments WHERE deleted_at IS NULL');
             const departments = departmentData.map(department => department.department_code);
-            const electionResult = yield (0, election_1.getElectionResult)(electionId);
+            // Batch all election-specific queries
+            const [departmentsPopulation, totalVotedResult, departmentVoteSummary, electionResult] = yield Promise.all([
+                (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId]),
+                (0, query_1.selectQuery)(database_1.pool, 'SELECT COUNT(DISTINCT voter_id) as total_voted FROM votes WHERE election_id = ?', [electionId]),
+                (0, election_1.getDepartmentsTotalVotes)([electionId]),
+                (0, election_1.getElectionResult)(electionId)
+            ]);
+            // Extract the data from query results
+            const totalVoted = totalVotedResult[0];
+            const departmentVoteSummaryData = departmentVoteSummary[0];
+            // Handle election result decryption or generation
             let candidatesVoteTally;
             if (!electionResult) {
                 candidatesVoteTally = yield (0, election_1.generateElectionResult)(electionId);
@@ -173,7 +189,16 @@ function renderAdminElectionResult(req, res, next) {
                 const decryptResult = cryptoService_1.CryptoService.decrypt(electionResult.result, secretKey, iv);
                 candidatesVoteTally = JSON.parse(decryptResult);
             }
-            return res.render('admin/electionResultForAdmin', { candidatesVoteTally, positionList, departments, electionInfo });
+            return res.render('admin/electionResultForAdmin', {
+                candidatesVoteTally,
+                positionList,
+                departments,
+                electionInfo,
+                departmentsPopulation,
+                totalVoted,
+                departmentVoteSummary: departmentVoteSummaryData,
+                departmentData
+            });
         }
         catch (error) {
             next(error);
@@ -187,7 +212,7 @@ function manageCandidate(req, res, next) {
         try {
             const candidatePositions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
             const positions = candidatePositions.map(position => position.position);
-            const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND (date_end > CURDATE() OR (date_end = CURDATE() AND time_end >= CURTIME()))";
+            const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL";
             const elections = yield (0, query_1.selectQuery)(database_1.pool, selectElectioQuery);
             res.render("admin/candidate_manage", { elections, positions });
         }

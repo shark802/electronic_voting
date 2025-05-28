@@ -26,8 +26,8 @@ router.get("/voter/manage", admin_1.manageVoter);
 router.get("/department/manage", admin_1.manageDepartment);
 router.get("/department/programs", admin_1.departmentPrograms);
 //Register Device
-router.get("/register-device/request", admin_1.reviewRegisterDevice);
-router.get("/register-device/registered", admin_1.viewRegisterDevice);
+// router.get("/register-device/request", reviewRegisterDevice);
+// router.get("/register-device/registered", viewRegisterDevice);
 // Control Panel
 router.get("/control-panel/user", admin_1.fetchUser);
 router.get("/control-panel/general-settings", admin_1.generalSettings);

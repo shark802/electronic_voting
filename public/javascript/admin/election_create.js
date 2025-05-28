@@ -1,5 +1,5 @@
 import "/javascript/logout.js"
-import socket from "/javascript/socket_io.js"
+import "/javascript/socket_io.js"
 
 import { isValidStartDate, isValidEndDate } from "/javascript/formInputValidator/dateValidator.js"
 import { isValidText } from "/javascript/formInputValidator/isValidText.js";

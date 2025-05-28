@@ -84,7 +84,7 @@ app.use(session.default({
     rolling: true,
     cookie: {
         // secure: process.env.NODE_ENV === "production",
-        maxAge: 5 * 60 * 60 * 1000, // 5 hours
+        maxAge: 12 * 60 * 60 * 1000, // 12 hours
         httpOnly: true,
     },
 }));
