@@ -13,6 +13,7 @@ import { Position } from "../../utils/types/Positions";
 import { Department } from "../../utils/types/Department";
 import { RegisterFaces } from "../../utils/types/RegisterFaces";
 import { CryptoService } from "../../utils/cryptoService";
+import { IpAddress } from "../../utils/types/IpAddress";
 
 export async function electionPage(req: Request, res: Response, next: NextFunction) {
     try {
@@ -37,7 +38,7 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
     try {
         const id_number = req.session.user!.user_id;
         const election_id = req.params.electionId;
-        const deviceRegistrationStatus = req.session?.deviceRegistrationStatus;
+        const isIpRegistered = req.session?.ipRegistered;
         const faceVerified = req.session?.faceVerified;
 
         // Check if the user has already voted
@@ -45,7 +46,7 @@ export async function renderElectionBallot(req: Request, res: Response, next: Ne
         if (hasVoted) return res.redirect('/election?redirectMessage=You have already voted');
 
         // If the device is not registered, check if user is available for face authentication.
-        if ((!deviceRegistrationStatus || deviceRegistrationStatus !== "REGISTERED") && !faceVerified) {
+        if (!isIpRegistered && !faceVerified) {
             const isUserRegisteredFaceImage = await hasUserRegisterFaceImage(id_number);
             if (!isUserRegisteredFaceImage) return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");
 

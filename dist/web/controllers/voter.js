@@ -43,14 +43,14 @@ function renderElectionBallot(req, res, next) {
         try {
             const id_number = req.session.user.user_id;
             const election_id = req.params.electionId;
-            const deviceRegistrationStatus = (_a = req.session) === null || _a === void 0 ? void 0 : _a.deviceRegistrationStatus;
+            const isIpRegistered = (_a = req.session) === null || _a === void 0 ? void 0 : _a.ipRegistered;
             const faceVerified = (_b = req.session) === null || _b === void 0 ? void 0 : _b.faceVerified;
             // Check if the user has already voted
             const hasVoted = yield (0, voteService_1.checkIfUserHasVoted)(id_number, election_id);
             if (hasVoted)
                 return res.redirect('/election?redirectMessage=You have already voted');
             // If the device is not registered, check if user is available for face authentication.
-            if ((!deviceRegistrationStatus || deviceRegistrationStatus !== "REGISTERED") && !faceVerified) {
+            if (!isIpRegistered && !faceVerified) {
                 const isUserRegisteredFaceImage = yield (0, hasUserRegisterFaceImage_1.hasUserRegisterFaceImage)(id_number);
                 if (!isUserRegisteredFaceImage)
                     return res.redirect("/election?redirectMessage=Please register your face for authentication to continue.");

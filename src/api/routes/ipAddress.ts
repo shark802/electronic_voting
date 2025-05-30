@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addIpAddress, getIpAddress, getAllIpAddress, removeIpAddress } from "../controllers/ipAddress";
+import { addIpAddress, getIpAddress, getAllIpAddress, removeIpAddress, validateIpAddress } from "../controllers/ipAddress";
 import { toUpperCase } from "../../middlewares/toUpperCase";
 
 const router = Router();
@@ -12,5 +12,8 @@ router.route('/ip-address')
 
 router.route('/ip-address/all')
     .get(getAllIpAddress);
+
+
+router.post('/ip-address/validate', validateIpAddress)
 
 export default router;

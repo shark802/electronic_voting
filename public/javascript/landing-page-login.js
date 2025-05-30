@@ -2,6 +2,22 @@ import { changeEventListener } from "/javascript/helper/changeEventListener.js";
 import { isValidText } from "/javascript/formInputValidator/isValidText.js"
 import { showLoading, hideLoader } from "/javascript/helper/loader.js";
 
+
+const loginModal = document.querySelector('#login-modal');
+
+const loginButton = document.querySelector('#login-button');
+if (loginButton) {
+    loginButton.addEventListener('click', () => {
+        loginModal.showModal();
+    });
+}
+
+document.querySelector("#login-modal-exit").addEventListener('click', function (event) {
+    loginModal.close();
+});
+
+
+
 const schoolIdErrorMessage = document.querySelector("#schoolIdErrorMessage");
 const passwordErrorMessage = document.querySelector("#passwordErrorMessage");
 const id_number = document.querySelector("#school-id");

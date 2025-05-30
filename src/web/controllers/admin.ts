@@ -25,8 +25,6 @@ export async function dashboardOverview(req: Request, res: Response, next: NextF
             populationPerProgram = await selectQuery(pool, 'SELECT * FROM program_populations WHERE election_id IN ( ? ) ORDER BY program_code', [electionIdList])
         }
 
-
-
         res.render("admin/dashboard_overview", { elections, populationPerProgram })
     } catch (error) {
         next(error)
@@ -213,7 +211,7 @@ export async function manageCandidate(req: Request, res: Response, next: NextFun
         const candidatePositions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
         const positions = candidatePositions.map(position => position.position);
 
-        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL";
+        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_close = 0  ORDER BY created_at ASC";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
 
         res.render("admin/candidate_manage", { elections, positions })

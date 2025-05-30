@@ -62,6 +62,7 @@ function generatePdfElectionResult(req, res, next) {
             const [election] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM elections WHERE election_id = ?', [electionId]);
             const departments = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT department_code FROM departments WHERE deleted_at IS NULL ORDER BY department_code');
             let positions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT position FROM positions WHERE deleted_at IS NULL');
+            const programPopulation = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM program_populations WHERE election_id = ?', [electionId]);
             const departmentArray = departments.map(department => department.department_code);
             const positionArray = positions.map(position => position.position);
             const electionResult = yield (0, election_1.getElectionResult)(electionId);
@@ -77,12 +78,11 @@ function generatePdfElectionResult(req, res, next) {
             }
             candidatesVoteTally.sort((a, b) => Number(b.vote_count) - Number(a.vote_count));
             // TODO: generate report in pdf and return to user to download
-            const pdfBuffer = yield (0, generateElectionResultPdf_1.generateElectionResultPdf)({ candidatesVoteTally, electionName: election.election_name, departmentArray, positionArray });
+            const pdfBuffer = yield (0, generateElectionResultPdf_1.generateElectionResultPdf)({ candidatesVoteTally, election: election, departmentArray, positionArray, programPopulation });
             const pdfFilename = election.election_name.replace(/\s+/g, '-').toLocaleLowerCase();
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=${pdfFilename}-result.pdf`);
             res.send(pdfBuffer);
-            // res.status(200).json({ candidatesVoteTally })
         }
         catch (error) {
             next(error);

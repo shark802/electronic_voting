@@ -21,14 +21,14 @@ const jspdf_autotable_1 = __importDefault(require("jspdf-autotable"));
  * @returns Promise with PDF buffer
  */
 function generateElectionResultPdf(_a) {
-    return __awaiter(this, arguments, void 0, function* ({ candidatesVoteTally, electionName, positionArray, departmentArray, }) {
+    return __awaiter(this, arguments, void 0, function* ({ candidatesVoteTally, election, positionArray, departmentArray, programPopulation }) {
         // Initialize PDF document
         const pdf = new jspdf_1.default({ orientation: "portrait", unit: "mm", format: "a4" });
         const { width: pageWidth, height: pageHeight } = pdf.internal.pageSize;
         const margin = 12;
         let yPosition = margin;
         // Add header with title and date
-        yPosition = renderHeader(pdf, pageWidth, electionName) + 8;
+        yPosition = renderHeader(pdf, pageWidth, election.election_name) + 8;
         // Process each position
         for (const position of positionArray) {
             const candidatesForPosition = candidatesVoteTally.filter((candidate) => candidate.position === position);
@@ -37,16 +37,16 @@ function generateElectionResultPdf(_a) {
             // Check if we need a new page
             if (yPosition > pageHeight - 60) {
                 pdf.addPage();
-                yPosition = renderContinuationHeader(pdf, electionName, margin) + 10;
+                yPosition = renderContinuationHeader(pdf, election.election_name, margin) + 10;
             }
             // Add position header
             yPosition = renderPositionHeader(pdf, position, margin, yPosition) + 6;
             // Render either by department (for senators) or directly
             if (position === "SENATOR") {
-                yPosition = renderSenatorsByDepartment(pdf, candidatesForPosition, departmentArray, electionName, position, margin, yPosition, pageHeight);
+                yPosition = renderSenatorsByDepartment(pdf, candidatesForPosition, departmentArray, election.election_name, programPopulation, position, margin, yPosition, pageHeight);
             }
             else {
-                yPosition = renderCandidatesTable(pdf, candidatesForPosition, margin, yPosition) + 10;
+                yPosition = renderCandidatesTable(pdf, candidatesForPosition, election.total_populations, margin, yPosition) + 10;
             }
         }
         // Add signatures section
@@ -111,7 +111,7 @@ function renderPositionHeader(pdf, position, margin, yPosition) {
 /**
  * Renders senators grouped by department
  */
-function renderSenatorsByDepartment(pdf, candidatesForPosition, departmentArray, electionName, position, margin, yPosition, pageHeight) {
+function renderSenatorsByDepartment(pdf, candidatesForPosition, departmentArray, electionName, programPopulation, position, margin, yPosition, pageHeight) {
     for (const department of departmentArray) {
         const candidatesForDepartment = candidatesForPosition.filter((candidate) => candidate.department_name === department);
         if (!candidatesForDepartment.length)
@@ -135,15 +135,16 @@ function renderSenatorsByDepartment(pdf, candidatesForPosition, departmentArray,
         pdf.setFont("helvetica", "italic");
         pdf.text(`Department: ${department}`, margin, yPosition);
         yPosition += 3;
+        const departmentPopulation = programPopulation.find((dept) => dept.program_code === department);
         // Render table for this department
-        yPosition = renderCandidatesTable(pdf, candidatesForDepartment, margin, yPosition) + 10;
+        yPosition = renderCandidatesTable(pdf, candidatesForDepartment, (departmentPopulation === null || departmentPopulation === void 0 ? void 0 : departmentPopulation.program_population) || 0, margin, yPosition) + 10;
     }
     return yPosition;
 }
 /**
  * Renders the candidates table
  */
-function renderCandidatesTable(pdf, candidates, margin, yPosition) {
+function renderCandidatesTable(pdf, candidates, population, margin, yPosition) {
     // Sort candidates by vote count (descending)
     const sortedCandidates = [...candidates].sort((a, b) => b.vote_count - a.vote_count);
     const totalVotes = getTotalVotes(candidates);
@@ -154,7 +155,7 @@ function renderCandidatesTable(pdf, candidates, margin, yPosition) {
         candidate.party || '-',
         candidate.course || '-',
         candidate.vote_count,
-        calculatePercentage(candidate.vote_count, totalVotes)
+        calculatePercentage(candidate.vote_count, population)
     ]);
     // Skip if no data
     if (!tableData.length)

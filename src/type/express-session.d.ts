@@ -11,6 +11,7 @@ declare module 'express-session' {
             },
         },
         deviceRegistrationStatus: string,
+        ipRegistered: boolean,
         faceVerified: boolean,
     }
 }

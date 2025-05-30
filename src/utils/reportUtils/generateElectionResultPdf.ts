@@ -1,12 +1,15 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { CandidateVoteTally } from "../types/CandidatesVoteTally";
+import { Election } from "../types/Election";
+import { ProgramPopulations } from "../types/ProgramPopulations";
 
 type GeneratePdfParams = {
     candidatesVoteTally: CandidateVoteTally[];
-    electionName: string;
+    election: Election;
     positionArray: string[];
     departmentArray: string[];
+    programPopulation: ProgramPopulations[];
 };
 
 /**
@@ -16,9 +19,10 @@ type GeneratePdfParams = {
  */
 export async function generateElectionResultPdf({
     candidatesVoteTally,
-    electionName,
+    election,
     positionArray,
     departmentArray,
+    programPopulation
 }: GeneratePdfParams): Promise<Buffer> {
     // Initialize PDF document
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -27,7 +31,7 @@ export async function generateElectionResultPdf({
     let yPosition = margin;
 
     // Add header with title and date
-    yPosition = renderHeader(pdf, pageWidth, electionName) + 8;
+    yPosition = renderHeader(pdf, pageWidth, election.election_name) + 8;
 
     // Process each position
     for (const position of positionArray) {
@@ -40,7 +44,7 @@ export async function generateElectionResultPdf({
         // Check if we need a new page
         if (yPosition > pageHeight - 60) {
             pdf.addPage();
-            yPosition = renderContinuationHeader(pdf, electionName, margin) + 10;
+            yPosition = renderContinuationHeader(pdf, election.election_name, margin) + 10;
         }
 
         // Add position header
@@ -52,7 +56,8 @@ export async function generateElectionResultPdf({
                 pdf,
                 candidatesForPosition,
                 departmentArray,
-                electionName,
+                election.election_name,
+                programPopulation,
                 position,
                 margin,
                 yPosition,
@@ -62,6 +67,7 @@ export async function generateElectionResultPdf({
             yPosition = renderCandidatesTable(
                 pdf,
                 candidatesForPosition,
+                election.total_populations,
                 margin,
                 yPosition
             ) + 10;
@@ -144,6 +150,7 @@ function renderSenatorsByDepartment(
     candidatesForPosition: CandidateVoteTally[],
     departmentArray: string[],
     electionName: string,
+    programPopulation: ProgramPopulations[],
     position: string,
     margin: number,
     yPosition: number,
@@ -179,10 +186,13 @@ function renderSenatorsByDepartment(
         pdf.text(`Department: ${department}`, margin, yPosition);
         yPosition += 3;
 
+        const departmentPopulation = programPopulation.find((dept) => dept.program_code === department)
+
         // Render table for this department
         yPosition = renderCandidatesTable(
             pdf,
             candidatesForDepartment,
+            departmentPopulation?.program_population || 0,
             margin,
             yPosition
         ) + 10;
@@ -197,6 +207,7 @@ function renderSenatorsByDepartment(
 function renderCandidatesTable(
     pdf: jsPDF,
     candidates: CandidateVoteTally[],
+    population: number,
     margin: number,
     yPosition: number
 ): number {
@@ -211,7 +222,7 @@ function renderCandidatesTable(
         candidate.party || '-',
         candidate.course || '-',
         candidate.vote_count,
-        calculatePercentage(candidate.vote_count, totalVotes)
+        calculatePercentage(candidate.vote_count, population)
     ]);
 
     // Skip if no data

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { insertQuery, selectQuery, updateQuery } from "../../data_access/query";
 import { pool } from "../../config/database";
 import { IpAddress } from "../../utils/types/IpAddress";
-import { ConflictError, NotFoundError } from "../../utils/customErrors";
+import { BadRequestError, ConflictError, NotFoundError } from "../../utils/customErrors";
 
 export async function addIpAddress(req: Request, res: Response, next: NextFunction) {
     try {
@@ -38,7 +38,7 @@ export async function getIpAddress(req: Request, res: Response, next: NextFuncti
             return res.status(200).json({ message: `${ipAddress} is not registered` });
         }
 
-        return res.status(200).json({ ip_address: ipAddressResult.ip_address });
+        return res.status(200).json({ ip_address: ipAddressResult.ip_address, isValid: true });
 
     } catch (error) {
         next(error);
@@ -70,6 +70,22 @@ export async function getAllIpAddress(req: Request, res: Response, next: NextFun
         return res.status(200).json({ ipAddress });
     } catch (error) {
         next(error);
+    }
+}
+
+export async function validateIpAddress(req: Request, res: Response, next: NextFunction) {
+    try {
+        const ipAddress = req.body.ipAddress;
+        if (!ipAddress) throw new BadRequestError('IP Address is undefined');
+
+        const [ipAddressResult] = await selectQuery<IpAddress>(pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [(ipAddress as string).trim()]);
+
+        const isIpRegistered = ipAddressResult ? true : false;
+        req.session.ipRegistered = isIpRegistered;
+
+        return res.status(200).json({ isValid: isIpRegistered });
+    } catch (error) {
+        next(error)
     }
 }
 

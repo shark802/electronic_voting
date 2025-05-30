@@ -8,6 +8,11 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
 
     const selectedCandidate = getSelectedCandidatePerPosition(event);
 
+    // If validation failed, don't proceed
+    if (selectedCandidate.length === 0) {
+        return;
+    }
+
     try {
         const candidateObjectArray = await fetchSelectedCandidateInfo(selectedCandidate); // fetch info of candidate selected
         displayConfirmVoteModal(candidateObjectArray); // display the candidate info to confirm
@@ -40,8 +45,7 @@ document.querySelector("#ballot-form").addEventListener('submit', async (event) 
 /* Helper Functions */
 
 // Retrieves voter selected candidates after submitting the ballot form.
-// Returns an object mapping position labels (as keys) to the values of the selected candidates' id numbers.\
-
+// Returns an object mapping position labels (as keys) to the values of the selected candidates' id numbers.
 function getSelectedCandidatePerPosition(event) {
     let castedVote = [];
     let hasError = false;
@@ -51,22 +55,32 @@ function getSelectedCandidatePerPosition(event) {
         const errorMessageContainer = document.getElementById(`error-${positionCandidateRun}`);
 
         // Clear previous error messages
-        errorMessageContainer.style.display = 'hidden';
+        errorMessageContainer.style.display = 'none';
         errorMessageContainer.textContent = '';
 
         if (positionCandidateRun === 'SENATOR') {
             const senatorSelectedCandidates = position.querySelectorAll('input[type=checkbox]:checked');
+            const maxVotes = parseInt(position.dataset.maxVote) || 12; // Default to 12 if not set
+            const selectedCount = senatorSelectedCandidates.length;
 
-            Array.from(senatorSelectedCandidates).map(candidate => {
+            // Add selected senators to vote array
+            Array.from(senatorSelectedCandidates).forEach(candidate => {
                 castedVote.push({
                     position: positionCandidateRun,
                     id_number: candidate.value
                 });
             });
 
-            if (senatorSelectedCandidates.length === 0) {
+            // Validate senator selection count - must select exactly maxVotes
+            if (selectedCount !== maxVotes) {
                 hasError = true;
-                errorMessageContainer.textContent = `Please select at least one candidate for ${positionCandidateRun}.`;
+                if (selectedCount === 0) {
+                    errorMessageContainer.textContent = `Please select exactly ${maxVotes} candidates for ${positionCandidateRun}.`;
+                } else if (selectedCount < maxVotes) {
+                    errorMessageContainer.textContent = `Please select exactly ${maxVotes} candidates for ${positionCandidateRun}. Currently selected: ${selectedCount}.`;
+                } else {
+                    errorMessageContainer.textContent = `You can only select ${maxVotes} candidates for ${positionCandidateRun}. Currently selected: ${selectedCount}.`;
+                }
                 errorMessageContainer.style.display = 'block';
             }
 
@@ -132,12 +146,14 @@ function displayConfirmVoteModal(candidateObjectArray) {
     confirmModal.showModal();
 }
 
-
 // Send request to fetch candidate info of selected candidate
 async function fetchSelectedCandidateInfo(selectedCandidateObject) {
     try {
         const electionIdInUrl = window.location.href.split("/");
-        const electionId = electionIdInUrl[electionIdInUrl.length - 1]
+        let electionId = electionIdInUrl[electionIdInUrl.length - 1]
+
+        console.log(electionIdInUrl);
+        console.log(electionId);
 
         const urlParams = selectedCandidateObject.map(candidate => `id_number=${candidate.id_number}`).join('&');
         const url = `/api/candidate-info?electionId=${electionId}&${urlParams}`
@@ -174,24 +190,76 @@ async function submitVote(selectedCandidate) {
     }
 }
 
+// Enhanced checkbox limitation with real-time feedback
+document.addEventListener('DOMContentLoaded', () => {
+    const senatorSection = document.querySelector('section[data-max-vote]');
+    if (senatorSection) {
+        senatorSection.addEventListener('change', (event) => {
+            if (event.target.matches('input[type="checkbox"]')) {
+                limitCheckboxSelection(event.target);
+                updateSelectionCounter(event.target);
+            }
+        });
 
-//
-document.querySelector('section[data-max-vote]').addEventListener('click', (event) => {
-    if (event.target.matches('input[type="checkbox"]')) {
-        limitCheckboxSelection(event.target);
+        // Initialize counter display
+        updateSelectionCounter(senatorSection.querySelector('input[type="checkbox"]'));
     }
 });
 
 function limitCheckboxSelection(checkboxElement) {
     const section = checkboxElement.closest('section');
-    const maxVotes = parseInt(section.dataset.maxVote);
+    const maxVotes = parseInt(section.dataset.maxVote) || 12;
     const selectedCheckboxes = section.querySelectorAll('input[type="checkbox"]:checked');
 
     if (checkboxElement.checked && selectedCheckboxes.length > maxVotes) {
-        // Find the first checked checkbox that isn't the current one
-        const firstChecked = Array.from(selectedCheckboxes).find(cb => cb !== checkboxElement);
-        if (firstChecked) {
-            firstChecked.checked = false;
+        // Prevent exceeding max votes by unchecking the current checkbox
+        checkboxElement.checked = false;
+
+        // Show error message
+        const positionLabel = section.querySelector('#position-label').textContent.trim();
+        const errorContainer = document.getElementById(`error-${positionLabel}`);
+        if (errorContainer) {
+            errorContainer.textContent = `Maximum ${maxVotes} candidates can be selected for ${positionLabel}.`;
+            errorContainer.style.display = 'block';
+
+            // Clear error after 3 seconds
+            setTimeout(() => {
+                errorContainer.style.display = 'none';
+                errorContainer.textContent = '';
+            }, 3000);
         }
     }
+}
+
+function updateSelectionCounter(checkboxElement) {
+    if (!checkboxElement) return;
+
+    const section = checkboxElement.closest('section');
+    const maxVotes = parseInt(section.dataset.maxVote) || 12;
+    const selectedCount = section.querySelectorAll('input[type="checkbox"]:checked').length;
+
+    // Find or create counter display
+    let counterElement = section.querySelector('.selection-counter');
+    if (!counterElement) {
+        counterElement = document.createElement('div');
+        counterElement.className = 'text-sm text-blue-300 selection-counter';
+
+        // Insert after the position label
+        const positionLabel = section.querySelector('#position-label');
+        if (positionLabel && positionLabel.parentNode) {
+            positionLabel.parentNode.insertBefore(counterElement, positionLabel.nextSibling);
+        }
+    }
+
+    // Update counter text with color coding
+    const isExact = selectedCount === maxVotes;
+    const isOver = selectedCount > maxVotes;
+    const isUnder = selectedCount > 0 && selectedCount < maxVotes;
+
+    let colorClass = 'text-blue-100';
+    if (isExact) {
+        colorClass = 'text-blue-100 font-semibold';
+    }
+
+    counterElement.innerHTML = `Selected: <span class="${colorClass}">${selectedCount}</span> / ${maxVotes} ${isExact ? '✓' : isUnder ? '(need more)' : isOver ? '(too many)' : ''}`;
 }

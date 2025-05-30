@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllIpAddress = exports.removeIpAddress = exports.getIpAddress = exports.addIpAddress = void 0;
+exports.validateIpAddress = exports.getAllIpAddress = exports.removeIpAddress = exports.getIpAddress = exports.addIpAddress = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const customErrors_1 = require("../../utils/customErrors");
@@ -45,7 +45,7 @@ function getIpAddress(req, res, next) {
             if (!ipAddressResult) {
                 return res.status(200).json({ message: `${ipAddress} is not registered` });
             }
-            return res.status(200).json({ ip_address: ipAddressResult.ip_address });
+            return res.status(200).json({ ip_address: ipAddressResult.ip_address, isValid: true });
         }
         catch (error) {
             next(error);
@@ -85,3 +85,20 @@ function getAllIpAddress(req, res, next) {
     });
 }
 exports.getAllIpAddress = getAllIpAddress;
+function validateIpAddress(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const ipAddress = req.body.ipAddress;
+            if (!ipAddress)
+                throw new customErrors_1.BadRequestError('IP Address is undefined');
+            const [ipAddressResult] = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM ip_address WHERE ip_address = ? AND deleted_at IS NULL LIMIT 1', [ipAddress.trim()]);
+            const isIpRegistered = ipAddressResult ? true : false;
+            req.session.ipRegistered = isIpRegistered;
+            return res.status(200).json({ isValid: isIpRegistered });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.validateIpAddress = validateIpAddress;

@@ -380,9 +380,6 @@
           </div>
           <% }); %>
 
-          <!-- <% if (winners.length > 8) { %>
-          <p class="pt-1 text-xs text-center text-slate-500">+ <%= winners.length - 8 %> more winners</p>
-          <% } %> -->
         </div>
         <% } else { %>
         <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-slate-50">
@@ -648,6 +645,7 @@
                       <div class="w-full mt-2">
                         <div class="flex items-center justify-between mb-1">
                           <span class="text-xs text-slate-500"><%= candidate.vote_count %> votes</span>
+                          <span class="text-xs text-slate-500"><%= population %> votes</span>
                           <span class="text-sm font-bold <%= isWinning ? 'text-green-600' : 'text-blue-600' %>"><%= votePercentage %>%</span>
                         </div>
 

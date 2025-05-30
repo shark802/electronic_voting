@@ -11,4 +11,5 @@ router.route('/ip-address')
     .put(ipAddress_1.removeIpAddress);
 router.route('/ip-address/all')
     .get(ipAddress_1.getAllIpAddress);
+router.post('/ip-address/validate', ipAddress_1.validateIpAddress);
 exports.default = router;
