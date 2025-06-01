@@ -57,7 +57,7 @@ export async function getAllRecentUsersVoted(page: number = 1, limit: number = 3
 
     const [voters, totalCount] = await Promise.all([
         selectQuery(pool, selectAllVotedQuery, [limit, offset]),
-        selectQuery<CountResult[]>(pool, countQuery)
+        selectQuery<CountResult>(pool, countQuery)
     ]);
 
     const total = totalCount[0]?.total || 0;
@@ -100,7 +100,7 @@ export async function getAllRecentUsersVotedInElection(electionId: string, page:
 
     const [voters, totalCount] = await Promise.all([
         selectQuery(pool, selectAllVotedByElectionQuery, [electionId, limit, offset]),
-        selectQuery<CountResult[]>(pool, countQuery, [electionId])
+        selectQuery<CountResult>(pool, countQuery, [electionId])
     ]);
 
     const total = totalCount[0]?.total || 0;
@@ -166,7 +166,7 @@ export async function getAllUserElectionParticipatedIn(userId: string, page: num
 
     const [voters, totalCount] = await Promise.all([
         selectQuery(pool, getAllUserElectionParticipatedQuery, [userId, limit, offset]),
-        selectQuery<CountResult[]>(pool, countQuery, [userId])
+        selectQuery<CountResult>(pool, countQuery, [userId])
     ]);
 
     const total = totalCount[0]?.total || 0;

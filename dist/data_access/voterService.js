@@ -28,37 +28,85 @@ function getAllVoterInElection(electionId) {
     });
 }
 exports.getAllVoterInElection = getAllVoterInElection;
-// Select all recent log of user voted in the system
+// Select all recent log of user voted in the system with pagination
 function getAllRecentUsersVoted() {
-    return __awaiter(this, void 0, void 0, function* () {
+    return __awaiter(this, arguments, void 0, function* (page = 1, limit = 30) {
+        var _a;
+        const offset = (page - 1) * limit;
         const selectAllVotedQuery = `
-                SELECT * FROM (
-                    SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
-                    FROM users u
-                    JOIN votes v ON u.id_number = v.voter_id
-                    JOIN elections e ON v.election_id = e.election_id
-                    WHERE e.deleted_at IS NULL
-                    GROUP BY v.election_id, u.id_number
-                ) AS subquery
-                ORDER BY time_casted DESC;`;
-        return yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedQuery);
+        SELECT 
+            u.id_number, 
+            u.firstname, 
+            u.lastname, 
+            u.course, 
+            u.year_level, 
+            u.section, 
+            v.election_id, 
+            MIN(v.time_casted) AS time_casted, 
+            e.election_name
+        FROM users u
+        JOIN votes v ON u.id_number = v.voter_id
+        JOIN elections e ON v.election_id = e.election_id
+        WHERE e.deleted_at IS NULL
+        GROUP BY v.election_id, u.id_number
+        ORDER BY time_casted DESC
+        LIMIT ? OFFSET ?`;
+        const countQuery = `
+        SELECT COUNT(DISTINCT CONCAT(v.election_id, u.id_number)) as total
+        FROM users u
+        JOIN votes v ON u.id_number = v.voter_id
+        JOIN elections e ON v.election_id = e.election_id
+        WHERE e.deleted_at IS NULL`;
+        const [voters, totalCount] = yield Promise.all([
+            (0, query_1.selectQuery)(database_1.pool, selectAllVotedQuery, [limit, offset]),
+            (0, query_1.selectQuery)(database_1.pool, countQuery)
+        ]);
+        const total = ((_a = totalCount[0]) === null || _a === void 0 ? void 0 : _a.total) || 0;
+        return {
+            voters,
+            total
+        };
     });
 }
 exports.getAllRecentUsersVoted = getAllRecentUsersVoted;
-// Select all recent user voted in one specific election
-function getAllRecentUsersVotedInElection(electionId) {
-    return __awaiter(this, void 0, void 0, function* () {
+// Select all recent user voted in one specific election with pagination
+function getAllRecentUsersVotedInElection(electionId_1) {
+    return __awaiter(this, arguments, void 0, function* (electionId, page = 1, limit = 30) {
+        var _a;
+        const offset = (page - 1) * limit;
         const selectAllVotedByElectionQuery = `
-                SELECT * FROM (
-                    SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
-                    FROM users u
-                    JOIN votes v ON u.id_number = v.voter_id
-                    JOIN elections e ON v.election_id = e.election_id
-                    WHERE v.election_id = ? AND e.deleted_at IS NULL
-                    GROUP BY v.election_id, u.id_number
-                ) AS subquery
-                ORDER BY time_casted DESC;`;
-        return yield (0, query_1.selectQuery)(database_1.pool, selectAllVotedByElectionQuery, [electionId]);
+        SELECT 
+            u.id_number, 
+            u.firstname, 
+            u.lastname, 
+            u.course, 
+            u.year_level, 
+            u.section, 
+            v.election_id, 
+            MIN(v.time_casted) AS time_casted, 
+            e.election_name
+        FROM users u
+        JOIN votes v ON u.id_number = v.voter_id
+        JOIN elections e ON v.election_id = e.election_id
+        WHERE v.election_id = ? AND e.deleted_at IS NULL
+        GROUP BY v.election_id, u.id_number
+        ORDER BY time_casted DESC
+        LIMIT ? OFFSET ?`;
+        const countQuery = `
+        SELECT COUNT(DISTINCT u.id_number) as total
+        FROM users u
+        JOIN votes v ON u.id_number = v.voter_id
+        JOIN elections e ON v.election_id = e.election_id
+        WHERE v.election_id = ? AND e.deleted_at IS NULL`;
+        const [voters, totalCount] = yield Promise.all([
+            (0, query_1.selectQuery)(database_1.pool, selectAllVotedByElectionQuery, [electionId, limit, offset]),
+            (0, query_1.selectQuery)(database_1.pool, countQuery, [electionId])
+        ]);
+        const total = ((_a = totalCount[0]) === null || _a === void 0 ? void 0 : _a.total) || 0;
+        return {
+            voters,
+            total
+        };
     });
 }
 exports.getAllRecentUsersVotedInElection = getAllRecentUsersVotedInElection;
@@ -66,33 +114,64 @@ exports.getAllRecentUsersVotedInElection = getAllRecentUsersVotedInElection;
 function findOneUserVotedInElection(electionId, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         const findOneUserVotedInElectionQuery = `
-                SELECT * FROM (
-                    SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
-                    FROM users u
-                    JOIN votes v ON u.id_number = v.voter_id
-                    JOIN elections e ON v.election_id = e.election_id
-                    WHERE v.election_id = ? AND u.id_number = ? AND e.deleted_at IS NULL
-                    GROUP BY v.election_id, u.id_number
-                ) AS subquery
-                ORDER BY time_casted DESC;`;
+        SELECT 
+            u.id_number, 
+            u.firstname, 
+            u.lastname, 
+            u.course, 
+            u.year_level, 
+            u.section, 
+            v.election_id, 
+            MIN(v.time_casted) AS time_casted, 
+            e.election_name
+        FROM users u
+        JOIN votes v ON u.id_number = v.voter_id
+        JOIN elections e ON v.election_id = e.election_id
+        WHERE v.election_id = ? AND u.id_number = ? AND e.deleted_at IS NULL
+        GROUP BY v.election_id, u.id_number
+        ORDER BY time_casted DESC`;
         return yield (0, query_1.selectQuery)(database_1.pool, findOneUserVotedInElectionQuery, [electionId, userId]);
     });
 }
 exports.findOneUserVotedInElection = findOneUserVotedInElection;
-// Select all election that user participated or voted in
-function getAllUserElectionParticipatedIn(userId) {
-    return __awaiter(this, void 0, void 0, function* () {
+// Select all election that user participated or voted in with pagination
+function getAllUserElectionParticipatedIn(userId_1) {
+    return __awaiter(this, arguments, void 0, function* (userId, page = 1, limit = 30) {
+        var _a;
+        const offset = (page - 1) * limit;
         const getAllUserElectionParticipatedQuery = `
-                SELECT * FROM (
-                    SELECT u.id_number, u.firstname, u.lastname, u.course, u.year_level, u.section, v.election_id, MIN(v.time_casted) AS time_casted, e.election_name
-                    FROM users u
-                    JOIN votes v ON u.id_number = v.voter_id
-                    JOIN elections e ON v.election_id = e.election_id
-                    WHERE u.id_number = ? AND e.deleted_at IS NULL
-                    GROUP BY v.election_id, u.id_number
-                ) AS subquery
-                ORDER BY time_casted DESC;`;
-        return yield (0, query_1.selectQuery)(database_1.pool, getAllUserElectionParticipatedQuery, [userId]);
+        SELECT 
+            u.id_number, 
+            u.firstname, 
+            u.lastname, 
+            u.course, 
+            u.year_level, 
+            u.section, 
+            v.election_id, 
+            MIN(v.time_casted) AS time_casted, 
+            e.election_name
+        FROM users u
+        JOIN votes v ON u.id_number = v.voter_id
+        JOIN elections e ON v.election_id = e.election_id
+        WHERE u.id_number = ? AND e.deleted_at IS NULL
+        GROUP BY v.election_id, u.id_number
+        ORDER BY time_casted DESC
+        LIMIT ? OFFSET ?`;
+        const countQuery = `
+        SELECT COUNT(DISTINCT v.election_id) as total
+        FROM users u
+        JOIN votes v ON u.id_number = v.voter_id
+        JOIN elections e ON v.election_id = e.election_id
+        WHERE u.id_number = ? AND e.deleted_at IS NULL`;
+        const [voters, totalCount] = yield Promise.all([
+            (0, query_1.selectQuery)(database_1.pool, getAllUserElectionParticipatedQuery, [userId, limit, offset]),
+            (0, query_1.selectQuery)(database_1.pool, countQuery, [userId])
+        ]);
+        const total = ((_a = totalCount[0]) === null || _a === void 0 ? void 0 : _a.total) || 0;
+        return {
+            voters,
+            total
+        };
     });
 }
 exports.getAllUserElectionParticipatedIn = getAllUserElectionParticipatedIn;

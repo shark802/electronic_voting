@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generatePdfElectionResult = exports.generateVoterReportInPdf = void 0;
 const voterService_1 = require("../../data_access/voterService");
@@ -21,6 +24,8 @@ const election_1 = require("../../data_access/election");
 const cryptoService_1 = require("../../utils/cryptoService");
 const generateElectionResultPdf_1 = require("../../utils/reportUtils/generateElectionResultPdf");
 require("jspdf-autotable");
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 function generateVoterReportInPdf(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -77,8 +82,27 @@ function generatePdfElectionResult(req, res, next) {
                 candidatesVoteTally = JSON.parse(decryptResult);
             }
             candidatesVoteTally.sort((a, b) => Number(b.vote_count) - Number(a.vote_count));
-            // TODO: generate report in pdf and return to user to download
-            const pdfBuffer = yield (0, generateElectionResultPdf_1.generateElectionResultPdf)({ candidatesVoteTally, election: election, departmentArray, positionArray, programPopulation });
+            // Read certification details
+            let certificationDetails;
+            try {
+                const filePath = path_1.default.join(__dirname, './../../../public/docs/certification-details.json');
+                if (fs_1.default.existsSync(filePath)) {
+                    const fileContent = fs_1.default.readFileSync(filePath, 'utf8');
+                    certificationDetails = JSON.parse(fileContent);
+                }
+            }
+            catch (error) {
+                console.error('Error reading certification details:', error);
+            }
+            // Generate PDF with certification details
+            const pdfBuffer = yield (0, generateElectionResultPdf_1.generateElectionResultPdf)({
+                candidatesVoteTally,
+                election: election,
+                departmentArray,
+                positionArray,
+                programPopulation,
+                certificationDetails
+            });
             const pdfFilename = election.election_name.replace(/\s+/g, '-').toLocaleLowerCase();
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=${pdfFilename}-result.pdf`);

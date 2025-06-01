@@ -47,7 +47,6 @@ function removePosition(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const positionId = req.params.id;
-            console.log(positionId);
             const deletePosition = yield (0, query_1.deleteQuery)(database_1.pool, 'UPDATE positions SET deleted_at = NOW() WHERE position_id = ?', [positionId]);
             if (deletePosition.affectedRows === 0)
                 throw new customErrors_1.NotFoundError("Position not found");

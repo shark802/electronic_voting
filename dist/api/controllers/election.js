@@ -359,7 +359,6 @@ function departmentTurnoutPercentage(req, res, next) {
                     totalVoted: election.total_voted,
                 };
             });
-            console.log(turnoutPerDepartment);
             return res.status(200).json({ turnoutPerDepartment });
         }
         catch (error) {

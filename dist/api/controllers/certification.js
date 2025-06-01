@@ -12,14 +12,83 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCertificationDetails = void 0;
+exports.updateCertificationDetails = exports.getCertificationDetails = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+// Default certification structure
+const DEFAULT_CERTIFICATION = {
+    preparedBy: [{
+            name: "Earl John Paildan",
+            position: "BCC COMELEC Chairperson"
+        }],
+    notedBy: [
+        {
+            name: "Mr. Anthony S. Malabanan, MIT",
+            position: "MAT-MATH BSIS Department Head"
+        },
+        {
+            name: "Dr. Rosemarie Lagunday, Ed.D",
+            position: "AB Department Head"
+        },
+        {
+            name: "Mr. Alain S. Acuna",
+            position: "Criminology Department Head"
+        },
+        {
+            name: "Dr. Remedios E. Alvarez, PhD",
+            position: "Education Department Head"
+        },
+        {
+            name: "Ma. Lucille Del Castillo",
+            position: "SASO Chairperson - Designate"
+        }
+    ],
+    approvedBy: [{
+            name: "Dr. Deborah Natalia E. Singson",
+            position: "College President"
+        }]
+};
+// Function to create default JSON file
+const createDefaultCertificationFile = (filePath) => {
+    try {
+        if (!fs_1.default.existsSync(filePath)) {
+            console.log('Creating default certification file');
+            // Create directory if it doesn't exist
+            const dirPath = path_1.default.dirname(filePath);
+            if (!fs_1.default.existsSync(dirPath)) {
+                fs_1.default.mkdirSync(dirPath, { recursive: true });
+            }
+            fs_1.default.writeFileSync(filePath, JSON.stringify(DEFAULT_CERTIFICATION, null, 2));
+            console.log('Default certification file created successfully');
+        }
+    }
+    catch (error) {
+        console.error('Error creating default certification file:', error);
+        throw error;
+    }
+};
+// Function to get certification details
+function getCertificationDetails(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const filePath = path_1.default.join(__dirname, './../../../public/docs/certification-details.json');
+            // Create default file if it doesn't exist
+            createDefaultCertificationFile(filePath);
+            // Read the file
+            const data = fs_1.default.readFileSync(filePath, 'utf8');
+            const certificationDetails = JSON.parse(data);
+            return res.status(200).json(certificationDetails);
+        }
+        catch (error) {
+            console.error('Error reading certification details:', error);
+            return res.status(500).json({ error: 'Failed to read certification details' });
+        }
+    });
+}
+exports.getCertificationDetails = getCertificationDetails;
 function updateCertificationDetails(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            console.log('Received certification update request');
-            console.log('Body:', req.body);
             const { certificationDetails } = req.body;
             if (!certificationDetails) {
                 console.log('Missing certification details');

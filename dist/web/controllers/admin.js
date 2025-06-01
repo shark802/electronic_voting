@@ -244,30 +244,36 @@ function manageVoter(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { election, user_id, page } = req.query;
-            let votedUsers = [];
-            // Fetch all voted users based on filters
+            const currentPage = parseInt(page) || 1;
+            const limit = 30;
+            let result;
+            // Fetch all voted users based on filters with pagination
             if (election && user_id) {
-                votedUsers = yield (0, voterService_1.findOneUserVotedInElection)(election, user_id);
+                const voters = yield (0, voterService_1.findOneUserVotedInElection)(election, user_id);
+                result = { voters, total: voters.length };
             }
             else if (election && !user_id) {
-                votedUsers = yield (0, voterService_1.getAllRecentUsersVotedInElection)(election);
+                result = yield (0, voterService_1.getAllRecentUsersVotedInElection)(election, currentPage, limit);
             }
             else if (user_id && !election) {
-                votedUsers = yield (0, voterService_1.getAllUserElectionParticipatedIn)(user_id);
+                result = yield (0, voterService_1.getAllUserElectionParticipatedIn)(user_id, currentPage, limit);
             }
             else {
-                votedUsers = yield (0, voterService_1.getAllRecentUsersVoted)();
+                result = yield (0, voterService_1.getAllRecentUsersVoted)(currentPage, limit);
             }
-            // Pagination logic
-            const limit = 30;
-            const currentPage = parseInt(page) || 1;
-            const totalUsers = votedUsers.length;
-            const totalPages = Math.ceil(totalUsers / limit);
-            const startIndex = (currentPage - 1) * limit;
-            const paginatedUsers = votedUsers.slice(startIndex, startIndex + limit);
+            const totalPages = Math.ceil(result.total / limit);
             const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
             const availableElections = yield (0, query_1.selectQuery)(database_1.pool, availableElectionQuery);
-            res.render("admin/voter_manage", { votedUsers: paginatedUsers, totalUsers, election, user_id, availableElections, currentPage, totalPages, limit });
+            res.render("admin/voter_manage", {
+                votedUsers: result.voters,
+                totalUsers: result.total,
+                election,
+                user_id,
+                availableElections,
+                currentPage,
+                totalPages,
+                limit
+            });
         }
         catch (error) {
             next(error);
@@ -363,41 +369,7 @@ function editCertification(req, res, next) {
             if (!election || election.length === 0) {
                 throw new Error('Election not found');
             }
-            // Default certification details
-            const certificationDetails = {
-                preparedBy: {
-                    name: "Earl John Paildan",
-                    position: "BCC COMELEC Chairperson"
-                },
-                notedBy: [
-                    {
-                        name: "Mr. Anthony S. Malabanan, MIT",
-                        position: "MAT-MATH BSIS Department Head"
-                    },
-                    {
-                        name: "Dr. Rosemarie Lagunday, Ed.D",
-                        position: "AB Department Head"
-                    },
-                    {
-                        name: "Mr. Alain S. Acuna",
-                        position: "Criminology Department Head"
-                    },
-                    {
-                        name: "Dr. Remedios E. Alvarez, PhD",
-                        position: "Education Department Head"
-                    }
-                ],
-                sasoChairperson: {
-                    name: "Ma. Lucille Del Castillo",
-                    position: "SASO Chairperson - Designate"
-                },
-                approvedBy: {
-                    name: "Dr. Deborah Natalia E. Singson",
-                    position: "College President"
-                }
-            };
             res.render('admin/editCertification', {
-                certificationDetails,
                 electionId: election_id
             });
         }

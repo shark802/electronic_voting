@@ -171,7 +171,6 @@ function importUsers(req, res, next) {
                 yield connection.execute('UPDATE users SET is_active = 0 WHERE is_active = 1');
                 yield connection.commit();
                 const result = yield (0, importUserToDatabase_1.importUsersToDatabase)(userCsvFile, importId, filename, connection, socket);
-                console.log(result);
                 yield (0, query_1.updateQuery)(database_1.pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [result.importTimeInMinutes, result.importSize, 'Successful', importId]);
                 socket.emit('user-import-success', {
                     status: 'SUCCESSFUL',
