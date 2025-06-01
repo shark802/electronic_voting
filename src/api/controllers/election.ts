@@ -387,8 +387,6 @@ export async function departmentTurnoutPercentage(req: Request, res: Response, n
 			}
 		});
 
-		console.log(turnoutPerDepartment);
-
 		return res.status(200).json({ turnoutPerDepartment })
 
 	} catch (error) {

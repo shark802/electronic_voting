@@ -19,7 +19,7 @@ import { showLoading, hideLoader } from "/javascript/helper/loader.js"
 // });
 
 // updateUuidStatusOnLoad();
-// displayRedirectMessage();
+displayRedirectMessage();
 // openRegisterDeviceModal();
 // closeRegisterDeviceModal();
 // submitRegisterDeviceForm();

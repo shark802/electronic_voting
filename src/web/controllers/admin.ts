@@ -12,6 +12,8 @@ import { Position } from "../../utils/types/Positions";
 import { Program } from "../../utils/types/Program";
 import { Candidate } from "../../utils/types/Candidate";
 import { CryptoService } from "../../utils/cryptoService";
+import path from 'path';
+import fs from 'fs';
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -240,33 +242,38 @@ export async function addCandidate(req: Request, res: Response, next: NextFuncti
 export async function manageVoter(req: Request, res: Response, next: NextFunction) {
     try {
         const { election, user_id, page } = req.query;
+        const currentPage = parseInt(page as string) || 1;
+        const limit = 30;
 
-        let votedUsers: unknown[] = [];
+        let result: { voters: unknown[], total: number };
 
-        // Fetch all voted users based on filters
+        // Fetch all voted users based on filters with pagination
         if (election && user_id) {
-            votedUsers = await findOneUserVotedInElection(election as string, user_id as string);
+            const voters = await findOneUserVotedInElection(election as string, user_id as string);
+            result = { voters, total: voters.length };
         } else if (election && !user_id) {
-            votedUsers = await getAllRecentUsersVotedInElection(election as string);
+            result = await getAllRecentUsersVotedInElection(election as string, currentPage, limit);
         } else if (user_id && !election) {
-            votedUsers = await getAllUserElectionParticipatedIn(user_id as string);
+            result = await getAllUserElectionParticipatedIn(user_id as string, currentPage, limit);
         } else {
-            votedUsers = await getAllRecentUsersVoted();
+            result = await getAllRecentUsersVoted(currentPage, limit);
         }
 
-        // Pagination logic
-        const limit = 30;
-        const currentPage = parseInt(page as string) || 1;
-        const totalUsers = votedUsers.length;
-        const totalPages = Math.ceil(totalUsers / limit);
-
-        const startIndex = (currentPage - 1) * limit;
-        const paginatedUsers = votedUsers.slice(startIndex, startIndex + limit);
+        const totalPages = Math.ceil(result.total / limit);
 
         const availableElectionQuery = "SELECT * FROM elections WHERE (date_start < NOW() OR (date_start = CURDATE() AND time_start < CURTIME())) AND deleted_at IS NULL ORDER BY date_end DESC, time_end DESC";
         const availableElections = await selectQuery(pool, availableElectionQuery);
 
-        res.render("admin/voter_manage", { votedUsers: paginatedUsers, totalUsers, election, user_id, availableElections, currentPage, totalPages, limit });
+        res.render("admin/voter_manage", {
+            votedUsers: result.voters,
+            totalUsers: result.total,
+            election,
+            user_id,
+            availableElections,
+            currentPage,
+            totalPages,
+            limit
+        });
     } catch (error) {
         next(error);
     }
@@ -336,5 +343,24 @@ export async function generalSettings(req: Request, res: Response, next: NextFun
         res.render("admin/control-panel-general-settings", { departments })
     } catch (error) {
         next(error)
+    }
+}
+
+export async function editCertification(req: Request, res: Response, next: NextFunction) {
+    try {
+        const election_id = req.params.id;
+        // Get election details to verify it exists
+        const query = "SELECT * FROM elections WHERE election_id = ?";
+        const election = await selectQuery<Election>(pool, query, [election_id]);
+
+        if (!election || election.length === 0) {
+            throw new Error('Election not found');
+        }
+
+        res.render('admin/editCertification', {
+            electionId: election_id
+        });
+    } catch (error) {
+        next(error);
     }
 }

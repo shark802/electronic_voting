@@ -10,7 +10,6 @@ import { CsvUserObject } from "../../utils/types/CsvUserObject";
 import { importUsersToDatabase } from "../../utils/importUserToDatabase";
 import { v4 as uuidV4 } from "uuid";
 import { errorMonitor } from "events";
-import { log } from "console";
 
 export async function newUserFunction(req: Request, res: Response, next: NextFunction) {
     try {
@@ -151,7 +150,6 @@ export async function importUsers(req: Request, res: Response, next: NextFunctio
 
             await connection.commit();
             const result = await importUsersToDatabase(userCsvFile, importId, filename, connection, socket);
-            console.log(result);
             await updateQuery(pool, 'UPDATE users_import_records SET time_taken = ?, import_size = ?, status = ? WHERE id = ?', [result.importTimeInMinutes, result.importSize, 'Successful', importId])
 
             socket.emit('user-import-success', {

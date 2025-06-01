@@ -3,6 +3,8 @@ import autoTable from "jspdf-autotable";
 import { CandidateVoteTally } from "../types/CandidatesVoteTally";
 import { Election } from "../types/Election";
 import { ProgramPopulations } from "../types/ProgramPopulations";
+import fs from "fs";
+import path from "path";
 
 type GeneratePdfParams = {
     candidatesVoteTally: CandidateVoteTally[];
@@ -10,7 +12,89 @@ type GeneratePdfParams = {
     positionArray: string[];
     departmentArray: string[];
     programPopulation: ProgramPopulations[];
+    certificationDetails?: {
+        preparedBy: {
+            name: string;
+            position: string;
+        }[];
+        notedBy: Array<{
+            name: string;
+            position: string;
+        }>;
+        sasoChairperson: {
+            name: string;
+            position: string;
+        };
+        approvedBy: {
+            name: string;
+            position: string;
+        }[];
+    };
 };
+
+/**
+ * Renders the document header
+ */
+async function renderHeader(pdf: jsPDF, pageWidth: number, electionName: string): Promise<number> {
+    // Load images using fs
+    const leftImagePath = path.join(process.cwd(), 'public', 'img', 'bcc-logo.png');
+    const rightImagePath = path.join(process.cwd(), 'public', 'img', 'bago-city-collge-SSG.jpg');
+
+    const leftImageData = new Uint8Array(fs.readFileSync(leftImagePath));
+    const rightImageData = new Uint8Array(fs.readFileSync(rightImagePath));
+
+    // Calculate image dimensions (maintaining aspect ratio)
+    const maxHeight = 20;
+    const leftImageWidth = 25; // Fixed width for left image
+    const rightImageWidth = 25; // Fixed width for right image
+
+    // Add left image
+    pdf.addImage(leftImageData, 'JPEG', 20, 8, leftImageWidth, maxHeight);
+
+    // Add right image
+    pdf.addImage(rightImageData, 'JPEG', pageWidth - rightImageWidth - 20, 8, rightImageWidth, maxHeight);
+
+    // School name
+    pdf.setFontSize(14);
+    pdf.setFont("helvetica", "bold");
+    const schoolName = "BAGO CITY COLLEGE";
+    const schoolNameWidth = pdf.getTextWidth(schoolName);
+    pdf.text(schoolName, (pageWidth - schoolNameWidth) / 2, 13);
+
+    // SSG text
+    pdf.setFontSize(12);
+    const ssgText = "SUPREME STUDENT GOVERNMENT";
+    const ssgTextWidth = pdf.getTextWidth(ssgText);
+    pdf.text(ssgText, (pageWidth - ssgTextWidth) / 2, 18);
+
+    // Election name
+    pdf.setFontSize(11);
+    const electionNameWidth = pdf.getTextWidth(electionName);
+    pdf.text(electionName, (pageWidth - electionNameWidth) / 2, 25);
+
+    // Generation timestamp
+    const dateTimeString = `Generated on: ${new Date().toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    } as Intl.DateTimeFormatOptions)}`;
+
+    pdf.setFontSize(8);
+    pdf.setFont("helvetica", "italic");
+    pdf.setTextColor(100);
+    const dateTimeWidth = pdf.getTextWidth(dateTimeString);
+    pdf.text(dateTimeString, (pageWidth - dateTimeWidth) / 2, 28);
+
+    // Add a line below the header
+    pdf.setDrawColor(0);
+    pdf.setLineWidth(0.3);
+    pdf.line(15, 32, pageWidth - 15, 32);
+
+    pdf.setTextColor(0);
+    return 38;
+}
 
 /**
  * Generates a formal election results PDF document
@@ -22,16 +106,17 @@ export async function generateElectionResultPdf({
     election,
     positionArray,
     departmentArray,
-    programPopulation
+    programPopulation,
+    certificationDetails
 }: GeneratePdfParams): Promise<Buffer> {
     // Initialize PDF document
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const { width: pageWidth, height: pageHeight } = pdf.internal.pageSize;
-    const margin = 12;
+    const margin = 15;
     let yPosition = margin;
 
     // Add header with title and date
-    yPosition = renderHeader(pdf, pageWidth, election.election_name) + 8;
+    yPosition = await renderHeader(pdf, pageWidth, election.election_name) + 8;
 
     // Process each position
     for (const position of positionArray) {
@@ -44,22 +129,22 @@ export async function generateElectionResultPdf({
         // Check if we need a new page
         if (yPosition > pageHeight - 60) {
             pdf.addPage();
-            yPosition = renderContinuationHeader(pdf, election.election_name, margin) + 10;
+            yPosition = await renderHeader(pdf, pageWidth, election.election_name) + 10;
         }
 
         // Add position header
-        yPosition = renderPositionHeader(pdf, position, margin, yPosition) + 6;
+        yPosition = renderPositionHeader(pdf, position, margin + 2, yPosition) + 6;
 
         // Render either by department (for senators) or directly
         if (position === "SENATOR") {
-            yPosition = renderSenatorsByDepartment(
+            yPosition = await renderSenatorsByDepartment(
                 pdf,
                 candidatesForPosition,
                 departmentArray,
                 election.election_name,
                 programPopulation,
                 position,
-                margin,
+                margin + 2,
                 yPosition,
                 pageHeight
             );
@@ -75,60 +160,13 @@ export async function generateElectionResultPdf({
     }
 
     // Add signatures section
-    yPosition = renderSignatures(pdf, pageWidth, pageHeight, yPosition);
+    yPosition = await renderSignatures(pdf, pageWidth, pageHeight, yPosition, certificationDetails, election.election_name);
 
     // Add footer with page numbers
     addFooters(pdf, pageWidth, pageHeight);
 
     // Return PDF buffer
     return Buffer.from(pdf.output("arraybuffer"));
-}
-
-/**
- * Renders the main document header
- */
-function renderHeader(pdf: jsPDF, pageWidth: number, electionName: string): number {
-    // Main title
-    pdf.setFontSize(18);
-    pdf.setFont("helvetica", "bold");
-    pdf.setTextColor(30, 90, 180);
-    const electionNameWidth = pdf.getTextWidth(electionName);
-    pdf.text(electionName, (pageWidth - electionNameWidth) / 2, 22);
-
-    // Subtitle
-    const reportTitle = "OFFICIAL ELECTION RESULTS";
-    pdf.setFontSize(12);
-    pdf.setTextColor(0);
-    const reportTitleWidth = pdf.getTextWidth(reportTitle);
-    pdf.text(reportTitle, (pageWidth - reportTitleWidth) / 2, 30);
-
-    // Generation timestamp
-    const dateTimeString = `Generated on: ${new Date().toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    } as Intl.DateTimeFormatOptions)}`;
-
-    pdf.setFontSize(10);
-    pdf.setFont("helvetica", "italic");
-    pdf.setTextColor(100);
-    const dateTimeWidth = pdf.getTextWidth(dateTimeString);
-    pdf.text(dateTimeString, (pageWidth - dateTimeWidth) / 2, 34);
-
-    pdf.setTextColor(0);
-    return 42;
-}
-
-/**
- * Renders a continuation header for subsequent pages
- */
-function renderContinuationHeader(pdf: jsPDF, electionName: string, margin: number): number {
-    pdf.setFontSize(10);
-    pdf.setFont("helvetica", "normal");
-    pdf.text(`Election Results - ${electionName} (continued)`, margin, margin);
-    return margin;
 }
 
 /**
@@ -141,11 +179,10 @@ function renderPositionHeader(pdf: jsPDF, position: string, margin: number, yPos
     return yPosition;
 }
 
-
 /**
  * Renders senators grouped by department
  */
-function renderSenatorsByDepartment(
+async function renderSenatorsByDepartment(
     pdf: jsPDF,
     candidatesForPosition: CandidateVoteTally[],
     departmentArray: string[],
@@ -155,7 +192,7 @@ function renderSenatorsByDepartment(
     margin: number,
     yPosition: number,
     pageHeight: number
-): number {
+): Promise<number> {
     for (const department of departmentArray) {
         const candidatesForDepartment = candidatesForPosition.filter(
             (candidate) => candidate.department_name === department
@@ -166,13 +203,7 @@ function renderSenatorsByDepartment(
         // Check if we need a new page
         if (yPosition > pageHeight - 60) {
             pdf.addPage();
-            yPosition = margin;
-
-            // Add continuation headers
-            pdf.setFontSize(10);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(`Election Results - ${electionName} (continued)`, margin, margin);
-            yPosition += 10;
+            yPosition = await renderHeader(pdf, pdf.internal.pageSize.width, electionName) + 10;
 
             pdf.setFontSize(14);
             pdf.setFont("helvetica", "bold");
@@ -183,7 +214,7 @@ function renderSenatorsByDepartment(
         // Add department header
         pdf.setFontSize(12);
         pdf.setFont("helvetica", "italic");
-        pdf.text(`Department: ${department}`, margin, yPosition);
+        pdf.text(`Department: ${department}`, margin + 2, yPosition);
         yPosition += 3;
 
         const departmentPopulation = programPopulation.find((dept) => dept.program_code === department)
@@ -213,7 +244,6 @@ function renderCandidatesTable(
 ): number {
     // Sort candidates by vote count (descending)
     const sortedCandidates = [...candidates].sort((a, b) => b.vote_count - a.vote_count);
-    const totalVotes = getTotalVotes(candidates);
 
     // Prepare table data
     const tableData = sortedCandidates.map((candidate, index) => [
@@ -233,7 +263,7 @@ function renderCandidatesTable(
         startY: yPosition,
         head: [["Rank", "Name", "Partylist", "Course", "Vote Count", "Percentage"]],
         body: tableData,
-        margin: { left: margin, right: margin },
+        margin: { left: margin + 2, right: margin + 2 },
         styles: { fontSize: 10, cellPadding: 2 },
         headStyles: {
             fillColor: [51, 108, 232],
@@ -253,104 +283,155 @@ function renderCandidatesTable(
 /**
  * Renders signature section at the end of the document
  */
-function renderSignatures(pdf: jsPDF, pageWidth: number, pageHeight: number, yPosition: number): number {
-    // Always create a new page for signatures
+async function renderSignatures(
+    pdf: jsPDF,
+    pageWidth: number,
+    pageHeight: number,
+    yPosition: number,
+    certificationDetails?: GeneratePdfParams['certificationDetails'],
+    electionName?: string
+): Promise<number> {
+    // Add a new page for signatures
     pdf.addPage();
-    yPosition = 30;
 
-    pdf.setFontSize(12);
+    // Add header to certification page with election name
+    yPosition = await renderHeader(pdf, pageWidth, electionName || "OFFICIAL CERTIFICATION") + 10;
+
+    // Add certification title
+    pdf.setFontSize(14);
     pdf.setFont("helvetica", "bold");
-    pdf.text("CERTIFICATION", pageWidth / 2 - 20, yPosition);
-    yPosition += 15;
+    pdf.text("CERTIFICATION OF ELECTION RESULTS", pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 20;
 
+    // Default certification details if none provided
+    const defaultDetails = {
+        preparedBy: [{
+            name: "Earl John Paildan",
+            position: "BCC COMELEC Chairperson"
+        }],
+        notedBy: [
+            {
+                name: "Mr. Anthony S. Malabanan, MIT",
+                position: "MAT-MATH BSIS Department Head"
+            },
+            {
+                name: "Dr. Rosemarie Lagunday, Ed.D",
+                position: "AB Department Head"
+            },
+            {
+                name: "Mr. Alain S. Acuna",
+                position: "Criminology Department Head"
+            },
+            {
+                name: "Dr. Remedios E. Alvarez, PhD",
+                position: "Education Department Head"
+            },
+            {
+                name: "Ma. Lucille Del Castillo",
+                position: "SASO Chairperson - Designate"
+            }
+        ],
+        approvedBy: [{
+            name: "Dr. Deborah Natalia E. Singson",
+            position: "College President"
+        }]
+    };
+
+    // Use provided details or defaults
+    const details = certificationDetails || defaultDetails;
+
+    // Calculate column widths and positions
+    const leftColumnX = 20;
+    const rightColumnX = pageWidth / 2 + 20;
+    const signatureLineWidth = 60;
+
+    // Prepared By
     pdf.setFontSize(10);
     pdf.setFont("helvetica", "normal");
-
-    // Column position
-    const leftColX = 30;
-    const rightColX = pageWidth - 80;
-
-    // First row label
-    pdf.text("Prepared by:", leftColX, yPosition);
+    pdf.text("Prepared By:", leftColumnX, yPosition);
     yPosition += 10;
 
-    // Prepared by signature
-    pdf.text("_______________________", leftColX, yPosition);
-    yPosition += 5;
+    // Handle preparedBy as array
+    details.preparedBy.forEach((person, index) => {
+        // Draw signature line
+        pdf.setDrawColor(0);
+        pdf.setLineWidth(0.5);
+        pdf.line(leftColumnX, yPosition, leftColumnX + signatureLineWidth, yPosition);
+        yPosition += 5;
 
-    pdf.text("Earl John Paildan", leftColX, yPosition);
-    yPosition += 5;
-
-    pdf.setFont("helvetica", "bold");
-    pdf.text("BCC COMELEC Chairperson", leftColX, yPosition);
-    pdf.setFont("helvetica", "normal");
-
-    // "Noted by" section
-    yPosition += 25;
-    pdf.text("Noted by:", leftColX, yPosition);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(person.name, leftColumnX, yPosition);
+        yPosition += 5;
+        pdf.setFont("helvetica", "bold");
+        pdf.text(person.position, leftColumnX, yPosition);
+        yPosition += 15;
+    });
     yPosition += 10;
 
-    // First row of Department Heads
-    pdf.text("_______________________", leftColX, yPosition);
-    pdf.text("_______________________", rightColX, yPosition);
-    yPosition += 5;
-
-    pdf.text("Mr. Anthony S. Malabanan, MIT", leftColX, yPosition);
-    pdf.text("Dr. Rosemarie Lagunday, Ed.D", rightColX, yPosition);
-    yPosition += 5;
-
-    pdf.setFont("helvetica", "bold");
-    pdf.text("MAT-MATH BSIS Department Head", leftColX, yPosition);
-    pdf.text("AB Department Head", rightColX, yPosition);
+    // Noted By
     pdf.setFont("helvetica", "normal");
-
-    // Second row
-    yPosition += 25;
-    pdf.text("_______________________", leftColX, yPosition);
-    pdf.text("_______________________", rightColX, yPosition);
-    yPosition += 5;
-
-    pdf.text("Mr. Alain S. Acuna", leftColX, yPosition);
-    pdf.text("Dr. Remedios E. Alvarez, PhD", rightColX, yPosition);
-    yPosition += 5;
-
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Criminology Department Head", leftColX, yPosition);
-    pdf.text("Education Department Head", rightColX, yPosition);
-    pdf.setFont("helvetica", "normal");
-
-    // Third row (only one person now)
-    yPosition += 25;
-    pdf.text("_______________________", leftColX, yPosition);
-    yPosition += 5;
-
-    pdf.text("Ma. Lucille Del Castillo", leftColX, yPosition);
-    yPosition += 5;
-
-    pdf.setFont("helvetica", "bold");
-    pdf.text("SASO Chairperson - Designate", leftColX, yPosition);
-    pdf.setFont("helvetica", "normal");
-
-    // Approved by section moved to bottom left
-    yPosition += 25;
-    pdf.text("Approved by:", leftColX, yPosition);
+    pdf.text("Noted By:", leftColumnX, yPosition);
     yPosition += 10;
 
-    pdf.text("_______________________", leftColX, yPosition);
-    yPosition += 5;
+    // Render notedBy in two columns
+    for (let i = 0; i < details.notedBy.length; i += 2) {
+        const currentY = yPosition;
 
-    pdf.text("Dr. Deborah Natalia E. Singson", leftColX, yPosition);
-    yPosition += 5;
+        // Left column
+        pdf.setDrawColor(0);
+        pdf.setLineWidth(0.5);
+        pdf.line(leftColumnX, currentY, leftColumnX + signatureLineWidth, currentY);
+        yPosition += 5;
 
-    pdf.setFont("helvetica", "bold");
-    pdf.text("College President", leftColX, yPosition);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(details.notedBy[i].name, leftColumnX, yPosition);
+        yPosition += 5;
+        pdf.setFont("helvetica", "bold");
+        pdf.text(details.notedBy[i].position, leftColumnX, yPosition);
+
+        // Right column (if exists)
+        if (i + 1 < details.notedBy.length) {
+            yPosition = currentY;
+            pdf.setDrawColor(0);
+            pdf.setLineWidth(0.5);
+            pdf.line(rightColumnX, currentY, rightColumnX + signatureLineWidth, currentY);
+            yPosition += 5;
+
+            pdf.setFont("helvetica", "normal");
+            pdf.text(details.notedBy[i + 1].name, rightColumnX, yPosition);
+            yPosition += 5;
+            pdf.setFont("helvetica", "bold");
+            pdf.text(details.notedBy[i + 1].position, rightColumnX, yPosition);
+        }
+
+        yPosition += 15;
+    }
+
+    yPosition += 10;
+
+    // Approved By
     pdf.setFont("helvetica", "normal");
+    pdf.text("Approved By:", leftColumnX, yPosition);
+    yPosition += 10;
 
-    return yPosition + 15;
+    // Handle approvedBy as array
+    details.approvedBy.forEach((person, index) => {
+        // Draw signature line
+        pdf.setDrawColor(0);
+        pdf.setLineWidth(0.5);
+        pdf.line(leftColumnX, yPosition, leftColumnX + signatureLineWidth, yPosition);
+        yPosition += 5;
+
+        pdf.setFont("helvetica", "normal");
+        pdf.text(person.name, leftColumnX, yPosition);
+        yPosition += 5;
+        pdf.setFont("helvetica", "bold");
+        pdf.text(person.position, leftColumnX, yPosition);
+        yPosition += 15;
+    });
+
+    return yPosition;
 }
-
-
-
 
 /**
  * Adds footers to all pages
@@ -370,7 +451,7 @@ function addFooters(pdf: jsPDF, pageWidth: number, pageHeight: number): void {
         pdf.setFont("helvetica", "italic");
         pdf.setFontSize(8);
         pdf.setTextColor(100);
-        pdf.text(`Page ${i} of ${totalPages}`, pageWidth - 25, pageHeight - 10);
+        pdf.text(`Page ${i} of ${totalPages}`, pageWidth - 30, pageHeight - 10);
         pdf.text("Confidential - Official Election Results", 15, pageHeight - 10);
     }
 }
@@ -391,11 +472,4 @@ function formatPositionName(position: string): string {
 function calculatePercentage(votes: number, totalVotes: number): string {
     if (totalVotes === 0) return "0.00%";
     return `${(votes / totalVotes * 100).toFixed(2)}%`;
-}
-
-/**
- * Gets total votes for a set of candidates
- */
-function getTotalVotes(candidates: CandidateVoteTally[]): number {
-    return candidates.reduce((sum, candidate) => sum + candidate.vote_count, 0);
 }

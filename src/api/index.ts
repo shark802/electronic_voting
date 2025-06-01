@@ -12,9 +12,11 @@ import voterRouter from "./routes/voter";
 import ipAddressRouter from "./routes/ipAddress";
 import positionRouter from "./routes/position";
 import faceRecognitionRouter from './routes/faceRecognition';
+import certificationRoutes from './routes/certification';
 
 const router = Router();
 
+// API Routes
 router.use(faceRecognitionRouter);
 router.use(electionRouter);
 router.use(authRouter);
@@ -28,5 +30,6 @@ router.use(reportRouter);
 router.use(voterRouter);
 router.use(ipAddressRouter);
 router.use(positionRouter);
+router.use(certificationRoutes);
 
 export default router;

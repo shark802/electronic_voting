@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.departmentPrograms = exports.manageDepartment = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.commpleteElectionResult = exports.editElection = exports.newElection = exports.viewElection = exports.electionAnalytics = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
+exports.editCertification = exports.generalSettings = exports.fetchUser = exports.viewRegisterDevice = exports.reviewRegisterDevice = exports.departmentPrograms = exports.manageDepartment = exports.manageVoter = exports.addCandidate = exports.manageCandidate = exports.renderAdminElectionResult = exports.viewElectionHistory = exports.commpleteElectionResult = exports.editElection = exports.newElection = exports.viewElection = exports.electionAnalytics = exports.dashboardVoteTally = exports.dashboardOverview = void 0;
 const query_1 = require("../../data_access/query");
 const database_1 = require("../../config/database");
 const voterService_1 = require("../../data_access/voterService");
@@ -353,3 +353,57 @@ function generalSettings(req, res, next) {
     });
 }
 exports.generalSettings = generalSettings;
+function editCertification(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const election_id = req.params.id;
+            // Get election details to verify it exists
+            const query = "SELECT * FROM elections WHERE election_id = ?";
+            const election = yield (0, query_1.selectQuery)(database_1.pool, query, [election_id]);
+            if (!election || election.length === 0) {
+                throw new Error('Election not found');
+            }
+            // Default certification details
+            const certificationDetails = {
+                preparedBy: {
+                    name: "Earl John Paildan",
+                    position: "BCC COMELEC Chairperson"
+                },
+                notedBy: [
+                    {
+                        name: "Mr. Anthony S. Malabanan, MIT",
+                        position: "MAT-MATH BSIS Department Head"
+                    },
+                    {
+                        name: "Dr. Rosemarie Lagunday, Ed.D",
+                        position: "AB Department Head"
+                    },
+                    {
+                        name: "Mr. Alain S. Acuna",
+                        position: "Criminology Department Head"
+                    },
+                    {
+                        name: "Dr. Remedios E. Alvarez, PhD",
+                        position: "Education Department Head"
+                    }
+                ],
+                sasoChairperson: {
+                    name: "Ma. Lucille Del Castillo",
+                    position: "SASO Chairperson - Designate"
+                },
+                approvedBy: {
+                    name: "Dr. Deborah Natalia E. Singson",
+                    position: "College President"
+                }
+            };
+            res.render('admin/editCertification', {
+                certificationDetails,
+                electionId: election_id
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+exports.editCertification = editCertification;

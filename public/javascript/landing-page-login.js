@@ -47,7 +47,6 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
 
         if (response.redirected) {
             window.location.href = response.url;
-
         } else if (!response.ok) {
             hideLoader();
             document.querySelector('#login-modal').close();

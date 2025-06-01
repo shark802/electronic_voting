@@ -17,7 +17,8 @@ import {
     departmentPrograms,
     manageDepartment,
     commpleteElectionResult,
-    electionAnalytics
+    electionAnalytics,
+    editCertification
 } from '../controllers/admin';
 import { isAdmin, isAuthenticated } from "../../middlewares/authorization";
 
@@ -38,6 +39,7 @@ router.get("/election/:id/edit", editElection);
 router.get("/election/history", viewElectionHistory);
 router.get("/election/result/:id", renderAdminElectionResult);
 router.get("/election/complete/:id", commpleteElectionResult)
+router.get("/election/:id/certification/edit", editCertification);
 
 // Candidate
 router.get("/candidate/manage", manageCandidate);

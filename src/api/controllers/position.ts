@@ -35,8 +35,6 @@ export async function removePosition(req: Request, res: Response, next: NextFunc
     try {
         const positionId = req.params.id;
 
-        console.log(positionId);
-
         const deletePosition = await deleteQuery(pool, 'UPDATE positions SET deleted_at = NOW() WHERE position_id = ?', [positionId]);
         if (deletePosition.affectedRows === 0) throw new NotFoundError("Position not found");
 

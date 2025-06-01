@@ -5,8 +5,7 @@
 	"main": "dist/app.js",
 	"scripts": {
 		"build-css:dev": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css -w",
-		"build:dev": "cross-env NODE_ENV=development tsc --watch",
-		"dev": "cross-env NODE_ENV=development TZ=Asia/Manila nodemon ./dist/app.js",
+		"dev": "cross-env NODE_ENV=development TZ=Asia/Manila ts-node-dev --respawn --transpile-only src/app.ts",
 		"build-css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css",
 		"build": "tsc",
 		"start": "cross-env NODE_ENV=production TZ=Asia/Manila node ./dist/app.js",
@@ -43,6 +42,7 @@
 		"@types/uuid": "^10.0.0",
 		"nodemon": "^3.1.10",
 		"tailwindcss": "^3.4.3",
+		"ts-node-dev": "^2.0.0",
 		"typescript": "^5.4.3"
 	}
 }

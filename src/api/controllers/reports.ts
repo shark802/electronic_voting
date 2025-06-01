@@ -17,6 +17,8 @@ import { Department } from "../../utils/types/Department";
 import { Position } from "../../utils/types/Positions";
 import 'jspdf-autotable';
 import { ProgramPopulations } from "../../utils/types/ProgramPopulations";
+import path from 'path';
+import fs from 'fs';
 
 
 export async function generateVoterReportInPdf(req: Request, res: Response, next: NextFunction) {
@@ -60,7 +62,6 @@ export async function generateVoterReportInPdf(req: Request, res: Response, next
 
 export async function generatePdfElectionResult(req: Request, res: Response, next: NextFunction) {
     try {
-
         const electionId = req.params.id;
 
         const [election] = await selectQuery<Election>(pool, 'SELECT * FROM elections WHERE election_id = ?', [electionId]);
@@ -84,8 +85,28 @@ export async function generatePdfElectionResult(req: Request, res: Response, nex
 
         (candidatesVoteTally as CandidateVoteTally[]).sort((a, b) => Number(b.vote_count) - Number(a.vote_count))
 
-        // TODO: generate report in pdf and return to user to download
-        const pdfBuffer = await generateElectionResultPdf({ candidatesVoteTally, election: election, departmentArray, positionArray, programPopulation })
+        // Read certification details
+        let certificationDetails;
+        try {
+            const filePath = path.join(__dirname, './../../../public/docs/certification-details.json');
+            if (fs.existsSync(filePath)) {
+                const fileContent = fs.readFileSync(filePath, 'utf8');
+                certificationDetails = JSON.parse(fileContent);
+            }
+        } catch (error) {
+            console.error('Error reading certification details:', error);
+        }
+
+        // Generate PDF with certification details
+        const pdfBuffer = await generateElectionResultPdf({
+            candidatesVoteTally,
+            election: election,
+            departmentArray,
+            positionArray,
+            programPopulation,
+            certificationDetails
+        });
+
         const pdfFilename = election.election_name.replace(/\s+/g, '-').toLocaleLowerCase();
 
         res.setHeader('Content-Type', 'application/pdf');
