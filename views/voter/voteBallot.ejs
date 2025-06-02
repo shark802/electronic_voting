@@ -9,7 +9,9 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/javascript/lib/sweetalert2@11.js"></script>
   <script src="/javascript/lib/socket.io.min.js" defer></script>
-  <script type="module" src="/javascript/voter/voteBallot.js"></script>
+  <script src="/javascript/helper/sweetAlertFunctions.js"></script>
+  <script src="/javascript/helper/loader.js"></script>
+  <script type="module" src="/javascript/voter/voteBallot.js" defer></script>
 
   <style>
     @keyframes fadeIn {
@@ -215,6 +217,34 @@
       color: #1d4ed8;
     }
 
+    /* Error state for position tabs */
+    .position-tab.has-error {
+      border-color: #ef4444;
+      color: #ef4444;
+      animation: shake 0.5s ease-in-out;
+    }
+
+    .position-tab.has-error .position-count {
+      background-color: #fee2e2;
+      color: #ef4444;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-4px);
+      }
+
+      75% {
+        transform: translateX(4px);
+      }
+    }
+
     /* Position tabs container - FIXED LAYOUT NO MOVEMENT */
     .position-tabs-container {
       display: flex;
@@ -279,7 +309,7 @@
   <!-- Header -->
   <header class="sticky top-0 z-50 w-full shadow-lg bg-white/80 backdrop-blur-md">
     <div class="bg-gradient-to-r from-blue-800 via-blue-700 to-blue-800">
-      <div class="container px-4 mx-auto max-w-7xl">
+      <div class="px-4 mx-auto max-w-7xl">
         <div class="flex items-center justify-between h-16">
           <!-- Left side with back button and election name -->
           <div class="flex items-center space-x-4">
@@ -324,7 +354,7 @@
 
     <!-- Election info bar -->
     <div class="w-full py-3 border-b shadow-sm bg-white/90 border-slate-200">
-      <div class="container px-4 mx-auto max-w-7xl">
+      <div class="px-4 mx-auto max-w-7xl">
         <div class="flex flex-wrap items-center justify-between gap-y-2">
           <div class="flex flex-wrap items-center gap-4 text-sm">
             <div class="flex items-center px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-100">
@@ -356,8 +386,8 @@
     </div>
   </header>
 
-  <main class="container max-w-6xl px-4 py-8 mx-auto main-content">
-    <!-- Ballot header - SMALLER -->
+  <main class="max-w-6xl px-4 py-8 mx-auto main-content">
+    <!-- Ballot header -->
     <div class="mb-6 text-center">
       <div class="inline-flex items-center gap-2 px-4 py-2 mb-2 text-blue-700 bg-blue-100 rounded-full">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -386,22 +416,10 @@
     </div>
     <% } else { %>
 
-    <form id="ballot-form" class="space-y-4">
+    <form id="ballot-form" class="space-y-8">
       <% if (candidatePositionList && candidatePositionList.length > 0) { %>
-      <!-- Position tabs navigation - FIXED NO MOVEMENT -->
-      <div>
-        <div class="position-tabs-container">
-          <% candidatePositionList.forEach((position, idx) => { %>
-          <button type="button" class="position-tab <%= idx === 0 ? 'active' : '' %>" data-position="<%= position.replace(/\s+/g, '-').toLowerCase() %>" data-index="<%= idx %>">
-            <span><%= position %></span>
-            <span class="position-count" id="tab-count-<%= position %>">0</span>
-          </button>
-          <% }); %>
-        </div>
-      </div>
-
       <!-- Positions with candidates -->
-      <div class="grid gap-6">
+      <div class="space-y-8">
         <% candidatePositionList.forEach((position, posIndex) => { %>
         <% 
           let candidatePerPosition;
@@ -417,9 +435,9 @@
         %>
 
         <% if (candidatePerPosition.length > 0) { %>
-        <section id="<%= position.replace(/\s+/g, '-').toLowerCase() %>" class="position-section overflow-hidden bg-white border border-slate-200 rounded-xl shadow-sm <%= posIndex === 0 ? 'block' : 'hidden' %> animate-fade-in" style="animation-delay: <%= (posIndex * 0.05).toFixed(2) %>s" <%= position === 'SENATOR' ? `data-max-vote=${departmentMaxSenatorVote[user.course]}` : '' %> data-position-index="<%= posIndex %>">
+        <section id="<%= position.replace(/\s+/g, '-').toLowerCase() %>" class="overflow-hidden bg-white border rounded-md shadow-sm border-slate-200" <%= position === 'SENATOR' ? `data-max-vote=${departmentMaxSenatorVote[user.course]}` : '' %>>
 
-          <!-- Position header - WITH ORIGINAL ID -->
+          <!-- Position header -->
           <div class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700">
             <div class="flex items-center">
               <div class="flex items-center justify-center w-12 h-12 mr-4 text-blue-700 bg-blue-100 rounded-lg">
@@ -442,7 +460,6 @@
                 <% } %>
               </div>
               <div class="text-left">
-                <!-- Original ID for position label -->
                 <h2 id="position-label" class="text-xl font-bold text-white"><%= position %></h2>
                 <p class="text-sm text-blue-100">
                   <% if (position === 'SENATOR') { %>
@@ -535,74 +552,56 @@
             <div class="mt-2">
               <div class="text-sm font-medium text-red-600 min-h-4 error-message" id="error-<%= position %>"></div>
             </div>
-
-            <!-- Minimal Navigation Controls -->
-            <div class="flex items-center justify-between pt-2 mt-2 border-t border-slate-100">
-              <button type="button" class="nav-button prev-position flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors duration-200" <%= posIndex === 0 ? 'disabled' : '' %> data-position-index="<%= posIndex %>" aria-label="Go to previous position">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span>Previous</span>
-              </button>
-
-              <div class="text-xs font-medium text-slate-500 position-indicator" title="Use left/right arrow keys to navigate">
-                Position <%= posIndex + 1 %> of <%= candidatePositionList.length %>
-              </div>
-
-              <button type="button" class="nav-button next-position flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-800 transition-colors duration-200" <%= posIndex === candidatePositionList.length - 1 ? 'disabled' : '' %> data-position-index="<%= posIndex %>" aria-label="Go to next position">
-                <span>Next</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-
           </div>
         </section>
         <% } %>
         <% }) %>
 
-        <!-- Ballot submission -->
-        <div class="p-4 border-2 border-green-200 shadow-lg bg-gradient-to-r from-green-50 to-blue-50 rounded-xl">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div class="flex items-center gap-4">
-              <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-green-100 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="mb-2 text-lg font-semibold text-slate-800">Ready to submit your ballot?</h3>
-                <p class="text-sm text-slate-600">Please review your selections before submitting. Once submitted, your vote cannot be changed.</p>
-                <div class="mt-3 text-sm text-slate-400" id="selection-summary">
-                  No selections made yet
+        <!-- Submit ballot section -->
+        <div class="overflow-hidden bg-white border-2 border-green-300 rounded-lg shadow-smborder">
+
+          <!-- Submit ballot content -->
+          <div class="p-4 bg-white ">
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div class="flex items-center gap-4">
+                <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 bg-green-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="mb-2 text-lg font-semibold text-slate-800">Ready to submit your ballot?</h3>
+                  <p class="text-sm text-slate-600">Please review your selections before submitting. Once submitted, your vote cannot be changed.</p>
+                  <div class="mt-3 text-sm text-slate-400" id="selection-summary">
+                    No selections made yet
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="flex gap-3 lg:flex-col xl:flex-row">
-              <button type="reset" class="px-6 py-3 text-sm font-medium transition-all duration-200 bg-white border-2 rounded-lg text-slate-700 border-slate-300 hover:bg-slate-50 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
-                Clear All Selections
-              </button>
+              <div class="flex gap-3 lg:flex-col xl:flex-row">
+                <button type="reset" class="px-6 py-3 text-sm font-medium transition-all duration-200 bg-white border-2 rounded-lg text-slate-700 border-slate-300 hover:bg-slate-50 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
+                  Clear All Selections
+                </button>
 
-              <button type="submit" class="flex items-center gap-3 px-8 py-3 font-medium text-white transition-all duration-200 transform rounded-lg shadow-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 hover:shadow-xl hover:scale-105">
-                <span>Submit Ballot</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-              </button>
+                <button type="submit" class="flex items-center gap-3 px-8 py-3 font-medium text-white transition-all duration-200 transform rounded-lg shadow-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 hover:shadow-xl hover:scale-105">
+                  <span>Submit Ballot</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-        <% } %>
       </div>
+      <% } %>
     </form>
     <% } %>
   </main>
 
   <!-- Footer -->
   <footer class="w-full mt-8 bg-white border-t shadow-sm border-slate-200">
-    <div class="container max-w-6xl px-4 py-4 mx-auto">
+    <div class="max-w-6xl px-4 py-4 mx-auto ">
       <div class="space-y-1 text-sm text-center text-slate-500">
         <p class="font-medium">© <%= new Date().getFullYear() %> BCC Web-based E-voting System. All rights reserved.</p>
         <p>If you encounter any issues, please contact the election administrator.</p>
@@ -617,11 +616,6 @@
   </footer>
 
   <script>
-    // Global state management
-    let selectedCandidates = {};
-    let currentPositionIndex = 0;
-    let totalPositions = 0;
-
     // Image error handling function
     function handleImageError(img, initials) {
       // Hide the failed image
@@ -634,141 +628,10 @@
       }
     }
 
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-      initializePage();
-      initializeNavigation();
-      updateProgressBar();
-      updateSelectionSummary();
-    });
+    // Global state management
+    let selectedCandidates = {};
+    let totalPositions = <%= candidatePositionList ? candidatePositionList.length : 0 %>;
 
-    function initializePage() {
-      // Set up form reset handler
-      const form = document.getElementById('ballot-form');
-      if (form) {
-        form.addEventListener('reset', function() {
-          setTimeout(() => {
-            selectedCandidates = {};
-
-            // Clear all input selections
-            const allInputs = document.querySelectorAll('input[type="radio"], input[type="checkbox"]');
-            allInputs.forEach(input => {
-              input.checked = false;
-              updateCandidateCard(input, false);
-            });
-
-            updateAllSelectionStates();
-            updateProgressBar();
-            updateSelectionSummary();
-          }, 100);
-        });
-      }
-
-      // Position tabs functionality
-      const positionTabs = document.querySelectorAll('.position-tab');
-      const positionSections = document.querySelectorAll('.position-section');
-      totalPositions = positionTabs.length;
-
-      positionTabs.forEach((tab, index) => {
-        tab.addEventListener('click', (e) => {
-          e.preventDefault();
-          navigateToPosition(index);
-        });
-      });
-    }
-
-    function initializeNavigation() {
-      // Get all previous and next buttons
-      const prevButtons = document.querySelectorAll('.prev-position');
-      const nextButtons = document.querySelectorAll('.next-position');
-
-      // Add click event to all previous buttons
-      prevButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const posIndex = parseInt(this.getAttribute('data-position-index'));
-          if (posIndex > 0) {
-            navigateToPosition(posIndex - 1);
-          }
-        });
-      });
-
-      // Add click event to all next buttons
-      nextButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const posIndex = parseInt(this.getAttribute('data-position-index'));
-          if (posIndex < totalPositions - 1) {
-            navigateToPosition(posIndex + 1);
-          }
-        });
-      });
-    }
-
-    function navigateToPosition(index) {
-      if (index
-
-        <
-        0 || index >= totalPositions) return;
-
-      currentPositionIndex = index;
-
-      // Update tabs
-      const positionTabs = document.querySelectorAll('.position-tab');
-      const positionSections = document.querySelectorAll('.position-section');
-
-      // Remove active class from all tabs
-      positionTabs.forEach(t => {
-        t.classList.remove('active');
-      });
-
-      // Add active class to current tab
-      if (positionTabs[index]) {
-        positionTabs[index].classList.add('active');
-      }
-
-      // Show corresponding section
-      positionSections.forEach((section, sectionIndex) => {
-        if (sectionIndex === index) {
-          section.classList.remove('hidden');
-          section.classList.add('block');
-        } else {
-          section.classList.add('hidden');
-          section.classList.remove('block');
-        }
-      });
-
-      // Update navigation buttons state
-      updateNavigationButtonsState();
-
-      const targetSection = positionSections[index];
-      if (targetSection) {
-        const rect = targetSection.getBoundingClientRect();
-        const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-        if (!isVisible) {
-          targetSection.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest' // Less intrusive than 'start' 
-          });
-        }
-      }
-
-    }
-
-    function updateNavigationButtonsState() {
-      // Update all prev buttons
-      document.querySelectorAll('.prev-position').forEach(button => {
-        button.disabled = currentPositionIndex === 0;
-      });
-
-      // Update all next buttons
-      document.querySelectorAll('.next-position').forEach(button => {
-        button.disabled = currentPositionIndex === totalPositions - 1;
-      });
-
-      // Update all position indicators
-      document.querySelectorAll('.position-indicator').forEach(indicator => {
-        indicator.textContent = `Position ${currentPositionIndex + 1} of ${totalPositions}`;
-      });
-    }
 
     function handleCandidateSelection(input, position) {
       const candidateId = input.value;
@@ -811,7 +674,6 @@
       updatePositionStatus(position);
       updateProgressBar();
       updateSelectionSummary();
-      updatePositionTabs();
     }
 
     function updateCandidateCard(input, isSelected) {
@@ -829,20 +691,6 @@
       }
     }
 
-    function updateAllSelectionStates() {
-      // Update all candidate cards based on current selections
-      Object.keys(selectedCandidates).forEach(position => {
-        const inputs = document.querySelectorAll(`input[name="${position}"]`);
-        inputs.forEach(input => {
-          const isSelected = selectedCandidates[position].includes(input.value);
-          input.checked = isSelected;
-          updateCandidateCard(input, isSelected);
-        });
-        updatePositionStatus(position);
-      });
-      updatePositionTabs();
-    }
-
     function updatePositionStatus(position) {
       const statusElement = document.getElementById(`status-${position}`);
       const selectedCount = selectedCandidates[position] ? selectedCandidates[position].length : 0;
@@ -858,29 +706,7 @@
       }
     }
 
-    function updatePositionTabs() {
-      // Update position tab counts
-      const allPositions = document.querySelectorAll('.position-section');
-      allPositions.forEach(section => {
-        const position = section.id.replace(/-/g, ' ').toUpperCase();
-        const countElement = document.getElementById(`tab-count-${position}`);
-        const selectedCount = selectedCandidates[position] ? selectedCandidates[position].length : 0;
-
-        if (countElement) {
-          countElement.textContent = selectedCount;
-          if (selectedCount > 0) {
-            countElement.classList.remove('bg-slate-200');
-            countElement.classList.add('bg-green-200', 'text-green-800');
-          } else {
-            countElement.classList.remove('bg-green-200', 'text-green-800');
-            countElement.classList.add('bg-slate-200');
-          }
-        }
-      });
-    }
-
     function updateProgressBar() {
-      const totalPositions = document.querySelectorAll('.position-section').length;
       const completedPositions = Object.values(selectedCandidates).filter(selections => selections.length > 0).length;
       const progress = totalPositions > 0 ? (completedPositions / totalPositions) * 100 : 0;
 
@@ -921,38 +747,6 @@
         }, 4000);
       }
     }
-
-    // Enforce maximum selections for checkboxes
-    document.addEventListener('change', function(e) {
-      if (e.target.type === 'checkbox') {
-        const section = e.target.closest('section[data-max-vote]');
-        if (section) {
-          const maxVotes = parseInt(section.getAttribute('data-max-vote'));
-          const checkboxes = section.querySelectorAll('input[type="checkbox"]');
-          const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-
-          if (checkedCount > maxVotes) {
-            e.target.checked = false;
-            const position = e.target.name;
-            showError(position, `You can only select up to ${maxVotes} candidate${maxVotes > 1 ? 's' : ''}.`);
-
-            // Revert card styling
-            updateCandidateCard(e.target, false);
-          }
-        }
-      }
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' && currentPositionIndex > 0) {
-        e.preventDefault();
-        navigateToPosition(currentPositionIndex - 1);
-      } else if (e.key === 'ArrowRight' && currentPositionIndex < totalPositions - 1) {
-        e.preventDefault();
-        navigateToPosition(currentPositionIndex + 1);
-      }
-    });
   </script>
 </body>
 

@@ -1,6 +1,6 @@
 import { eventEmitter } from './../../events/globalEventEmitterInstance';
 import { NextFunction, Request, Response } from "express";
-import { BadRequestError, ConflictError } from "../../utils/customErrors";
+import { BadRequestError, ConflictError, UnauthorizedError } from "../../utils/customErrors";
 import { checkIfUserHasVoted, getVoterDepartment, incrementCandidateVoteCount, saveVote, updateVoterVoteStatus } from "../../data_access/voteService";
 import { pool } from "../../config/database";
 import { Socket } from "socket.io";
@@ -15,9 +15,14 @@ export async function saveVoteFunction(req: Request, res: Response, next: NextFu
         const { electionId } = req.body;
         const selectedCandidate: Pick<Candidate, 'id_number' | 'position'>[] = req.body.selectedCandidate
         const user_id = req.session.user!.user_id;
+        const ipRegistered = req.session.ipRegistered;
         const faceVerified = req.session?.faceVerified; // available if voter vote online and authenticated their face
 
         const socket: Socket = res.locals.io;
+
+        if (!ipRegistered && !faceVerified) {
+            throw new UnauthorizedError('Unauthorized vote attempt. Please either register your IP or complete face verification.');
+        }
 
         if (!electionId) throw new BadRequestError('Election ID is missing');
         if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0) throw new BadRequestError('Selected candidate data is missing or invalid');

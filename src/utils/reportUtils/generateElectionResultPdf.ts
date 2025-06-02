@@ -349,7 +349,7 @@ async function renderSignatures(
     pdf.setFontSize(10);
     pdf.setFont("helvetica", "normal");
     pdf.text("Prepared By:", leftColumnX, yPosition);
-    yPosition += 10;
+    yPosition += 15;
 
     // Handle preparedBy as array
     details.preparedBy.forEach((person, index) => {
@@ -371,7 +371,7 @@ async function renderSignatures(
     // Noted By
     pdf.setFont("helvetica", "normal");
     pdf.text("Noted By:", leftColumnX, yPosition);
-    yPosition += 10;
+    yPosition += 15;
 
     // Render notedBy in two columns
     for (let i = 0; i < details.notedBy.length; i += 2) {
@@ -412,7 +412,7 @@ async function renderSignatures(
     // Approved By
     pdf.setFont("helvetica", "normal");
     pdf.text("Approved By:", leftColumnX, yPosition);
-    yPosition += 10;
+    yPosition += 15;
 
     // Handle approvedBy as array
     details.approvedBy.forEach((person, index) => {
