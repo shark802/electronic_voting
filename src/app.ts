@@ -78,6 +78,28 @@ app.use("/", webRoutes);
 
 app.use(errorHandler);
 
+
+process.on('uncaughtException', (error: Error) => {
+    console.error('Uncaught Exception:', error);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    process.exit(1);
+});
+
+const gracefulShutdown = () => {
+    console.log('Received shutdown signal');
+    httpServer.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
+};
+
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
+
 const PORT = process.env.PORT || 3000;
 const ENVIRONMENT = process.env.NODE_ENV;
 

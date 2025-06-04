@@ -94,6 +94,23 @@ app.use((0, socketIO_1.socketIO)(io));
 app.use("/api", api_1.default);
 app.use("/", web_1.default);
 app.use(errorHandler_1.errorHandler);
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+    process.exit(1);
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    process.exit(1);
+});
+const gracefulShutdown = () => {
+    console.log('Received shutdown signal');
+    httpServer.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
+};
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 const PORT = process.env.PORT || 3000;
 const ENVIRONMENT = process.env.NODE_ENV;
 httpServer.listen(PORT, () => {
