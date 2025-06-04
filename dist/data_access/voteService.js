@@ -14,6 +14,7 @@ const query_1 = require("./query");
 const database_1 = require("../config/database");
 const customErrors_1 = require("../utils/customErrors");
 const cryptoService_1 = require("../utils/cryptoService");
+const ulid_1 = require("ulid");
 function checkIfUserHasVoted(userId, electionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const getUserVoteHistory = yield (0, query_1.selectQuery)(database_1.pool, "SELECT * FROM votes WHERE voter_id = ? AND election_id = ?", [userId, electionId]);
@@ -54,10 +55,23 @@ exports.incrementCandidateVoteCount = incrementCandidateVoteCount;
 function updateVoterVoteStatus(connection, userId, electionId, isFaceVerified) {
     return __awaiter(this, void 0, void 0, function* () {
         const votingMode = isFaceVerified ? 'ONLINE' : 'ON-SITE';
-        const [updateVoteStatusResult] = yield connection.execute('UPDATE voters SET voted = 1, voting_mode = ? WHERE id_number = ? AND election_id = ?', [votingMode, userId, electionId]);
-        if (updateVoteStatusResult.affectedRows === 0)
-            throw new customErrors_1.NotFoundError('Voter not Exist on this Election');
-        return;
+        const voterId = (0, ulid_1.ulid)();
+        try {
+            // First try to update existing voter
+            const [updateVoteStatusResult] = yield connection.execute('UPDATE voters SET voted = 1, voting_mode = ? WHERE id_number = ? AND election_id = ?', [votingMode, userId, electionId]);
+            // If no voter exists, create a new one
+            if (updateVoteStatusResult.affectedRows === 0) {
+                // Create new voter record
+                yield connection.execute('INSERT INTO voters (voter_id, id_number, election_id, voted, voting_mode) VALUES (?, ?, ?, 1, ?)', [voterId, userId, electionId, votingMode]);
+            }
+            return;
+        }
+        catch (error) {
+            if (error instanceof customErrors_1.NotFoundError) {
+                throw error;
+            }
+            throw new Error('Failed to update or create voter status');
+        }
     });
 }
 exports.updateVoterVoteStatus = updateVoterVoteStatus;

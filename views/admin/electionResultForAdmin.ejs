@@ -653,7 +653,6 @@
                       <div class="w-full mt-2">
                         <div class="flex items-center justify-between mb-1">
                           <span class="text-xs text-slate-500"><%= candidate.vote_count %> votes</span>
-                          <span class="text-xs text-slate-500"><%= population %> votes</span>
                           <span class="text-sm font-bold <%= isWinning ? 'text-green-600' : 'text-blue-600' %>"><%= votePercentage %>%</span>
                         </div>
 
@@ -792,7 +791,7 @@
   <!-- Modern footer -->
   <footer class="py-6 mt-8 text-sm text-center bg-white border-t text-slate-500 border-slate-200">
     <div class="container max-w-5xl px-4 mx-auto">
-      <p>© <%= new Date().getFullYear() %> Election System. All rights reserved.</p>
+      <p class="font-medium">© <%= new Date().getFullYear() %> BCC Web-based E-voting System. All rights reserved.</p>
     </div>
   </footer>
 

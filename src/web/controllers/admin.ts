@@ -12,8 +12,7 @@ import { Position } from "../../utils/types/Positions";
 import { Program } from "../../utils/types/Program";
 import { Candidate } from "../../utils/types/Candidate";
 import { CryptoService } from "../../utils/cryptoService";
-import path from 'path';
-import fs from 'fs';
+
 
 export async function dashboardOverview(req: Request, res: Response, next: NextFunction) {
     try {
@@ -213,7 +212,7 @@ export async function manageCandidate(req: Request, res: Response, next: NextFun
         const candidatePositions = await selectQuery<Position>(pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
         const positions = candidatePositions.map(position => position.position);
 
-        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_close = 0  ORDER BY created_at ASC";
+        const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_close = 0  ORDER BY created_at DESC";
         const elections = await selectQuery<Election>(pool, selectElectioQuery);
 
         res.render("admin/candidate_manage", { elections, positions })

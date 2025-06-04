@@ -70,7 +70,7 @@ function displayElectionPopulationInDashboard(electionTotalPopulationArrayObject
     electionTotalPopulationArrayObject.forEach(electionObject => {
         if (electionObject.total_populations > 0) {
             const electionSection = document.body.querySelector(`section[data-election-id="${electionObject.election_id}"]`);
-            electionSection.querySelector('#total-population').textContent = electionObject.total_populations
+            electionSection.querySelector('#total-population').textContent = electionObject.registered_populations
         }
     })
 }

@@ -212,7 +212,7 @@ function manageCandidate(req, res, next) {
         try {
             const candidatePositions = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM positions WHERE deleted_at IS NULL');
             const positions = candidatePositions.map(position => position.position);
-            const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_close = 0  ORDER BY created_at ASC";
+            const selectElectioQuery = "SELECT * FROM elections WHERE deleted_at IS NULL AND is_close = 0  ORDER BY created_at DESC";
             const elections = yield (0, query_1.selectQuery)(database_1.pool, selectElectioQuery);
             res.render("admin/candidate_manage", { elections, positions });
         }

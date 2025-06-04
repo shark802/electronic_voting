@@ -85,11 +85,13 @@ document.querySelector("#candidate-form").addEventListener('submit', async (even
 
     try {
 
+        showLoading()
         const response = await fetch("/api/candidate", {
             method: "POST",
             body: addCandidateForm
         })
 
+        hideLoader()
         if (!response.ok) {
             const responseObject = await response.json();
             Swal.fire({
@@ -103,7 +105,15 @@ document.querySelector("#candidate-form").addEventListener('submit', async (even
                 title: "New Candidate added successfully",
                 icon: "success",
             }).then(action => {
-                if (action.isConfirmed) event.target.reset();
+                if (action.isConfirmed) {
+                    event.target.reset();
+                    // Reset image preview
+                    imagePreview.src = "/placeholder.svg";
+                    imagePreview.classList.add("hidden");
+                    imagePlaceholder.classList.remove("hidden");
+                    // Reset file input
+                    fileInput.value = "";
+                }
             })
             return;
         }

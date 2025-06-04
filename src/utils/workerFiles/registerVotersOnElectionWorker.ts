@@ -33,7 +33,10 @@ parentPort?.on('message', async (dataObject: DataObject) => {
     } catch (error) {
         await connection.rollback()
         console.error('Error in worker:', error);
-        parentPort?.postMessage(parentPort?.postMessage({ success: false, error: error }));
+        parentPort?.postMessage({
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error occurred'
+        });
     } finally {
         await connection.release();
     }

@@ -115,7 +115,7 @@ export async function generateElectionResultPdf({
     const margin = 15;
     let yPosition = margin;
 
-    // Add header with title and date
+    // Add header with title and date (only on first page)
     yPosition = await renderHeader(pdf, pageWidth, election.election_name) + 8;
 
     // Process each position
@@ -129,7 +129,7 @@ export async function generateElectionResultPdf({
         // Check if we need a new page
         if (yPosition > pageHeight - 60) {
             pdf.addPage();
-            yPosition = await renderHeader(pdf, pageWidth, election.election_name) + 10;
+            yPosition = margin + 10; // Start from margin without header
         }
 
         // Add position header
@@ -159,7 +159,7 @@ export async function generateElectionResultPdf({
         }
     }
 
-    // Add signatures section
+    // Add signatures section with header
     yPosition = await renderSignatures(pdf, pageWidth, pageHeight, yPosition, certificationDetails, election.election_name);
 
     // Add footer with page numbers
@@ -203,7 +203,7 @@ async function renderSenatorsByDepartment(
         // Check if we need a new page
         if (yPosition > pageHeight - 60) {
             pdf.addPage();
-            yPosition = await renderHeader(pdf, pdf.internal.pageSize.width, electionName) + 10;
+            yPosition = margin + 10; // Start from margin without header
 
             pdf.setFontSize(14);
             pdf.setFont("helvetica", "bold");
@@ -345,90 +345,93 @@ async function renderSignatures(
     const rightColumnX = pageWidth / 2 + 20;
     const signatureLineWidth = 60;
 
-    // Prepared By
-    pdf.setFontSize(10);
-    pdf.setFont("helvetica", "normal");
-    pdf.text("Prepared By:", leftColumnX, yPosition);
-    yPosition += 15;
-
-    // Handle preparedBy as array
-    details.preparedBy.forEach((person, index) => {
-        // Draw signature line
-        pdf.setDrawColor(0);
-        pdf.setLineWidth(0.5);
-        pdf.line(leftColumnX, yPosition, leftColumnX + signatureLineWidth, yPosition);
-        yPosition += 5;
-
+    // Prepared By (only if there's data)
+    if (details.preparedBy && details.preparedBy.length > 0) {
+        pdf.setFontSize(10);
         pdf.setFont("helvetica", "normal");
-        pdf.text(person.name, leftColumnX, yPosition);
-        yPosition += 5;
-        pdf.setFont("helvetica", "bold");
-        pdf.text(person.position, leftColumnX, yPosition);
+        pdf.text("Prepared By:", leftColumnX, yPosition);
         yPosition += 15;
-    });
-    yPosition += 10;
 
-    // Noted By
-    pdf.setFont("helvetica", "normal");
-    pdf.text("Noted By:", leftColumnX, yPosition);
-    yPosition += 15;
-
-    // Render notedBy in two columns
-    for (let i = 0; i < details.notedBy.length; i += 2) {
-        const currentY = yPosition;
-
-        // Left column
-        pdf.setDrawColor(0);
-        pdf.setLineWidth(0.5);
-        pdf.line(leftColumnX, currentY, leftColumnX + signatureLineWidth, currentY);
-        yPosition += 5;
-
-        pdf.setFont("helvetica", "normal");
-        pdf.text(details.notedBy[i].name, leftColumnX, yPosition);
-        yPosition += 5;
-        pdf.setFont("helvetica", "bold");
-        pdf.text(details.notedBy[i].position, leftColumnX, yPosition);
-
-        // Right column (if exists)
-        if (i + 1 < details.notedBy.length) {
-            yPosition = currentY;
+        details.preparedBy.forEach((person) => {
+            // Draw signature line
             pdf.setDrawColor(0);
             pdf.setLineWidth(0.5);
-            pdf.line(rightColumnX, currentY, rightColumnX + signatureLineWidth, currentY);
+            pdf.line(leftColumnX, yPosition, leftColumnX + signatureLineWidth, yPosition);
             yPosition += 5;
 
             pdf.setFont("helvetica", "normal");
-            pdf.text(details.notedBy[i + 1].name, rightColumnX, yPosition);
+            pdf.text(person.name, leftColumnX, yPosition);
             yPosition += 5;
             pdf.setFont("helvetica", "bold");
-            pdf.text(details.notedBy[i + 1].position, rightColumnX, yPosition);
-        }
-
-        yPosition += 15;
+            pdf.text(person.position, leftColumnX, yPosition);
+            yPosition += 15;
+        });
+        yPosition += 10;
     }
 
-    yPosition += 10;
-
-    // Approved By
-    pdf.setFont("helvetica", "normal");
-    pdf.text("Approved By:", leftColumnX, yPosition);
-    yPosition += 15;
-
-    // Handle approvedBy as array
-    details.approvedBy.forEach((person, index) => {
-        // Draw signature line
-        pdf.setDrawColor(0);
-        pdf.setLineWidth(0.5);
-        pdf.line(leftColumnX, yPosition, leftColumnX + signatureLineWidth, yPosition);
-        yPosition += 5;
-
+    // Noted By (only if there's data)
+    if (details.notedBy && details.notedBy.length > 0) {
         pdf.setFont("helvetica", "normal");
-        pdf.text(person.name, leftColumnX, yPosition);
-        yPosition += 5;
-        pdf.setFont("helvetica", "bold");
-        pdf.text(person.position, leftColumnX, yPosition);
+        pdf.text("Noted By:", leftColumnX, yPosition);
         yPosition += 15;
-    });
+
+        // Render notedBy in two columns
+        for (let i = 0; i < details.notedBy.length; i += 2) {
+            const currentY = yPosition;
+
+            // Left column
+            pdf.setDrawColor(0);
+            pdf.setLineWidth(0.5);
+            pdf.line(leftColumnX, currentY, leftColumnX + signatureLineWidth, currentY);
+            yPosition += 5;
+
+            pdf.setFont("helvetica", "normal");
+            pdf.text(details.notedBy[i].name, leftColumnX, yPosition);
+            yPosition += 5;
+            pdf.setFont("helvetica", "bold");
+            pdf.text(details.notedBy[i].position, leftColumnX, yPosition);
+
+            // Right column (if exists)
+            if (i + 1 < details.notedBy.length) {
+                yPosition = currentY;
+                pdf.setDrawColor(0);
+                pdf.setLineWidth(0.5);
+                pdf.line(rightColumnX, currentY, rightColumnX + signatureLineWidth, currentY);
+                yPosition += 5;
+
+                pdf.setFont("helvetica", "normal");
+                pdf.text(details.notedBy[i + 1].name, rightColumnX, yPosition);
+                yPosition += 5;
+                pdf.setFont("helvetica", "bold");
+                pdf.text(details.notedBy[i + 1].position, rightColumnX, yPosition);
+            }
+
+            yPosition += 15;
+        }
+        yPosition += 10;
+    }
+
+    // Approved By (only if there's data)
+    if (details.approvedBy && details.approvedBy.length > 0) {
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Approved By:", leftColumnX, yPosition);
+        yPosition += 15;
+
+        details.approvedBy.forEach((person) => {
+            // Draw signature line
+            pdf.setDrawColor(0);
+            pdf.setLineWidth(0.5);
+            pdf.line(leftColumnX, yPosition, leftColumnX + signatureLineWidth, yPosition);
+            yPosition += 5;
+
+            pdf.setFont("helvetica", "normal");
+            pdf.text(person.name, leftColumnX, yPosition);
+            yPosition += 5;
+            pdf.setFont("helvetica", "bold");
+            pdf.text(person.position, leftColumnX, yPosition);
+            yPosition += 15;
+        });
+    }
 
     return yPosition;
 }

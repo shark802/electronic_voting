@@ -27,8 +27,12 @@ function saveVoteFunction(req, res, next) {
             const { electionId } = req.body;
             const selectedCandidate = req.body.selectedCandidate;
             const user_id = req.session.user.user_id;
+            const ipRegistered = req.session.ipRegistered;
             const faceVerified = (_a = req.session) === null || _a === void 0 ? void 0 : _a.faceVerified; // available if voter vote online and authenticated their face
             const socket = res.locals.io;
+            if (!ipRegistered && !faceVerified) {
+                throw new customErrors_1.UnauthorizedError('Unauthorized vote attempt. Please either register your IP or complete face verification.');
+            }
             if (!electionId)
                 throw new customErrors_1.BadRequestError('Election ID is missing');
             if (!selectedCandidate || typeof selectedCandidate !== 'object' || Object.keys(selectedCandidate).length === 0)

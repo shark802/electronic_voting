@@ -30,7 +30,10 @@ worker_threads_1.parentPort === null || worker_threads_1.parentPort === void 0 ?
     catch (error) {
         yield connection.rollback();
         console.error('Error in worker:', error);
-        worker_threads_1.parentPort === null || worker_threads_1.parentPort === void 0 ? void 0 : worker_threads_1.parentPort.postMessage(worker_threads_1.parentPort === null || worker_threads_1.parentPort === void 0 ? void 0 : worker_threads_1.parentPort.postMessage({ success: false, error: error }));
+        worker_threads_1.parentPort === null || worker_threads_1.parentPort === void 0 ? void 0 : worker_threads_1.parentPort.postMessage({
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error occurred'
+        });
     }
     finally {
         yield connection.release();

@@ -6,6 +6,7 @@ import { Candidate } from '../utils/types/Candidate';
 import { NotFoundError } from '../utils/customErrors';
 import { CryptoService } from '../utils/cryptoService';
 import { Department } from '../utils/types/Department';
+import { ulid } from 'ulid';
 
 
 export async function checkIfUserHasVoted(userId: string, electionId: string) {
@@ -44,14 +45,34 @@ export async function incrementCandidateVoteCount(connection: PoolConnection, se
     }
 }
 
+
 export async function updateVoterVoteStatus(connection: PoolConnection, userId: string, electionId: string, isFaceVerified: boolean | undefined) {
-
     const votingMode = isFaceVerified ? 'ONLINE' : 'ON-SITE';
+    const voterId = ulid();
 
-    const [updateVoteStatusResult] = await connection.execute<ResultSetHeader>('UPDATE voters SET voted = 1, voting_mode = ? WHERE id_number = ? AND election_id = ?', [votingMode, userId, electionId]);
-    if (updateVoteStatusResult.affectedRows === 0) throw new NotFoundError('Voter not Exist on this Election');
+    try {
+        // First try to update existing voter
+        const [updateVoteStatusResult] = await connection.execute<ResultSetHeader>(
+            'UPDATE voters SET voted = 1, voting_mode = ? WHERE id_number = ? AND election_id = ?',
+            [votingMode, userId, electionId]
+        );
 
-    return;
+        // If no voter exists, create a new one
+        if (updateVoteStatusResult.affectedRows === 0) {
+            // Create new voter record
+            await connection.execute(
+                'INSERT INTO voters (voter_id, id_number, election_id, voted, voting_mode) VALUES (?, ?, ?, 1, ?)',
+                [voterId, userId, electionId, votingMode]
+            );
+        }
+
+        return;
+    } catch (error) {
+        if (error instanceof NotFoundError) {
+            throw error;
+        }
+        throw new Error('Failed to update or create voter status');
+    }
 }
 
 export async function getVoterDepartment(user_id: string) {

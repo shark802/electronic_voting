@@ -18,16 +18,37 @@ const query_1 = require("../data_access/query");
 const globalEventEmitterInstance_1 = require("./globalEventEmitterInstance");
 const worker_threads_1 = require("worker_threads");
 globalEventEmitterInstance_1.eventEmitter.on('addCandidateEvent', (electionId) => __awaiter(void 0, void 0, void 0, function* () {
-    const CURRENT_YEAR = new Date().getFullYear();
-    const users = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE year_active = ?', [CURRENT_YEAR]);
-    const worker = new worker_threads_1.Worker(path_1.default.join(__dirname, '../utils/workerFiles/registerVotersOnElectionWorker.js'));
-    worker.postMessage({ users, electionId });
-    worker.on('message', (result) => {
-        if (result.success === true) {
-            console.log(`Successfully added voters for election ${electionId}`);
-        }
-        else if (result.error) {
-            console.error(`Error adding voters for election ${electionId}:`, result.error);
-        }
-    });
+    let worker = null;
+    try {
+        const users = yield (0, query_1.selectQuery)(database_1.pool, 'SELECT * FROM users WHERE is_active = 1');
+        // Determine the correct path based on environment
+        const isDev = process.env.NODE_ENV !== 'production';
+        const workerPath = isDev
+            ? path_1.default.join(__dirname, '../../src/utils/workerFiles/registerVotersOnElectionWorker.ts')
+            : path_1.default.join(__dirname, '../utils/workerFiles/registerVotersOnElectionWorker.js');
+        worker = new worker_threads_1.Worker(workerPath);
+        worker.postMessage({ users, electionId });
+        worker.on('message', (result) => {
+            if (result.success === true) {
+                console.log(`Successfully added voters for election ${electionId}`);
+            }
+            else if (result.error) {
+                console.error(`Error adding voters for election ${electionId}:`, result.error);
+            }
+            worker === null || worker === void 0 ? void 0 : worker.terminate();
+        });
+        worker.on('error', (error) => {
+            console.error(`Worker error for election ${electionId}:`, error);
+            worker === null || worker === void 0 ? void 0 : worker.terminate();
+        });
+        worker.on('exit', (code) => {
+            if (code !== 0) {
+                console.error(`Worker stopped with exit code ${code}`);
+            }
+        });
+    }
+    catch (error) {
+        console.error(`Error in addCandidateEvent handler:`, error);
+        worker === null || worker === void 0 ? void 0 : worker.terminate();
+    }
 }));
