@@ -82,14 +82,14 @@
 
             <img src="/img/x.webp" id="close-import-user-dropdown" alt="exit" class="relative w-6 rounded-full top-2 -left-1 opacity-70 hover:bg-blue-200">
 
-            <div class="font-[sans-serif] max-w-md py-5 pb-2 pt-8 border-b-2 border-gray-200 mr-4">
+            <div class="font-[sans-serif] max-w-md py-5 pt-8 pb-2 border-b-2 border-gray-200 mr-4">
               <form id="import-user-form">
 
                 <label class="block mb-2 text-sm font-semibold text-gray-500">Upload CSV file</label>
                 <input type="file" name="userFile" accept=".csv" class="w-full text-sm font-semibold text-gray-400 bg-white border border-gray-300 rounded cursor-pointer file:cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-gray-500" />
                 <p class="mt-2 text-xs text-gray-400">Only CSV files are allowed.</p>
 
-                <div>
+                <div class="relative">
                   <div id="info-icon-upload" class="flex items-center w-fit">
                     <span class="relative inline-block -top-[2px]">
                       <svg class="inline w-4 h-4 text-gray-500 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -99,7 +99,9 @@
                     <label class="block ml-1 text-sm font-medium text-gray-700">Upload File Requirements</label>
                   </div>
                   <div class="absolute z-50 hidden p-3 mt-1 text-sm text-white bg-gray-800 rounded-lg shadow-lg max-w-56 tooltip" id="tooltip-upload-requirements">
-                    Please ensure the uploaded file contains the following fields:
+                    <p class="mb-2">Please ensure the uploaded CSV file follows these requirements:</p>
+                    <p class="mb-2 text-xs text-yellow-300">⚠️ Important: Field names must match exactly (including capitalization and spaces)</p>
+                    <p class="mb-2">Required fields:</p>
                     <ul class="pl-4 mt-2 list-disc">
                       <li>ID NUMBER</li>
                       <li>LAST NAME</li>
@@ -111,6 +113,7 @@
                       <li>PASSWORD</li>
                       <li>EMAIL</li>
                     </ul>
+                    <!-- <p class="mt-2 text-xs text-gray-300">Note: All fields are required. The import will fail if any field is missing or incorrectly formatted.</p> -->
                   </div>
                   </span>
                 </div>
